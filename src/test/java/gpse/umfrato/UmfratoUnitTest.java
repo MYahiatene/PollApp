@@ -1,9 +1,9 @@
-package gpse.example;
+package gpse.umfrato;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class ExampleUnitTest {
+public class UmfratoUnitTest {
 
     @Test
     public void unitTest() {
