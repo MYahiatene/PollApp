@@ -1,6 +1,8 @@
 package gpse.umfrato.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -16,16 +18,20 @@ public class User implements UserDetails {
 
     @Id
     @Column
+    @Getter @Setter
     private String username;
 
     @Column
+    @Getter @Setter
     private String firstname;
 
     @Column
+    @Getter @Setter
     private String lastname;
 
     @JsonIgnore
     @Column
+    @Getter @Setter
     private String password;
 
     @JsonIgnore
@@ -45,16 +51,6 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
-    }
-
-    @Override
-    public String getPassword() {
-        return null;
-    }
-
-    @Override
-    public String getUsername() {
         return null;
     }
 
