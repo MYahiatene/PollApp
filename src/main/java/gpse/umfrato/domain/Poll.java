@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class Poll {
@@ -11,13 +13,19 @@ public class Poll {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
-    @Getter
     private Long id;
+
+    @Column
+    private String pollname;
+
+    @Column
+    private int pollStatus;
 
     @Column
     @Getter
     @Setter
-    private String pollname;
+    @OneToMany
+    private List<Question> questionList = new ArrayList<>();
 
     protected Poll() {
 
@@ -25,5 +33,6 @@ public class Poll {
 
     public Poll(final String pollname) {
         this.pollname = pollname;
+        this.pollStatus = 0;
     }
 }
