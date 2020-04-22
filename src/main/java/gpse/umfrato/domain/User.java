@@ -18,7 +18,7 @@ public class User implements UserDetails {
 
     @Id
     @Column
-    @Getter @Setter
+    @Setter
     private String username;
 
     @Column
@@ -31,18 +31,18 @@ public class User implements UserDetails {
 
     @JsonIgnore
     @Column
-    @Getter @Setter
+    @Setter
     private String password;
 
     @JsonIgnore
     @ElementCollection(fetch = FetchType.EAGER)
-    private List<String> roles; //<3>
+    private List<String> roles;
 
     protected User() {
 
     }
 
-    public User(final String username, final String firstname, final String lastname, final String password) { //<4>
+    public User(final String username, final String firstname, final String lastname, final String password) {
         this.username = username;
         this.firstname = firstname;
         this.lastname = lastname;
@@ -51,6 +51,16 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
+        return null;
+    }
+
+    @Override
+    public String getPassword() {
+        return null;
+    }
+
+    @Override
+    public String getUsername() {
         return null;
     }
 
