@@ -1,14 +1,11 @@
 package gpse.umfrato.web;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import gpse.umfrato.domain.User;
-import gpse.umfrato.domain.UserRepository;
 import gpse.umfrato.domain.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.logging.Logger;
 
 @CrossOrigin
 @RestController
@@ -16,23 +13,26 @@ import java.util.List;
 public class UserController {
     private UserService userService;
 
+    private static final Logger LOGGER = Logger.getLogger("UserController");
+
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(final UserService userService) {
         this.userService = userService;
     }
-/*
+
     @PutMapping("/create")
     public void creatUser() {
         try {
             userService.createUser("Richie", "Richard", "Hübert", "password");
 
         } catch (Exception e) {
+            LOGGER.info("couldnt create user");
         }
     }
-*/
+
     @GetMapping("/users")
     public User getUser() {
-        User user = new User("Richie", "Richard", "Hübert", "password");
+        final User user = new User("Richie", "Richard", "Hübert", "password");
         return user;
     }
 }

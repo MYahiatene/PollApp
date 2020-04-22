@@ -14,10 +14,10 @@ class PollServiceImpl implements PollService {
     }
 
     @Override
-    public Poll createPoll(String pollname) {
+    public Poll createPoll(final String pollname) {
         final Poll poll = new Poll(pollname);
 
-        final Poll savedPoll = pollRepository.save(poll);
+        pollRepository.save(poll);
 
         return poll;
     }

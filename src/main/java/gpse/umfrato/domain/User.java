@@ -84,7 +84,7 @@ public class User implements UserDetails {
         return false;
     }
 
-    public void addRole(String role) {
+    public void addRole(final String role) {
         if (roles == null) {
             this.roles = new ArrayList<>();
         }

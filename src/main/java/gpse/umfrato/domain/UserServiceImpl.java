@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 class UserServiceImpl implements UserService {
-    
+
 
     private final UserRepository userRepository;
 
@@ -17,7 +17,7 @@ class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User createUser(String username, String password, String firstname, String lastname, String... roles) {
+    public User createUser(final String username, final String password, final String firstname, final String lastname, final String... roles) {
         final User user = new User(username, firstname, lastname, password);
         for (final String role : roles) {
             user.addRole(role);
@@ -26,7 +26,7 @@ class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(final String username) throws UsernameNotFoundException {
         return userRepository.findById(username)
             .orElseThrow(() -> new UsernameNotFoundException("User name " + username + " not found."));
     }

@@ -20,9 +20,9 @@ public class InitializeDatabase implements InitializingBean {
         try {
             userService.loadUserByUsername("Uncle_Bob");
         } catch (UsernameNotFoundException ex) {
-            final User user = userService.createUser("Uncle_Bob",
-                "{bcrypt}$2a$10$WoG5Z4YN9Z37EWyNCkltyeFr6PtrSXSLMeFWOeDUwcanht5CIJgPa",
-                "Bob", "Martin", "ROLE_USER");
+             userService.createUser("Uncle_Bob",
+                 "{bcrypt}$2a$10$WoG5Z4YN9Z37EWyNCkltyeFr6PtrSXSLMeFWOeDUwcanht5CIJgPa",
+                 "Bob", "Martin", "ROLE_USER");
         }
     }
 }
