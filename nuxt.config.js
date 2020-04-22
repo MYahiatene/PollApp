@@ -8,7 +8,7 @@ export default {
   port:8080,
   ws: true,
   changeOrigin: true
-  }, 
+  },
 proxy: {
   '/api': {
     target: 'http://localhost:8088',
@@ -61,7 +61,7 @@ proxy: {
    ** https://github.com/nuxt-community/vuetify-module
    */
   vuetify: {
-    customVariables: ['/home/mokrane/gp-se-ss-2020-team5-1/src/main/vue/assets/variables.scss'],
+    customVariables: ['./src/main/vue/assets/variables.scss'],
     theme: {
       dark: true,
       themes: {
