@@ -332,7 +332,12 @@
                 <groupId>com.github.eirslett</groupId>
                 <artifactId>frontend-maven-plugin</artifactId>
                 <version>1.9.1</version>
+                <configuration>
+   <installDirectory>${NODE_PATH}</installDirectory>
+   <workingDirectory>${YOUR_WORKING_DIRECTORY}</workingDirectory>
+</configuration>
                 <executions>
+
                     <!-- Install our node and npm version to run npm/node scripts-->
                     <execution>
                         <id>install node and npm</id>
@@ -345,7 +350,7 @@
                     </execution>
                     <!-- Install all project dependencies -->
                     <execution>
-                        <id>npm install</id>
+                        <id>npm-install</id>
                         <goals>
                             <goal>npm</goal>
                         </goals>
@@ -356,14 +361,16 @@
                             <arguments>install</arguments>
                         </configuration>
                     </execution>
-
                     <!-- Build and minify static files -->
                     <execution>
                         <id>npm run build</id>
                         <goals>
                             <goal>npm</goal>
                         </goals>
-                        <configuration>
+                            <configuration>
+   <installDirectory>${NODE_PATH}</installDirectory>
+   <workingDirectory>${YOUR_WORKING_DIRECTORY}</workingDirectory>
+
                             <arguments>run build</arguments>
                         </configuration>
                     </execution>
