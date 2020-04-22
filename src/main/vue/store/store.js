@@ -3,7 +3,7 @@ import Vuex from 'vuex'
 
 Vue.use(Vuex)
 
-export default new Vuex.Store({
+export default {
     state: {
         authenticated: null,
     },
@@ -21,4 +21,4 @@ export default new Vuex.Store({
             return state.authenticated
         },
     },
-})
+}
