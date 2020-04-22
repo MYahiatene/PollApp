@@ -62,13 +62,23 @@ export default {
             items: [
                 {
                     icon: 'mdi-apps',
-                    title: 'Welcome',
+                    title: 'Login',
                     to: '/',
                 },
                 {
                     icon: 'mdi-chart-bubble',
-                    title: 'Configuration',
-                    to: '/configuration',
+                    title: 'Konfiguration',
+                    to: '/Configuration',
+                },
+                {
+                    icon: 'mdi-chart-bubble',
+                    title: 'Administration',
+                    to: '/Administration',
+                },
+                {
+                    icon: 'mdi-chart-bubble',
+                    title: 'Auswertung',
+                    to: '/Analyse',
                 },
             ],
             miniVariant: false,
