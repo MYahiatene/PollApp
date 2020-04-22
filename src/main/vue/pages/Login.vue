@@ -1,5 +1,5 @@
 <template>
-    <b-container>
+    <v-layout>
         <b-row>
             <b-col cols="6" offset="3" class="mt-3">
                 <b-card header="Login">
@@ -18,7 +18,7 @@
                 </b-card>
             </b-col>
         </b-row>
-    </b-container>
+    </v-layout>
 </template>
 
 <script>
