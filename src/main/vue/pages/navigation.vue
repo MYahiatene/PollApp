@@ -35,9 +35,10 @@
         <v-list two-line subheader>
             <v-list-item v-for="item in items2" :key="item.title" link>
                 <v-list-item-content>
-                    <v-list-item v-for="icons in item.icon" :key="icons.title" icons>
+                    <v-icon v-text="item.icon"></v-icon>
+                    <!--<v-list-item v-for="icons in item.icon" :key="icons.title" icons>
                         <v-icon>{{ icons.icon }}</v-icon>
-                    </v-list-item>
+                    </v-list-item>-->
                     <v-list-item-title v-text="item.title"></v-list-item-title>
                     <v-list-item-subtitle v-text="item.subtitle"></v-list-item-subtitle>
                 </v-list-item-content>
