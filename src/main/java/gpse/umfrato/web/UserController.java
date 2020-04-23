@@ -7,9 +7,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.logging.Logger;
 
-@CrossOrigin(origins = "http://localhost:8080", maxAge = 3600)
+@RequestMapping("/api")
 @RestController
-@RequestMapping("http://localhost:8088")
+@CrossOrigin(origins = "http://localhost:8080")
 public class UserController {
     private UserService userService;
 
