@@ -1,4 +1,4 @@
-package gpse.example.domain;
+package gpse.umfrato.domain;
 
 public class RangeQuestion {
 
