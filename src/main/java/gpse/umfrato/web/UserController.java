@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.logging.Logger;
 
-@RequestMapping("/api")
+@RequestMapping(value = "/api", method = RequestMethod.GET)
 @RestController
 @CrossOrigin
 public class UserController {
@@ -20,14 +20,15 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PutMapping("/create")
-    public void creatUser() {
+    @PostMapping("/create")
+    public String creatUser() {
         try {
             userService.createUser("Richie", "Richard", "Hübert", "password");
 
         } catch (Exception e) {
             LOGGER.info("couldnt create user");
         }
+        return "HTTP POST was called";
     }
 
     @GetMapping("/users")
