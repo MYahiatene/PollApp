@@ -9,7 +9,7 @@ import java.util.logging.Logger;
 
 @CrossOrigin(origins = "http://localhost:8080", maxAge = 3600)
 @RestController
-@RequestMapping("/api")
+@RequestMapping("http://localhost:8088")
 public class UserController {
     private UserService userService;
 
