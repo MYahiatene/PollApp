@@ -1,4 +1,4 @@
-package gpse.example.domain;
+package gpse.umfrato.domain;
 
 import java.util.List;
 
