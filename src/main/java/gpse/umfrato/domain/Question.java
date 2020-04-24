@@ -4,15 +4,16 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
-@Getter
-@Setter
 public class Question {
 
     //private static final long serialVersionUID = 1;
 
     @Id
+    @Getter
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
@@ -20,8 +21,15 @@ public class Question {
     @Lob
     private String question;
 
-    @OneToOne
-    private Answer answer;
+    @Column
+    @Getter
+    @Setter
+    @OneToMany
+    private List<Answer> answerList = new ArrayList<>();
+
+    public List<Answer> getAnswerList() {
+        return answerList;
+    }
 
     protected Question() {
 

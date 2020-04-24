@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 public class QuestionServiceImpl implements QuestionService {
 
     private final QuestionRepository questionRepository;
+    private Question question;
 
     @Autowired
     public QuestionServiceImpl(final QuestionRepository questionRepository) {
@@ -16,11 +17,22 @@ public class QuestionServiceImpl implements QuestionService {
     @Override
     public Question createQuestion(String message) {
 
-        Question question = new Question(message);
+        this.question = new Question(message);
 
         questionRepository.save(question);
 
         return question;
+    }
+
+    @Override
+    public Answer createAnswer(String answer, User user, String answertype) {
+
+        Answer ans = new Answer(answer, user, answertype);
+
+        final Question newQuestion = (Question) questionRepository.findById(question.getId());
+        questionRepository.save(question.getAnswerList().add(ans));
+
+        return ans;
     }
 
     @Override

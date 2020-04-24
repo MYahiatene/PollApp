@@ -29,7 +29,5 @@ public class InitializeDatabase implements InitializingBean {
                  "{bcrypt}$2a$10$WoG5Z4YN9Z37EWyNCkltyeFr6PtrSXSLMeFWOeDUwcanht5CIJgPa",
                  "Bob", "Martin", "ROLE_USER");
         }
-
-
     }
 }

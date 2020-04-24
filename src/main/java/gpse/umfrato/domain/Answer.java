@@ -15,6 +15,10 @@ public class Answer {
     private long id;
 
     @Column
+    @Getter
+    private String answertype;
+
+    @Column
     @Lob
     @Getter
     @Setter
@@ -29,9 +33,10 @@ public class Answer {
 
     }
 
-    public Answer(final String answer, final User user) {
+    public Answer(final String answer, final User user, final String answertype) {
         this.answer = answer;
         this.user = user;
+        this.answertype = answertype;
     }
 
 
