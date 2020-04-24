@@ -115,6 +115,9 @@ buildNumber.properties
 ### Node ###
 node
 
+#Local Database
+*.db
+
 # Logs
 logs
 npm-debug.log*

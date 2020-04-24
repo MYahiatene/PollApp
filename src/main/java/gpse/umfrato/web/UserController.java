@@ -21,7 +21,7 @@ public class UserController {
     }
 
     @PostMapping("/create")
-    public String creatUser() {
+    public String createUser() {
         try {
             userService.createUser("Richie", "Richard", "Hübert", "password");
 

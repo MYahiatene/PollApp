@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,9 +17,42 @@ public class Poll {
     private Long id;
 
     @Column
+    @Getter
+    private String pollcreator;
+
+    @Column
+    @Getter
+    private LocalDateTime pollCreatedAt;
+
+    @OneToOne
+    @Getter
+    private User creator;
+
+    @Column
+    @Getter
+    private LocalDateTime lastEditAt;
+
+    @Column
+    @Getter
+    @Setter
+    private LocalDateTime activatedAt;
+
+    @Column
+    @Getter
+    private LocalDateTime deactivatedAt;
+
+    @Column
+    @Getter
+    private String anonymityStatus;
+
+    //last editor maybe
+
+    @Column
+    @Getter
     private String pollname;
 
     @Column
+    @Getter
     private int pollStatus;
 
     @Column
@@ -34,5 +68,7 @@ public class Poll {
     public Poll(final String pollname) {
         this.pollname = pollname;
         this.pollStatus = 0;
+        this.pollCreatedAt = LocalDateTime.now();
+
     }
 }
