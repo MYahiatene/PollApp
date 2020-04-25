@@ -1,11 +1,8 @@
 <template>
-    <v-layout>
+    <b-container>
         <b-row>
             <b-col cols="6" offset="3" class="mt-3">
                 <b-card header="Login">
-                    <b-alert variant="danger" :show="authenticated === false">
-                        Bitte überprüfen Sie Ihre Angaben.
-                    </b-alert>
                     <b-form @submit.prevent="login">
                         <b-form-group label="Username:">
                             <b-form-input type="text" v-model="auth.username"></b-form-input>
@@ -15,10 +12,13 @@
                         </b-form-group>
                         <b-button type="submit" variant="primary">Login</b-button>
                     </b-form>
+                    <b-alert variant="danger" :show="authenticated === false">
+                        Bitte überprüfen Sie Ihre Angaben.
+                    </b-alert>
                 </b-card>
             </b-col>
         </b-row>
-    </v-layout>
+    </b-container>
 </template>
 
 <script>
