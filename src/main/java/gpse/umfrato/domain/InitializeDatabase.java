@@ -1,5 +1,7 @@
 package gpse.umfrato.domain;
 
+import gpse.umfrato.domain.answer.question.QuestionService;
+import gpse.umfrato.domain.answer.user.UserService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

@@ -1,7 +1,7 @@
 package gpse.umfrato.web;
 
-import gpse.umfrato.domain.User;
-import gpse.umfrato.domain.UserService;
+import gpse.umfrato.domain.answer.user.User;
+import gpse.umfrato.domain.answer.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

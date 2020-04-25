@@ -384,3 +384,94 @@ Caused by: java.lang.IllegalStateException: The file is locked: nio:/home/richie
 	at org.h2.mvstore.FileStore.open(FileStore.java:172)
 	at org.h2.mvstore.MVStore.<init>(MVStore.java:390)
 	... 67 more
+2020-04-25 11:54:53 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax Fehler in SQL Befehl "ID[*]"; erwartet "INSERT"
+Syntax error in SQL statement "ID[*]"; expected "INSERT"; SQL statement:
+ID [42001-199]
+2020-04-25 11:55:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax Fehler in SQL Befehl "ANSWER_ID[*]"; erwartet "ALTER, ANALYZE"
+Syntax error in SQL statement "ANSWER_ID[*]"; expected "ALTER, ANALYZE"; SQL statement:
+ANSWER_ID [42001-199]
+2020-04-25 11:55:30 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "ID" nicht gefunden
+Table "ID" not found; SQL statement:
+SELECT * FROM ID [42102-199]
+2020-04-25 11:56:12 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Feld "PRIMARY_KEY" nicht gefunden
+Column "PRIMARY_KEY" not found; SQL statement:
+SELECT PRIMARY_KEY FROM QUESTION [42122-199]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:451)
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:427)
+	at org.h2.message.DbException.get(DbException.java:205)
+	at org.h2.message.DbException.get(DbException.java:181)
+	at org.h2.expression.ExpressionColumn.getColumnException(ExpressionColumn.java:176)
+	at org.h2.expression.ExpressionColumn.optimize(ExpressionColumn.java:158)
+	at org.h2.command.dml.Select.prepare(Select.java:1245)
+	at org.h2.command.Parser.prepareCommand(Parser.java:689)
+	at org.h2.engine.Session.prepareLocal(Session.java:627)
+	at org.h2.engine.Session.prepareCommand(Session.java:565)
+	at org.h2.jdbc.JdbcConnection.prepareCommand(JdbcConnection.java:1292)
+	at org.h2.jdbc.JdbcStatement.executeInternal(JdbcStatement.java:217)
+	at org.h2.jdbc.JdbcStatement.execute(JdbcStatement.java:1113)
+	at org.h2.server.web.WebApp.getResult(WebApp.java:1436)
+	at org.h2.server.web.WebApp.query(WebApp.java:1111)
+	at org.h2.server.web.WebApp.query(WebApp.java:1087)
+	at org.h2.server.web.WebApp.process(WebApp.java:237)
+	at org.h2.server.web.WebApp.processRequest(WebApp.java:169)
+	at org.h2.server.web.WebServlet.doGet(WebServlet.java:121)
+	at org.h2.server.web.WebServlet.doPost(WebServlet.java:158)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:660)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:741)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:231)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:53)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:202)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:96)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:541)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:139)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:92)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:343)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:367)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:65)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:868)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1639)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:49)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+	at java.base/java.lang.Thread.run(Thread.java:834)
+2020-04-25 12:17:36 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax Fehler in SQL Befehl "QUESTION[*]"
+Syntax error in SQL statement "QUESTION[*]"; SQL statement:
+QUESTION [42000-199]
+2020-04-25 12:18:19 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax Fehler in SQL Befehl "ANSWER[*]"; erwartet "ALTER, ANALYZE"
+Syntax error in SQL statement "ANSWER[*]"; expected "ALTER, ANALYZE"; SQL statement:
+ANSWER [42001-199]
+2020-04-25 12:19:05 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax Fehler in SQL Befehl "INFORMATION_SCHEMA[*].COLUMNS"; erwartet "INSERT"
+Syntax error in SQL statement "INFORMATION_SCHEMA[*].COLUMNS"; expected "INSERT"; SQL statement:
+INFORMATION_SCHEMA.COLUMNS [42001-199]
+2020-04-25 12:24:03 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax Fehler in SQL Befehl "SELECT * FROM SELECT[*] 1 FROM QUESTION_ANSWER_LIST"; erwartet "identifier"
+Syntax error in SQL statement "SELECT * FROM SELECT[*] 1 FROM QUESTION_ANSWER_LIST"; expected "identifier"; SQL statement:
+SELECT * FROM SELECT 1 FROM QUESTION_ANSWER_LIST [42001-199]
+2020-04-25 12:24:18 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax Fehler in SQL Befehl "SELECT  FROM (SELECT 1 FROM QUESTION_ANSWER_LIST )[*]"; erwartet "USE, AS, (, USE, RIGHT, LEFT, FULL, INNER, JOIN, CROSS, NATURAL, ,, SELECT"
+Syntax error in SQL statement "SELECT  FROM (SELECT 1 FROM QUESTION_ANSWER_LIST )[*]"; expected "USE, AS, (, USE, RIGHT, LEFT, FULL, INNER, JOIN, CROSS, NATURAL, ,, SELECT"; SQL statement:
+SELECT  FROM (SELECT 1 FROM QUESTION_ANSWER_LIST ) [42001-199]

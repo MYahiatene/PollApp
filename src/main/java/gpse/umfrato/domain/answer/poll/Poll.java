@@ -1,5 +1,7 @@
-package gpse.umfrato.domain;
+package gpse.umfrato.domain.answer.poll;
 
+import gpse.umfrato.domain.answer.question.Question;
+import gpse.umfrato.domain.answer.user.User;
 import lombok.Getter;
 import lombok.Setter;
 

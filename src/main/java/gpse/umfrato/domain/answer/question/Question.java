@@ -1,10 +1,10 @@
-package gpse.umfrato.domain;
+package gpse.umfrato.domain.answer.question;
 
+import gpse.umfrato.domain.answer.Answer;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -19,17 +19,16 @@ public class Question {
 
     @Column
     @Lob
+    @Getter
     private String question;
 
     @Column
     @Getter
     @Setter
-    @OneToMany
-    private List<Answer> answerList = new ArrayList<>();
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<Answer> answerList;
 
-    public List<Answer> getAnswerList() {
-        return answerList;
-    }
+
 
     protected Question() {
 

@@ -1,4 +1,4 @@
-package gpse.umfrato.domain;
+package gpse.umfrato.domain.answer.question;
 
 import org.springframework.data.repository.CrudRepository;
 

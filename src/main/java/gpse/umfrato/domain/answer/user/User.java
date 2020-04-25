@@ -1,4 +1,4 @@
-package gpse.umfrato.domain;
+package gpse.umfrato.domain.answer.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;

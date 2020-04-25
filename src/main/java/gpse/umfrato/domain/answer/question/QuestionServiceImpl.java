@@ -1,7 +1,11 @@
-package gpse.umfrato.domain;
+package gpse.umfrato.domain.answer.question;
 
+import gpse.umfrato.domain.answer.user.User;
+import gpse.umfrato.domain.answer.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class QuestionServiceImpl implements QuestionService {
@@ -25,15 +29,16 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public Answer createAnswer(String answer, User user, String answertype) {
+    public Answer createAnswer(String answer, User user, String answertype, Long questionId) {
 
-        Answer ans = new Answer(answer, user, answertype);
-
-        final Question newQuestion = (Question) questionRepository.findById(question.getId());
-        questionRepository.save(question.getAnswerList().add(ans));
-
+        Optional<Question> tmp = questionRepository.findById(questionId);
+        Question questionByAnswer = tmp.get();
+        Answer ans = new Answer(answer, user, answertype, questionByAnswer);
+        questionByAnswer.getAnswerList().add(ans);
+        questionRepository.save(questionByAnswer);
         return ans;
     }
+
 
     @Override
     public void deleteQuestion() {

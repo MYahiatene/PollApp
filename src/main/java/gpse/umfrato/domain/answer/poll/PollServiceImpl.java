@@ -1,4 +1,4 @@
-package gpse.umfrato.domain;
+package gpse.umfrato.domain.answer.poll;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
