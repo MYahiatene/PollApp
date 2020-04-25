@@ -6,9 +6,25 @@
                     <v-switch v-model="enterSwitch" label="Enter erlauben"></v-switch>
                 </v-row>
                 <v-row>
-                    <v-switch v-model="charSwitch" label="Zeichenanzahl beschränken"></v-switch>
+                    <v-switch v-model="minCharSwitch" label="Zeichenanzahl nach unten beschränken"></v-switch>
                 </v-row>
-                <v-row v-if="charSwitch">
+                <v-row v-if="minCharSwitch">
+                    <v-col cols="10" md="4">
+                        <v-text-field
+                            single-line
+                            type="number"
+                            min="1"
+                            value="5"
+                            style="width: 170px;"
+                            suffix=" Zeichen erlaubt"
+                            :rules="charRules"
+                        ></v-text-field>
+                    </v-col>
+                </v-row>
+                <v-row>
+                    <v-switch v-model="maxCharSwitch" label="Zeichenanzahl nach oben beschränken"></v-switch>
+                </v-row>
+                <v-row v-if="maxCharSwitch">
                     <v-col cols="10" md="4">
                         <v-text-field
                             single-line
@@ -32,7 +48,8 @@ export default {
     data() {
         return {
             enterSwitch: false,
-            charSwitch: false,
+            minCharSwitch: false,
+            maxCharSwitch: false,
             valid: false,
             charRules: [(v) => v > 1 || 'Die Zahl muss positiv sein!'],
         }
