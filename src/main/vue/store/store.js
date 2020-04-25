@@ -17,6 +17,7 @@ export default {
         },
     },
     getters: {
+        // hier liegt ein Fehler...
         isAuthenticated: (state) => {
             return state.authenticated
         },
