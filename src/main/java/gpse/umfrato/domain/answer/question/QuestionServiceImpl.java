@@ -1,5 +1,7 @@
 package gpse.umfrato.domain.answer.question;
 
+import gpse.umfrato.domain.answer.poll.Poll;
+import gpse.umfrato.domain.answer.poll.PollRepository;
 import gpse.umfrato.domain.answer.user.User;
 import gpse.umfrato.domain.answer.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,20 +12,23 @@ import java.util.Optional;
 @Service
 public class QuestionServiceImpl implements QuestionService {
 
+    private final PollRepository pollRepository;
     private final QuestionRepository questionRepository;
-    private Question question;
 
     @Autowired
-    public QuestionServiceImpl(final QuestionRepository questionRepository) {
+    public QuestionServiceImpl(final PollRepository pollRepository, final QuestionRepository questionRepository) {
+        this.pollRepository = pollRepository;
         this.questionRepository = questionRepository;
     }
 
     @Override
-    public Question createQuestion(String message) {
+    public Question createQuestion(String message, Long pollId) {
 
-        this.question = new Question(message);
-
-        questionRepository.save(question);
+        Question question = new Question(message);
+        Optional<Poll> pollOptional = pollRepository.findById(pollId);
+        Poll poll = pollOptional.get();
+        poll.getQuestionList().add(question);
+        pollRepository.save(poll);
 
         return question;
     }

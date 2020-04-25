@@ -24,7 +24,6 @@ public class InitializeDatabase implements InitializingBean {
     public void afterPropertiesSet() {
         try {
             userService.loadUserByUsername("Uncle_Bob");
-            questionService.createQuestion("Bist du?");
 
         } catch (UsernameNotFoundException ex) {
              userService.createUser("Uncle_Bob",

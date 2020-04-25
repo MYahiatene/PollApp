@@ -15,6 +15,7 @@ public class Poll {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Getter
     @Column
     private Long id;
 
@@ -57,10 +58,9 @@ public class Poll {
     @Getter
     private int pollStatus;
 
-    @Column
     @Getter
     @Setter
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     private List<Question> questionList = new ArrayList<>();
 
     protected Poll() {
