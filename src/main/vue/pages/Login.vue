@@ -33,6 +33,11 @@ export default {
             },
         }
     },
+    computed: {
+        ...mapGetters({
+            authenticated: 'isAuthenticated',
+        }),
+    },
     methods: {
         ...mapMutations(['authenticate']),
         login() {
@@ -42,11 +47,7 @@ export default {
             }
         },
     },
-    computed: {
-        ...mapGetters({
-            authenticated: 'isAuthenticated',
-        }),
-    },
 }
 </script>
+
 <style scoped></style>

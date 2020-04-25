@@ -48,7 +48,7 @@ export default {
     data() {
         return {
             clipped: false,
-            drawer: false,
+            drawer: true,
             fixed: false,
             items: [
                 {
@@ -57,19 +57,19 @@ export default {
                     to: '/',
                 },
                 {
-                    icon: 'mdi-apps',
+                    icon: 'mdi-account',
                     title: 'Login',
                     to: '/Login',
+                },
+                {
+                    icon: 'mdi-account-multiple',
+                    title: 'Administration',
+                    to: '/Administration',
                 },
                 {
                     icon: 'mdi-pencil',
                     title: 'Konfiguration',
                     to: '/Configuration',
-                },
-                {
-                    icon: 'mdi-setting',
-                    title: 'Administration',
-                    to: '/Administration',
                 },
                 {
                     icon: 'mdi-chart-bubble',
