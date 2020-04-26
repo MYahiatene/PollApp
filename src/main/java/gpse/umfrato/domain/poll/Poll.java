@@ -14,11 +14,10 @@ import java.util.List;
 @Entity
 @Data
 @NoArgsConstructor
-public class Poll implements Serializable {
-    private final static long serialVersionUID=5L;
+public class Poll {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue
     private Long id;
 
     private String pollcreator;
@@ -45,13 +44,20 @@ public class Poll implements Serializable {
     private int pollStatus;
 
 
-    @OneToMany(mappedBy = "poll",cascade = CascadeType.ALL)
-    private List<Question> questionList;
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<Question> questionList=new ArrayList<>();
 
-    public Poll(final String pollname) {
-        this.pollname = pollname;
-        this.pollStatus = 0;
-        this.pollCreatedAt = LocalDateTime.now();
+    public Poll(String pollName) {
+        this.pollname = pollName;
+    }
 
+    public void addQuestion(Question question) {
+        questionList.add(question);
+        question.setPoll(this);
+    }
+
+    public void removeQuestion(Question question) {
+        questionList.remove(question);
+        question.setPoll(null);
     }
 }

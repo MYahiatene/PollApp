@@ -36,9 +36,6 @@ public class InitializeDatabase implements InitializingBean {
         try {
             User user = (User) userService.loadUserByUsername("Uncle_Bob");
             Poll poll = pollService.createPoll("Erste Umfrage");
-         //   Question question= questionService.createQuestion("Wie groß bist du?", poll.getId());
-         //   answerService.createAnswer("1.95m",user,"String",question.getId());
-         //   answerService.createAnswer("2.05m",user,"String",question.getId());
 
 
 

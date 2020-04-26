@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import javax.transaction.Transactional;
 import java.util.List;
 
 @Entity
@@ -22,13 +23,21 @@ public class Question {
     @Lob
     private String question;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Poll poll;
 
     @OneToMany(cascade = CascadeType.ALL)
     private List<Answer> answerList;
 
+    public void addAnswer(Answer answer) {
+        answerList.add(answer);
+        answer.setQuestion(this);
+    }
 
+    public void removeAnswer(Answer answer) {
+        answerList.remove(answer);
+        answer.setQuestion(null);
+    }
     public Question(final String question,Poll poll) {
         this.question = question;
         this.poll=poll;

@@ -26,18 +26,8 @@ public class QuestionServiceImpl implements QuestionService {
         this.pollService = pollService;
     }
 
-    @Override
-    public Question createQuestion(String message, Long pollId) {
-        Poll poll = pollService.getPoll(pollId);
-        Question question = new Question(message, poll);
-
-        poll.getQuestionList().add(question);
-        return question;
-    }
 
 
-    @Override
-    public void deleteQuestion() {
 
-    }
+
 }
