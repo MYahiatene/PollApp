@@ -2,8 +2,8 @@
     <v-container>
         <v-subheader class="display-2"> Umfrage 1</v-subheader>
         <v-row>
-            <v-col>
-                <v-card max-width="400" class="ma-4">
+            <v-col cols="4">
+                <v-card class="ma-4">
                     <v-list v-for="categorie in categories" :key="categorie.name">
                         <v-list-item>
                             <v-list-item-title class="title">{{ categorie.name }} </v-list-item-title>
@@ -27,13 +27,18 @@
                     <v-btn depressed small>Neue Kategorie</v-btn>
                 </div>
             </v-col>
+            <v-col cols="8">
+                <QuestionBuildWidget></QuestionBuildWidget>
+            </v-col>
         </v-row>
     </v-container>
 </template>
 
 <script>
+import QuestionBuildWidget from '../components/QuestionBuildWidget'
 export default {
     name: 'QuestionOverview',
+    components: { QuestionBuildWidget },
     data: () => ({
         categories: [
             {

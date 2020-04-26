@@ -24,11 +24,10 @@
                         v-model="date"
                         no-title
                         @input="menu1 = false"
-                        :show-current="true"
+                        show-current="true"
                         :min="new Date().toISOString().substr(0, 10)"
                         max="2100-01-01"
-                        >></v-date-picker
-                    >
+                    ></v-date-picker>
                 </v-menu>
             </v-col>
             <v-col><v-text-field label="Uhrzeit" :value="time" type="time" style="width: 170px;"></v-text-field></v-col>
