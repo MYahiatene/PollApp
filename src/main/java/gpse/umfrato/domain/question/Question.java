@@ -29,8 +29,9 @@ public class Question {
     private List<Answer> answerList;
 
 
-    public Question(final String question) {
+    public Question(final String question,Poll poll) {
         this.question = question;
+        this.poll=poll;
     }
 
 

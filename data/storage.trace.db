@@ -710,3 +710,7 @@ USER [42001-199]
 org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax Fehler in SQL Befehl "DROP ALL OBJECT[*]"; erwartet "OBJECTS"
 Syntax error in SQL statement "DROP ALL OBJECT[*]"; expected "OBJECTS"; SQL statement:
 DROP ALL OBJECT [42001-199]
+2020-04-26 13:25:51 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax Fehler in SQL Befehl "QUESTION_ANSWER_LIST[*]"
+Syntax error in SQL statement "QUESTION_ANSWER_LIST[*]"; SQL statement:
+QUESTION_ANSWER_LIST [42000-199]

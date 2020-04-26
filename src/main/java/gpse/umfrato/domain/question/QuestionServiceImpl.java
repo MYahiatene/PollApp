@@ -28,9 +28,9 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     public Question createQuestion(String message, Long pollId) {
-
-        Question question = new Question(message);
         Poll poll = pollService.getPoll(pollId);
+        Question question = new Question(message, poll);
+
         poll.getQuestionList().add(question);
         return question;
     }
