@@ -1,43 +1,35 @@
 package gpse.umfrato.domain.answer;
 
-import gpse.umfrato.domain.answer.question.Question;
-import gpse.umfrato.domain.answer.user.User;
+import gpse.umfrato.domain.question.Question;
+import gpse.umfrato.domain.user.User;
+import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
 
 @Entity
+@Data
+@NoArgsConstructor
 public class Answer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Getter
-    @Setter
     private long id;
 
-    @Column
-    @Getter
+
     private String answertype;
 
-    @Column
     @Lob
-    @Getter
-    @Setter
     private String answer;
 
     @OneToOne
-    @Getter
-    @Setter
     private User user;
 
     @ManyToOne
-    @Getter
     private Question question;
 
-    protected Answer() {
-
-    }
 
     public Answer(final String answer, final User user, final String answertype,Question question) {
         this.answer = answer;

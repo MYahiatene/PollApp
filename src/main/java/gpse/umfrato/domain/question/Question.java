@@ -1,38 +1,33 @@
-package gpse.umfrato.domain.answer.question;
+package gpse.umfrato.domain.question;
 
 import gpse.umfrato.domain.answer.Answer;
-import lombok.Getter;
-import lombok.Setter;
+import gpse.umfrato.domain.poll.Poll;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.List;
 
 @Entity
+@Data
+@NoArgsConstructor
 public class Question {
 
     //private static final long serialVersionUID = 1;
 
     @Id
-    @Getter
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column
     @Lob
-    @Getter
     private String question;
 
-    @Column
-    @Getter
-    @Setter
+    @ManyToOne
+    private Poll poll;
+
     @OneToMany(cascade = CascadeType.ALL)
     private List<Answer> answerList;
 
-
-
-    protected Question() {
-
-    }
 
     public Question(final String question) {
         this.question = question;

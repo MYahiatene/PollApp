@@ -1,4 +1,4 @@
-package gpse.umfrato.domain.answer.user;
+package gpse.umfrato.domain.user;
 
 import org.springframework.security.core.userdetails.UserDetailsService;
 

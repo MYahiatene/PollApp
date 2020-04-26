@@ -670,3 +670,43 @@ Caused by: java.lang.IllegalStateException: The file is locked: nio:/home/mokran
 	at org.h2.mvstore.FileStore.open(FileStore.java:172)
 	at org.h2.mvstore.MVStore.<init>(MVStore.java:390)
 	... 67 more
+2020-04-26 11:57:13 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax Fehler in SQL Befehl "DROP TABLE[*]"; erwartet "identifier"
+Syntax error in SQL statement "DROP TABLE[*]"; expected "identifier"; SQL statement:
+DROP TABLE [42001-199]
+2020-04-26 11:57:19 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax Fehler in SQL Befehl "DROP TABLE *[*]"; erwartet "identifier"
+Syntax error in SQL statement "DROP TABLE *[*]"; expected "identifier"; SQL statement:
+DROP TABLE * [42001-199]
+2020-04-26 11:57:32 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax Fehler in SQL Befehl "DROP *[*]"; erwartet "TABLE, INDEX, USER, SEQUENCE, CONSTANT, TRIGGER, VIEW, ROLE, ALIAS, SCHEMA, ALL, DOMAIN, TYPE, DATATYPE, AGGREGATE, SYNONYM"
+Syntax error in SQL statement "DROP *[*]"; expected "TABLE, INDEX, USER, SEQUENCE, CONSTANT, TRIGGER, VIEW, ROLE, ALIAS, SCHEMA, ALL, DOMAIN, TYPE, DATATYPE, AGGREGATE, SYNONYM"; SQL statement:
+DROP * [42001-199]
+2020-04-26 11:57:42 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax Fehler in SQL Befehl "DROP *[*] TABLE"; erwartet "TABLE, INDEX, USER, SEQUENCE, CONSTANT, TRIGGER, VIEW, ROLE, ALIAS, SCHEMA, ALL, DOMAIN, TYPE, DATATYPE, AGGREGATE, SYNONYM"
+Syntax error in SQL statement "DROP *[*] TABLE"; expected "TABLE, INDEX, USER, SEQUENCE, CONSTANT, TRIGGER, VIEW, ROLE, ALIAS, SCHEMA, ALL, DOMAIN, TYPE, DATATYPE, AGGREGATE, SYNONYM"; SQL statement:
+DROP * TABLE [42001-199]
+2020-04-26 11:59:20 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax Fehler in SQL Befehl "DROP TABLE *[*]"; erwartet "identifier"
+Syntax error in SQL statement "DROP TABLE *[*]"; expected "identifier"; SQL statement:
+DROP TABLE * [42001-199]
+2020-04-26 11:59:24 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax Fehler in SQL Befehl "DROP TABLE ALL[*]"; erwartet "identifier"
+Syntax error in SQL statement "DROP TABLE ALL[*]"; expected "identifier"; SQL statement:
+DROP TABLE ALL [42001-199]
+2020-04-26 11:59:24 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax Fehler in SQL Befehl "DROP TABLE ALL[*]"; erwartet "identifier"
+Syntax error in SQL statement "DROP TABLE ALL[*]"; expected "identifier"; SQL statement:
+DROP TABLE ALL [42001-199]
+2020-04-26 12:01:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax Fehler in SQL Befehl "DROP ALL OBJECTS [[*]DELETE FILES]"
+Syntax error in SQL statement "DROP ALL OBJECTS [[*]DELETE FILES]"; SQL statement:
+DROP ALL OBJECTS [DELETE FILES] [42000-199]
+2020-04-26 13:04:05 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax Fehler in SQL Befehl "USER[*]"; erwartet "UPDATE, USE"
+Syntax error in SQL statement "USER[*]"; expected "UPDATE, USE"; SQL statement:
+USER [42001-199]
+2020-04-26 13:09:37 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax Fehler in SQL Befehl "DROP ALL OBJECT[*]"; erwartet "OBJECTS"
+Syntax error in SQL statement "DROP ALL OBJECT[*]"; expected "OBJECTS"; SQL statement:
+DROP ALL OBJECT [42001-199]

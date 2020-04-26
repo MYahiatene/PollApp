@@ -1,4 +1,4 @@
-package gpse.umfrato.domain.answer.poll;
+package gpse.umfrato.domain.poll;
 
 
 public interface PollService {

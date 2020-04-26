@@ -1,71 +1,52 @@
-package gpse.umfrato.domain.answer.poll;
+package gpse.umfrato.domain.poll;
 
-import gpse.umfrato.domain.answer.question.Question;
-import gpse.umfrato.domain.answer.user.User;
-import lombok.Getter;
-import lombok.Setter;
+import gpse.umfrato.domain.question.Question;
+import gpse.umfrato.domain.user.User;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-public class Poll {
+@Data
+@NoArgsConstructor
+public class Poll implements Serializable {
+    private final static long serialVersionUID=5L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Getter
-    @Column
     private Long id;
 
-    @Column
-    @Getter
     private String pollcreator;
 
-    @Column
-    @Getter
+
     private LocalDateTime pollCreatedAt;
 
     @OneToOne
-    @Getter
     private User creator;
 
-    @Column
-    @Getter
     private LocalDateTime lastEditAt;
 
-    @Column
-    @Getter
-    @Setter
+    // use Instant instead , cause of time zone
     private LocalDateTime activatedAt;
 
-    @Column
-    @Getter
     private LocalDateTime deactivatedAt;
 
-    @Column
-    @Getter
+
     private String anonymityStatus;
 
-    //last editor maybe
 
-    @Column
-    @Getter
     private String pollname;
 
-    @Column
-    @Getter
     private int pollStatus;
 
-    @Getter
-    @Setter
-    @OneToMany(cascade = CascadeType.ALL)
-    private List<Question> questionList = new ArrayList<>();
 
-    protected Poll() {
-
-    }
+    @OneToMany(mappedBy = "poll",cascade = CascadeType.ALL)
+    private List<Question> questionList;
 
     public Poll(final String pollname) {
         this.pollname = pollname;

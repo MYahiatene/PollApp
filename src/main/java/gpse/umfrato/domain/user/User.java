@@ -1,8 +1,8 @@
-package gpse.umfrato.domain.answer.user;
+package gpse.umfrato.domain.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -12,35 +12,27 @@ import java.util.Collection;
 import java.util.List;
 
 @Entity
+@Data
+@NoArgsConstructor
 public class User implements UserDetails {
 
     private static final long serialVersionUID = 0L;
 
     @Id
-    @Column
-    @Setter
     private String username;
 
-    @Column
-    @Getter @Setter
     private String firstname;
 
-    @Column
-    @Getter @Setter
     private String lastname;
 
     @JsonIgnore
-    @Column
-    @Setter
     private String password;
 
     @JsonIgnore
     @ElementCollection(fetch = FetchType.EAGER)
     private List<String> roles;
 
-    protected User() {
 
-    }
 
     public User(final String username, final String firstname, final String lastname, final String password) {
         this.username = username;

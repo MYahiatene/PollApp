@@ -1,4 +1,4 @@
-package gpse.umfrato.domain.answer.user;
+package gpse.umfrato.domain.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;

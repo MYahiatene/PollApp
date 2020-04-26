@@ -1,8 +1,7 @@
 package gpse.umfrato.web;
 
 
-import gpse.umfrato.domain.answer.poll.Poll;
-import gpse.umfrato.domain.answer.poll.PollService;
+import gpse.umfrato.domain.poll.PollService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
