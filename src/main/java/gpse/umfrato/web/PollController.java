@@ -14,37 +14,53 @@ import java.util.logging.Logger;
 @RestController
 @CrossOrigin
 public class PollController {
-    private final PollService pollService;
     private static final Logger LOGGER = Logger.getLogger("PollController");
+    private final PollService pollService;
 
+    /**
+     * This class constructor initializes the poll service.
+     *
+     * @param pollService the poll service to work with the poll
+     */
     @Autowired
-    public PollController(final PollService pollService){
-        this.pollService =pollService;
+    public PollController(final PollService pollService) {
+        this.pollService = pollService;
     }
 
     @PostMapping("/createpoll")
-    public String createPoll(@RequestBody PollCmd pollCmd) {
+    public String createPoll(final @RequestBody PollCmd pollCmd) {
         try {
             pollService.createPoll(pollCmd.getPollname(), pollCmd.getPollcreator(), pollCmd.getPollCreatedAt(),
                 pollCmd.getLastEditAt(), pollCmd.getActivatedAt(), pollCmd.getDeactivatedAt(),
                 pollCmd.getAnonymityStatus(), pollCmd.getPollStatus());
             return "Poll created!";
-        } catch (Exception e) {
+        } catch (BadRequestException e) {
             return "Poll creation failed!";
         }
     }
 
+    /**
+     * This method returns a list with all polls.
+     *
+     * @return a list with all polls.
+     */
     @GetMapping("/poll")
     public List<Poll> getPolls() {
-        if (!pollService.getAllPolls().isEmpty()) {
-            return pollService.getAllPolls();
-        } else {
+        if (pollService.getAllPolls().isEmpty()) {
             throw new BadRequestException();
+        } else {
+            return pollService.getAllPolls();
         }
     }
 
+    /**
+     * This method returns a selected poll.
+     *
+     * @param pollCmd has the id of the poll
+     * @return a selected poll
+     */
     @GetMapping("/poll/{id:\\d+}")
-    public Poll getPoll(/*@PathVariable("id") final String id*/ @RequestBody PollCmd pollCmd) {
+    public Poll getPoll(/*@PathVariable("id") final String id*/ final @RequestBody PollCmd pollCmd) {
 
         return pollService.getPoll(pollCmd.getId());
 

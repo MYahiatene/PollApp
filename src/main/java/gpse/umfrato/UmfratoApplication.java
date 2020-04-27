@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @SuppressWarnings("checkstyle:HideUtilityClassConstructor")
-@SpringBootApplication(exclude = {SecurityAutoConfiguration.class})
+@SpringBootApplication(exclude = SecurityAutoConfiguration.class)
 @EnableJpaRepositories
 @EnableTransactionManagement
 public class UmfratoApplication {

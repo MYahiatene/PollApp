@@ -16,18 +16,29 @@ import java.util.logging.Logger;
 @RestController
 @CrossOrigin
 public class QuestionController {
+    private static final Logger LOGGER = Logger.getLogger("QuestionController");
+
     private final QuestionService questionService;
     private final UserService userService;
     private final PollService pollService;
     private final AnswerService answerService;
     private Question question;
     private final PollRepository pollRepository;
-    private static final Logger LOGGER = Logger.getLogger("QuestionController");
 
+
+    /**
+     * This class constructor initializes the services and repository.
+     *
+     * @param questionService the question service
+     * @param userService     the user service
+     * @param pollService     the poll service
+     * @param answerService   the answer service
+     * @param pollRepository  the poll repository
+     */
     @Autowired
     public QuestionController(final QuestionService questionService, final UserService userService,
                               final PollService pollService, final AnswerService answerService,
-                              PollRepository pollRepository) {
+                              final PollRepository pollRepository) {
         this.questionService = questionService;
         this.userService = userService;
         this.pollService = pollService;
@@ -35,22 +46,39 @@ public class QuestionController {
         this.pollRepository = pollRepository;
     }
 
+    /**
+     * This method adds a question.
+     *
+     * @param questionCmd has the question and the poll id
+     */
     @PostMapping("/poll/{id:\\d+}/addquestion")
-    public void addQuestion(/*@PathVariable("id") final String id*/ @RequestBody QuestionCmd questionCmd) {
+    public void addQuestion(/*@PathVariable("id") final String id*/ final @RequestBody QuestionCmd questionCmd) {
         questionService.addQuestion(questionCmd.getQuestion(), questionCmd.getId());
     }
 
+    /**
+     * This method deletes a question.
+     *
+     * @param questionCmd has the poll id
+     */
     @PostMapping("/poll/{pollId:\\d+}/removequestion/{questionId:\\d+}")
     public void deleteQuestion(
         /*@PathVariable("pollId") final String pollId,
         @PathVariable("questionId") final String questionId*/
-        @RequestBody QuestionCmd questionCmd) {
-        String pollId = questionService.getQuestion(Long.valueOf(questionCmd.getId())).getPoll().getId().toString();
+        final @RequestBody QuestionCmd questionCmd) {
+        final String pollId = questionService.getQuestion(Long.valueOf(questionCmd.getId())).getPoll().getId().
+            toString();
         questionService.removeQuestion(pollId, questionCmd.getId());
     }
 
+    /**
+     * This method gets a requested question.
+     *
+     * @param questionCmd has the poll id of the question
+     * @return returns the requested question
+     */
     @GetMapping("/poll/{pollId:\\d+}/getquestion/{questionId:\\d+}")
-    public Question getQuestion(@RequestBody QuestionCmd questionCmd) {
+    public Question getQuestion(final @RequestBody QuestionCmd questionCmd) {
 
         return questionService.getQuestion(Long.valueOf(questionCmd.getId()));
     }
