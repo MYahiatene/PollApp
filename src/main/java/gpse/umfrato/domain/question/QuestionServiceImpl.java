@@ -3,6 +3,7 @@ package gpse.umfrato.domain.question;
 import gpse.umfrato.domain.poll.Poll;
 import gpse.umfrato.domain.poll.PollRepository;
 import gpse.umfrato.domain.poll.PollService;
+import gpse.umfrato.web.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -41,4 +42,26 @@ public class QuestionServiceImpl implements QuestionService {
         questionList.removeIf(obj -> obj.getId() == Long.valueOf(questionId));
         pollRepository.save(poll);
     }
+
+    @Override
+    public Question getQuestion(Long questionId) {
+
+        Question question = questionRepository.findById(questionId).orElseThrow(() -> new EntityNotFoundException());
+
+        return question;
+    }
+
+    @Override
+    public List<Question> getAllQuestions() {
+
+        List<Question> questions = questionRepository.findAll();
+
+        if (questions.isEmpty()) {
+            throw new BadRequestException();
+        }
+
+        return questions;
+    }
+
+
 }

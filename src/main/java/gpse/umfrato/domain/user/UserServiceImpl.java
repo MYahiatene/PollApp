@@ -1,9 +1,12 @@
 package gpse.umfrato.domain.user;
 
+import gpse.umfrato.web.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 class UserServiceImpl implements UserService {
@@ -23,6 +26,17 @@ class UserServiceImpl implements UserService {
             user.addRole(role);
         }
         return userRepository.save(user);
+    }
+
+    @Override
+    public List<User> getAllUsers() {
+        List<User> users = userRepository.findAll();
+
+        if (users.isEmpty()) {
+            throw new BadRequestException();
+        }
+
+        return users;
     }
 
     @Override

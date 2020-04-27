@@ -1,5 +1,6 @@
 package gpse.umfrato.web;
 
+import gpse.umfrato.domain.cmd.UserCmd;
 import gpse.umfrato.domain.user.User;
 import gpse.umfrato.domain.user.UserRepository;
 import gpse.umfrato.domain.user.UserService;
@@ -13,7 +14,7 @@ import java.util.logging.Logger;
 @RestController
 @CrossOrigin
 public class UserController {
-    private UserService userService;
+    private final UserService userService;
     private final UserRepository userRepository;
 
     private static final Logger LOGGER = Logger.getLogger("UserController");
@@ -25,9 +26,9 @@ public class UserController {
     }
 
     @PostMapping("/createuser")
-    public String createUser() {
+    public String createUser(@RequestBody UserCmd userCmd) {
         try {
-            userService.createUser("Richie", "Richard", "Hübert", "password");
+            userService.createUser(userCmd.getUsername(), userCmd.getPassword(), userCmd.getFirstname(), userCmd.getLastname());
 
         } catch (Exception e) {
             LOGGER.info("couldnt create user");
@@ -36,8 +37,12 @@ public class UserController {
     }
 
     @GetMapping("/users")
-    public List<User> getUser() {
-         return userRepository.findAll();
+    public List<User> getUsers() {
+        return userRepository.findAll();
+    }
 
+    @GetMapping("/getuser/{userId:\\d+}")
+    public String getUser(@RequestBody UserCmd usercmd) {
+        return userService.loadUserByUsername(usercmd.getUsername()).getUsername();
     }
 }

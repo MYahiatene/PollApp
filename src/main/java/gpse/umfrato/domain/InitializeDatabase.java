@@ -3,7 +3,6 @@ package gpse.umfrato.domain;
 import gpse.umfrato.domain.answer.AnswerService;
 import gpse.umfrato.domain.poll.Poll;
 import gpse.umfrato.domain.poll.PollService;
-import gpse.umfrato.domain.question.Question;
 import gpse.umfrato.domain.question.QuestionService;
 import gpse.umfrato.domain.user.User;
 import gpse.umfrato.domain.user.UserService;
@@ -11,6 +10,8 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 
 @Service
 public class InitializeDatabase implements InitializingBean {
@@ -35,7 +36,7 @@ public class InitializeDatabase implements InitializingBean {
     public void afterPropertiesSet() {
         try {
             User user = (User) userService.loadUserByUsername("Uncle_Bob");
-            Poll poll = pollService.createPoll("Erste Umfrage");
+            Poll poll = pollService.createPoll("Erste Umfrage", "Uncle_Bob", LocalDateTime.now(), LocalDateTime.now(), LocalDateTime.now(), LocalDateTime.now(), "true", 0);
 
 
 

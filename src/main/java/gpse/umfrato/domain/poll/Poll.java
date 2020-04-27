@@ -1,7 +1,6 @@
 package gpse.umfrato.domain.poll;
 
 import gpse.umfrato.domain.question.Question;
-import gpse.umfrato.domain.user.User;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -21,11 +20,7 @@ public class Poll {
 
     private String pollcreator;
 
-
     private LocalDateTime pollCreatedAt;
-
-    @OneToOne
-    private User creator;
 
     private LocalDateTime lastEditAt;
 
@@ -34,9 +29,7 @@ public class Poll {
 
     private LocalDateTime deactivatedAt;
 
-
     private String anonymityStatus;
-
 
     private String pollname;
 

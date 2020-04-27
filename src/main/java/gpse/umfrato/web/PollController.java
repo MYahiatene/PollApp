@@ -1,6 +1,7 @@
 package gpse.umfrato.web;
 
 
+import gpse.umfrato.domain.cmd.PollCmd;
 import gpse.umfrato.domain.poll.Poll;
 import gpse.umfrato.domain.poll.PollService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,9 +23,11 @@ public class PollController {
     }
 
     @PostMapping("/createpoll")
-    public String createPoll() {
+    public String createPoll(@RequestBody PollCmd pollCmd) {
         try {
-            pollService.createPoll("Poll vom 28.10.1900");
+            pollService.createPoll(pollCmd.getPollname(), pollCmd.getPollcreator(), pollCmd.getPollCreatedAt(),
+                pollCmd.getLastEditAt(), pollCmd.getActivatedAt(), pollCmd.getDeactivatedAt(),
+                pollCmd.getAnonymityStatus(), pollCmd.getPollStatus());
             return "Poll created!";
         } catch (Exception e) {
             return "Poll creation failed!";
@@ -41,12 +44,10 @@ public class PollController {
     }
 
     @GetMapping("/poll/{id:\\d+}")
-    public Poll getPoll(@PathVariable("id") final String id) {
-        if (pollService.getPoll(id).isPresent()) {
-            return pollService.getPoll(id).get();
-        } else {
-            throw new BadRequestException();
-        }
+    public Poll getPoll(/*@PathVariable("id") final String id*/ @RequestBody PollCmd pollCmd) {
+
+        return pollService.getPoll(pollCmd.getId());
+
     }
 
 

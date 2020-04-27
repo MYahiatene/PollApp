@@ -20,15 +20,15 @@ public class AnswerServiceImpl implements AnswerService {
     }
 
     @Override
-    public Answer addAnswer(String answerMessage, String questionId) {
+    public Answer addAnswer(final String message, final String questionId, final String answerType, final String username) {
         Question question =
             questionRepository.findById(Long.valueOf(questionId)).orElseThrow(() -> new EntityNotFoundException());
-        String username = "mokrane";
-        Answer answer = new Answer(answerMessage, username, "answerType", Long.valueOf(questionId));
+        Answer answer = new Answer(message, questionId, answerType, username);
         question.getAnswerList().add(answer);
         questionRepository.save(question);
         return answer;
     }
+
 
     @Override
     public void deleteAnswer(String questionId, String answerId) {
@@ -37,5 +37,22 @@ public class AnswerServiceImpl implements AnswerService {
         List<Answer> answerList = question.getAnswerList();
         answerList.removeIf(obj -> obj.getId() == Long.valueOf(answerId));
         questionRepository.save(question);
+    }
+
+    @Override
+    public Answer getAnswer(Long answerId) {
+        Question question = questionRepository.findById(answerRepository.findById(answerId).orElseThrow(() ->
+            new EntityNotFoundException()).getQuestionId()).orElseThrow(() -> new EntityNotFoundException());
+
+        List<Answer> answerList = question.getAnswerList();
+
+        return answerList.stream().filter(o -> o.getId() == answerId).findFirst().get();
+    }
+
+    @Override
+    public List<Answer> getAllAnswers(String questionId) {
+        List<Answer> answers = questionRepository.findById(Long.valueOf(questionId)).orElseThrow(() -> new EntityNotFoundException()).getAnswerList();
+
+        return answers;
     }
 }

@@ -12,7 +12,7 @@ public class Answer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
 
     private String answerType;
@@ -25,11 +25,11 @@ public class Answer {
     private Long questionId;
 
 
-    public Answer(final String answer, final String username, final String answerType, Long questionId) {
-        this.answer = answer;
+    public Answer(final String message, final String questionId, final String answerType, final String username) {
+        this.answer = message;
         this.username = username;
         this.answerType = answerType;
-        this.questionId = questionId;
+        this.questionId = Long.valueOf(questionId);
     }
 
 

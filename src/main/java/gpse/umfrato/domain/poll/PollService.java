@@ -1,13 +1,17 @@
 package gpse.umfrato.domain.poll;
 
 
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 public interface PollService {
-    Poll createPoll(String pollname);
+    Poll createPoll(final String pollname, final String pollcreator, final LocalDateTime pollCreatedAt,
+                    final LocalDateTime lastEditAt, final LocalDateTime activatedAt,
+                    final LocalDateTime deactivatedAt, final String anonymityStatus, final int pollStatus);
 
     List<Poll> getAllPolls();
 
-    Optional<Poll> getPoll(String id);
+    Poll getPoll(String id);
+
+
 }
