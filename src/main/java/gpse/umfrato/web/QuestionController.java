@@ -1,13 +1,11 @@
 package gpse.umfrato.web;
 
-import gpse.umfrato.domain.answer.Answer;
 import gpse.umfrato.domain.answer.AnswerService;
 import gpse.umfrato.domain.poll.Poll;
 import gpse.umfrato.domain.poll.PollRepository;
 import gpse.umfrato.domain.poll.PollService;
 import gpse.umfrato.domain.question.Question;
 import gpse.umfrato.domain.question.QuestionService;
-import gpse.umfrato.domain.user.User;
 import gpse.umfrato.domain.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -38,7 +36,7 @@ public class QuestionController {
         this.pollRepository=pollRepository;
     }
 
-    @PostMapping("/createquestion")
+    @GetMapping("/createquestion")
     public String createQuestion() {
         try {
            Poll poll= pollRepository.findById(1L).orElseThrow(() -> new EntityNotFoundException());

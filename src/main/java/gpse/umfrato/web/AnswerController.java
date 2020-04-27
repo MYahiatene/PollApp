@@ -2,7 +2,6 @@ package gpse.umfrato.web;
 
 import gpse.umfrato.domain.answer.Answer;
 import gpse.umfrato.domain.answer.AnswerService;
-import gpse.umfrato.domain.poll.Poll;
 import gpse.umfrato.domain.poll.PollService;
 import gpse.umfrato.domain.question.Question;
 import gpse.umfrato.domain.question.QuestionRepository;
@@ -34,7 +33,7 @@ public class AnswerController {
     }
 
 
-    @PostMapping("/createanswer")
+    @GetMapping("/createanswer")
     public String createAnswer() {
         try {
             User user = (User) userService.loadUserByUsername("Uncle_Bob");
