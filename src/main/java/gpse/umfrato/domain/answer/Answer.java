@@ -1,11 +1,7 @@
 package gpse.umfrato.domain.answer;
 
-import gpse.umfrato.domain.question.Question;
-import gpse.umfrato.domain.user.User;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import javax.persistence.*;
 
@@ -19,23 +15,21 @@ public class Answer {
     private long id;
 
 
-    private String answertype;
+    private String answerType;
 
     @Lob
     private String answer;
 
-    @OneToOne
-    private User user;
+    private String username;
 
-    @ManyToOne
-    private Question question;
+    private Long questionId;
 
 
-    public Answer(final String answer, final User user, final String answertype,Question question) {
+    public Answer(final String answer, final String username, final String answerType, Long questionId) {
         this.answer = answer;
-        this.user = user;
-        this.answertype = answertype;
-        this.question = question;
+        this.username = username;
+        this.answerType = answerType;
+        this.questionId = questionId;
     }
 
 

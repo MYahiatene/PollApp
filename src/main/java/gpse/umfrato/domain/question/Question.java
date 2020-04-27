@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import javax.transaction.Transactional;
 import java.util.List;
 
 @Entity
@@ -18,7 +17,7 @@ public class Question {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @Lob
     private String question;
@@ -29,18 +28,8 @@ public class Question {
     @OneToMany(cascade = CascadeType.ALL)
     private List<Answer> answerList;
 
-    public void addAnswer(Answer answer) {
-        answerList.add(answer);
-        answer.setQuestion(this);
-    }
-
-    public void removeAnswer(Answer answer) {
-        answerList.remove(answer);
-        answer.setQuestion(null);
-    }
-    public Question(final String question,Poll poll) {
+    public Question(final String question) {
         this.question = question;
-        this.poll=poll;
     }
 
 

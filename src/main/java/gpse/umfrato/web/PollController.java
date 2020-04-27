@@ -21,7 +21,7 @@ public class PollController {
         this.pollService =pollService;
     }
 
-    @GetMapping("/createpoll")
+    @PostMapping("/createpoll")
     public String createPoll() {
         try {
             pollService.createPoll("Poll vom 28.10.1900");

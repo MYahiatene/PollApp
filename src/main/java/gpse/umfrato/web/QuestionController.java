@@ -1,7 +1,6 @@
 package gpse.umfrato.web;
 
 import gpse.umfrato.domain.answer.AnswerService;
-import gpse.umfrato.domain.poll.Poll;
 import gpse.umfrato.domain.poll.PollRepository;
 import gpse.umfrato.domain.poll.PollService;
 import gpse.umfrato.domain.question.Question;
@@ -10,7 +9,6 @@ import gpse.umfrato.domain.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.persistence.EntityNotFoundException;
 import java.util.logging.Logger;
 
 @RequestMapping(value = "/api", method = RequestMethod.GET)
@@ -33,21 +31,19 @@ public class QuestionController {
         this.userService = userService;
         this.pollService = pollService;
         this.answerService = answerService;
-        this.pollRepository=pollRepository;
+        this.pollRepository = pollRepository;
     }
 
-    @GetMapping("/createquestion")
-    public String createQuestion() {
-        try {
-           Poll poll= pollRepository.findById(1L).orElseThrow(() -> new EntityNotFoundException());
-           Question question=new Question("Ist Jero der coolste? :-D",poll);
-            poll.addQuestion(question);
-            pollRepository.save(poll);
-            return "Die Frage: \"" + question.getQuestion() + "\" wurde erstellt!";
-        } catch (Exception e) {
-            return e.getCause().toString();
-        }
+    @PostMapping("/poll/{id:\\d+}/addquestion")
+    public void addQuestion(@PathVariable("id") final String id) {
+        String message = "Jero ist geil";
+        questionService.addQuestion(message, id);
     }
 
-
+    @PostMapping("/poll/{pollId:\\d+}/removequestion/{questionId:\\d+}")
+    public void deleteQuestion(
+        @PathVariable("pollId") final String pollId,
+        @PathVariable("questionId") final String questionId) {
+        questionService.removeQuestion(pollId, questionId);
+    }
 }

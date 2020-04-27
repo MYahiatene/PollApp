@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -51,13 +50,4 @@ public class Poll {
         this.pollname = pollName;
     }
 
-    public void addQuestion(Question question) {
-        questionList.add(question);
-        question.setPoll(this);
-    }
-
-    public void removeQuestion(Question question) {
-        questionList.remove(question);
-        question.setPoll(null);
-    }
 }

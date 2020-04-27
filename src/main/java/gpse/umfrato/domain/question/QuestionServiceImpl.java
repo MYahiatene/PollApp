@@ -3,13 +3,11 @@ package gpse.umfrato.domain.question;
 import gpse.umfrato.domain.poll.Poll;
 import gpse.umfrato.domain.poll.PollRepository;
 import gpse.umfrato.domain.poll.PollService;
-import gpse.umfrato.domain.user.User;
-import gpse.umfrato.domain.answer.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class QuestionServiceImpl implements QuestionService {
@@ -26,8 +24,21 @@ public class QuestionServiceImpl implements QuestionService {
         this.pollService = pollService;
     }
 
+    @Override
+    public Question addQuestion(String questionMessage, String pollId) {
+        Poll poll = pollRepository.findById(Long.valueOf(pollId)).orElseThrow(() -> new EntityNotFoundException());
+        Question question = new Question(questionMessage);
+        question.setPoll(poll);
+        poll.getQuestionList().add(question);
+        pollRepository.save(poll);
+        return question;
+    }
 
-
-
-
+    @Override
+    public void removeQuestion(String pollId, String questionId) {
+        Poll poll = pollRepository.findById(Long.valueOf(pollId)).orElseThrow(() -> new EntityNotFoundException());
+        List<Question> questionList = poll.getQuestionList();
+        questionList.removeIf(obj -> obj.getId() == Long.valueOf(questionId));
+        pollRepository.save(poll);
+    }
 }
