@@ -1,5 +1,5 @@
 {
-  "name": "vergleich",
+  "name": "Umfrato",
   "version": "1.0.0",
   "description": "My wondrous Nuxt.js project",
   "author": "ymokrane",
@@ -16,7 +16,7 @@
     "@nuxtjs/proxy": "^1.3.3",
     "fibers": "^4.0.3",
     "http-proxy": "^1.18.0",
-    "nuxt": "^2.0.0",
+    "nuxt": "^2.12.2",
     "sass": "^1.26.3",
     "vuetify": "^2.2.22"
   },
