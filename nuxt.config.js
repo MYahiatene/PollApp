@@ -6,16 +6,7 @@ export default {
   srcDir: 'src/main/vue' ,
   server :{
   port:8080,
-  ws: true,
-  changeOrigin: true
   },
-proxy: {
-  '/api': {
-    target: 'http://localhost:8088',
-    pathRewrite: {
-      '^/api' : '/'
-      }
-    }},
 
   head: {
     titleTemplate: '%s - ' + process.env.npm_package_name,
@@ -54,7 +45,7 @@ proxy: {
   /*
    ** Nuxt.js modules
    */
-  modules: [      '@nuxtjs/axios',
+  modules: ['@nuxtjs/axios',
       '@nuxtjs/proxy'],
   /*
    ** vuetify module configuration

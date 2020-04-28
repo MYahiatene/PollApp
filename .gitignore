@@ -109,11 +109,14 @@ release.properties
 dependency-reduced-pom.xml
 buildNumber.properties
 .mvn/timing.properties
-!.mvn/wrapper/maven-wrapper.jar
+.mvn/wrapper/maven-wrapper.jar
 .flattened-pom.xml
 
 ### Node ###
 node
+
+#Local Database
+*.db
 
 # Logs
 logs
