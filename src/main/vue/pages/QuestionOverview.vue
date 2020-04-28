@@ -38,21 +38,21 @@
 </template>
 
 <script>
-import draggable from 'vuedraggable'
-import QuestionBuildWidget from '../components/QuestionBuildWidget'
-export default {
-    name: 'DragDropTest',
-    components: { draggable, QuestionBuildWidget },
-    data: () => ({
-        categories: [
-            {
-                id: '1',
-                name: 'Hauptkategorie',
-                items: [
-                    {
-                        id: '1',
-                        title: 'Frage 1',
-                        symbol: 'mdi-pencil-outline',
+    import QuestionBuildWidget from '../components/QuestionBuildWidget'
+
+    export default {
+        name: 'DragDropTest',
+        components: { QuestionBuildWidget },
+        data: () => ({
+            categories: [
+                {
+                    id: '1',
+                    name: 'Hauptkategorie',
+                    items: [
+                        {
+                            id: '1',
+                            title: 'Frage 1',
+                            symbol: 'mdi-pencil-outline'
                     },
                     {
                         id: '2',
