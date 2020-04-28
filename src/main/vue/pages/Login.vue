@@ -5,10 +5,10 @@
                 <b-card header="Login">
                     <b-form @submit.prevent="login">
                         <b-form-group label="Username:">
-                            <b-form-input type="text" v-model="auth.username"></b-form-input>
+                            <b-form-input v-model="auth.username" type="text"></b-form-input>
                         </b-form-group>
                         <b-form-group label="Passwort:">
-                            <b-form-input type="password" v-model="auth.password"></b-form-input>
+                            <b-form-input v-model="auth.password" type="password"></b-form-input>
                         </b-form-group>
                         <b-button type="submit" variant="primary">Login</b-button>
                     </b-form>
