@@ -1,3 +1,5 @@
+<!--this widget enables the user to configure a general question, including all of its common features, to specify-->
+<!--the final question type and to preview (wysiwyg) the final question as it will be displayed to the participants-->
 <template>
     <div>
         <v-card>
