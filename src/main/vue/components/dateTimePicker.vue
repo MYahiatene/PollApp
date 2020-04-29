@@ -20,6 +20,7 @@
                             v-on="on"
                         ></v-text-field>
                     </template>
+<!--                    date-picker-->
                     <v-date-picker
                         id="datePicker"
                         v-model="date"
@@ -32,6 +33,7 @@
                     ></v-date-picker>
                 </v-menu>
             </v-col>
+<!--            Time-Picker-->
             <v-col><v-text-field label="Uhrzeit" :value="time" type="time" style="width: 170px;"></v-text-field></v-col>
         </v-row>
     </v-container>
@@ -54,19 +56,37 @@ export default {
     },
 
     methods: {
+        /**
+         * formats Date in german standard
+         * @param date unformated date
+         * @returns {string|null} formated date
+         */
         formatDate(date) {
             if (!date) return null
             const [year, month, day] = date.split('-')
             return `${day}.${month}.${year}`
         },
+        /**
+         * parses date so the datePicker can display it
+         * @param date formated date
+         * @returns {string|null} date the datePicker can display
+         */
         parseDate(date) {
             if (!date) return null
             const [day, month, year] = date.split('.')
             return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
         },
+
+        /**
+         * method reformats the dateFormatted
+         */
         reformatDate() {
             this.dateFormatted = this.formatDate(this.date)
         },
+
+        /**
+         * this methods closes the menu and calls the method that reformats the date
+         */
 
         closeMenuAndUpdate() {
             this.menu = false

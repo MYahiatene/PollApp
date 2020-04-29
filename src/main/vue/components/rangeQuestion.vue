@@ -1,4 +1,6 @@
 <template>
+
+<!--    This widget includes the necessary controls to create a rangeQuestion-->
     <v-container>
         <v-row no-gutters>
             <v-text-field
@@ -18,7 +20,6 @@
                 :rules="endValueRules"
             ></v-text-field>
         </v-row>
-        <!--Schrittweite wirklich nötig?-->
         <v-row no-gutters>
             <v-text-field label="Schrittweite:" id="stepsize" type="number" :rules="stepSizeRules"></v-text-field>
         </v-row>
@@ -51,7 +52,9 @@ export default {
             openLower: false,
             openUpper: false,
             valid: false,
+            // rules that assert that the endValue entered in the textField must be higher than the starValue
             endValueRules: [(v) => parseFloat(v, 10) > this.startValue || 'Die Zahl muss größer als der Endwert sein!'],
+            // rules that assert that the stepsize entered in the textField must be lower than the difference between starValue and endValue
             stepSizeRules: [
                 (v) =>
                     parseFloat(v, 10) < this.endValue - this.startValue ||

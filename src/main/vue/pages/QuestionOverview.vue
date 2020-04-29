@@ -38,21 +38,21 @@
 </template>
 
 <script>
-    import QuestionBuildWidget from '../components/QuestionBuildWidget'
+import QuestionBuildWidget from '../components/QuestionBuildWidget'
 
-    export default {
-        name: 'DragDropTest',
-        components: { QuestionBuildWidget },
-        data: () => ({
-            categories: [
-                {
-                    id: '1',
-                    name: 'Hauptkategorie',
-                    items: [
-                        {
-                            id: '1',
-                            title: 'Frage 1',
-                            symbol: 'mdi-pencil-outline'
+export default {
+    name: 'DragDropTest',
+    components: { QuestionBuildWidget },
+    data: () => ({
+        categories: [
+            {
+                id: '1',
+                name: 'Hauptkategorie',
+                items: [
+                    {
+                        id: '1',
+                        title: 'Frage 1',
+                        symbol: 'mdi-pencil-outline',
                     },
                     {
                         id: '2',

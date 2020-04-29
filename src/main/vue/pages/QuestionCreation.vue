@@ -1,4 +1,5 @@
 <template>
+<!--    This page includes all the necessary controls to create a new Poll-->
     <v-card>
         <v-container>
             <v-form v-model="valid">
@@ -8,9 +9,6 @@
                             <h3>Umfrage erstellen</h3>
                         </v-col>
                     </v-row>
-                    <div>
-                        console.log("Hallo")
-                    </div>
                     <v-row>
                         <v-col cols="12" md="4">
                             <v-text-field
@@ -25,7 +23,7 @@
                     <v-row no-gutters>
                         <v-col cols="12" md="4">
                             <v-overflow-btn
-                                :items="anonomityTypes"
+                                :items="anonymityTypes"
                                 placeholder="Anonymitätsgrad"
                                 :rules="anonymityRules"
                             ></v-overflow-btn>
@@ -72,12 +70,15 @@ export default {
             switch2: false,
             valid: false,
             title: '',
-            anonomityTypes: ['Anonym', 'Teilanonym', 'Nicht anonym'],
+            anonymityTypes: ['Anonym', 'Teilanonym', 'Nicht anonym'],
+            // rules that assert that the title attribute must be set and that the title length is below 10 characters (that part can be changed)
             titleRules: [(v) => !!v || 'Titel fehlt', (v) => v.length <= 10 || 'Name must be less than 10 characters'],
+            // rules that assert that the anonymity attribute must be set.
             anonymityRules: [(v) => !!v || 'Anonymitätsgrad fehlt.'],
         }
     },
     methods: {
+        // validates the form (so the button is only enabled when the inputs are correct
         validate() {
             this.$refs.form.validate()
         },
