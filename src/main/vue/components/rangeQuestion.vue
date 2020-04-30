@@ -1,6 +1,5 @@
 <template>
-
-<!--    This widget includes the necessary controls to create a rangeQuestion-->
+    <!--    This widget includes the necessary controls to create a rangeQuestion-->
     <v-container>
         <v-row no-gutters>
             <v-text-field

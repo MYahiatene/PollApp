@@ -1,5 +1,5 @@
 <template>
-<!--    This page includes all the necessary controls to create a new Poll-->
+    <!--    This page includes all the necessary controls to create a new Poll-->
     <v-card>
         <v-container>
             <v-form v-model="valid">

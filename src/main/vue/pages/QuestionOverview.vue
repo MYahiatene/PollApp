@@ -1,3 +1,5 @@
+<!--This page lists the categories of questions and gives buttons to edit a question and to create new categories-->
+<!--This will include Drag and Drop of the questions to group them into the categories-->
 <template>
     <v-container>
         <v-subheader class="display-2"> Umfrage 1</v-subheader>
