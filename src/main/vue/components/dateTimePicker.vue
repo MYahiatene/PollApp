@@ -20,7 +20,7 @@
                             v-on="on"
                         ></v-text-field>
                     </template>
-<!--                    date-picker-->
+                    <!--                    date-picker-->
                     <v-date-picker
                         id="datePicker"
                         v-model="date"
@@ -33,7 +33,7 @@
                     ></v-date-picker>
                 </v-menu>
             </v-col>
-<!--            Time-Picker-->
+            <!--            Time-Picker-->
             <v-col><v-text-field label="Uhrzeit" :value="time" type="time" style="width: 170px;"></v-text-field></v-col>
         </v-row>
     </v-container>

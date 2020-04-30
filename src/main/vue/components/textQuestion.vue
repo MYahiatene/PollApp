@@ -1,6 +1,5 @@
 <template>
-
-<!--    this widget includes the necessary controls to create a textQuestion-->
+    <!--    this widget includes the necessary controls to create a textQuestion-->
     <v-container>
         <v-form v-model="valid">
             <v-row no-gutters>
@@ -9,7 +8,7 @@
             <v-row no-gutters>
                 <v-switch v-model="minCharSwitch" label="Zeichenanzahl nach unten beschränken"></v-switch>
             </v-row>
-<!--            textField to specify the lowest possible number of chars-->
+            <!--            textField to specify the lowest possible number of chars-->
             <v-row v-if="minCharSwitch">
                 <v-col md="5">
                     <v-text-field
