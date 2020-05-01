@@ -6,7 +6,7 @@
                 <v-col cols="8">
                     <v-list v-for="question in questions" :key="question.id" two-line>
                         <v-card class="mx-auto">
-                            <v-card-title> {{ question.text }}</v-card-title>
+                            <v-card-title> {{ question.id }}/{{ questions.length }} {{ question.text }}</v-card-title>
                             <div v-if="question.type === 'textQuestion'">
                                 <v-text-field label="Antwort"> </v-text-field>
                             </div>
@@ -21,8 +21,8 @@
             </v-row>
             <v-row>
                 <v-col cols="8">
-                    <v-btn class="ma-4">Vorherige Seite</v-btn>
-                    <v-btn class="ma-4">Nächste Seite</v-btn>
+                    <v-btn class="pl-4">Vorherige Seite</v-btn>
+                    <v-btn class="pl-4">Nächste Seite</v-btn>
                 </v-col>
             </v-row>
         </v-content>

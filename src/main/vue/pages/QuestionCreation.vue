@@ -54,6 +54,10 @@
                             label="Vor- und Zurückspringen zwischen Kategorien erlaubt"
                         ></v-switch>
                     </v-row>
+
+                    <v-row no-gutters>
+                        <v-switch v-model="switch4" label="Sichtbarkeit der Gesamtanzahl der Fragen"></v-switch>
+                    </v-row>
                 </v-container>
 
                 <br />
@@ -77,6 +81,8 @@ export default {
             switch2: false,
             // flag to set the attribute of changing the sites as a participant
             switch3: false,
+            // flag to set the visibility of the number of questions
+            switch4: false,
             valid: false,
             title: '',
             anonymityTypes: ['Anonym', 'Teilanonym', 'Nicht anonym'],
