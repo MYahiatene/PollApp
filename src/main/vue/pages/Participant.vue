@@ -19,6 +19,12 @@
                     </v-list>
                 </v-col>
             </v-row>
+            <v-row>
+                <v-col cols="8">
+                    <v-btn class="ma-4">Vorherige Seite</v-btn>
+                    <v-btn class="ma-4">Nächste Seite</v-btn>
+                </v-col>
+            </v-row>
         </v-content>
     </v-container>
 </template>

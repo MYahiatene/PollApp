@@ -47,6 +47,13 @@
                             <date-time-picker />
                         </v-col>
                     </v-row>
+
+                    <v-row no-gutters>
+                        <v-switch
+                            v-model="switch3"
+                            label="Vor- und Zurückspringen zwischen Kategorien erlaubt"
+                        ></v-switch>
+                    </v-row>
                 </v-container>
 
                 <br />
@@ -68,6 +75,8 @@ export default {
         return {
             switch1: false,
             switch2: false,
+            // flag to set the attribute of changing the sites as a participant
+            switch3: false,
             valid: false,
             title: '',
             anonymityTypes: ['Anonym', 'Teilanonym', 'Nicht anonym'],
