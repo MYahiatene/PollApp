@@ -5,6 +5,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -71,5 +72,21 @@ public class StatisticUnitTest {
 
         assertEquals(expected, actual);
     }
+
+    @Test
+    public void modusTest() {
+
+        double expected = 9.9;
+
+        List<Double> doubles = Arrays.asList(4.0,3.2,9.9,8.0);
+
+        double actual = Statistics.modus(doubles);
+
+        assertEquals(expected, actual);
+
+    }
+
+
+
 
 }

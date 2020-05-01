@@ -64,5 +64,25 @@ public class Statistics {
         return normalizeAllDoubleValues(listOfDoubleValues);
     }
 
+    /**
+     * This function returns the modus of a list of absolute values
+     * @param allValues absolute values
+     * @return the highest value
+     */
+
+    public static double modus(List<Double> allValues){
+
+        double currentHighest = 0.0;
+
+        for (int i = 0; i < allValues.size(); i++) {
+            if(allValues.get(i)>currentHighest){
+                currentHighest = allValues.get(i);
+            }
+        }
+
+        return currentHighest;
+
+    }
+
 
 }
