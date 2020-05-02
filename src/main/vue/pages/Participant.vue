@@ -6,7 +6,11 @@
                 <v-col cols="8">
                     <v-list v-for="question in questions" :key="question.id" two-line>
                         <v-card class="mx-auto">
-                            <v-card-title> {{ question.id }}/{{ questions.length }} {{ question.text }}</v-card-title>
+                            <v-card-title>
+                                <!--the visibility of the number of questions depends on the poll configuration-->
+                                <div v-if="visible">{{ question.id }}/{{ questions.length }}</div>
+                                {{ question.text }}
+                            </v-card-title>
                             <div v-if="question.type === 'textQuestion'">
                                 <v-text-field label="Antwort"> </v-text-field>
                             </div>
@@ -30,6 +34,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 export default {
     name: 'Participant',
     data: () => ({
@@ -57,6 +62,11 @@ export default {
             },
         ],
     }),
+    computed: {
+        ...mapGetters({
+            visible: 'isVisible',
+        }),
+    },
 }
 </script>
 
