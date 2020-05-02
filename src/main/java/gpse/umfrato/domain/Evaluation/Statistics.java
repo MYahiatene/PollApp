@@ -1,6 +1,7 @@
 package gpse.umfrato.domain.Evaluation;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Statistics {
@@ -84,5 +85,62 @@ public class Statistics {
 
     }
 
+    /**
+     * This function casts the provided value to an integer and limits it to a range of zero to max minus one
+     * to avoid out of range exceptions while accessing arrays or lists.
+     * @param val the value to limit or the possibly out of bounds index to access.
+     * @param max one above the biggest value val can be or the size of the array to access.
+     * @return the constricted integer.
+     */
+    private static <T extends Number> int constrict(T val, int max)
+    {
+        max -= 1;
+        int casted = val.intValue();
+        if(casted < 0)
+        {
+            return 0;
+        }
+        if(casted > max)
+        {
+            return max;
+        }
+        return casted;
+    }
 
+    /**
+     * This function returns the p-Quantile of the provided values.
+     * If the list is empty the function returns null.
+     * If p is below zero or above one it will be set to zero or one respectively.
+     * @param values list of values to pick the quantile from. The values will be sorted inside the function.
+     * @param p the parameter to calculate the quantile for example p=0.5 equals the median and p=1 equals the maximum.
+     * @return the value corresponding to the p.
+     **/
+    public static Double pQuantile(List<Double> values, double p)
+    {
+        if(values.isEmpty())
+        {
+            return null;
+        }
+        if(p < 0.0)
+        {
+            p = 0.0;
+        }
+        else if(p > 1.0)
+        {
+            p = 1.0;
+        }
+        Collections.sort(values);
+        int n = values.size();
+        double Xnp = 0.0;
+        double Xnp1 = values.get(constrict(n * p, values.size()));
+        if(n * p % 1.0 == 0.0)
+        {
+            Xnp = values.get(constrict((n * p) - 1,values.size()));
+            return (Xnp + Xnp1) / 2;
+        }
+        else
+        {
+            return Xnp1;
+        }
+    }
 }
