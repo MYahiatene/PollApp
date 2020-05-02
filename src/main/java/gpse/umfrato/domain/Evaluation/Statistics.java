@@ -143,4 +143,14 @@ public class Statistics {
             return Xnp1;
         }
     }
+
+    /**
+    * This function returns the median of a given list of values, if the list is not empty.
+    * @param values list of values to calculate the median from
+    * @return will return null for empty lists, otherwise will return the median of given list of values.
+    */
+    public static Double median(List<Double> values)
+    {
+        return pQuantile(values, 0.5);
+    }
 }
