@@ -4,6 +4,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+
 public class Statistics {
 
     /**
@@ -153,4 +159,35 @@ public class Statistics {
     {
         return pQuantile(values, 0.5);
     }
+
+    public <T extends Number> double cumulate(List<T> values, T threshold){ //Kumulierte Häufigkeit
+        double cumulated = 0;
+        Iterator<T> listIterator = values.listIterator();
+        while(listIterator.hasNext()){
+            if(listIterator.next().doubleValue() < threshold.doubleValue()) { cumulated++; }
+        }
+        return cumulated;
+    }
+
+    public <T extends Number> List<Double> normalize(List<T> values){
+        Iterator<T> listIterator = values.listIterator();
+        double minimum = Double.POSITIVE_INFINITY;
+        double maximum = Double.NEGATIVE_INFINITY; //So that there's always a max and a min to be found
+        ArrayList<Double> normalized = new ArrayList<Double>();
+        while(listIterator.hasNext()){
+            T next = listIterator.next();
+            if(minimum < next.doubleValue()) { minimum = next.doubleValue(); }
+            if(maximum > next.doubleValue()) { maximum = next.doubleValue(); }
+            minimum = next.doubleValue() < minimum ? next.doubleValue() : minimum;
+            maximum = next.doubleValue() > maximum ? next.doubleValue() : maximum;
+        }
+        listIterator = values.listIterator();
+        while(listIterator.hasNext()){
+            T next = listIterator.next();
+            normalized.add(next.doubleValue()/maximum - minimum/maximum);
+        }
+        return normalized;
+    }
+
+
 }
