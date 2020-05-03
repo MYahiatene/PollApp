@@ -8,18 +8,18 @@
                         <v-flex class="ma-n4">
                             <v-list v-for="categorie in categories" :key="categorie.id" two-line>
                                 <v-subheader class="headline"> {{ categorie.name }} </v-subheader>
-                                <draggable v-model="categorie.items" group="questions">
+                                <draggable group="questions" v-model="categories.items">
                                     <v-list v-for="item in categorie.items" :key="item.id">
-                                        <v-list-tile :key="item.title">
-                                            <v-list-tile-content>
-                                                <v-list-tile-title>{{ item.title }}</v-list-tile-title>
-                                            </v-list-tile-content>
+                                        <v-list-item-title :key="item.title">
+                                            <v-list-item-content>
+                                                <v-list-item-title>{{ item.title }}</v-list-item-title>
+                                            </v-list-item-content>
                                             <v-list-item-action>
                                                 <v-btn depressed small icon>
                                                     <v-icon>{{ item.symbol }}</v-icon>
                                                 </v-btn>
                                             </v-list-item-action>
-                                        </v-list-tile>
+                                        </v-list-item-title>
                                     </v-list>
                                 </draggable>
                             </v-list>
@@ -38,54 +38,58 @@
 </template>
 
 <script>
+    import draggable from 'vuedraggable'
     import QuestionBuildWidget from '../components/QuestionBuildWidget'
 
     export default {
         name: 'DragDropTest',
-        components: { QuestionBuildWidget },
-        data: () => ({
-            categories: [
-                {
-                    id: '1',
-                    name: 'Hauptkategorie',
-                    items: [
-                        {
-                            id: '1',
-                            title: 'Frage 1',
-                            symbol: 'mdi-pencil-outline'
+        components: {QuestionBuildWidget, draggable},
+        data() {
+            return {
+                categories: [
+                    {
+                        id: '1',
+                        name: 'Hauptkategorie',
+                        items: [
+                            {
+                                id: '1',
+                                title: 'Frage 1',
+                                symbol: 'mdi-pencil-outline',
+                            },
+                            {
+                                id: '2',
+                                title: 'Frage 2',
+                                symbol: 'mdi-pencil-outline',
+                            },
+                        ],
                     },
                     {
                         id: '2',
-                        title: 'Frage 2',
-                        symbol: 'mdi-pencil-outline',
+                        name: 'Kategorie 1',
+                        items: [
+                            {
+                                id: '3',
+                                title: 'Frage 3',
+                                symbol: 'mdi-pencil-outline',
+                            },
+                            {
+                                id: '4',
+                                title: 'Frage 4',
+                                symbol: 'mdi-pencil-outline',
+                            },
+                            {
+                                id: '5',
+                                title: 'Frage 5',
+                                symbol: 'mdi-pencil-outline',
+                            },
+                        ],
                     },
                 ],
+            }
+        },
+        methods: {
+            createSurvey() {
             },
-            {
-                id: '2',
-                name: 'Kategorie 1',
-                items: [
-                    {
-                        id: '3',
-                        title: 'Frage 3',
-                        symbol: 'mdi-pencil-outline',
-                    },
-                    {
-                        id: '4',
-                        title: 'Frage 4',
-                        symbol: 'mdi-pencil-outline',
-                    },
-                    {
-                        id: '5',
-                        title: 'Frage 5',
-                        symbol: 'mdi-pencil-outline',
-                    },
-                ],
-            },
-        ],
-    }),
-    methods: {
-        createSurvey() {},
-    },
-}
+        },
+    }
 </script>
