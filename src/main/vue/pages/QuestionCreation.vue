@@ -68,7 +68,7 @@
 
                 <br />
 
-                <v-btn :disabled="!valid" color="success" class="mr-4">
+                <v-btn color="primary" nuxt to="/QuestionOverview">
                     Erstellen
                 </v-btn>
             </v-form>
