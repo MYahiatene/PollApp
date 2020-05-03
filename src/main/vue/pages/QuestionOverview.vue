@@ -38,58 +38,57 @@
 </template>
 
 <script>
-    import draggable from 'vuedraggable'
-    import QuestionBuildWidget from '../components/QuestionBuildWidget'
+import draggable from 'vuedraggable'
+import QuestionBuildWidget from '../components/QuestionBuildWidget'
 
-    export default {
-        name: 'DragDropTest',
-        components: {QuestionBuildWidget, draggable},
-        data() {
-            return {
-                categories: [
-                    {
-                        id: '1',
-                        name: 'Hauptkategorie',
-                        items: [
-                            {
-                                id: '1',
-                                title: 'Frage 1',
-                                symbol: 'mdi-pencil-outline',
-                            },
-                            {
-                                id: '2',
-                                title: 'Frage 2',
-                                symbol: 'mdi-pencil-outline',
-                            },
-                        ],
-                    },
-                    {
-                        id: '2',
-                        name: 'Kategorie 1',
-                        items: [
-                            {
-                                id: '3',
-                                title: 'Frage 3',
-                                symbol: 'mdi-pencil-outline',
-                            },
-                            {
-                                id: '4',
-                                title: 'Frage 4',
-                                symbol: 'mdi-pencil-outline',
-                            },
-                            {
-                                id: '5',
-                                title: 'Frage 5',
-                                symbol: 'mdi-pencil-outline',
-                            },
-                        ],
-                    },
-                ],
-            }
-        },
-        methods: {
-            createSurvey() {
-            },
-        },
-    }
+export default {
+    name: 'DragDropTest',
+    components: { QuestionBuildWidget, draggable },
+    data() {
+        return {
+            categories: [
+                {
+                    id: '1',
+                    name: 'Hauptkategorie',
+                    items: [
+                        {
+                            id: '1',
+                            title: 'Frage 1',
+                            symbol: 'mdi-pencil-outline',
+                        },
+                        {
+                            id: '2',
+                            title: 'Frage 2',
+                            symbol: 'mdi-pencil-outline',
+                        },
+                    ],
+                },
+                {
+                    id: '2',
+                    name: 'Kategorie 1',
+                    items: [
+                        {
+                            id: '3',
+                            title: 'Frage 3',
+                            symbol: 'mdi-pencil-outline',
+                        },
+                        {
+                            id: '4',
+                            title: 'Frage 4',
+                            symbol: 'mdi-pencil-outline',
+                        },
+                        {
+                            id: '5',
+                            title: 'Frage 5',
+                            symbol: 'mdi-pencil-outline',
+                        },
+                    ],
+                },
+            ],
+        }
+    },
+    methods: {
+        createSurvey() {},
+    },
+}
 </script>
