@@ -13,10 +13,10 @@ import java.util.List;
 public class Statistics {
 
     /**
-     * This method takes a absolute value and converts it to a relative value
-     * @param value absolute value
-     * @param totalNumber total number of values
-     * @return relative value
+     * This method takes a absolute value and converts it to a relative value.
+     * @param value absolute value.
+     * @param totalNumber total number of values.
+     * @return relative value.
      */
     public static double normalizeOneValue (double value, double totalNumber) throws Exception {
         if(totalNumber<value){
@@ -27,9 +27,9 @@ public class Statistics {
 
     /**
      * This method takes a List of double values that represent an absolute number
-     * and converts each of them into the corresponding relative value
-     * @param values all absolute values that were given in a poll
-     * @return a list of relative values
+     * and converts each of them into the corresponding relative value.
+     * @param values all absolute values that were given in a poll.
+     * @return a list of relative values.
      */
 
     public static List<Double> normalizeAllDoubleValues(List< Double> values){
@@ -44,10 +44,10 @@ public class Statistics {
             try {
                 listOfNormalizedValues.add(normalizeOneValue(values.get(i), totalNumber));
             }
-            catch (Exception e){
+            catch (Exception e)
+            {
                 return null;
             }
-
         }
 
         return listOfNormalizedValues;
@@ -56,7 +56,7 @@ public class Statistics {
     /**
      * This method uses normalizeAllDoubleValues to convert absolute numbers into relative numbers.
      * It casts the Integer values into double values first in order to use the method.
-     * @param values a list of absolute integer values
+     * @param values a list of absolute integer values.
      * @return a list of corresponding relative double values.
      */
 
@@ -72,9 +72,9 @@ public class Statistics {
     }
 
     /**
-     * This function returns the modus of a list of absolute values
-     * @param allValues absolute values
-     * @return the highest value
+     * This function returns the modus of a list of absolute values.
+     * @param allValues absolute values.
+     * @return the highest value.
      */
 
     public static double modus(List<Double> allValues){
@@ -152,7 +152,7 @@ public class Statistics {
 
     /**
     * This function returns the median of a given list of values, if the list is not empty.
-    * @param values list of values to calculate the median from
+    * @param values list of values to calculate the median from.
     * @return will return null for empty lists, otherwise will return the median of given list of values.
     */
     public static Double median(List<Double> values)
@@ -160,6 +160,13 @@ public class Statistics {
         return pQuantile(values, 0.5);
     }
 
+    /**
+     * This function cumulates a list of generic types and returns the percentage of values being under the given threshold.
+     * @param values list of values to cumulate.
+     * @param threshold to use in function.
+     * @param <T> generic type of items used in values.
+     * @return
+     */
     public <T extends Number> double cumulate(List<T> values, T threshold){ //Kumulierte Häufigkeit
         double cumulated = 0;
         Iterator<T> listIterator = values.listIterator();
@@ -168,24 +175,4 @@ public class Statistics {
         }
         return cumulated;
     }
-
-    public <T extends Number> List<Double> normalize(List<T> values){
-        Iterator<T> listIterator = values.listIterator();
-        double minimum = Double.POSITIVE_INFINITY;
-        double maximum = Double.NEGATIVE_INFINITY; //So that there's always a max and a min to be found
-        ArrayList<Double> normalized = new ArrayList<Double>();
-        while(listIterator.hasNext()){
-            T next = listIterator.next();
-            if(minimum < next.doubleValue()) { minimum = next.doubleValue(); }
-            if(maximum > next.doubleValue()) { maximum = next.doubleValue(); }
-        }
-        listIterator = values.listIterator();
-        while(listIterator.hasNext()){
-            T next = listIterator.next();
-            normalized.add(next.doubleValue()/maximum - minimum/maximum);
-        }
-        return normalized;
-    }
-
-
 }
