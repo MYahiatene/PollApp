@@ -178,8 +178,6 @@ public class Statistics {
             T next = listIterator.next();
             if(minimum < next.doubleValue()) { minimum = next.doubleValue(); }
             if(maximum > next.doubleValue()) { maximum = next.doubleValue(); }
-            minimum = next.doubleValue() < minimum ? next.doubleValue() : minimum;
-            maximum = next.doubleValue() > maximum ? next.doubleValue() : maximum;
         }
         listIterator = values.listIterator();
         while(listIterator.hasNext()){
