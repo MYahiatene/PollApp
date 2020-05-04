@@ -27,6 +27,9 @@
                 <v-col cols="8">
                     <v-btn class="pl-4">Vorherige Seite</v-btn>
                     <v-btn class="pl-4">Nächste Seite</v-btn>
+                    <v-btn color="primary" nuxt to="/AfterParticipated">
+                        Absenden
+                    </v-btn>
                 </v-col>
             </v-row>
         </v-content>
