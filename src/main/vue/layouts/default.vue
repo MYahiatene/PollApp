@@ -72,7 +72,7 @@ export default {
                     to: '/Configuration',
                 },
                 {
-                    icon: 'mdi-chart-bubble',
+                    icon: 'mdi-chart-line',
                     title: 'Auswertung',
                     to: '/Analyse',
                 },

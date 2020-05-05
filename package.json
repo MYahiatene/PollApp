@@ -19,6 +19,7 @@
     "http-proxy": "^1.18.0",
     "nuxt": "^2.12.2",
     "sass": "^1.26.3",
+    "vue-chartjs": "^3.5.0",
     "vuetify": "^2.2.22"
   },
   "devDependencies": {
