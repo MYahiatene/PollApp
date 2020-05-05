@@ -18,9 +18,9 @@ public class Statistics {
      * @param totalNumber total number of values.
      * @return relative value.
      */
-    public static double normalizeOneValue (double value, double totalNumber) throws Exception {
+    public static double normalizeOneValue (double value, double totalNumber) throws ArithmeticException {
         if(totalNumber<value){
-            throw new Exception("totalNumber must be larger than value!");
+            throw new ArithmeticException("totalNumber must be larger than value!");
         }
         return value / totalNumber;
     }
@@ -137,16 +137,16 @@ public class Statistics {
         }
         Collections.sort(values);
         int n = values.size();
-        double Xnp = 0.0;
-        double Xnp1 = values.get(constrict(n * p, values.size()));
+        double xnp = 0.0;
+        double xnp1 = values.get(constrict(n * p, values.size()));
         if(n * p % 1.0 == 0.0)
         {
-            Xnp = values.get(constrict((n * p) - 1,values.size()));
-            return (Xnp + Xnp1) / 2;
+            xnp = values.get(constrict((n * p) - 1,values.size()));
+            return (xnp + xnp1) / 2;
         }
         else
         {
-            return Xnp1;
+            return xnp1;
         }
     }
 
