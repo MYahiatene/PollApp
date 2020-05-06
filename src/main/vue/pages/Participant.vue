@@ -8,7 +8,7 @@
                         <v-card class="mx-auto">
                             <v-card-title>
                                 <!--the visibility of the number of questions depends on the poll configuration-->
-                                <div v-if="visible">{{ question.id }}/{{ questions.length }}</div>
+                                <div v-if="getVisibility">{{ question.id }}/{{ questions.length }}</div>
                                 {{ question.text }}
                             </v-card-title>
                             <div v-if="question.type === 'textQuestion'">
@@ -67,8 +67,11 @@ export default {
     }),
     computed: {
         ...mapGetters({
-            visible: 'isVisible',
+            getVisibility: 'isVisible',
         }),
+        getVisibility() {
+            return this.$store.state.participant.visibility
+        },
     },
 }
 </script>
