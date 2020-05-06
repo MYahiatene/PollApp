@@ -14,7 +14,7 @@ import java.util.logging.Logger;
 
 @RequestMapping(value = "/api", method = RequestMethod.GET)
 @RestController
-@CrossOrigin
+@CrossOrigin(origins = "http://127.0.0.1:8080")
 public class QuestionController {
     private static final Logger LOGGER = Logger.getLogger("QuestionController");
 

@@ -1,14 +1,14 @@
 <template>
     <v-container>
-        <v-subheader class="display-2"> Umfrage 1</v-subheader>
+        <v-subheader class="display-2">Umfrage 1</v-subheader>
         <v-content>
             <v-row>
                 <v-col cols="4">
                     <v-container fluid>
                         <v-flex class="ma-n4">
                             <v-list v-for="categorie in categories" :key="categorie.id" two-line>
-                                <v-subheader class="headline"> {{ categorie.name }} </v-subheader>
-                                <draggable group="questions" v-model="categories.items">
+                                <v-subheader class="headline">{{ categorie.name }}</v-subheader>
+                                <draggable v-model="categories.items" group="questions">
                                     <v-list v-for="item in categorie.items" :key="item.id">
                                         <v-list-item-title :key="item.title">
                                             <v-list-item-content>
@@ -40,6 +40,7 @@
 <script>
 import draggable from 'vuedraggable'
 import QuestionBuildWidget from '../components/QuestionBuildWidget'
+// import axios from "../../../../.nuxt/axios";
 
 export default {
     name: 'DragDropTest',

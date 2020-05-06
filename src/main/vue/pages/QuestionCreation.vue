@@ -8,9 +8,6 @@
                             <h3>Umfrage erstellen</h3>
                         </v-col>
                     </v-row>
-                    <div>
-                        console.log("Hallo")
-                    </div>
                     <v-row>
                         <v-col cols="12" md="4">
                             <v-text-field
@@ -32,7 +29,7 @@
                         </v-col>
                     </v-row>
                     <v-row no-gutters>
-                        <v-switch v-model="switch1" label="lege Aktivierungsdatum fest"> </v-switch>
+                        <v-switch v-model="switch1" label="lege Aktivierungsdatum fest"></v-switch>
                     </v-row>
 
                     <v-row v-if="switch1" no-gutters>
@@ -53,9 +50,7 @@
 
                 <br />
 
-                <v-btn :disabled="!valid" color="success" class="mr-4">
-                    Erstellen
-                </v-btn>
+                <v-btn :disabled="!valid" color="success" class="mr-4" @click="sendData()">Erstellen</v-btn>
             </v-form>
         </v-container>
     </v-card>
@@ -63,6 +58,12 @@
 
 <script>
 import DateTimePicker from '../components/dateTimePicker'
+const axios = require('axios')
+const instance = axios.create({
+    baseURL: 'http://127.0.0.1:8088/api/',
+    timeout: 1000,
+    headers: { 'X-Custom-Header': 'foobar' },
+})
 export default {
     name: 'QuestionCreation',
     components: { DateTimePicker },
@@ -80,6 +81,22 @@ export default {
     methods: {
         validate() {
             this.$refs.form.validate()
+        },
+        sendData() {
+            const obj = {
+                username: 'testxyccxyc',
+                firstname: 'test',
+                lastname: 'test',
+                password: 'test',
+            }
+            instance
+                .post('/createuser', obj)
+                .then((response) => {
+                    console.log(response)
+                })
+                .catch((error) => {
+                    console.log(error)
+                })
         },
     },
 }
