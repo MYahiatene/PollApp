@@ -1,9 +1,9 @@
 export const state = () => ({
-    visibility: true,
+    // visibility: false,
 })
 export const mutations = {
-    // gets the attribute visibility from QuestionCreation
-    changeVisible(state, value) {
-        this.state.visibility = value
+    // sets the attribute visibility
+    changeVisible(state) {
+        state.visibility = !state.visibility
     },
 }

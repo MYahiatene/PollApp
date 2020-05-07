@@ -58,9 +58,8 @@
                     <v-row no-gutters>
                         <v-switch
                             v-model="switch4"
-                            :value="false"
                             label="Sichtbarkeit der Gesamtanzahl der Fragen"
-                            @change="changeVisibility(value)"
+                            @change="changeVisibility()"
                         >
                         </v-switch>
                     </v-row>
@@ -77,7 +76,7 @@
 </template>
 
 <script>
-import { mapMutations } from 'vuex'
+// import { mapMutations } from 'vuex'
 import DateTimePicker from '../components/dateTimePicker'
 export default {
     name: 'QuestionCreation',
@@ -100,14 +99,15 @@ export default {
         }
     },
     methods: {
-        ...mapMutations(['changeVisible']),
+        /* ...mapMutations({
+            changeVisibility: 'questionCreation/changeVisible',
+        }), */
+        changeVisibility() {
+            this.$store.commit('questionCreation/changeVisible')
+        },
         // validates the form (so the button is only enabled when the inputs are correct
         validate() {
             this.$refs.form.validate()
-        },
-        // changes the visibility of the number of questions depending on the switch button
-        changeVisibility(value) {
-            this.changeVisible(value)
         },
     },
 }

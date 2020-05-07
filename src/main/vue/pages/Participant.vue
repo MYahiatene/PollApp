@@ -44,12 +44,12 @@ export default {
         questions: [
             {
                 id: '1',
-                text: 'Was für eine Frage?',
+                text: ' Was für eine Frage?',
                 type: 'textQuestion',
             },
             {
                 id: '2',
-                text: 'Was für zwei Fragen?',
+                text: ' Was für zwei Fragen?',
                 type: 'choiceQuestion',
                 answers: [
                     {
@@ -67,11 +67,8 @@ export default {
     }),
     computed: {
         ...mapGetters({
-            getVisibility: 'isVisible',
+            getVisibility: 'participant/isVisible',
         }),
-        getVisibility() {
-            return this.$store.state.participant.visibility
-        },
     },
 }
 </script>
