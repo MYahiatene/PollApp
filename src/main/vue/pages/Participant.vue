@@ -18,6 +18,17 @@
                                 <v-list v-for="answer in question.answers" :key="answer.text">
                                     <v-checkbox class="ma-4" :label="answer.text"></v-checkbox>
                                 </v-list>
+                                <div v-if="question.ownAnswersAllowed">
+                                    <v-checkbox
+                                        v-model="enabled"
+                                        hide-details
+                                        class="ma-4"
+                                        label="Eigene Antwort:"
+                                    ></v-checkbox>
+                                    <v-col>
+                                        <v-text-field></v-text-field>
+                                    </v-col>
+                                </div>
                             </div>
                         </v-card>
                     </v-list>
@@ -41,6 +52,7 @@ import { mapGetters } from 'vuex'
 export default {
     name: 'Participant',
     data: () => ({
+        enabled: false,
         questions: [
             {
                 id: '1',
@@ -51,6 +63,7 @@ export default {
                 id: '2',
                 text: ' Was für zwei Fragen?',
                 type: 'choiceQuestion',
+                ownAnswersAllowed: 'true',
                 answers: [
                     {
                         text: 'a',
