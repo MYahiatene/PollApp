@@ -63,6 +63,32 @@
                         >
                         </v-switch>
                     </v-row>
+
+                    <v-row no-gutters>
+                        <v-switch v-model="switch5" label="eigenes Design für die Umfrage"></v-switch>
+                    </v-row>
+                    <v-row v-if="switch5" no-gutters>
+                        <v-col cols="12" md="4">
+                            <v-model />
+                            Hintergrundfarbe
+                            <v-color-picker />
+                            <v-model />
+                        </v-col>
+                        <v-col cols="12" md="4">
+                            <v-model />
+                            Schriftfarbe
+                            <v-color-picker />
+                            <v-model />
+                        </v-col>
+                        <v-col cols="12" md="4">
+                            Logo hochladen
+                            <input type="file" @change="showImage" />
+                            <img :src="logo" alt="Image" />
+                            <v-btn color="primary" @click="onUpload">
+                                Hochladen
+                            </v-btn>
+                        </v-col>
+                    </v-row>
                 </v-container>
 
                 <br />
@@ -89,6 +115,7 @@ export default {
             switch3: false,
             // flag to set the visibility of the number of questions
             switch4: false,
+            switch5: false,
             valid: false,
             title: '',
             anonymityTypes: ['Anonym', 'Teilanonym', 'Nicht anonym'],
@@ -96,6 +123,7 @@ export default {
             titleRules: [(v) => !!v || 'Titel fehlt', (v) => v.length <= 10 || 'Name must be less than 10 characters'],
             // rules that assert that the anonymity attribute must be set.
             anonymityRules: [(v) => !!v || 'Anonymitätsgrad fehlt.'],
+            logo: null,
         }
     },
     methods: {
@@ -108,6 +136,19 @@ export default {
         // validates the form (so the button is only enabled when the inputs are correct
         validate() {
             this.$refs.form.validate()
+        },
+        // Shows the uploded logo
+        showImage(e) {
+            // supposed to show the logo as a preview
+            const image = e.target.files[0]
+            const reader = new FileReader()
+            reader.readAsDataURL(image)
+            reader.onload = (e) => {
+                this.logo = e.target.result
+            }
+        },
+        onUpload() {
+            // save logo somehow to put onto the participant page
         },
     },
 }
