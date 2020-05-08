@@ -9,10 +9,10 @@
                 </v-row>
                 <v-row no-gutters>
                     <v-textarea
+                        v-model="questionText"
                         label="Fragentext"
                         hint="Was soll den Umfrageteilnehmer gefragt werden?"
                         rows="1"
-                        v-model="questionText"
                     >
                     </v-textarea>
                 </v-row>
@@ -25,7 +25,7 @@
                     ></v-overflow-btn>
                 </v-row>
                 <v-row>
-                    <component v-bind:is="currentComponent"></component>
+                    <component :is="currentComponent"></component>
                 </v-row>
                 <v-row no-gutters>
                     <h1>*preview wenn fertig*</h1>
