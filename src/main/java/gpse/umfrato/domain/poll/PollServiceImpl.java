@@ -1,11 +1,13 @@
 package gpse.umfrato.domain.poll;
 
+import gpse.umfrato.domain.question.Question;
 import gpse.umfrato.web.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -39,8 +41,10 @@ class PollServiceImpl implements PollService {
     @Override
     public Poll createPoll(final String pollname, final String pollcreator, final LocalDateTime pollCreatedAt,
                            final LocalDateTime lastEditAt, final LocalDateTime activatedAt,
-                           final LocalDateTime deactivatedAt, final String anonymityStatus, final int pollStatus) {
+                           final LocalDateTime deactivatedAt, final String anonymityStatus, final int pollStatus,
+                           final List<Question> questions) {
         final Poll poll = new Poll(pollname);
+        poll.setQuestionList(questions);
 
         pollRepository.save(poll);
 

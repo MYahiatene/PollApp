@@ -81,4 +81,19 @@ public class Poll {
         this.pollname = pollName;
     }
 
+    public List<Question> getQuestionList() {
+        return questionList;
+    }
+
+    public void setQuestionList(List<Question> questionList) {
+        this.questionList = questionList;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 }

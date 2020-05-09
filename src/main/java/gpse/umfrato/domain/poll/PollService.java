@@ -1,6 +1,8 @@
 package gpse.umfrato.domain.poll;
 
 
+import gpse.umfrato.domain.question.Question;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -20,7 +22,8 @@ public interface PollService {
      */
     Poll createPoll(final String pollname, final String pollcreator, final LocalDateTime pollCreatedAt,
                     final LocalDateTime lastEditAt, final LocalDateTime activatedAt,
-                    final LocalDateTime deactivatedAt, final String anonymityStatus, final int pollStatus);
+                    final LocalDateTime deactivatedAt, final String anonymityStatus, final int pollStatus,
+                    final List<Question> questions);
 
     /**
      * This method returns a list with all polls.

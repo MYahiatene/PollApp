@@ -7,6 +7,7 @@ import gpse.umfrato.domain.poll.PollService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -32,7 +33,7 @@ public class PollController {
         try {
             pollService.createPoll(pollCmd.getPollname(), pollCmd.getPollcreator(), pollCmd.getPollCreatedAt(),
                 pollCmd.getLastEditAt(), pollCmd.getActivatedAt(), pollCmd.getDeactivatedAt(),
-                pollCmd.getAnonymityStatus(), pollCmd.getPollStatus());
+                pollCmd.getAnonymityStatus(), pollCmd.getPollStatus(), new ArrayList<>()); //arraylist vorübergehend
             return "Poll created!";
         } catch (BadRequestException e) {
             return "Poll creation failed!";
@@ -63,7 +64,6 @@ public class PollController {
     public Poll getPoll(/*@PathVariable("id") final String id*/ final @RequestBody PollCmd pollCmd) {
 
         return pollService.getPoll(pollCmd.getId());
-
     }
 
 

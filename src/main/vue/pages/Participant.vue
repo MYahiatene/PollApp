@@ -8,13 +8,14 @@
                         <v-card class="mx-auto">
                             <v-card-title>
                                 <!--the visibility of the number of questions depends on the poll configuration-->
-                                <div v-if="getVisibility">{{ question.id }}/{{ questions.length }}</div>
-                                {{ question.text }}
+                                <!--div v-if="getVisibility">{{ question.id }}/{{ questions.length }}</div-->
+                                {{ question.questionMessage }}
                             </v-card-title>
-                            <div v-if="question.type === 'textQuestion'">
+                            <!--div v-if="question.type === 'textQuestion'">
                                 <v-text-field label="Antwort"> </v-text-field>
-                            </div>
-                            <div v-else-if="question.type === 'choiceQuestion'">
+                            <div-->
+                            <v-text-field label="Antwort"> </v-text-field>
+                            <!--div v-else-if="question.type === 'choiceQuestion'">
                                 <v-list v-for="answer in question.answers" :key="answer.text">
                                     <v-checkbox class="ma-4" :label="answer.text"></v-checkbox>
                                 </v-list>
@@ -29,7 +30,7 @@
                                         <v-text-field></v-text-field>
                                     </v-col>
                                 </div>
-                            </div>
+                            </div-->
                         </v-card>
                     </v-list>
                 </v-col>
@@ -48,41 +49,12 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+// import { mapActions, mapGetters } from 'vuex'
 export default {
     name: 'Participant',
     data: () => ({
         enabled: false,
-        questions: [
-            {
-                id: '1',
-                text: ' Was für eine Frage?',
-                type: 'textQuestion',
-            },
-            {
-                id: '2',
-                text: ' Was für zwei Fragen?',
-                type: 'choiceQuestion',
-                ownAnswersAllowed: 'true',
-                answers: [
-                    {
-                        text: 'a',
-                    },
-                    {
-                        text: 'b',
-                    },
-                    {
-                        text: 'c',
-                    },
-                ],
-            },
-        ],
     }),
-    computed: {
-        ...mapGetters({
-            getVisibility: 'participant/isVisible',
-        }),
-    },
 }
 </script>
 

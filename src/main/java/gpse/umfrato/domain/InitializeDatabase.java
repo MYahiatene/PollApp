@@ -2,6 +2,7 @@ package gpse.umfrato.domain;
 
 import gpse.umfrato.domain.answer.AnswerService;
 import gpse.umfrato.domain.poll.PollService;
+import gpse.umfrato.domain.question.Question;
 import gpse.umfrato.domain.question.QuestionService;
 import gpse.umfrato.domain.user.UserService;
 import org.springframework.beans.factory.InitializingBean;
@@ -10,6 +11,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class InitializeDatabase implements InitializingBean {
@@ -47,9 +50,25 @@ public class InitializeDatabase implements InitializingBean {
     public void afterPropertiesSet() {
         try {
             userService.loadUserByUsername(TEST_USER);
-            pollService.createPoll("Erste Umfrage", TEST_USER, LocalDateTime.now(),
-                LocalDateTime.now(), LocalDateTime.now(), LocalDateTime.now(), "true", 0);
 
+            /*
+            erstmal nur mit Testdaten, da questionService Fehler auswirft
+            org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'initializeDatabase'
+            defined in file [/Users/annalena/IdeaProjects/gp-se-ss-2020-team5-1/target/classes/gpse/umfrato/domain/
+            InitializeDatabase.class]:
+            Invocation of init method failed; nested exception is org.hibernate.LazyInitializationException: failed to
+            lazily initialize a collection of role: gpse.umfrato.domain.poll.Poll.questionList, could not initialize
+            proxy - no Session
+             */
+            final List<Question> questions = new ArrayList<>(); // später import Arraylist löschen
+            questions.add(new Question("Wie ist das Wetter heute?"));
+            questions.add(new Question("Wie war dein Tag?"));
+            questions.add(new Question("Come ti chiami?"));
+
+            pollService.createPoll("Erste Umfrage", TEST_USER, LocalDateTime.now(),
+                LocalDateTime.now(), LocalDateTime.now(), LocalDateTime.now(), "true", 0, questions);
+            // questionService.addQuestion("Wie ist das Wetter heute?", "1");
+            // questionService.addQuestion("Wie scheiße ist Nuxt?", "1");
 
         } catch (UsernameNotFoundException ex) {
             userService.createUser(TEST_USER,

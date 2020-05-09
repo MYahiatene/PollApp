@@ -102,7 +102,7 @@
 </template>
 
 <script>
-// import { mapMutations } from 'vuex'
+import { mapMutations } from 'vuex'
 import DateTimePicker from '../components/dateTimePicker'
 export default {
     name: 'QuestionCreation',
@@ -127,12 +127,12 @@ export default {
         }
     },
     methods: {
-        /* ...mapMutations({
+        ...mapMutations({
             changeVisibility: 'questionCreation/changeVisible',
-        }), */
-        changeVisibility() {
+        }),
+        /* changeVisibility() {
             this.$store.commit('questionCreation/changeVisible')
-        },
+        }, */
         // validates the form (so the button is only enabled when the inputs are correct
         validate() {
             this.$refs.form.validate()

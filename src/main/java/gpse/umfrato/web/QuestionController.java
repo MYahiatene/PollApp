@@ -10,6 +10,7 @@ import gpse.umfrato.domain.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.logging.Logger;
 
 @RequestMapping(value = "/api", method = RequestMethod.GET)
@@ -82,4 +83,14 @@ public class QuestionController {
 
         return questionService.getQuestion(Long.valueOf(questionCmd.getId()));
     }
+
+    /**
+     * This methods gets all questions from a poll. For the first tests, it gets every question
+     * @return returns all Questions in the repository
+     */
+    @GetMapping("/questions")
+    public List<Question> getAllQuestions() {
+        return questionService.getAllQuestions();
+    }
+
 }
