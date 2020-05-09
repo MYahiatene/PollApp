@@ -1,7 +1,17 @@
+<!DOCTYPE html>
+
+<template>
+    <p>
+        {{ data }}
+    </p>
+</template>
+
 <script>
 import { Pie } from 'vue-chartjs'
 
 export default {
+    name: 'diagramView',
+    props: ['data'],
     extends: Pie,
     data: () => ({
         chartdata: {
@@ -24,6 +34,7 @@ export default {
                 },
             ],
         },
+
         options: {
             responsive: true,
             maintainAspectRatio: false,
@@ -39,10 +50,10 @@ export default {
         },
     }),
 
-    mounted() {
-        this.renderChart(this.chartdata, this.options)
-    },
+    // mounted() {
+    //     this.renderChart(this.data, this.options)
+    // },
 }
 </script>
 
-<style></style>
+<style scoped></style>
