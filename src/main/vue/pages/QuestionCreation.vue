@@ -84,7 +84,7 @@
                             Logo hochladen
                             <input type="file" @change="showImage" />
                             <img :src="logo" alt="Image" />
-                            <v-btn color="primary" @click="onUpload">
+                            <v-btn color="primary" @click="upload">
                                 Hochladen
                             </v-btn>
                         </v-col>
@@ -137,7 +137,7 @@ export default {
         validate() {
             this.$refs.form.validate()
         },
-        // Shows the uploded logo
+        // Shows the uploded logo for verification
         showImage(e) {
             // supposed to show the logo as a preview
             const image = e.target.files[0]
@@ -147,8 +147,9 @@ export default {
                 this.logo = e.target.result
             }
         },
-        onUpload() {
-            // save logo somehow to put onto the participant page
+        //saves the logo in the database of the poll
+        upload() {
+            // axios.post('/upload', {image}:avatar)
         },
     },
 }
