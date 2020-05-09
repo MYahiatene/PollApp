@@ -84,16 +84,13 @@
                             Logo hochladen
                             <input type="file" @change="showImage" />
                             <img :src="logo" alt="Image" />
-                            <v-btn color="primary" @click="upload">
-                                Hochladen
-                            </v-btn>
                         </v-col>
                     </v-row>
                 </v-container>
 
                 <br />
 
-                <v-btn color="primary" nuxt to="/QuestionOverview">
+                <v-btn color="primary" @click="savePoll" nuxt to="/QuestionOverview">
                     Erstellen
                 </v-btn>
             </v-form>
@@ -147,7 +144,7 @@ export default {
                 this.logo = e.target.result
             }
         },
-        //saves the logo in the database of the poll
+        // saves the logo in the database of the poll
         upload() {
             // axios.post('/upload', {image}:avatar)
         },
