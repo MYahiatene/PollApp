@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 @Data
 public class PollCmd {
 
-    private String id;
+    private String id; //shouldn't this b generated, so not be listed here?
 
     private String pollcreator;
 
@@ -20,6 +20,12 @@ public class PollCmd {
     private LocalDateTime deactivatedAt;
 
     private String anonymityStatus;
+
+    private int hexaBackground;
+
+    private int hexaFont;
+
+    private Blob logo;
 
     private String pollname;
 

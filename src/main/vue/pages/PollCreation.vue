@@ -12,7 +12,7 @@
                     <v-row>
                         <v-col cols="12" md="4">
                             <v-text-field
-                                v-model="title"
+                                v-model="poll.pollname"
                                 hint="Wie soll die Umfrage genannt werden?"
                                 :rules="titleRules"
                                 label="Titel"
@@ -23,6 +23,7 @@
                     <v-row no-gutters>
                         <v-col cols="12" md="4">
                             <v-overflow-btn
+                                v-model="poll.anonymityStatus"
                                 :items="anonymityTypes"
                                 placeholder="Anonymitätsgrad"
                                 :rules="anonymityRules"
@@ -35,7 +36,7 @@
 
                     <v-row v-if="switch1" no-gutters>
                         <v-col cols="12" md="4">
-                            <date-time-picker />
+                            <date-time-picker v-model="poll.activatedAt"/>
                         </v-col>
                     </v-row>
 
@@ -44,7 +45,7 @@
                     </v-row>
                     <v-row v-if="switch2" no-gutters>
                         <v-col cols="12" md="4">
-                            <date-time-picker />
+                            <date-time-picker v-model="poll.deactivatedAt"/>
                         </v-col>
                     </v-row>
 
@@ -71,13 +72,13 @@
                         <v-col cols="12" md="4">
                             <v-model />
                             Hintergrundfarbe
-                            <v-color-picker />
+                            <v-color-picker @change="backgroundColor"/>
                             <v-model />
                         </v-col>
                         <v-col cols="12" md="4">
                             <v-model />
                             Schriftfarbe
-                            <v-color-picker />
+                            <v-color-picker @change="fontColor"/>
                             <v-model />
                         </v-col>
                         <v-col cols="12" md="4">
@@ -90,7 +91,7 @@
 
                 <br />
 
-                <v-btn color="primary" @click="savePoll" nuxt to="/QuestionOverview">
+                <v-btn color="primary" nuxt to="/QuestionOverview" @click="savePoll">
                     Erstellen
                 </v-btn>
             </v-form>
@@ -99,13 +100,24 @@
 </template>
 
 <script>
-import { mapMutations } from 'vuex'
-import DateTimePicker from '../components/dateTimePicker'
-export default {
+    import {mapMutations, mapActions} from 'vuex'
+    import DateTimePicker from '../components/dateTimePicker'
+
+    export default {
     name: 'QuestionCreation',
     components: { DateTimePicker },
     data() {
         return {
+            poll: {
+                pollname: "",
+                anonymityStatus: null,
+                activatedAt: null,
+                deactivatedAt: null,
+                logo: null,
+                hexaBackground: null,
+                hexaFont: null,
+                // flag-settings for visbility of numbers of questions and allowing back/forth should also be added
+            },
             switch1: false,
             switch2: false,
             // flag to set the attribute of changing the sites as a participant
@@ -114,23 +126,21 @@ export default {
             switch4: false,
             switch5: false,
             valid: false,
-            title: '',
             anonymityTypes: ['Anonym', 'Teilanonym', 'Nicht anonym'],
             // rules that assert that the title attribute must be set and that the title length is below 10 characters (that part can be changed)
-            titleRules: [(v) => !!v || 'Titel fehlt', (v) => v.length <= 10 || 'Name must be less than 10 characters'],
+            titleRules: [(v) => !!v || 'Titel fehlt', (v) => v.length <= 20 || 'Name must be less than 20 characters'],
             // rules that assert that the anonymity attribute must be set.
             anonymityRules: [(v) => !!v || 'Anonymitätsgrad fehlt.'],
-            logo: null,
         }
     },
     methods: {
         ...mapMutations({
             changeVisibility: 'questionCreation/changeVisible',
         }),
-        /* changeVisibility() {
-            this.$store.commit('questionCreation/changeVisible')
-        }, */
-        // validates the form (so the button is only enabled when the inputs are correct
+        ...mapActions([
+            'savePoll'
+        ]),
+        // validates the form (so the button is only enabled when the inputs are correct)
         validate() {
             this.$refs.form.validate()
         },
@@ -144,10 +154,16 @@ export default {
                 this.logo = e.target.result
             }
         },
-        // saves the logo in the database of the poll
-        upload() {
-            // axios.post('/upload', {image}:avatar)
+        // saves the poll in the database
+        save() {
+            this.savePoll(this.poll) // make savePoll function in store
         },
+        backgroundColor(e) {
+            this.hexaBackground = e.payload[0].hexa
+        },
+        fontColor(e) {
+            this.hexaFont = e.payload[0].hexa
+        }
     },
 }
 </script>

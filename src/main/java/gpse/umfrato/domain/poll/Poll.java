@@ -57,6 +57,22 @@ public class Poll {
     private String anonymityStatus;
 
     /**
+     * This attribute represents the chosen background color as hexa.
+     */
+    private int hexaBackground;
+
+    /**
+     * This attribute represents the chosen font color as hexa.
+     */
+    private int hexaFont;
+
+    /**
+     * This attribute represents the uploades logo.
+     */
+    private Blob logo;
+
+
+    /**
      * This attribute represents the name of the poll.
      */
     private String pollname;
