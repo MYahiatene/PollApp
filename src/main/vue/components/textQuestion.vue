@@ -45,7 +45,7 @@
 
 <script>
 export default {
-    name: 'textQuestion',
+    name: 'TextQuestion',
     data() {
         return {
             enterSwitch: false,
