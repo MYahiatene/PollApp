@@ -49,12 +49,30 @@
 </template>
 
 <script>
-// import { mapActions, mapGetters } from 'vuex'
+import { mapActions } from 'vuex'
+// import axios from 'axios'
+
 export default {
     name: 'Participant',
+    /* async fetch() {
+        this.questions = await this.$axios.get('/api/questions')
+    }, */
+    /* async asyncData() {
+        const { questions } = await axios.get('/api/questions')
+        // this.commit('setQuestions', questions)
+
+        return { questions }
+    }, */
     data: () => ({
         enabled: false,
+        questions: [],
     }),
+    methods: {
+        ...mapActions(['showPoll']),
+    },
+    created() {
+        this.showPoll()
+    },
 }
 </script>
 

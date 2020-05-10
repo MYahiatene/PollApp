@@ -147,7 +147,7 @@ export default {
                 this.logo = e.target.result
             }
         },
-        //saves the logo in the database of the poll
+        // saves the logo in the database of the poll
         upload() {
             // axios.post('/upload', {image}:avatar)
         },
