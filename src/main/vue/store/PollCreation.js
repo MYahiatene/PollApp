@@ -12,18 +12,12 @@ export const mutations = {
         // this.state.articles.push(article)
         this.poll.push(poll)
 
-        //no idea what I'm doing here...
+        // no idea what I'm doing here...
     },
-}
-actions: {
-    savePoll({commit}, poll) { // TODO: Find out what's wrong here
-        return new Promise((resolve, reject) => {
-            api.poll.save(article).then(res => {    // using save() from api.poll
-                commit('savePoll', res.data)
-                resolve()
-            }).catch(() => {
-                reject()
-            })
-        })
+} /*
+export const actions: {
+savePoll(){
+    this.commit('savePoll','polltest') etc.
+} })
     },
-}
+} */

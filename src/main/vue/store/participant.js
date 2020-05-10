@@ -1,7 +1,7 @@
 // mport axios from 'axios'
 export const state = () => ({
     // visibility: false,
-    poll: null,
+    poll: ['test'],
     // questions: [],
 })
 /* export const getters = {
@@ -11,24 +11,12 @@ export const state = () => ({
 } */
 export const mutations = {
     setPoll: (state, poll) => {
-        this.state.poll = poll
+        state.poll.push(poll)
     },
 }
 export const actions = {
-    /* async showPoll (commit){
-        return new Promise((resolve, reject)) =>{
-            api.participant.getPoll().then(res => {
-                commit('setPoll', res.data)
-                resolve()
-            }).catch(() => {
-                commit('setPoll', null)
-                reject()
-            })
-        }
-    } */
-    async showPoll() {
-        const { poll } = await this.$axios.$get('/api/participant')
-        this.commit('setPoll', poll)
-        return { poll }
+    async showPoll({ commit }) {
+        const poll = await this.$axios.$get('api/participant')
+        commit('setPoll', poll)
     },
 }

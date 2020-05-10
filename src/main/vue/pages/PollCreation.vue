@@ -36,7 +36,7 @@
 
                     <v-row v-if="switch1" no-gutters>
                         <v-col cols="12" md="4">
-                            <date-time-picker v-model="poll.activatedAt"/>
+                            <date-time-picker v-model="poll.activatedAt" />
                         </v-col>
                     </v-row>
 
@@ -45,7 +45,7 @@
                     </v-row>
                     <v-row v-if="switch2" no-gutters>
                         <v-col cols="12" md="4">
-                            <date-time-picker v-model="poll.deactivatedAt"/>
+                            <date-time-picker v-model="poll.deactivatedAt" />
                         </v-col>
                     </v-row>
 
@@ -72,13 +72,13 @@
                         <v-col cols="12" md="4">
                             <v-model />
                             Hintergrundfarbe
-                            <v-color-picker @change="backgroundColor"/>
+                            <v-color-picker @change="backgroundColor" />
                             <v-model />
                         </v-col>
                         <v-col cols="12" md="4">
                             <v-model />
                             Schriftfarbe
-                            <v-color-picker @change="fontColor"/>
+                            <v-color-picker @change="fontColor" />
                             <v-model />
                         </v-col>
                         <v-col cols="12" md="4">
@@ -91,7 +91,7 @@
 
                 <br />
 
-                <v-btn color="primary" nuxt to="/QuestionOverview" @click="savePoll">
+                <v-btn color="primary" nuxt to="/PollEditing" @click="savePoll">
                     Erstellen
                 </v-btn>
             </v-form>
@@ -100,16 +100,16 @@
 </template>
 
 <script>
-    import {mapMutations, mapActions} from 'vuex'
-    import DateTimePicker from '../components/dateTimePicker'
+import { mapMutations, mapActions } from 'vuex'
+import DateTimePicker from '../components/dateTimePicker'
 
-    export default {
+export default {
     name: 'QuestionCreation',
     components: { DateTimePicker },
     data() {
         return {
             poll: {
-                pollname: "",
+                pollname: '',
                 anonymityStatus: null,
                 activatedAt: null,
                 deactivatedAt: null,
@@ -137,9 +137,7 @@
         ...mapMutations({
             changeVisibility: 'questionCreation/changeVisible',
         }),
-        ...mapActions([
-            'savePoll'
-        ]),
+        ...mapActions(['savePoll']),
         // validates the form (so the button is only enabled when the inputs are correct)
         validate() {
             this.$refs.form.validate()
@@ -163,7 +161,7 @@
         },
         fontColor(e) {
             this.hexaFont = e.payload[0].hexa
-        }
+        },
     },
 }
 </script>

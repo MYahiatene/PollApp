@@ -14,7 +14,7 @@
                             <!--div v-if="question.type === 'textQuestion'">
                                 <v-text-field label="Antwort"> </v-text-field>
                             <div-->
-                            <v-text-field label="Antwort"> </v-text-field>
+                            <v-text-field label="Antwort"></v-text-field>
                             <!--div v-else-if="question.type === 'choiceQuestion'">
                                 <v-list v-for="answer in question.answers" :key="answer.text">
                                     <v-checkbox class="ma-4" :label="answer.text"></v-checkbox>
@@ -56,8 +56,8 @@ export default {
     name: 'Participant',
     /* async fetch() {
         this.questions = await this.$axios.get('/api/questions')
-    }, */
-    /* async asyncData() {
+    }, /
+    / async asyncData() {
         const { questions } = await axios.get('/api/questions')
         // this.commit('setQuestions', questions)
 
@@ -67,11 +67,14 @@ export default {
         enabled: false,
         questions: [],
     }),
-    methods: {
-        ...mapActions(['showPoll']),
-    },
     created() {
         this.showPoll()
+    },
+    methods: {
+        showPoll() {
+            this.$store.dispatch('participant/showPoll')
+        },
+        ...mapActions({ showPoll: 'participant/showPoll' }),
     },
 }
 </script>
