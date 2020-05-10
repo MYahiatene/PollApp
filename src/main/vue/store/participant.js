@@ -14,7 +14,7 @@ export const mutations = {
         this.state.poll = poll
     },
 }
-const actions = {
+export const actions = {
     /* async showPoll (commit){
         return new Promise((resolve, reject)) =>{
             api.participant.getPoll().then(res => {
