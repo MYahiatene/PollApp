@@ -1,12 +1,12 @@
 <template>
     <v-container grid-list-md text-xs-center>
-        <v-layout row wrap>
+        <v-layout column wrap>
             <div class="row">
                 <div class="col-12">
                     <draggable
                         v-model="rows"
                         tag="v-layout"
-                        class="row wrap fill-height align-center sortable-list"
+                        class="column wrap fill-height fill-width align-center sortable-list"
                         style="background: grey;"
                     >
                         <v-flex
@@ -21,7 +21,7 @@
                                 :list="row.items"
                                 tag="v-layout"
                                 :group="{ name: 'row' }"
-                                class="row wrap justify-space-around"
+                                class="column wrap justify-space-around"
                             >
                                 <v-flex v-for="item in row.items" :key="item.title" xs4 pa-3 class="row-v">
                                     <!--xs4 pa-3-->
@@ -89,10 +89,10 @@ export default {
 .buttons {
     margin-top: 35px;
 }
-.row-v {
+/*.row-v {
     height: 150px;
     width: 200px;
-}
+}*/
 .ghost {
     opacity: 0.5;
     background: #c8ebfb;

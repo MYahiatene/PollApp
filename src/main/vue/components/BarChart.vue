@@ -1,8 +1,8 @@
 <script>
-import { Pie } from 'vue-chartjs'
+import { Bar } from 'vue-chartjs'
 
 export default {
-    extends: Pie,
+    extends: Bar,
     data: () => ({
         chartdata: {
             labels: ['Ja', 'Nein', 'Enthaltung'],

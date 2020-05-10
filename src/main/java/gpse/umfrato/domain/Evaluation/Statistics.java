@@ -3,14 +3,19 @@ package gpse.umfrato.domain.Evaluation;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
-import java.util.List;
 
 public class Statistics {
+
+    public static DiagramData generateDiagram(List<StatisticsBlock> blocks)
+    {
+        StatisticsData sd = new StatisticsData();//Datenbank
+        for(StatisticsBlock sb:blocks)
+        {
+            sb.work(sd);
+        }
+        return sd.toDiagramData();
+    }
 
     /**
      * This method takes a absolute value and converts it to a relative value.
@@ -18,7 +23,7 @@ public class Statistics {
      * @param totalNumber total number of values.
      * @return relative value.
      */
-    public static double normalizeOneValue (double value, double totalNumber) throws ArithmeticException {
+    private static double normalizeOneValue (double value, double totalNumber) throws ArithmeticException {
         if(totalNumber<value){
             throw new ArithmeticException("totalNumber must be larger than value!");
         }
@@ -31,8 +36,7 @@ public class Statistics {
      * @param values all absolute values that were given in a poll.
      * @return a list of relative values.
      */
-
-    public static List<Double> normalizeAllDoubleValues(List< Double> values){
+    private static List<Double> normalizeAllDoubleValues(List< Double> values){
         double totalNumber = 0;
         for (int i = 0; i < values.size(); i++) {
             totalNumber += values.get(i);
@@ -59,8 +63,7 @@ public class Statistics {
      * @param values a list of absolute integer values.
      * @return a list of corresponding relative double values.
      */
-
-    public static List<Double> normalizeAllIntegerValues(List<Integer> values){
+    private static List<Double> normalizeAllIntegerValues(List<Integer> values){
 
         List<Double> listOfDoubleValues = new ArrayList<>();
 
@@ -76,10 +79,9 @@ public class Statistics {
      * @param allValues absolute values.
      * @return the highest value.
      */
+    private static double modus(List<Double> allValues){
 
-    public static double modus(List<Double> allValues){
-
-        double currentHighest = 0.0;
+        double currentHighest = allValues.get(0);
 
         for (int i = 0; i < allValues.size(); i++) {
             if(allValues.get(i)>currentHighest){
@@ -121,7 +123,7 @@ public class Statistics {
      * @param p the parameter to calculate the quantile for example p=0.5 equals the median and p=1 equals the maximum.
      * @return the value corresponding to the p.
      **/
-    public static Double pQuantile(List<Double> values, double p)
+    private static Double pQuantile(List<Double> values, double p)
     {
         if(values.isEmpty())
         {
@@ -155,7 +157,7 @@ public class Statistics {
     * @param values list of values to calculate the median from.
     * @return will return null for empty lists, otherwise will return the median of given list of values.
     */
-    public static Double median(List<Double> values)
+    private static Double median(List<Double> values)
     {
         return pQuantile(values, 0.5);
     }
@@ -167,7 +169,7 @@ public class Statistics {
      * @param <T> generic type of items used in values.
      * @return
      */
-    public <T extends Number> double cumulate(List<T> values, T threshold){ //Kumulierte Häufigkeit
+    private <T extends Number> double cumulate(List<T> values, T threshold){ //Kumulierte Häufigkeit
         double cumulated = 0;
         Iterator<T> listIterator = values.listIterator();
         while(listIterator.hasNext()){
