@@ -25,7 +25,22 @@
                             >
                                 <v-flex v-for="item in row.items" :key="item.title" xs4 pa-3 class="row-v">
                                     <!--xs4 pa-3-->
-                                    <v-card style="height: 100px;">{{ item.title }}</v-card>
+                                    <v-card>
+                                        <v-overflow-btn
+                                            v-model="questionSet"
+                                            class="my-2"
+                                            :items="questions2"
+                                            label="Frage"
+                                            @change="changeQuestionID()"
+                                        ></v-overflow-btn>
+                                        <v-overflow-btn
+                                            class="my-2"
+                                            :items="answerList"
+                                            label="Antwort"
+                                        ></v-overflow-btn>
+
+                                        <v-list-item-title>{{ item.title }}</v-list-item-title>
+                                    </v-card>
                                 </v-flex>
                             </draggable>
                         </v-flex>
@@ -34,6 +49,7 @@
 
                 <!--<rawDisplayer class="col-3" :value="rows" title="List" />-->
             </div>
+            <v-btn color="primary" @click="addFilter()">Filter hinzufügen</v-btn>
         </v-layout>
     </v-container>
 </template>
@@ -43,6 +59,8 @@ import draggable from 'vuedraggable'
 import 'vuetify/dist/vuetify.min.css'
 
 export default {
+    questionSet: '',
+    answerList: [],
     name: 'Functional',
     display: 'Functional third party',
     order: 17,
@@ -51,13 +69,13 @@ export default {
     },
     data() {
         return {
-            enabled: true,
+            currentIndex: 4,
             rows: [
                 {
                     index: 1,
                     items: [
                         {
-                            title: 'Männlich, Alter > 30',
+                            title: 'Geschlecht',
                         },
                     ],
                 },
@@ -65,10 +83,7 @@ export default {
                     index: 2,
                     items: [
                         {
-                            title: 'Weiblich, Alter < 20',
-                        },
-                        {
-                            title: 'Frage 2: Ja',
+                            title: 'Alter',
                         },
                     ],
                 },
@@ -76,11 +91,29 @@ export default {
                     index: 3,
                     items: [
                         {
-                            title: 'Frage 1: Nein',
+                            title: 'Meinung über Karl Marx',
                         },
                     ],
                 },
             ],
+            questions: [
+                { title: 'Frage 1', answers: ['Ja', 'Egal'] },
+                { title: 'Frage 2', answers: ['Alt', 'Vielleicht'] },
+                { title: 'Frage 3', answers: ['Gut', 'Sehr gut'] },
+            ],
+            questions2: ['Frage1', 'Frage2', 'Frage3'],
+            enabled: true,
+            changeQuestionID() {
+                this.answerList = this.questions[this.questions2.indexOf(this.questionSet)].answers
+                this.$forceUpdate()
+            },
+            addFilter() {
+                this.rows.push({ index: this.currentIndex, items: [{ title: 'Theo Waigel-Augenbrauen?' }] })
+                this.questions.push({ title: 'Frage'.concat(this.currentIndex), answers: ['Ja', 'Egal'] })
+                this.questions2.push('Frage'.concat(this.currentIndex))
+                this.currentIndex++
+                this.$forceUpdate()
+            },
         }
     },
 }
