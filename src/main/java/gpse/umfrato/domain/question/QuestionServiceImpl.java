@@ -122,7 +122,7 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     public List<Question> getQuestionsFromGroup(long groupId) {
-        return questionRepository.findQuestionByGroup_Id(groupId);
+        return questionRepository.findQuestionByGroupId(groupId);
     }
 
 
