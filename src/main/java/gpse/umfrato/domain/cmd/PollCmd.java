@@ -2,6 +2,7 @@ package gpse.umfrato.domain.cmd;
 
 import lombok.Data;
 
+import java.sql.Blob;
 import java.time.LocalDateTime;
 
 @Data
