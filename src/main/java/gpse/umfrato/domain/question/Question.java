@@ -2,6 +2,7 @@ package gpse.umfrato.domain.question;
 
 import gpse.umfrato.domain.answer.Answer;
 import gpse.umfrato.domain.poll.Poll;
+import gpse.umfrato.domain.pollGroup.Group;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -32,10 +33,10 @@ public class Question {
     private String questionMessage;
 
     /**
-     * This attribute represents the poll where the question is assigned.
+     * This attribute represents the group where the question is assigned.
      */
     @ManyToOne(fetch = FetchType.LAZY)
-    private Poll poll;
+    private Group group;
 
     /**
      * This attribute represents a list with all answers for this question.

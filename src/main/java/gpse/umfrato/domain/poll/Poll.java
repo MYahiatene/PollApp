@@ -1,5 +1,6 @@
 package gpse.umfrato.domain.poll;
 
+import gpse.umfrato.domain.pollGroup.Group;
 import gpse.umfrato.domain.question.Question;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -27,12 +28,12 @@ public class Poll {
     /**
      * This attribute represents the creator of the poll.
      */
-    private String pollcreator;
+    private String pollCreator;
 
     /**
      * This attribute represents the date when the poll was created.
      */
-    private LocalDateTime pollCreatedAt;
+    private LocalDateTime creationDate;
 
     /**
      * This attribute represents the date when the poll was edited the last time.
@@ -43,12 +44,12 @@ public class Poll {
      * This attribute represents the date when the poll was activated.
      */
     // use Instant instead , cause of time zone
-    private LocalDateTime activatedAt;
+    private LocalDateTime activatedDate;
 
     /**
      * This attribute represents the date when the poll was deactivated.
      */
-    private LocalDateTime deactivatedAt;
+    private LocalDateTime deactivatedDate;
 
     /**
      * This attribute represents the status of the anonymity if it is anonymous, part-anonymous
@@ -66,11 +67,10 @@ public class Poll {
      */
     private int pollStatus;
 
-    /**
-     * This attribute represents a question list with all questions of this poll.
-     */
+
     @OneToMany(cascade = CascadeType.ALL)
-    private List<Question> questionList = new ArrayList<>();
+    private List<Group> groupList = new ArrayList<>();
+
 
     /**
      * This constructor receives a poll name and saves in the poll object.
@@ -79,6 +79,7 @@ public class Poll {
      */
     public Poll(final String pollName) {
         this.pollname = pollName;
+        this.groupList.add(new Group("Keine Gruppe"));
     }
 
 }

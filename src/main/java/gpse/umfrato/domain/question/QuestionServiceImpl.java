@@ -3,11 +3,14 @@ package gpse.umfrato.domain.question;
 import gpse.umfrato.domain.poll.Poll;
 import gpse.umfrato.domain.poll.PollRepository;
 import gpse.umfrato.domain.poll.PollService;
+import gpse.umfrato.domain.pollGroup.Group;
+import gpse.umfrato.domain.pollGroup.GroupRepository;
 import gpse.umfrato.web.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -28,6 +31,8 @@ public class QuestionServiceImpl implements QuestionService {
      */
     private final PollService pollService;
 
+    private final GroupRepository groupRepository;
+
     /**
      * This class constructor initializes the poll-, question repository and the poll service.
      *
@@ -37,27 +42,27 @@ public class QuestionServiceImpl implements QuestionService {
      */
     @Autowired
     public QuestionServiceImpl(final PollRepository pollRepository, final QuestionRepository questionRepository,
-                               final PollService pollService) {
+                               final PollService pollService, final GroupRepository groupRepository) {
         this.pollRepository = pollRepository;
         this.questionRepository = questionRepository;
         this.pollService = pollService;
+        this.groupRepository = groupRepository;
     }
 
     /**
      * This method creates a question for a poll.
      *
      * @param questionMessage the given question
-     * @param pollId          the id of the poll
+     * @param groupId         the id of the group
      * @return the question which is created
      */
     @Override
-    public Question addQuestion(final String questionMessage, final String pollId) {
-        final Poll poll = pollRepository.findById(Long.valueOf(pollId)).orElseThrow(() ->
+    public Question addQuestion(final String questionMessage, final long groupId) {
+        final Group group = groupRepository.findById(groupId).orElseThrow(() ->
             new EntityNotFoundException());
         final Question question = new Question(questionMessage);
-        question.setPoll(poll);
-        poll.getQuestionList().add(question);
-        pollRepository.save(poll);
+        question.setGroup(group);
+        group.getQuestionList().add(question);
         return question;
     }
 
@@ -69,11 +74,12 @@ public class QuestionServiceImpl implements QuestionService {
      */
     @Override
     public void removeQuestion(final String pollId, final String questionId) {
-        final Poll poll = pollRepository.findById(Long.valueOf(pollId)).orElseThrow(() ->
-            new EntityNotFoundException());
-        final List<Question> questionList = poll.getQuestionList();
-        questionList.removeIf(obj -> obj.getId() == Long.valueOf(questionId));
-        pollRepository.save(poll);
+        try {
+            questionRepository.deleteById(Long.valueOf(questionId));
+
+        } catch (EntityNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -97,15 +103,26 @@ public class QuestionServiceImpl implements QuestionService {
      * @return all questions from a poll
      */
     @Override
-    public List<Question> getAllQuestions() {
+    public List<Question> getAllQuestions(final long pollId) {
+        Poll poll = pollRepository.findById(pollId).orElseThrow(() -> new EntityNotFoundException());
+        final List<Group> groups = poll.getGroupList();
+        List<Question> allQuestions = new ArrayList<>();
 
-        final List<Question> questions = questionRepository.findAll();
-
-        if (questions.isEmpty()) {
+        for (Group g : groups) {
+            for (Question q : g.getQuestionList()) {
+                allQuestions.add(q);
+            }
+        }
+        if (allQuestions.isEmpty()) {
             throw new BadRequestException();
         }
 
-        return questions;
+        return allQuestions;
+    }
+
+    @Override
+    public List<Question> getQuestionsFromGroup(long groupId) {
+        return questionRepository.findQuestionByGroup_Id(groupId);
     }
 
 

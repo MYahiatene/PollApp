@@ -10,7 +10,7 @@ public interface QuestionService {
      * @param pollId          the id of the poll
      * @return the question which is created
      */
-    Question addQuestion(String questionMessage, String pollId);
+    Question addQuestion(String questionMessage, long pollId);
 
     /**
      * This method removes a selected question.
@@ -33,5 +33,7 @@ public interface QuestionService {
      *
      * @return all questions from a poll
      */
-    List<Question> getAllQuestions();
+    List<Question> getAllQuestions(final long pollId);
+
+    List<Question> getQuestionsFromGroup(final long groupId);
 }
