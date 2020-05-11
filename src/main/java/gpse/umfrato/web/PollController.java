@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-import java.awt.*;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -29,11 +28,11 @@ public class PollController {
         this.pollService = pollService;
     }
 
+    @CrossOrigin
     @PostMapping(value = "/createpoll",produces = MediaType.APPLICATION_JSON_VALUE)
     public String createPoll(final @RequestBody PollCmd pollCmd) {
         try {
-            pollService.createPoll(pollCmd.getPollname(), pollCmd.getPollcreator(), pollCmd.getPollCreatedAt(),
-                pollCmd.getLastEditAt(), pollCmd.getActivatedAt(), pollCmd.getDeactivatedAt(),
+            pollService.createPoll(pollCmd.getPollname(), pollCmd.getPollcreator(),
                 pollCmd.getAnonymityStatus(), pollCmd.getPollStatus());
             return "Poll created!";
         } catch (BadRequestException e) {

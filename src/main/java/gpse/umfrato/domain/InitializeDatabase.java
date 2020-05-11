@@ -9,8 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-
 @Service
 public class InitializeDatabase implements InitializingBean {
 
@@ -47,8 +45,7 @@ public class InitializeDatabase implements InitializingBean {
     public void afterPropertiesSet() {
         try {
             userService.loadUserByUsername(TEST_USER);
-            pollService.createPoll("Erste Umfrage", TEST_USER, LocalDateTime.now(),
-                LocalDateTime.now(), LocalDateTime.now(), LocalDateTime.now(), "true", 0);
+            pollService.createPoll("Erste Umfrage", TEST_USER, "true", 0);
 
 
         } catch (UsernameNotFoundException ex) {

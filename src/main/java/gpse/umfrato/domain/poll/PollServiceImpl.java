@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -28,18 +27,12 @@ class PollServiceImpl implements PollService {
      *
      * @param pollname        name of the poll
      * @param pollcreator     name of the creator of the poll
-     * @param pollCreatedAt   date when the poll was created
-     * @param lastEditAt      date when the poll was last edit
-     * @param activatedAt     date when the poll was activated
-     * @param deactivatedAt   date when the poll was deactivated
      * @param anonymityStatus status of the poll if it is anonymous, part anonymous and non anonymous
      * @param pollStatus      status of the poll if it is activated or deactivated
      * @return the created poll
      */
     @Override
-    public Poll createPoll(final String pollname, final String pollcreator, final LocalDateTime pollCreatedAt,
-                           final LocalDateTime lastEditAt, final LocalDateTime activatedAt,
-                           final LocalDateTime deactivatedAt, final String anonymityStatus, final int pollStatus) {
+    public Poll createPoll(final String pollname, final String pollcreator,final String anonymityStatus, final int pollStatus) {
         final Poll poll = new Poll(pollname);
 
         pollRepository.save(poll);
