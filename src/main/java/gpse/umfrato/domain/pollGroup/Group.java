@@ -20,7 +20,7 @@ public class Group {
      */
     @Id
     @GeneratedValue
-    private Long id;
+    private String id;
 
     private String groupName;
 

@@ -7,10 +7,11 @@ public interface QuestionService {
      * This method creates a question for a poll.
      *
      * @param questionMessage the given question
-     * @param pollId          the id of the poll
      * @return the question which is created
      */
-    Question addQuestion(String questionMessage, long pollId);
+    Question addQuestion(final String questionMessage, final long pollId,
+                         List<String> answerPossibilities,
+                         String questionType);
 
     /**
      * This method removes a selected question.

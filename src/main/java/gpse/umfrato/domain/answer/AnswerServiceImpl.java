@@ -34,13 +34,12 @@ public class AnswerServiceImpl implements AnswerService {
      * @return the given answer
      */
     @Override
-    public Answer addAnswer(final String message, final String questionId, final String answerType, final String
+    public Answer giveAnswer(final String message, final String questionId, final String answerType, final String
         username) {
         final Question question =
             questionRepository.findById(Long.valueOf(questionId)).orElseThrow(() -> new EntityNotFoundException());
-        final Answer answer = new Answer(message, questionId, answerType, username);
-        question.getAnswerList().add(answer);
-        questionRepository.save(question);
+        final Answer answer = new Answer(message, questionId, username);
+        question.getGivenAnswers().add(answer);
         return answer;
     }
 
@@ -54,9 +53,8 @@ public class AnswerServiceImpl implements AnswerService {
     public void deleteAnswer(final String questionId, final String answerId) {
         final Question question =
             questionRepository.findById(Long.valueOf(questionId)).orElseThrow(() -> new EntityNotFoundException());
-        final List<Answer> answerList = question.getAnswerList();
+        final List<Answer> answerList = question.getGivenAnswers();
         answerList.removeIf(obj -> obj.getId() == Long.valueOf(answerId));
-        questionRepository.save(question);
     }
 
     /**
@@ -70,7 +68,7 @@ public class AnswerServiceImpl implements AnswerService {
         final Question question = questionRepository.findById(answerRepository.findById(answerId).orElseThrow(() ->
             new EntityNotFoundException()).getQuestionId()).orElseThrow(() -> new EntityNotFoundException());
 
-        final List<Answer> answerList = question.getAnswerList();
+        final List<Answer> answerList = question.getGivenAnswers();
 
         return answerList.stream().filter(o -> o.getId() == answerId).findFirst().get();
     }
@@ -84,7 +82,7 @@ public class AnswerServiceImpl implements AnswerService {
     @Override
     public List<Answer> getAllAnswers(final String questionId) {
         final List<Answer> answers = questionRepository.findById(Long.valueOf(questionId)).orElseThrow(() -> new
-            EntityNotFoundException()).getAnswerList();
+            EntityNotFoundException()).getGivenAnswers();
 
         return answers;
     }

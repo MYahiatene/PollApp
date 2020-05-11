@@ -49,20 +49,20 @@ public class QuestionServiceImpl implements QuestionService {
         this.groupRepository = groupRepository;
     }
 
+
     /**
      * This method creates a question for a poll.
      *
      * @param questionMessage the given question
-     * @param groupId         the id of the group
      * @return the question which is created
      */
     @Override
-    public Question addQuestion(final String questionMessage, final long groupId) {
-        final Group group = groupRepository.findById(groupId).orElseThrow(() ->
-            new EntityNotFoundException());
-        final Question question = new Question(questionMessage);
-        question.setGroup(group);
-        group.getQuestionList().add(question);
+    public Question addQuestion(final String questionMessage, final long pollId,
+                                List<String> answerPossibilities,
+                                String questionType) {
+        final Question question = new Question(questionMessage,answerPossibilities,questionType);
+        pollRepository.findById(pollId).get().getGroupList().get(0).getQuestionList().add(question);
+        question.setGroup(pollRepository.findById(pollId).get().getGroupList().get(0));
         return question;
     }
 

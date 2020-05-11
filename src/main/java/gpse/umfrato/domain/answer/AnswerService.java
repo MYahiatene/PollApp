@@ -12,7 +12,8 @@ public interface AnswerService {
      * @param username   name of the user creating the answer
      * @return the given answer
      */
-    Answer addAnswer(final String message, final String questionId, final String answerType, final String username);
+    public Answer giveAnswer(final String message, final String questionId, final String answerType, final String
+        username);
 
     /**
      * This method deletes an selected answer.

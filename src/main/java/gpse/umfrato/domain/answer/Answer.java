@@ -20,10 +20,6 @@ public class Answer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    /**
-     * This attribute represents the type of answer (dropdown, text field, ...).
-     */
-    private String answerType;
 
     /**
      * This attribute represents the message of the answer.
@@ -46,13 +42,11 @@ public class Answer {
      *
      * @param message    the answer message
      * @param questionId the question id where the answer is assigned
-     * @param answerType the type of answer (dropdown, text field, ..)
      * @param username   the username of the user who created the answer
      */
-    public Answer(final String message, final String questionId, final String answerType, final String username) {
+    public Answer(final String message, final String questionId, final String username) {
         this.answerMessage = message;
         this.username = username;
-        this.answerType = answerType;
         this.questionId = Long.valueOf(questionId);
     }
 

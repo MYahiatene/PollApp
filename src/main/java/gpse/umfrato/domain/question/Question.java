@@ -1,7 +1,6 @@
 package gpse.umfrato.domain.question;
 
 import gpse.umfrato.domain.answer.Answer;
-import gpse.umfrato.domain.poll.Poll;
 import gpse.umfrato.domain.pollGroup.Group;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -32,26 +31,43 @@ public class Question {
     @Lob
     private String questionMessage;
 
+    @ElementCollection(fetch = FetchType.EAGER)
+    private List<String> answerPossibilities;
+
+
     /**
      * This attribute represents the group where the question is assigned.
      */
     @ManyToOne(fetch = FetchType.LAZY)
     private Group group;
 
+
+    /**
+     * This attribute represents the type of question (dropdown, text field, ...).
+     */
+    private String questionType;
+
     /**
      * This attribute represents a list with all answers for this question.
      */
     @OneToMany(cascade = CascadeType.ALL)
-    private List<Answer> answerList;
+    private List<Answer> givenAnswers;
+
+    private int numberOfPossibleAnswers;
 
     /**
      * This constructor receives a question message and saves in the question object.
      *
      * @param question the question message which is given
      */
-    public Question(final String question) {
+
+
+    public Question(final String question, List<String> answerPossibilities, String questionType) {
         this.questionMessage = question;
+        this.answerPossibilities = answerPossibilities;
+        this.questionType = questionType;
     }
 
 
 }
+
