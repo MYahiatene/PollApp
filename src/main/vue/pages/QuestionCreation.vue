@@ -22,6 +22,7 @@
                     <v-row no-gutters>
                         <v-col cols="12" md="4">
                             <v-overflow-btn
+                                v-model="selected"
                                 :items="anonomityTypes"
                                 placeholder="Anonymitätsgrad"
                                 :rules="anonymityRules"
@@ -57,8 +58,9 @@
 </template>
 
 <script>
-import DateTimePicker from '../components/dateTimePicker'
-const axios = require('axios')
+    import DateTimePicker from '../components/dateTimePicker'
+
+    const axios = require('axios')
 const instance = axios.create({
     baseURL: 'http://127.0.0.1:8088/api/',
     timeout: 1000,
@@ -73,7 +75,11 @@ export default {
             switch2: false,
             valid: false,
             title: '',
-            anonomityTypes: ['Anonym', 'Teilanonym', 'Nicht anonym'],
+            anonomityTypes: [
+                { text: 'Anonym', value: 1 },
+                { text: 'Teilanonym', value: 2 },
+                { text: 'Nicht anonym', value: 3 },
+            ],
             titleRules: [(v) => !!v || 'Titel fehlt', (v) => v.length <= 10 || 'Name must be less than 10 characters'],
             anonymityRules: [(v) => !!v || 'Anonymitätsgrad fehlt.'],
         }
@@ -84,10 +90,15 @@ export default {
         },
         sendData() {
             const obj = {
-                username: 'testxyccxyc',
-                firstname: 'test',
-                lastname: 'test',
-                password: 'test',
+                id: '1',
+                pollcreator: 'Richie',
+                // pollCreatedAt: '',
+                // lastEditAt: '',
+                // activatedAt: '',
+                // deactivatedAt: '',
+                anonymityStatus: this.selected,
+                pollname: this.title,
+                pollStatus: 0,
             }
             instance
                 .post('/createuser', obj)
