@@ -4,34 +4,37 @@
         <v-content>
             <v-row>
                 <v-col cols="8">
-                    <v-list v-for="question in questions" :key="question.id" two-line>
-                        <v-card class="mx-auto">
-                            <v-card-title>
-                                <!--the visibility of the number of questions depends on the poll configuration-->
-                                <!--div v-if="getVisibility">{{ question.id }}/{{ questions.length }}</div-->
-                                {{ question.questionMessage }}
-                            </v-card-title>
-                            <!--div v-if="question.type === 'textQuestion'">
-                                <v-text-field label="Antwort"> </v-text-field>
-                            <div-->
-                            <v-text-field label="Antwort"></v-text-field>
-                            <!--div v-else-if="question.type === 'choiceQuestion'">
-                                <v-list v-for="answer in question.answers" :key="answer.text">
-                                    <v-checkbox class="ma-4" :label="answer.text"></v-checkbox>
-                                </v-list>
-                                <div v-if="question.ownAnswersAllowed">
-                                    <v-checkbox
-                                        v-model="enabled"
-                                        hide-details
-                                        class="ma-4"
-                                        label="Eigene Antwort:"
-                                    ></v-checkbox>
-                                    <v-col>
-                                        <v-text-field></v-text-field>
-                                    </v-col>
-                                </div>
-                            </div-->
-                        </v-card>
+                    <v-list v-for="poll in getPoll" :key="poll.id">
+                        <v-list v-for="question in poll.questionList" :key="question.id" two-line>
+                            <v-card class="mx-auto">
+                                <v-card-title>
+                                    <!--the visibility of the number of questions depends on the poll configuration-->
+                                    <!--div v-if="getVisibility">{{ question.id }}/{{ questions.length }}</div-->
+                                    {{ question.questionMessage }}
+                                </v-card-title>
+                                Hallo
+                                <!--div v-if="question.type === 'textQuestion'">
+                                    <v-text-field label="Antwort"> </v-text-field>
+                                <div-->
+                                <v-text-field label="Antwort"></v-text-field>
+                                <!--div v-else-if="question.type === 'choiceQuestion'">
+                                    <v-list v-for="answer in question.answers" :key="answer.text">
+                                        <v-checkbox class="ma-4" :label="answer.text"></v-checkbox>
+                                    </v-list>
+                                    <div v-if="question.ownAnswersAllowed">
+                                        <v-checkbox
+                                            v-model="enabled"
+                                            hide-details
+                                            class="ma-4"
+                                            label="Eigene Antwort:"
+                                        ></v-checkbox>
+                                        <v-col>
+                                            <v-text-field></v-text-field>
+                                        </v-col>
+                                    </div>
+                                </div-->
+                            </v-card>
+                        </v-list>
                     </v-list>
                 </v-col>
             </v-row>
@@ -49,26 +52,19 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
-// import axios from 'axios'
+import { mapActions, mapGetters } from 'vuex'
 
 export default {
     name: 'Participant',
-    /* async fetch() {
-        this.questions = await this.$axios.get('/api/questions')
-    }, /
-    / async asyncData() {
-        const { questions } = await axios.get('/api/questions')
-        // this.commit('setQuestions', questions)
-
-        return { questions }
-    }, */
     data: () => ({
         enabled: false,
         questions: [],
     }),
     created() {
         this.showPoll()
+    },
+    computed: {
+        ...mapGetters({ getPoll: 'participant/getPoll' }),
     },
     methods: {
         showPoll() {
