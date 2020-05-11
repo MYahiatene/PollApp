@@ -34,7 +34,7 @@ public class PollController {
             pollService.createPoll(pollCmd.getPollname(), pollCmd.getPollcreator(), pollCmd.getPollCreatedAt(),
                 pollCmd.getLastEditAt(), pollCmd.getActivatedAt(), pollCmd.getDeactivatedAt(),
                 pollCmd.getAnonymityStatus(), pollCmd.getPollStatus(), new ArrayList<>()); //arraylist vorübergehend
-                // TODO: Add new attributes here, @requestBody?
+                // TODO: Add new attributes here
             return "Poll created!";
         } catch (BadRequestException e) {
             return "Poll creation failed!";
