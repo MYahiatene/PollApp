@@ -1,6 +1,7 @@
 package gpse.umfrato.domain.Evaluation;
 
 import gpse.umfrato.domain.answer.Answer;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 

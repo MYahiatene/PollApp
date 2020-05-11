@@ -3,7 +3,7 @@
         <v-dialog persistent v-model="dialog" width="500" overlay-opacity="0.95" fullscreen>
             <template v-slot:activator="{ on }">
                 <v-btn color="#444444" v-on="on">
-                    Analysieren
+                    Analyse
                 </v-btn>
             </template>
 

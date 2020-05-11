@@ -46,24 +46,24 @@
 
 <script>
 export default {
-    // props: {
-    //     showDiagram: {
-    //         type: Boolean,
-    //         default: true,
-    //     },
-    chosenDiagram: {
-        type: String,
-        default: 'bar',
+    props: {
+        //     showDiagram: {
+        //         type: Boolean,
+        //         default: true,
+        //     },
+        chosenDiagram: {
+            type: String,
+            default: 'bar',
+        },
+        chosenDiagramColor: {
+            type: String,
+            default: '#555555',
+        },
+        //     showTable: {
+        //         type: Boolean,
+        //         default: true,
+        //     },
     },
-    chosenDiagramColor: {
-        type: String,
-        default: '#555555',
-    },
-    //     showTable: {
-    //         type: Boolean,
-    //         default: true,
-    //     },
-    // },
     name: 'visualEvaluationSettings',
     data() {
         return {

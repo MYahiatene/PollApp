@@ -5,7 +5,7 @@
 
             <v-spacer></v-spacer>
 
-            <v-btn> Analyse </v-btn>
+            <BlockDialog></BlockDialog>
 
             <v-btn icon color="teal" @click="visualSettings = !visualSettings">
                 <v-icon>mdi-pencil</v-icon>
@@ -44,9 +44,10 @@
 import visualEvaluationSettings from '../pages/visualEvaluationSettings'
 import BarChartView from './BarChartView'
 import PieChartView from './PieChartView'
+import BlockDialog from './BlockDialog'
 
 export default {
-    components: { BarChartView, PieChartView, visualEvaluationSettings },
+    components: { BlockDialog, BarChartView, PieChartView, visualEvaluationSettings },
     props: {
         diagramType: {
             type: String,
