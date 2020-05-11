@@ -11,8 +11,6 @@ export const mutations = {
         // article.id = id + 1
         // this.state.articles.push(article)
         this.poll.push(poll)
-
-        // no idea what I'm doing here...
     },
 } /*
 export const actions: {

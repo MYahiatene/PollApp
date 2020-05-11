@@ -70,21 +70,17 @@
                     </v-row>
                     <v-row v-if="switch5" no-gutters>
                         <v-col cols="12" md="4">
-                            <v-model />
                             Hintergrundfarbe
                             <v-color-picker @change="backgroundColor" />
-                            <v-model />
                         </v-col>
                         <v-col cols="12" md="4">
-                            <v-model />
                             Schriftfarbe
                             <v-color-picker @change="fontColor" />
-                            <v-model />
                         </v-col>
                         <v-col cols="12" md="4">
                             Logo hochladen
                             <input type="file" @change="showImage" />
-                            <img :src="logo" alt="Image" />
+                            <img :src="poll.logo" alt="Image" />
                         </v-col>
                     </v-row>
                 </v-container>
@@ -144,18 +140,18 @@ export default {
         },
         // Shows the uploded logo for verification
         showImage(e) {
-            // supposed to show the logo as a preview
             const image = e.target.files[0]
             const reader = new FileReader()
             reader.readAsDataURL(image)
             reader.onload = (e) => {
-                this.logo = e.target.result
+                this.poll.logo = e.target.result
             }
         },
-        // saves the poll in the database
-        save() {
-            this.savePoll(this.poll) // make savePoll function in store
+        // creates and saves the poll in the database
+        createPoll() {
+            // this.$store.dispatch('PollCreation/createPoll')
         },
+        ...mapActions({ createPoll: 'PollCreation/createPoll' }),
         backgroundColor(e) {
             this.hexaBackground = e.payload[0].hexa
         },

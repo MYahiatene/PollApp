@@ -33,8 +33,8 @@ public class PollController {
         try {
             pollService.createPoll(pollCmd.getPollname(), pollCmd.getPollcreator(), pollCmd.getPollCreatedAt(),
                 pollCmd.getLastEditAt(), pollCmd.getActivatedAt(), pollCmd.getDeactivatedAt(),
-                pollCmd.getAnonymityStatus(), pollCmd.getPollStatus(), new ArrayList<>());
-                // TODO: Add new attributes here, @requestBody?
+                pollCmd.getAnonymityStatus(), pollCmd.getPollStatus(), new ArrayList<>()); //arraylist vorübergehend
+                // TODO: Add new attributes here
             return "Poll created!";
         } catch (BadRequestException e) {
             return "Poll creation failed!";
@@ -64,7 +64,7 @@ public class PollController {
     @GetMapping("/participant") // TODO: /poll/{id:\d+} wieder einfügen
     public Poll getPoll(/*@PathVariable("id") final String id final @RequestBody PollCmd pollCmd */) {
 
-        return pollService.getPoll("2"); // TODO: pollCmd.getId()
+        return pollService.getPoll("1"); // TODO: pollCmd.getId()
     }
 
 
