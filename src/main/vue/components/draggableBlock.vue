@@ -34,6 +34,7 @@
                                             @change="changeQuestionID()"
                                         ></v-overflow-btn>
                                         <v-overflow-btn
+                                            :disabled="(questionSet = '')"
                                             class="my-2"
                                             :items="answerList"
                                             label="Antwort"
