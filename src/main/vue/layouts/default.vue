@@ -76,7 +76,7 @@ export default {
                 {
                     icon: 'mdi-chart-line',
                     title: 'Auswertung',
-                    to: '/Analyse',
+                    to: '/BaseEvaluationPage',
                 },
             ],
             miniVariant: true,

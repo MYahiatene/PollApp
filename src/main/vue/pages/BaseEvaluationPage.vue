@@ -3,7 +3,7 @@
         <v-app-bar fixed app elevate-on-scroll>
             <v-toolbar-title> {{ PollResult.name }}</v-toolbar-title>
 
-            <v-dialog v-model="dialog" width="600">
+            <v-dialog v-model="dialog">
                 <!--                <template v-slot:activator="{ on }">-->
                 <!--                    <v-btn color="red lighten-2" dark v-on="on">-->
                 <!--                        Click Me-->
@@ -69,7 +69,7 @@
                 <!--                ></v-overflow-btn>-->
             </v-row>
             <v-row>
-                <v-col cols="12" lg="8">
+                <v-col cols="12" fluid>
                     <v-card v-for="question in PollResult.questionList" :key="question.id">
                         <a :id="'Frage' + question.id"> <v-spacer></v-spacer></a>
                         <ChoiceQuestionEvaluationWidget
@@ -94,7 +94,7 @@
 
 <script>
 import ChoiceQuestionEvaluationWidget from '../components/ChoiceQuestionEvaluationWidget'
-import visualEvaluationSettings from './visualEvaluationSettings'
+import visualEvaluationSettings from '../components/visualEvaluationSettings'
 
 export default {
     name: 'BaseEvaluationPage',

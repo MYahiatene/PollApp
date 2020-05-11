@@ -26,6 +26,8 @@
                                 <v-flex v-for="item in row.items" :key="item.title" xs4 pa-3 class="row-v">
                                     <!--xs4 pa-3-->
                                     <v-card>
+                                        <!--Umfrage?-->
+                                        <!--Frage-->
                                         <v-overflow-btn
                                             v-model="questionSet"
                                             class="my-2"
@@ -33,8 +35,9 @@
                                             label="Frage"
                                             @change="changeQuestionID()"
                                         ></v-overflow-btn>
+                                        <!--Antwort-->
                                         <v-overflow-btn
-                                            :disabled="(questionSet = '')"
+                                            :v-show="(questionSet === '')"
                                             class="my-2"
                                             :items="answerList"
                                             label="Antwort"

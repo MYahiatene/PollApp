@@ -47,10 +47,9 @@
 <script>
 export default {
     props: {
-        //     showDiagram: {
-        //         type: Boolean,
-        //         default: true,
-        //     },
+        showDiagram: {
+            type: Boolean,
+        },
         chosenDiagram: {
             type: String,
             default: 'bar',
@@ -59,10 +58,9 @@ export default {
             type: String,
             default: '#555555',
         },
-        //     showTable: {
-        //         type: Boolean,
-        //         default: true,
-        //     },
+        showTable: {
+            type: Boolean,
+        },
     },
     name: 'visualEvaluationSettings',
     data() {
@@ -70,7 +68,7 @@ export default {
             // chosenDiagram: 'bar',
             chosenDiagramAsWord: '',
 
-            diagramTypesInWords: ['TortenDiagram', 'Balkendiagram'],
+            diagramTypesInWords: ['Tortendiagramm', 'Balkendiagramm'],
             diagramTypes: ['pie', 'bar'],
 
             // chosenDiagramColor: '#555555',
@@ -79,13 +77,15 @@ export default {
             diagramColorsInWords: ['Grau', 'Blau', 'Grün', 'Rot'],
             diagramColors: ['#555555', '#000088', '#008800', '#880000'],
 
-            showDiagram: true,
-            showTable: true,
             forbidColorSwitch: true,
         }
     },
 
     methods: {
+        onShow() {
+            this.forbidColorSwitch = this.chosenDiagram !== ''
+            this.chosenDiagramAsWord = this.diagramTypesInWords[this.diagramTypes.indexOf(this.chosenDiagram)]
+        },
         changeDiagramColor() {
             this.chosenDiagramColor = this.diagramColors[
                 this.diagramColorsInWords.indexOf(this.chosenDiagramColorAsWord)

@@ -15,7 +15,14 @@
         <v-container>
             <v-row v-if="visualSettings">
                 <v-card>
-                    <visual-evaluation-settings v-on:update-Visuals="updateVisuals"></visual-evaluation-settings>
+                    <visual-evaluation-settings
+                        @input="onShow()"
+                        :chosen-diagram="diagramType"
+                        :chosen-diagram-color="backgroundColor"
+                        :show-diagram="showDiagram"
+                        :show-table="showTable"
+                        v-on:update-Visuals="updateVisuals"
+                    ></visual-evaluation-settings>
                 </v-card>
             </v-row>
             <v-row v-if="showDiagram">
@@ -41,7 +48,7 @@
 </template>
 
 <script>
-import visualEvaluationSettings from '../pages/visualEvaluationSettings'
+import visualEvaluationSettings from './visualEvaluationSettings'
 import BarChartView from './BarChartView'
 import PieChartView from './PieChartView'
 import BlockDialog from './BlockDialog'
