@@ -9,7 +9,7 @@
         <v-row no-gutters>
             <v-switch v-model="showDiagram" label="Zeige ein Diagram an"> </v-switch>
         </v-row>
-        <v-row>
+        <v-row v-show="showDiagram">
             <v-col cols="12" lg="5">
                 <v-overflow-btn
                     :disabled="!showDiagram"
@@ -62,6 +62,11 @@ export default {
             type: Boolean,
         },
     },
+    mounted() {
+        this.forbidColorSwitch = this.chosenDiagram === ''
+        this.chosenDiagramAsWord = this.diagramTypesInWords[this.diagramTypes.indexOf(this.chosenDiagram)]
+        this.chosenDiagramColorAsWord = this.diagramColorsInWords[this.diagramColors.indexOf(this.chosenDiagramColor)]
+    },
     name: 'visualEvaluationSettings',
     data() {
         return {
@@ -82,10 +87,6 @@ export default {
     },
 
     methods: {
-        onShow() {
-            this.forbidColorSwitch = this.chosenDiagram !== ''
-            this.chosenDiagramAsWord = this.diagramTypesInWords[this.diagramTypes.indexOf(this.chosenDiagram)]
-        },
         changeDiagramColor() {
             this.chosenDiagramColor = this.diagramColors[
                 this.diagramColorsInWords.indexOf(this.chosenDiagramColorAsWord)

@@ -4,13 +4,13 @@
             <div class="row">
                 <div class="col-12">
                     <draggable
-                        v-model="rows"
+                        v-model="blocks"
                         tag="v-layout"
                         class="column wrap fill-height fill-width align-center sortable-list"
                         style="background: grey;"
                     >
                         <v-flex
-                            v-for="row in rows"
+                            v-for="row in blocks"
                             :key="row.index"
                             class="sortable"
                             xs12
@@ -23,28 +23,14 @@
                                 :group="{ name: 'row' }"
                                 class="column wrap justify-space-around"
                             >
-                                <v-flex v-for="item in row.items" :key="item.title" xs4 pa-3 class="row-v">
+                                <v-flex v-for="block in row.items" :key="block.title" fluid class="row-v">
                                     <!--xs4 pa-3-->
-                                    <v-card>
-                                        <!--Umfrage?-->
-                                        <!--Frage-->
-                                        <v-overflow-btn
-                                            v-model="questionSet"
-                                            class="my-2"
-                                            :items="questions2"
-                                            label="Frage"
-                                            @change="changeQuestionID()"
-                                        ></v-overflow-btn>
-                                        <!--Antwort-->
-                                        <v-overflow-btn
-                                            :v-show="(questionSet === '')"
-                                            class="my-2"
-                                            :items="answerList"
-                                            label="Antwort"
-                                        ></v-overflow-btn>
-
-                                        <v-list-item-title>{{ item.title }}</v-list-item-title>
-                                    </v-card>
+                                    <QuestionFilterBlock
+                                        v-if="block.type === 'qf'"
+                                        :questions="questions"
+                                        :question-set="block.targetQuestion"
+                                        :inverted="block.inverted"
+                                    ></QuestionFilterBlock>
                                 </v-flex>
                             </draggable>
                         </v-flex>
@@ -61,6 +47,7 @@
 <script>
 import draggable from 'vuedraggable'
 import 'vuetify/dist/vuetify.min.css'
+import QuestionFilterBlock from './QuestionFilterBlock'
 
 export default {
     questionSet: '',
@@ -69,52 +56,46 @@ export default {
     display: 'Functional third party',
     order: 17,
     components: {
+        QuestionFilterBlock,
         draggable,
     },
     data() {
         return {
             currentIndex: 4,
-            rows: [
+            blocks: [
                 {
                     index: 1,
                     items: [
-                        {
-                            title: 'Geschlecht',
-                        },
+                        { type: 'qf', targetQuestion: 'Frage 1', selectedAnswers: ['Ja', 'Egal'], inverted: false },
                     ],
                 },
                 {
                     index: 2,
-                    items: [
-                        {
-                            title: 'Alter',
-                        },
-                    ],
+                    items: [{ type: 'qf', targetQuestion: 'Frage 2', selectedAnswers: ['Alt'], inverted: true }],
                 },
                 {
                     index: 3,
                     items: [
                         {
-                            title: 'Meinung über Karl Marx',
+                            type: 'qf',
+                            targetQuestion: 'Frage 4',
+                            selectedAnswers: ['20', '30', '40', '50'],
+                            inverted: false,
                         },
                     ],
                 },
             ],
             questions: [
-                { title: 'Frage 1', answers: ['Ja', 'Egal'] },
-                { title: 'Frage 2', answers: ['Alt', 'Vielleicht'] },
-                { title: 'Frage 3', answers: ['Gut', 'Sehr gut'] },
+                { fragentext: 'Frage 1', answers: ['Ja', 'Nein', 'Egal'] },
+                { fragentext: 'Frage 2', answers: ['Alt', 'Vielleicht'] },
+                { fragentext: 'Frage 3', answers: ['Gut', 'Sehr gut'] },
+                {
+                    fragentext: 'Frage 4',
+                    answers: ['unter 10', '10', '20', '30', '40', '50', '60', '70', '80', 'über 80'],
+                },
             ],
-            questions2: ['Frage1', 'Frage2', 'Frage3'],
-            enabled: true,
-            changeQuestionID() {
-                this.answerList = this.questions[this.questions2.indexOf(this.questionSet)].answers
-                this.$forceUpdate()
-            },
             addFilter() {
-                this.rows.push({ index: this.currentIndex, items: [{ title: 'Theo Waigel-Augenbrauen?' }] })
-                this.questions.push({ title: 'Frage'.concat(this.currentIndex), answers: ['Ja', 'Egal'] })
-                this.questions2.push('Frage'.concat(this.currentIndex))
+                this.blocks.push({ index: this.currentIndex, items: [{ type: 'qf' }] })
                 this.currentIndex++
                 this.$forceUpdate()
             },
