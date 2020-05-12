@@ -70,7 +70,7 @@
             </v-row>
             <v-row>
                 <v-col cols="12" fluid>
-                    <v-card v-for="question in PollResult.questionList" :key="question.id">
+                    <div v-for="question in PollResult.questionList" :key="question.id">
                         <a :id="'Frage' + question.id"> <v-spacer></v-spacer></a>
                         <ChoiceQuestionEvaluationWidget
                             :show-table="showTable"
@@ -84,7 +84,7 @@
                         ></ChoiceQuestionEvaluationWidget>
 
                         <v-spacer></v-spacer>
-                    </v-card>
+                    </div>
                 </v-col>
             </v-row>
         </v-container>

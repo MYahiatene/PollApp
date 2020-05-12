@@ -16,7 +16,19 @@ export default {
     },
 
     mounted() {
+        console.log('mount')
+        console.log(this.chartdata)
         this.renderChart(this.chartdata, this.options)
+    },
+
+    updated() {
+        console.log('update')
+    },
+
+    watch: {
+        chartdata: function handle() {
+            console.log('watcher')
+        },
     },
 }
 </script>

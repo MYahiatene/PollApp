@@ -2,7 +2,7 @@
     <v-card min-width="150">
         <!--Umfrage?-->
         <!--Frage-->
-        <v-card-text>alle, die bei Frage</v-card-text>
+        <v-card-text>Wähle alle, die bei Frage</v-card-text>
         <v-overflow-btn
             v-model="questionSet"
             class="my-2"

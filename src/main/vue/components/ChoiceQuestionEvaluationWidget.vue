@@ -130,7 +130,6 @@ export default {
             { text: 'Relative Häufigkeit', value: 'rel', sortable: false },
         ],
     }),
-
     computed: {
         items() {
             const h = []

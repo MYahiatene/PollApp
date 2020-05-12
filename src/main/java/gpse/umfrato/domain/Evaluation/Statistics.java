@@ -7,7 +7,7 @@ import java.util.Iterator;
 
 public class Statistics {
 
-    public static DiagramData generateDiagram(List<StatisticsBlock> blocks)
+/*    public static DiagramData generateDiagram(List<StatisticsBlock> blocks)
     {
         StatisticsData sd = new StatisticsData();//Datenbank
         for(StatisticsBlock sb:blocks)
@@ -15,7 +15,7 @@ public class Statistics {
             sb.work(sd);
         }
         return sd.toDiagramData();
-    }
+    }*/
 
     /**
      * This method takes a absolute value and converts it to a relative value.
