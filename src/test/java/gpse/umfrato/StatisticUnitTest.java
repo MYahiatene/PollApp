@@ -20,11 +20,11 @@ public class StatisticUnitTest {
 
 
     @Test
-    public void normalizeOneValueTest() {
+    public void absoluteFrequencyOfOneValueTest() {
         double expected = 0.2;
         double actual;
         try {
-            actual = Statistics.normalizeOneValue(2, 10);
+            actual = Statistics.getRelativeFrequencyOfOneValue(2,10);
         }
         catch (Exception e){
             actual = 0;
@@ -47,7 +47,7 @@ public class StatisticUnitTest {
 
 
 
-        List<Double> actual = Statistics.normalizeAllDoubleValues(absoluteValues);
+        List<Double> actual = Statistics.getRelativeFrequencyOfDoubleValues(absoluteValues);
 
         assertEquals(expected, actual);
     }
@@ -68,7 +68,7 @@ public class StatisticUnitTest {
 
 
 
-        List<Double> actual = Statistics.normalizeAllIntegerValues(absoluteValues);
+        List<Double> actual = Statistics.getRelativeFrequencyOfAllIntegerValues(absoluteValues);
 
         assertEquals(expected, actual);
     }

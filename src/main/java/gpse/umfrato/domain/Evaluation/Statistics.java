@@ -23,7 +23,7 @@ public class Statistics {
      * @param totalNumber total number of values.
      * @return relative value.
      */
-    private static double normalizeOneValue (double value, double totalNumber) throws ArithmeticException {
+    public static double getRelativeFrequencyOfOneValue(double value, double totalNumber) throws ArithmeticException {
         if(totalNumber<value){
             throw new ArithmeticException("totalNumber must be larger than value!");
         }
@@ -36,17 +36,17 @@ public class Statistics {
      * @param values all absolute values that were given in a poll.
      * @return a list of relative values.
      */
-    private static List<Double> normalizeAllDoubleValues(List< Double> values){
+    public static List<Double> getRelativeFrequencyOfDoubleValues(List< Double> values){
         double totalNumber = 0;
         for (int i = 0; i < values.size(); i++) {
             totalNumber += values.get(i);
         }
 
-        List<Double> listOfNormalizedValues = new ArrayList<>();
+        List<Double> listOfValues = new ArrayList<>();
 
         for (int i = 0; i < values.size() ; i++) {
             try {
-                listOfNormalizedValues.add(normalizeOneValue(values.get(i), totalNumber));
+                listOfValues.add(getRelativeFrequencyOfOneValue(values.get(i), totalNumber));
             }
             catch (Exception e)
             {
@@ -54,7 +54,7 @@ public class Statistics {
             }
         }
 
-        return listOfNormalizedValues;
+        return listOfValues;
     }
 
     /**
@@ -63,7 +63,7 @@ public class Statistics {
      * @param values a list of absolute integer values.
      * @return a list of corresponding relative double values.
      */
-    private static List<Double> normalizeAllIntegerValues(List<Integer> values){
+    public static List<Double> getRelativeFrequencyOfAllIntegerValues(List<Integer> values){
 
         List<Double> listOfDoubleValues = new ArrayList<>();
 
@@ -71,7 +71,7 @@ public class Statistics {
             listOfDoubleValues.add((double) values.get(i));
         }
 
-        return normalizeAllDoubleValues(listOfDoubleValues);
+        return getRelativeFrequencyOfDoubleValues(listOfDoubleValues);
     }
 
     /**
@@ -79,7 +79,7 @@ public class Statistics {
      * @param allValues absolute values.
      * @return the highest value.
      */
-    private static double modus(List<Double> allValues){
+    public static double modus(List<Double> allValues){
 
         double currentHighest = allValues.get(0);
 
