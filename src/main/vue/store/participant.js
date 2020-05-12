@@ -1,7 +1,7 @@
 // mport axios from 'axios'
 export const state = () => ({
     // visibility: false,
-    poll: null,
+    poll: ['Object'],
     // questions: [],
 })
 export const getters = {

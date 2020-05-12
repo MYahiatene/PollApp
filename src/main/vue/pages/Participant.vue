@@ -12,7 +12,6 @@
                                     <!--div v-if="getVisibility">{{ question.id }}/{{ questions.length }}</div-->
                                     {{ question.questionMessage }}
                                 </v-card-title>
-                                Hallo
                                 <!--div v-if="question.type === 'textQuestion'">
                                     <v-text-field label="Antwort"> </v-text-field>
                                 <div-->

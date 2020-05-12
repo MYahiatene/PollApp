@@ -64,7 +64,7 @@ public class PollController {
     @GetMapping("/participant") // TODO: /poll/{id:\d+} wieder einfügen
     public Poll getPoll(/*@PathVariable("id") final String id final @RequestBody PollCmd pollCmd */) {
 
-        return pollService.getPoll("1"); // TODO: pollCmd.getId()
+        return pollService.getPoll("2"); // TODO: pollCmd.getId()
     }
 
 
