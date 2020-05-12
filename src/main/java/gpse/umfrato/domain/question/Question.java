@@ -1,7 +1,7 @@
 package gpse.umfrato.domain.question;
 
 import gpse.umfrato.domain.answer.Answer;
-import gpse.umfrato.domain.pollGroup.Group;
+import gpse.umfrato.domain.pollgroup.Group;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -54,15 +54,13 @@ public class Question {
     private List<Answer> givenAnswers;
 
     private int numberOfPossibleAnswers;
-
     /**
      * This constructor receives a question message and saves in the question object.
-     *
-     * @param question the question message which is given
+     * @param question the question message
+     * @param answerPossibilities a list with all possible answers to this question
+     * @param questionType the type how the question should be answered
      */
-
-
-    public Question(final String question, List<String> answerPossibilities, String questionType) {
+    public Question(final String question, final List<String> answerPossibilities, final String questionType) {
         this.questionMessage = question;
         this.answerPossibilities = answerPossibilities;
         this.questionType = questionType;

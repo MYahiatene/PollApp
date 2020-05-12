@@ -1,4 +1,4 @@
-package gpse.umfrato.domain.pollGroup;
+package gpse.umfrato.domain.pollgroup;
 
 import gpse.umfrato.domain.poll.PollRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,14 +10,14 @@ public class GroupServiceImpl implements GroupService {
     private final PollRepository pollRepository;
 
     @Autowired
-    public GroupServiceImpl(final GroupRepository groupRepository,final PollRepository pollRepository) {
+    public GroupServiceImpl(final GroupRepository groupRepository, final PollRepository pollRepository) {
         this.groupRepository = groupRepository;
         this.pollRepository = pollRepository;
     }
 
     @Override
     public Group addGroup(final String name, final long pollId) {
-        Group group = new Group(name);
+        final Group group = new Group(name);
         group.setPoll(pollRepository.getOne(pollId));
         groupRepository.save(group);
         return group;

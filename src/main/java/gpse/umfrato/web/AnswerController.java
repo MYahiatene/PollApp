@@ -16,10 +16,10 @@ import java.util.List;
 @CrossOrigin
 public class AnswerController {
 
-    private final UserService userService;
-    private final PollService pollService;
+    final UserService userService;
+    final PollService pollService;
     private final AnswerService answerService;
-    private final QuestionRepository questionRepository;
+    final QuestionRepository questionRepository;
 
     /**
      * This class constructor initializes the objects.

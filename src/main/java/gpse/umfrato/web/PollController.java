@@ -15,7 +15,7 @@ import java.util.logging.Logger;
 @RestController
 @CrossOrigin
 public class PollController {
-    private static final Logger LOGGER = Logger.getLogger("PollController");
+    static final Logger LOGGER = Logger.getLogger("PollController");
     private final PollService pollService;
 
     /**
@@ -28,12 +28,12 @@ public class PollController {
         this.pollService = pollService;
     }
 
-    @CrossOrigin
-    @PostMapping(value = "/createpoll",produces = MediaType.APPLICATION_JSON_VALUE)
+    //@CrossOrigin
+    @PostMapping(value = "/createpoll", produces = MediaType.APPLICATION_JSON_VALUE)
     public String createPoll(final @RequestBody PollCmd pollCmd) {
         try {
-            pollService.createPoll(pollCmd.getPollname(), pollCmd.getPollcreator(),
-                pollCmd.getAnonymityStatus(), pollCmd.getPollStatus());
+            pollService.createPoll(pollCmd.getPollcreator(), pollCmd.getAnonymityStatus(), pollCmd.getPollname(),
+                pollCmd.getPollStatus());
             return "Poll created!";
         } catch (BadRequestException e) {
             return "Poll creation failed!";
@@ -60,12 +60,12 @@ public class PollController {
      * @param pollCmd has the id of the poll
      * @return a selected poll
      */
-    @GetMapping("/poll/{id:\\d+}")
-    public Poll getPoll(/*@PathVariable("id") final String id*/ final @RequestBody PollCmd pollCmd) {
+    /*@GetMapping("/poll/{id:\\d+}")
+    public Poll getPoll(final @RequestBody PollCmd pollCmd) {
 
         return pollService.getPoll(pollCmd.getId());
 
-    }
+    }*/
 
 
 }

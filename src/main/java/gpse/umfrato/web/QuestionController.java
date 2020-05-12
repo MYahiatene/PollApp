@@ -16,14 +16,14 @@ import java.util.logging.Logger;
 @RestController
 @CrossOrigin(origins = "http://127.0.0.1:8080")
 public class QuestionController {
-    private static final Logger LOGGER = Logger.getLogger("QuestionController");
+    static final Logger LOGGER = Logger.getLogger("QuestionController");
 
     private final QuestionService questionService;
-    private final UserService userService;
-    private final PollService pollService;
-    private final AnswerService answerService;
-    private Question question;
-    private final PollRepository pollRepository;
+    final UserService userService;
+    final PollService pollService;
+    final AnswerService answerService;
+    Question question;
+    final PollRepository pollRepository;
 
 
     /**
@@ -53,8 +53,8 @@ public class QuestionController {
      */
     @PostMapping("/poll/{id:\\d+}/addquestion")
     public void addQuestion(/*@PathVariable("id") final String id*/ final @RequestBody QuestionCmd questionCmd) {
-        questionService.addQuestion(questionCmd.getQuestion(), Long.valueOf(questionCmd.getId()),questionCmd.getAnswerPossibilities()
-            ,questionCmd.getQuestionType());
+        questionService.addQuestion(questionCmd.getQuestion(), Long.valueOf(questionCmd.getId()),
+            questionCmd.getAnswerPossibilities(), questionCmd.getQuestionType());
     }
 
     /**

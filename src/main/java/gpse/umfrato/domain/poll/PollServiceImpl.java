@@ -32,8 +32,9 @@ class PollServiceImpl implements PollService {
      * @return the created poll
      */
     @Override
-    public Poll createPoll(final String pollname, final String pollcreator,final String anonymityStatus, final int pollStatus) {
-        final Poll poll = new Poll(pollname);
+    public Poll createPoll(final String pollcreator, final String anonymityStatus, final String pollname,
+                           final int pollStatus) {
+        final Poll poll = new Poll(pollcreator, pollname, anonymityStatus, pollStatus);
 
         pollRepository.save(poll);
 

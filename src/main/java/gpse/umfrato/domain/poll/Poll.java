@@ -1,7 +1,7 @@
 package gpse.umfrato.domain.poll;
 
-import gpse.umfrato.domain.pollGroup.Group;
-import gpse.umfrato.domain.question.Question;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import gpse.umfrato.domain.pollgroup.Group;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -33,28 +33,33 @@ public class Poll {
     /**
      * This attribute represents the date when the poll was created.
      */
+    @JsonIgnore
     private LocalDateTime creationDate;
 
     /**
      * This attribute represents the date when the poll was edited the last time.
      */
+    @JsonIgnore
     private LocalDateTime lastEditAt;
 
     /**
      * This attribute represents the date when the poll was activated.
      */
     // use Instant instead , cause of time zone
+    @JsonIgnore
     private LocalDateTime activatedDate;
 
     /**
      * This attribute represents the date when the poll was deactivated.
      */
+    @JsonIgnore
     private LocalDateTime deactivatedDate;
 
     /**
      * This attribute represents the status of the anonymity if it is anonymous, part-anonymous
      * or not anonymous.
      */
+    @JsonIgnore
     private String anonymityStatus;
 
     /**
@@ -67,19 +72,24 @@ public class Poll {
      */
     private int pollStatus;
 
-
+    @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL)
     private List<Group> groupList = new ArrayList<>();
 
 
     /**
      * This constructor receives a poll name and saves in the poll object.
-     *
-     * @param pollName
+     * @param pollCreator the name of the user who creates the poll
+     * @param pollName the name of the poll
+     * @param anonymityStatus the anonymitystatus of the poll
+     * @param pollStatus the status (activated/deactivated) of the poll
      */
-    public Poll(final String pollName) {
+    public Poll(final String pollCreator, final String pollName, final String anonymityStatus, final int pollStatus) {
         this.pollname = pollName;
-        this.groupList.add(new Group("Keine Gruppe"));
+        this.pollCreator = pollCreator;
+        this.anonymityStatus = anonymityStatus;
+        this.pollStatus = pollStatus;
+        //this.groupList.add(new Group("Keine Gruppe"));
     }
 
 }

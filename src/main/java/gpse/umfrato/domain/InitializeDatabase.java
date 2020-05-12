@@ -14,10 +14,10 @@ public class InitializeDatabase implements InitializingBean {
 
     private static final String TEST_USER = "Uncle_Bob";
 
-    private final UserService userService;
-    private final PollService pollService;
-    private final QuestionService questionService;
-    private final AnswerService answerService;
+    /*default*/ final UserService userService;
+    /*default*/ final PollService pollService;
+    /*default*/ final QuestionService questionService;
+    /*default*/ final AnswerService answerService;
 
 
     /**
@@ -45,7 +45,7 @@ public class InitializeDatabase implements InitializingBean {
     public void afterPropertiesSet() {
         try {
             userService.loadUserByUsername(TEST_USER);
-            pollService.createPoll("Erste Umfrage", TEST_USER, "true", 0);
+            //pollService.createPoll("Erste Umfrage", TEST_USER, "true", 0);
 
 
         } catch (UsernameNotFoundException ex) {

@@ -22,7 +22,7 @@
                     <v-row no-gutters>
                         <v-col cols="12" md="4">
                             <v-overflow-btn
-                                v-model="selected"
+                                v-model="selectedAnonymityType"
                                 :items="anonomityTypes"
                                 placeholder="Anonymitätsgrad"
                                 :rules="anonymityRules"
@@ -75,10 +75,20 @@ export default {
             switch2: false,
             valid: false,
             title: '',
+            selectedAnonymityType: '',
             anonomityTypes: [
-                { text: 'Anonym', value: 1 },
-                { text: 'Teilanonym', value: 2 },
-                { text: 'Nicht anonym', value: 3 },
+                {
+                    text: 'Anonym',
+                    value: 1,
+                },
+                {
+                    text: 'Teilanonym',
+                    value: 2,
+                },
+                {
+                    text: 'Nicht anonym',
+                    value: 3,
+                },
             ],
             titleRules: [(v) => !!v || 'Titel fehlt', (v) => v.length <= 10 || 'Name must be less than 10 characters'],
             anonymityRules: [(v) => !!v || 'Anonymitätsgrad fehlt.'],
@@ -90,18 +100,13 @@ export default {
         },
         sendData() {
             const obj = {
-                id: '1',
                 pollcreator: 'Richie',
-                // pollCreatedAt: '',
-                // lastEditAt: '',
-                // activatedAt: '',
-                // deactivatedAt: '',
-                anonymityStatus: this.selected,
+                anonymityStatus: this.selectedAnonymityType,
                 pollname: this.title,
                 pollStatus: 0,
             }
             instance
-                .post('/createuser', obj)
+                .post('/createpoll', obj)
                 .then((response) => {
                     console.log(response)
                 })

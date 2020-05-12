@@ -3,8 +3,8 @@ package gpse.umfrato.domain.question;
 import gpse.umfrato.domain.poll.Poll;
 import gpse.umfrato.domain.poll.PollRepository;
 import gpse.umfrato.domain.poll.PollService;
-import gpse.umfrato.domain.pollGroup.Group;
-import gpse.umfrato.domain.pollGroup.GroupRepository;
+import gpse.umfrato.domain.pollgroup.Group;
+import gpse.umfrato.domain.pollgroup.GroupRepository;
 import gpse.umfrato.web.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,21 +17,21 @@ import java.util.List;
 public class QuestionServiceImpl implements QuestionService {
 
     /**
-     * initializes the poll repository.
+     * Initializes the poll repository.
      */
     private final PollRepository pollRepository;
 
     /**
-     * initializes the question repository.
+     * Initializes the question repository.
      */
     private final QuestionRepository questionRepository;
 
     /**
-     * initializes the poll service.
+     * Initializes the poll service.
      */
-    private final PollService pollService;
+    final PollService pollService;
 
-    private final GroupRepository groupRepository;
+    final GroupRepository groupRepository;
 
     /**
      * This class constructor initializes the poll-, question repository and the poll service.
@@ -39,6 +39,7 @@ public class QuestionServiceImpl implements QuestionService {
      * @param pollRepository     the repository for the polls
      * @param questionRepository the repository for the questions
      * @param pollService        the class to work with polls
+     * @param groupRepository    the repository for the groups
      */
     @Autowired
     public QuestionServiceImpl(final PollRepository pollRepository, final QuestionRepository questionRepository,
@@ -58,9 +59,9 @@ public class QuestionServiceImpl implements QuestionService {
      */
     @Override
     public Question addQuestion(final String questionMessage, final long pollId,
-                                List<String> answerPossibilities,
-                                String questionType) {
-        final Question question = new Question(questionMessage,answerPossibilities,questionType);
+                                final List<String> answerPossibilities,
+                                final String questionType) {
+        final Question question = new Question(questionMessage, answerPossibilities, questionType);
         pollRepository.findById(pollId).get().getGroupList().get(0).getQuestionList().add(question);
         question.setGroup(pollRepository.findById(pollId).get().getGroupList().get(0));
         return question;
@@ -104,12 +105,12 @@ public class QuestionServiceImpl implements QuestionService {
      */
     @Override
     public List<Question> getAllQuestions(final long pollId) {
-        Poll poll = pollRepository.findById(pollId).orElseThrow(() -> new EntityNotFoundException());
+        final Poll poll = pollRepository.findById(pollId).orElseThrow(() -> new EntityNotFoundException());
         final List<Group> groups = poll.getGroupList();
-        List<Question> allQuestions = new ArrayList<>();
+        final List<Question> allQuestions = new ArrayList<>();
 
-        for (Group g : groups) {
-            for (Question q : g.getQuestionList()) {
+        for (final Group g : groups) {
+            for (final Question q : g.getQuestionList()) {
                 allQuestions.add(q);
             }
         }
@@ -121,7 +122,7 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public List<Question> getQuestionsFromGroup(long groupId) {
+    public List<Question> getQuestionsFromGroup(final long groupId) {
         return questionRepository.findQuestionByGroupId(groupId);
     }
 

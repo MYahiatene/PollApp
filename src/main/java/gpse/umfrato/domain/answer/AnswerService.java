@@ -12,7 +12,7 @@ public interface AnswerService {
      * @param username   name of the user creating the answer
      * @return the given answer
      */
-    public Answer giveAnswer(final String message, final String questionId, final String answerType, final String
+    Answer giveAnswer(final String message, final String questionId, final String answerType, final String
         username);
 
     /**

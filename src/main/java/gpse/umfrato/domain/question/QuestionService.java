@@ -6,7 +6,10 @@ public interface QuestionService {
     /**
      * This method creates a question for a poll.
      *
-     * @param questionMessage the given question
+     * @param questionMessage     the given question
+     * @param pollId              the id of the poll where the question belongs to
+     * @param answerPossibilities a list of possible answers to the question
+     * @param questionType        the type how the answers should be like
      * @return the question which is created
      */
     Question addQuestion(final String questionMessage, final long pollId,
@@ -32,6 +35,7 @@ public interface QuestionService {
     /**
      * This method returns all questions from a poll.
      *
+     * @param pollId the id of the poll
      * @return all questions from a poll
      */
     List<Question> getAllQuestions(final long pollId);
