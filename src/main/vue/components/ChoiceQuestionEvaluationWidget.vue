@@ -11,7 +11,7 @@
                 <v-icon>mdi-pencil</v-icon>
             </v-btn>
         </v-app-bar>
-
+        <!--Hi Nora, ich hoffe, das hier wird einen Mergekonfilkt bei dir auslösen :D-->
         <v-container>
             <v-row v-if="visualSettings">
                 <v-card>
