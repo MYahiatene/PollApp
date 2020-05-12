@@ -58,9 +58,9 @@
 </template>
 
 <script>
-    import DateTimePicker from '../components/dateTimePicker'
+import DateTimePicker from '../components/dateTimePicker'
 
-    const axios = require('axios')
+const axios = require('axios')
 const instance = axios.create({
     baseURL: 'http://127.0.0.1:8088/api/',
     timeout: 1000,
