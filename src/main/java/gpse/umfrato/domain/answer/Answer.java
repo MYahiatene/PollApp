@@ -2,8 +2,10 @@ package gpse.umfrato.domain.answer;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.engine.internal.Cascade;
 
 import javax.persistence.*;
+import java.util.List;
 
 /**
  * This object represents a answer.
@@ -17,20 +19,15 @@ public class Answer {
      * This attribute is an unique id from the object answer.
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
 
     /**
      * This attribute represents the message of the answer.
      */
-    @Lob
-    private String answerMessage;
-
-    /**
-     * This attribute represents the username of the user who created the answer.
-     */
-    private String username;
+    @ElementCollection
+    private List<String> givenAnswerList;
 
     /**
      * This attribute represents the question id where the answer is assigned.
@@ -40,13 +37,11 @@ public class Answer {
     /**
      * This constructor receives some data for the answer object and saves them in the answer object.
      *
-     * @param message    the answer message
+     * @param messageList    the answer message
      * @param questionId the question id where the answer is assigned
-     * @param username   the username of the user who created the answer
      */
-    public Answer(final String message, final String questionId, final String username) {
-        this.answerMessage = message;
-        this.username = username;
+    public Answer(final List<String> messageList, final String questionId) {
+        this.givenAnswerList = messageList;
         this.questionId = Long.valueOf(questionId);
     }
 

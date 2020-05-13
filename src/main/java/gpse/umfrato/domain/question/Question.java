@@ -38,12 +38,6 @@ public class Question {
      */
     private String questionType;
 
-    /**
-     * This attribute represents a list with all answers for this question.
-     */
-    @OneToMany(cascade = CascadeType.ALL)
-    private List<Answer> givenAnswers;
-
     private int numberOfPossibleAnswers;
     /**
      * This constructor receives a question message and saves in the question object.

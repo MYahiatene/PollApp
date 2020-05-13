@@ -1,15 +1,13 @@
 package gpse.umfrato.domain.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import gpse.umfrato.domain.answer.Answer;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -49,10 +47,17 @@ public class User implements UserDetails {
     /**
      * This attribute represents a list with the roles of this user.
      */
+
+
     @JsonIgnore
     @ElementCollection(fetch = FetchType.EAGER)
     private List<String> roles;
 
+    /**
+     * This attribute represents a list with all answers for this question.
+     */
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<Answer> givenAnswers;
 
     /**
      * This constructor receives the required parameter for the user object.

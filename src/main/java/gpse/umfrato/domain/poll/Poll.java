@@ -2,6 +2,7 @@ package gpse.umfrato.domain.poll;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import gpse.umfrato.domain.category.Category;
+import gpse.umfrato.domain.user.User;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -75,6 +76,8 @@ public class Poll {
     @OneToMany(cascade = CascadeType.ALL)
     private List<Category> categoryList = new ArrayList<>();
 
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<User> userList = new ArrayList<>();
 
     /**
      * This constructor receives a poll name and saves in the poll object.
