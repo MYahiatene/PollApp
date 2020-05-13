@@ -12,9 +12,10 @@ public interface QuestionService {
      * @param questionType        the type how the answers should be like
      * @return the question which is created
      */
-    Question addQuestion(final String questionMessage, final long pollId,
-                         List<String> answerPossibilities,
-                         String questionType);
+    public Question addQuestion(final String pollId,
+                                final String questionMessage,
+                                final List<String> answerPossibilities,
+                                final String questionType);
 
     /**
      * This method removes a selected question.
@@ -40,5 +41,5 @@ public interface QuestionService {
      */
     List<Question> getAllQuestions(final long pollId);
 
-    List<Question> getQuestionsFromGroup(final long groupId);
+    List<Question> getQuestionsFromCategory(final long categoryId);
 }

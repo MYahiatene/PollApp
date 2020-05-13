@@ -4,12 +4,12 @@
             <b-col cols="6" offset="3" class="mt-3">
                 <b-card header="Login">
                     <b-form @submit.prevent="login">
-                        <b-form-group label="Username:">
+                        <b-form-category label="Username:">
                             <b-form-input v-model="auth.username" type="text"></b-form-input>
-                        </b-form-group>
-                        <b-form-group label="Passwort:">
+                        </b-form-category>
+                        <b-form-category label="Passwort:">
                             <b-form-input v-model="auth.password" type="password"></b-form-input>
-                        </b-form-group>
+                        </b-form-category>
                         <b-button type="submit" variant="primary">Login</b-button>
                     </b-form>
                     <b-alert variant="danger" :show="authenticated === false">
@@ -23,6 +23,7 @@
 
 <script>
 import { mapGetters, mapMutations } from 'vuex'
+
 export default {
     name: 'Login',
     data() {

@@ -1,10 +1,10 @@
 package gpse.umfrato.domain.question;
 
+import gpse.umfrato.domain.category.Category;
+import gpse.umfrato.domain.category.CategoryRepository;
 import gpse.umfrato.domain.poll.Poll;
 import gpse.umfrato.domain.poll.PollRepository;
 import gpse.umfrato.domain.poll.PollService;
-import gpse.umfrato.domain.pollgroup.Group;
-import gpse.umfrato.domain.pollgroup.GroupRepository;
 import gpse.umfrato.web.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,7 +31,7 @@ public class QuestionServiceImpl implements QuestionService {
      */
     final PollService pollService;
 
-    final GroupRepository groupRepository;
+    final CategoryRepository categoryRepository;
 
     /**
      * This class constructor initializes the poll-, question repository and the poll service.
@@ -39,15 +39,15 @@ public class QuestionServiceImpl implements QuestionService {
      * @param pollRepository     the repository for the polls
      * @param questionRepository the repository for the questions
      * @param pollService        the class to work with polls
-     * @param groupRepository    the repository for the groups
+     * @param categoryRepository the repository for the groups
      */
     @Autowired
     public QuestionServiceImpl(final PollRepository pollRepository, final QuestionRepository questionRepository,
-                               final PollService pollService, final GroupRepository groupRepository) {
+                               final PollService pollService, final CategoryRepository categoryRepository) {
         this.pollRepository = pollRepository;
         this.questionRepository = questionRepository;
         this.pollService = pollService;
-        this.groupRepository = groupRepository;
+        this.categoryRepository = categoryRepository;
     }
 
 
@@ -58,12 +58,18 @@ public class QuestionServiceImpl implements QuestionService {
      * @return the question which is created
      */
     @Override
-    public Question addQuestion(final String questionMessage, final long pollId,
+    public Question addQuestion(final String pollId,
+                                final String questionMessage,
                                 final List<String> answerPossibilities,
                                 final String questionType) {
         final Question question = new Question(questionMessage, answerPossibilities, questionType);
-        pollRepository.findById(pollId).get().getGroupList().get(0).getQuestionList().add(question);
-        question.setGroup(pollRepository.findById(pollId).get().getGroupList().get(0));
+        List<Category> categoryList = pollRepository.findById(Long.valueOf(pollId)).orElseThrow(EntityNotFoundException::new).getCategoryList();
+        if (categoryList.isEmpty()) {
+            Category category = new Category("Keine Kategorie", Long.valueOf(pollId));
+            pollRepository.findById(Long.valueOf(pollId)).orElseThrow(EntityNotFoundException::new).getCategoryList().add(category);
+        }
+        categoryList.get(0).getQuestionList().add(question);
+        question.setCategoryId(categoryList.get(0).getCategoryId());
         return question;
     }
 
@@ -106,10 +112,10 @@ public class QuestionServiceImpl implements QuestionService {
     @Override
     public List<Question> getAllQuestions(final long pollId) {
         final Poll poll = pollRepository.findById(pollId).orElseThrow(() -> new EntityNotFoundException());
-        final List<Group> groups = poll.getGroupList();
+        final List<Category> categories = poll.getCategoryList();
         final List<Question> allQuestions = new ArrayList<>();
 
-        for (final Group g : groups) {
+        for (final Category g : categories) {
             for (final Question q : g.getQuestionList()) {
                 allQuestions.add(q);
             }
@@ -122,8 +128,8 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public List<Question> getQuestionsFromGroup(final long groupId) {
-        return questionRepository.findQuestionByGroupId(groupId);
+    public List<Question> getQuestionsFromCategory(final long categoryId) {
+        return questionRepository.findQuestionByCategoryId(categoryId);
     }
 
 

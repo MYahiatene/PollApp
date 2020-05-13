@@ -28,7 +28,6 @@ public class PollController {
         this.pollService = pollService;
     }
 
-    //@CrossOrigin
     @PostMapping(value = "/createpoll", produces = MediaType.APPLICATION_JSON_VALUE)
     public String createPoll(final @RequestBody PollCmd pollCmd) {
         try {

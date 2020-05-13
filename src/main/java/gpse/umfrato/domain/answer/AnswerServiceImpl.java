@@ -2,6 +2,7 @@ package gpse.umfrato.domain.answer;
 
 import gpse.umfrato.domain.question.Question;
 import gpse.umfrato.domain.question.QuestionRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
@@ -19,6 +20,7 @@ public class AnswerServiceImpl implements AnswerService {
      * @param answerRepository   the answer repository with answers
      * @param questionRepository the question repository with questions
      */
+    @Autowired
     public AnswerServiceImpl(final AnswerRepository answerRepository, final QuestionRepository questionRepository) {
         this.answerRepository = answerRepository;
         this.questionRepository = questionRepository;

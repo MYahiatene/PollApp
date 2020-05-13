@@ -24,11 +24,11 @@
                         id="datePicker"
                         v-model="date"
                         no-title
-                        @input="closeMenuAndUpdate"
                         show-current="true"
                         locale="de"
                         :min="new Date().toISOString().substr(0, 10)"
                         max="2100-01-01"
+                        @input="closeMenuAndUpdate"
                     ></v-date-picker>
                 </v-menu>
             </v-col>
@@ -39,7 +39,7 @@
 
 <script>
 export default {
-    name: 'dateTimePicker',
+    name: 'DateTimePicker',
     data: (vm) => ({
         date: new Date().toISOString().substr(0, 10),
         dateFormatted: vm.formatDate(new Date().toISOString().substr(0, 10)),

@@ -5,5 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface QuestionRepository extends JpaRepository<Question, Long> {
-    List<Question> findQuestionByGroupId(final long groupId);
+    List<Question> findQuestionByCategoryId(final long categoryId);
 }
