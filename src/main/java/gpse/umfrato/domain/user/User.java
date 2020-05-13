@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.ElementCollection;
@@ -76,7 +77,7 @@ public class User implements UserDetails {
      */
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        return AuthorityUtils.createAuthorityList(roles.toArray(new String[0]));
     }
 
     /**
@@ -86,7 +87,7 @@ public class User implements UserDetails {
      */
     @Override
     public String getPassword() {
-        return null;
+        return password;
     }
 
     /**
@@ -96,47 +97,45 @@ public class User implements UserDetails {
      */
     @Override
     public String getUsername() {
-        return null;
+        return username;
     }
 
     /**
      * This method returns false if the account is expired.
      *
-     * @return false if account is expired
+     * @return true if account is not expired
      */
     @Override
     public boolean isAccountNonExpired() {
-        return false;
+        return true;
     }
 
     /**
      * This method returns false if the account is locked.
      *
-     * @return false if account is locked
+     * @return true if account is not locked
      */
     @Override
-    public boolean isAccountNonLocked() {
-        return false;
-    }
+    public boolean isAccountNonLocked() { return true; }
 
     /**
      * This method returns false if the credentials is expired.
      *
-     * @return false if the credentials is expired.
+     * @return true if the credentials is not expired.
      */
     @Override
     public boolean isCredentialsNonExpired() {
-        return false;
+        return true;
     }
 
     /**
      * This method returns true if the user is enabled.
      *
-     * @return false if user account is disabled
+     * @return true if user account is enabled
      */
     @Override
     public boolean isEnabled() {
-        return false;
+        return true;
     }
 
     /**
