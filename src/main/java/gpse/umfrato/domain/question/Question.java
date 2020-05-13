@@ -19,7 +19,7 @@ public class Question {
      * This attribute represents an unique id from the object question.
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long questionId;
 
     private Long categoryId;

@@ -66,10 +66,12 @@ public class QuestionServiceImpl implements QuestionService {
         List<Category> categoryList = pollRepository.findById(Long.valueOf(pollId)).orElseThrow(EntityNotFoundException::new).getCategoryList();
         if (categoryList.isEmpty()) {
             Category category = new Category("Keine Kategorie", Long.valueOf(pollId));
+            categoryRepository.save(category);
             pollRepository.findById(Long.valueOf(pollId)).orElseThrow(EntityNotFoundException::new).getCategoryList().add(category);
         }
         categoryList.get(0).getQuestionList().add(question);
         question.setCategoryId(categoryList.get(0).getCategoryId());
+        questionRepository.save(question);
         return question;
     }
 
