@@ -24,8 +24,8 @@
 </template>
 
 <script>
+import axios from 'axios'
 import { mapActions, mapGetters } from 'vuex'
-
 export default {
     name: 'Login',
     data() {
@@ -33,9 +33,15 @@ export default {
             auth: {
                 username: '',
                 password: '',
-                showPassword: false,
             },
+            showPassword: false,
         }
+    },
+    login(username, password) {
+        const credentials = new URLSearchParams()
+        credentials.append('username', username)
+        credentials.append('password', password)
+        return axios.post('/api/authenticate', credentials)
     },
     computed: {
         ...mapGetters({

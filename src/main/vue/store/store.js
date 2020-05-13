@@ -1,4 +1,4 @@
-import Vue from 'vue'
+/* import Vue from 'vue'
 import Vuex from 'vuex'
 
 Vue.use(Vuex)
@@ -20,6 +20,6 @@ export default {
         // hier liegt ein Fehler...
         isAuthenticated: (state) => {
             return state.authenticated
-        },
+        } ,
     },
-}
+} */
