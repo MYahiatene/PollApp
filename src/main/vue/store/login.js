@@ -2,8 +2,8 @@ import axios from 'axios'
 import api from '../api/login'
 
 export const state = () => ({
-    authenticated: null,
-    token: null,
+    authenticated: false,
+    token: '',
 })
 export const mutations = {
     authenticate(state, token) {
