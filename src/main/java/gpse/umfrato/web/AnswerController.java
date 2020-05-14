@@ -18,8 +18,9 @@ public class AnswerController {
 
     final UserService userService;
     final PollService pollService;
-    private final AnswerService answerService;
     final QuestionRepository questionRepository;
+    private final AnswerService answerService;
+
 
     /**
      * This class constructor initializes the objects.
@@ -46,7 +47,7 @@ public class AnswerController {
      */
     @PostMapping("/poll/{pollId:\\d+}/addanswer")
     public void addAnswer(final @RequestBody AnswerCmd answerCmd) {
-        answerService.giveAnswer(answerCmd.getUsername(),answerCmd.getQuestionId(), answerCmd.getAnswerList());
+        answerService.giveAnswer(answerCmd.getUsername(), answerCmd.getQuestionId(), answerCmd.getAnswerList());
     }
 
     /**

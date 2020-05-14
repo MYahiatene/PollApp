@@ -17,6 +17,13 @@ import java.util.List;
 public class QuestionServiceImpl implements QuestionService {
 
     /**
+     * Initializes the poll service.
+     */
+    final PollService pollService;
+
+    final CategoryRepository categoryRepository;
+
+    /**
      * Initializes the poll repository.
      */
     private final PollRepository pollRepository;
@@ -25,13 +32,6 @@ public class QuestionServiceImpl implements QuestionService {
      * Initializes the question repository.
      */
     private final QuestionRepository questionRepository;
-
-    /**
-     * Initializes the poll service.
-     */
-    final PollService pollService;
-
-    final CategoryRepository categoryRepository;
 
     /**
      * This class constructor initializes the poll-, question repository and the poll service.
@@ -63,11 +63,13 @@ public class QuestionServiceImpl implements QuestionService {
                                 final List<String> answerPossibilities,
                                 final String questionType) {
         final Question question = new Question(questionMessage, answerPossibilities, questionType);
-        List<Category> categoryList = pollRepository.findById(Long.valueOf(pollId)).orElseThrow(EntityNotFoundException::new).getCategoryList();
+        List<Category> categoryList = pollRepository.findById(Long.valueOf(pollId)).orElseThrow(
+            EntityNotFoundException::new).getCategoryList();
         if (categoryList.isEmpty()) {
             Category category = new Category("Keine Kategorie", Long.valueOf(pollId));
             categoryRepository.save(category);
-            pollRepository.findById(Long.valueOf(pollId)).orElseThrow(EntityNotFoundException::new).getCategoryList().add(category);
+            pollRepository.findById(Long.valueOf(pollId)).orElseThrow(EntityNotFoundException::new)
+                .getCategoryList().add(category);
         }
         categoryList.get(0).getQuestionList().add(question);
         question.setCategoryId(categoryList.get(0).getCategoryId());

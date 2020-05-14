@@ -31,8 +31,8 @@ public class PollController {
     @PostMapping(value = "/createpoll", produces = MediaType.APPLICATION_JSON_VALUE)
     public String createPoll(final @RequestBody PollCmd pollCmd) {
         try {
-            pollService.createPoll(pollCmd.getPollcreator(), pollCmd.getAnonymityStatus(), pollCmd.getPollname(), pollCmd.getActivatedAt(), pollCmd.getDeactivatedAt(),
-                pollCmd.getPollStatus());
+            pollService.createPoll(pollCmd.getPollcreator(), pollCmd.getAnonymityStatus(), pollCmd.getPollname(),
+                pollCmd.getActivatedAt(), pollCmd.getDeactivatedAt(), pollCmd.getPollStatus());
             return "Poll created!";
         } catch (BadRequestException e) {
             return "Poll creation failed!";

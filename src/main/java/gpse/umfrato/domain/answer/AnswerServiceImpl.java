@@ -1,6 +1,5 @@
 package gpse.umfrato.domain.answer;
 
-import gpse.umfrato.domain.question.Question;
 import gpse.umfrato.domain.question.QuestionRepository;
 import gpse.umfrato.domain.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,14 +11,16 @@ import java.util.List;
 @Service
 public class AnswerServiceImpl implements AnswerService {
 
+    final QuestionRepository questionRepository;
+    final UserRepository userRepository;
     private final AnswerRepository answerRepository;
-    private final QuestionRepository questionRepository;
-    private final UserRepository userRepository;
+
     /**
      * This class constructor initializes the answer- and question repository.
      *
      * @param answerRepository   the answer repository with answers
      * @param questionRepository the question repository with questions
+     * @param userRepository the user repository with all users
      */
     @Autowired
     public AnswerServiceImpl(final AnswerRepository answerRepository, final QuestionRepository questionRepository,
@@ -37,9 +38,10 @@ public class AnswerServiceImpl implements AnswerService {
      * @return the given answer
      */
     @Override
-    public Answer giveAnswer(final String username,final String questionId, final List<String> answerList) {
-        final Answer answer = new Answer(answerList,questionId);
-        userRepository.findById(username).orElseThrow(()->new EntityNotFoundException()).getGivenAnswers().add(answer);
+    public Answer giveAnswer(final String username, final String questionId, final List<String> answerList) {
+        final Answer answer = new Answer(answerList, questionId);
+        userRepository.findById(username).orElseThrow(() -> new EntityNotFoundException()).getGivenAnswers()
+            .add(answer);
         answerRepository.save(answer);
         return answer;
     }
@@ -65,7 +67,7 @@ public class AnswerServiceImpl implements AnswerService {
      * @return the requested answer
      */
     @Override
-    public List<Answer> getAnswerFromOneQuestion(Long questionId) {
+    public List<Answer> getAnswerFromOneQuestion(final Long questionId) {
         return answerRepository.findAnswerByQuestionId(questionId);
     }
 }

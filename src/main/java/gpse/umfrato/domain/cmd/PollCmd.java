@@ -2,7 +2,6 @@ package gpse.umfrato.domain.cmd;
 
 import lombok.Data;
 
-import java.time.LocalDateTime;
 
 @Data
 public class PollCmd {

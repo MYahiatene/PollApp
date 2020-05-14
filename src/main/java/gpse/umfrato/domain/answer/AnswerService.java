@@ -7,9 +7,11 @@ public interface AnswerService {
      * This method adds an answer to the answer list of the question.
      *
      * @param questionId the id of the given question
+     * @param username   the username of the user who gives the answer
+     * @param answerList the list of all possible answers
      * @return the given answer
      */
-    Answer giveAnswer(final String username,final String questionId, final List<String> answerList);
+    Answer giveAnswer(final String username, final String questionId, final List<String> answerList);
 
     /**
      * This method deletes an selected answer.

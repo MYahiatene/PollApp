@@ -1,13 +1,11 @@
 package gpse.umfrato.domain.poll;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import gpse.umfrato.domain.pollgroup.Group;
+import gpse.umfrato.domain.category.Category;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.apache.tomcat.jni.Local;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -74,17 +72,21 @@ public class Poll {
 
     @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL)
-    private List<Group> groupList = new ArrayList<>();
+    private List<Category> categoryList = new ArrayList<>();
 
 
     /**
      * This constructor receives a poll name and saves in the poll object.
-     * @param pollCreator the name of the user who creates the poll
-     * @param pollName the name of the poll
+     *
+     * @param pollCreator     the name of the user who creates the poll
+     * @param pollName        the name of the poll
      * @param anonymityStatus the anonymitystatus of the poll
-     * @param pollStatus the status (activated/deactivated) of the poll
+     * @param pollStatus      the status (activated/deactivated) of the poll
+     * @param activatedAt     the date when the poll activated
+     * @param deactivatedAt   the date when the poll deactivates
      */
-    public Poll(final String pollCreator, final String pollName, final String anonymityStatus, final String activatedAt, final String deactivatedAt, final int pollStatus) {
+    public Poll(final String pollCreator, final String pollName, final String anonymityStatus, final String activatedAt,
+                final String deactivatedAt, final int pollStatus) {
         this.pollname = pollName;
         this.pollCreator = pollCreator;
         this.anonymityStatus = anonymityStatus;

@@ -18,12 +18,12 @@ import java.util.logging.Logger;
 public class QuestionController {
     static final Logger LOGGER = Logger.getLogger("QuestionController");
 
-    private final QuestionService questionService;
+    Question question;
     final UserService userService;
     final PollService pollService;
     final AnswerService answerService;
-    Question question;
     final PollRepository pollRepository;
+    private final QuestionService questionService;
 
 
     /**
@@ -53,8 +53,8 @@ public class QuestionController {
      */
     @PostMapping("/poll/{id:\\d+}/addquestion")
     public void addQuestion(/*@PathVariable("id") final String id*/ final @RequestBody QuestionCmd questionCmd) {
-        questionService.addQuestion(questionCmd.getPollId(), questionCmd.getQuestionMessage(), questionCmd.getAnswerPossibilities(),
-            questionCmd.getQuestionType());
+        questionService.addQuestion(questionCmd.getPollId(), questionCmd.getQuestionMessage(),
+            questionCmd.getAnswerPossibilities(), questionCmd.getQuestionType());
     }
 
     /**

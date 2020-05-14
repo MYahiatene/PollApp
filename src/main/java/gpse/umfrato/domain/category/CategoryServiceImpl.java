@@ -6,8 +6,9 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class CategoryServiceImpl implements CategoryService {
+    final PollRepository pollRepository;
     private final CategoryRepository categoryRepository;
-    private final PollRepository pollRepository;
+
 
     @Autowired
     public CategoryServiceImpl(final CategoryRepository categoryRepository, final PollRepository pollRepository) {
