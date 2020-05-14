@@ -1,5 +1,7 @@
 package gpse.umfrato.domain.answer;
 
+import gpse.umfrato.domain.answer.Answer;
+
 import java.util.List;
 
 public interface AnswerService {
@@ -16,10 +18,9 @@ public interface AnswerService {
     /**
      * This method deletes an selected answer.
      *
-     * @param questionId the id of the question containing the answer
      * @param answerId   the id of the selected answer
      */
-    //void deleteAnswer(final String questionId, final String answerId);
+    String deleteAnswer(final String answerId);
 
     /**
      * This method returns the requested answer.
@@ -36,5 +37,5 @@ public interface AnswerService {
      * @return all answers from a question in a list
      */
     //todo: cmd with username and pollId
-    //List<Answer> getAllAnswersFromPollByUser(String username);
+    List<Answer> getAllAnswersFromPollByUser(final Long pollId, String username);
 }

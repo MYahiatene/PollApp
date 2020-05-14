@@ -2,6 +2,7 @@ package gpse.umfrato.domain.poll;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import gpse.umfrato.domain.category.Category;
+import gpse.umfrato.domain.user.User;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -32,13 +33,11 @@ public class Poll {
     /**
      * This attribute represents the date when the poll was created.
      */
-    @JsonIgnore
     private String creationDate;
 
     /**
      * This attribute represents the date when the poll was edited the last time.
      */
-    @JsonIgnore
     private String lastEditAt;
 
     /**
@@ -50,14 +49,12 @@ public class Poll {
     /**
      * This attribute represents the date when the poll was deactivated.
      */
-    @JsonIgnore
     private String deactivatedDate;
 
     /**
      * This attribute represents the status of the anonymity if it is anonymous, part-anonymous
      * or not anonymous.
      */
-    @JsonIgnore
     private String anonymityStatus;
 
     /**
@@ -70,9 +67,13 @@ public class Poll {
      */
     private int pollStatus;
 
-    @JsonIgnore
+
     @OneToMany(cascade = CascadeType.ALL)
     private List<Category> categoryList = new ArrayList<>();
+    // todo: find out why h2 doesnt create poll_userList
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<User> userList = new ArrayList<>();
+
 
 
     /**
@@ -93,7 +94,6 @@ public class Poll {
         this.activatedDate = activatedAt;
         this.deactivatedDate = deactivatedAt;
         this.pollStatus = pollStatus;
-        //this.groupList.add(new Group("Keine Gruppe"));
     }
 
 }

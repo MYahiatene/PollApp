@@ -18,11 +18,6 @@ import java.util.List;
 public class User implements UserDetails {
 
     /**
-     * The serial version of the object user.
-     */
-    private static final long serialVersionUID = 0L;
-
-    /**
      * This attribute represents the username of the user.
      */
     @Id

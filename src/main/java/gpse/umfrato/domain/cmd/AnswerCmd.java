@@ -13,4 +13,8 @@ public class AnswerCmd {
 
     private List<String> answerList;
 
+    private String answerId;
+
+    private String pollId;
+
 }

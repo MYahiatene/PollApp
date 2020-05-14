@@ -1,5 +1,6 @@
 package gpse.umfrato.domain.poll;
 
+import gpse.umfrato.domain.poll.Poll;
 
 import java.util.List;
 

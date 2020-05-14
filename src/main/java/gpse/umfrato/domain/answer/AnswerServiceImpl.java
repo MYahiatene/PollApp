@@ -1,12 +1,16 @@
 package gpse.umfrato.domain.answer;
 
+import gpse.umfrato.domain.category.CategoryRepository;
+import gpse.umfrato.domain.poll.PollRepository;
 import gpse.umfrato.domain.question.QuestionRepository;
+import gpse.umfrato.domain.user.User;
 import gpse.umfrato.domain.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class AnswerServiceImpl implements AnswerService {
@@ -14,20 +18,25 @@ public class AnswerServiceImpl implements AnswerService {
     final QuestionRepository questionRepository;
     final UserRepository userRepository;
     private final AnswerRepository answerRepository;
+    private final PollRepository pollRepository;
+    private final CategoryRepository categoryRepository;
 
     /**
      * This class constructor initializes the answer- and question repository.
      *
      * @param answerRepository   the answer repository with answers
      * @param questionRepository the question repository with questions
-     * @param userRepository the user repository with all users
+     * @param userRepository     the user repository with all users
      */
     @Autowired
     public AnswerServiceImpl(final AnswerRepository answerRepository, final QuestionRepository questionRepository,
-                             final UserRepository userRepository) {
+                             final UserRepository userRepository, final PollRepository pollRepository,
+                             final CategoryRepository categoryRepository) {
         this.answerRepository = answerRepository;
         this.questionRepository = questionRepository;
         this.userRepository = userRepository;
+        this.pollRepository = pollRepository;
+        this.categoryRepository = categoryRepository;
     }
 
     /**
@@ -40,6 +49,11 @@ public class AnswerServiceImpl implements AnswerService {
     @Override
     public Answer giveAnswer(final String username, final String questionId, final List<String> answerList) {
         final Answer answer = new Answer(answerList, questionId);
+        User user= userRepository.findById(username).orElseThrow(EntityNotFoundException::new);
+      Long categoryID =  questionRepository.findById(Long.valueOf(questionId)).orElseThrow(EntityNotFoundException::new)
+          .getCategoryId();
+        Long pollId = categoryRepository.findById(categoryID).orElseThrow(EntityNotFoundException::new).getPollId();
+        pollRepository.findById(pollId).orElseThrow(EntityNotFoundException::new).getUserList().add(user);
         userRepository.findById(username).orElseThrow(() -> new EntityNotFoundException()).getGivenAnswers()
             .add(answer);
         answerRepository.save(answer);
@@ -49,16 +63,15 @@ public class AnswerServiceImpl implements AnswerService {
     /**
      * This method deletes an selected answer.
      *
-     * @param questionId the id of the question containing the answer
-     * @param answerId   the id of the selected answer
+     * @param answerId the id of the selected answer
      */
-    /*@Override
-    public void deleteAnswer(final String username,final String questionId, final String answerId) {
-        final Question question =
-            questionRepository.findById(Long.valueOf(questionId)).orElseThrow(() -> new EntityNotFoundException());
-        final List<Answer> answerList = question.getGivenAnswers();
-        answerList.removeIf(obj -> obj.getId() == Long.valueOf(answerId));
-    }*/
+    @Override
+    public String deleteAnswer(final String answerId) {
+        String givenAnswerList = answerRepository.findById(Long.valueOf(answerId)).orElseThrow(EntityNotFoundException::new)
+            .getGivenAnswerList().toString();
+        answerRepository.deleteById(Long.valueOf(answerId));
+        return givenAnswerList;
+    }
 
     /**
      * This method returns the requested answer.
@@ -69,5 +82,14 @@ public class AnswerServiceImpl implements AnswerService {
     @Override
     public List<Answer> getAnswerFromOneQuestion(final Long questionId) {
         return answerRepository.findAnswerByQuestionId(questionId);
+    }
+
+    @Override
+    public List<Answer> getAllAnswersFromPollByUser(final Long pollId, String username) {
+        List<User> pollUserList = pollRepository.findById(pollId).orElseThrow(EntityNotFoundException::new).getUserList();
+        User user = pollUserList.stream().filter(u -> u.getUsername().equals(username)).findFirst()
+            .orElseThrow(EntityNotFoundException::new);
+        return user.getGivenAnswers();
+
     }
 }

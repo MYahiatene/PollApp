@@ -17,7 +17,6 @@ import java.util.List;
 public class AnswerController {
 
     final UserService userService;
-    final PollService pollService;
     final QuestionRepository questionRepository;
     private final AnswerService answerService;
 
@@ -26,15 +25,14 @@ public class AnswerController {
      * This class constructor initializes the objects.
      *
      * @param userService        the user service
-     * @param pollService        the poll service
+
      * @param answerService      the answer service
      * @param questionRepository the question repository
      */
     @Autowired
-    public AnswerController(final UserService userService, final PollService pollService,
+    public AnswerController(final UserService userService,
                             final AnswerService answerService, final QuestionRepository questionRepository) {
         this.answerService = answerService;
-        this.pollService = pollService;
         this.userService = userService;
         this.questionRepository = questionRepository;
 
@@ -52,16 +50,11 @@ public class AnswerController {
 
     /**
      * This method deletes an answer.
-     *
-     * @param questionId the question id from the question
-     * @param answerId   the answer id from the answer
      */
-    /*@PostMapping("/poll/{pollId:\\d+}/question/{questionId:\\d+}/deleteanswer/{answerId:\\d+}")
-    public void deleteAnswer(
-        @PathVariable("questionId") final String questionId,
-        @PathVariable("answerId") final String answerId) {
-        answerService.deleteAnswer(questionId, answerId);
-    }*/
+    @PostMapping("/question/{questionId:\\d+}/deleteanswer")
+    public void deleteAnswer(final @RequestBody AnswerCmd answerCmd) {
+        answerService.deleteAnswer(answerCmd.getAnswerId());
+    }
 
     /**
      * This method returns a requested answer.
@@ -73,5 +66,10 @@ public class AnswerController {
     @GetMapping("/poll/getAnswer")
     public List<Answer> getAnswerFromOneQuestion(final @RequestBody AnswerCmd answerCmd) {
         return answerService.getAnswerFromOneQuestion(Long.valueOf(answerCmd.getQuestionId()));
+    }
+
+    @GetMapping("/poll/getAnswerFromUser")
+    public List<Answer> getAnswersFromPollByUser(final @RequestBody AnswerCmd answerCmd) {
+        return answerService.getAllAnswersFromPollByUser(Long.valueOf(answerCmd.getPollId()), answerCmd.getUsername());
     }
 }
