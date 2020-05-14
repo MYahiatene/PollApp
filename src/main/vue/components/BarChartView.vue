@@ -1,4 +1,5 @@
 <script>
+// This compoent gets options and chartdata as props and displayes a barChart from it
 import { Bar } from 'vue-chartjs'
 
 export default {

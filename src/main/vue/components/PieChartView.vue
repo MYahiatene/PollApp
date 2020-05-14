@@ -1,4 +1,5 @@
 <script>
+// This compoent gets options and chartdata as props and displayes a pieChart from it
 import { Pie } from 'vue-chartjs'
 
 export default {

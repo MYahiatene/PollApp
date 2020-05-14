@@ -1,21 +1,26 @@
 <template>
+    <!--     This page is called whenever you want to see the Evaluation of a survey.
+It provides a first overview of the result by displaying a table as well as a diagram for each separate question.
+Thusly the user can easily get a first impression on the results.
+-->
     <v-container>
+        <!--        the app bar is used to navigate the page.
+All the buttons here apply to the entire poll, nit one individual question-->
         <v-app-bar fixed app elevate-on-scroll>
             <v-toolbar-title> {{ PollResult.name }}</v-toolbar-title>
 
             <v-dialog v-model="dialog">
-                <!--                <template v-slot:activator="{ on }">-->
-                <!--                    <v-btn color="red lighten-2" dark v-on="on">-->
-                <!--                        Click Me-->
-                <!--                    </v-btn>-->
-                <!--                </template>-->
+                <!--             Here we open a setting window
+where the user can change the visual settings of every question at the same time-->
                 <v-card
                     ><visual-evaluation-settings v-on:update-Visuals="updateVisuals"> </visual-evaluation-settings
                 ></v-card>
             </v-dialog>
             <v-spacer></v-spacer>
-
+            <!-- here we have a search component, that allows the user to jump to a specific question in the poll-->
             <v-app-bar flat>
+                <!--                 oninput: When the user types a number that is higher that the highest question Id or below zero,
+the input will be deleted as it is invalid-->
                 <v-text-field
                     id="startValue"
                     :value="highestQuestionId"
@@ -29,6 +34,7 @@
                     class="shrink"
                 ></v-text-field>
                 <v-spacer></v-spacer>
+                <!--                After pressing this button we will jump to he href that is associated with the questionId we have entered -->
                 <a :href="linkToQuestion" id="jump">
                     <v-btn>
                         Los
@@ -38,10 +44,13 @@
 
             <v-spacer></v-spacer>
 
+            <!--            This button will lead to the Page where we can filter and analyse the data-->
+
             <v-btn>
                 Analyse
             </v-btn>
 
+            <!--            here we have a sub menu, that can hold a list of different options or setings-->
             <v-menu bottom left>
                 <template v-slot:activator="{ on }">
                     <v-btn icon color="teal" v-on="on">
@@ -57,16 +66,11 @@
             </v-menu>
         </v-app-bar>
 
+        <!--        this is the real content of the page, a list of ChoiceQuestionEvaluationWidgets,
+that each display a basic evaluation of one specific question-->
         <v-container>
             <v-row>
                 <v-col cols="12" lg="3"> </v-col>
-
-                <!--                <v-overflow-btn-->
-                <!--                    v-model="questionToJumpTo"-->
-                <!--                    :items="idList"-->
-                <!--                    label=" "-->
-                <!--                    @change=""-->
-                <!--                ></v-overflow-btn>-->
             </v-row>
             <v-row>
                 <v-col cols="12" fluid>
@@ -88,7 +92,6 @@
                 </v-col>
             </v-row>
         </v-container>
-        <!--        <p>{{ chartdataSets[0].labels[0] }}</p>-->
     </v-container>
 </template>
 
@@ -101,14 +104,20 @@ export default {
     components: { ChoiceQuestionEvaluationWidget, visualEvaluationSettings },
     data() {
         return {
+            // by default we will jump to question 1
             questionToJumpTo: '',
             linkToQuestion: '#Frage1',
+            // the dialog (setting window) is closed by default
             dialog: false,
+            // default settings for the visual settings, they are passed as props into the choiceQuestionEvaluationWidgets
             defaultColor: '#888888',
             defaultDiagramType: 'bar',
             showDiagram: true,
             showTable: true,
+            // options that will be displayed in the sub menu
             menuItems: [{ title: 'Visuelle Einstellungen' }, { title: 'Exportieren' }],
+
+            // mock data set
             PollResult: {
                 name: 'Mittagessen Umfrage',
                 questionList: [
@@ -144,52 +153,14 @@ export default {
                     },
                 ],
             },
-            // firstchartdataSet: {
-            //     labels: ['Ja', 'Nein', 'Enthaltung'],
-            //     datasets: [
-            //         {
-            //             label: 'Do you like cake?',
-            //             backgroundColor: '#888888',
-            //             data: [3, 3, 14],
-            //         },
-            //     ],
-            // },
-
-            // chartdataSets: [
-            //     {
-            //         labels: ['Good', 'Bad', 'Okay'],
-            //         datasets: [
-            //             {
-            //                 label: 'How are you?',
-            //                 backgroundColor: '#111111',
-            //                 data: [18, 5, 7],
-            //             },
-            //         ],
-            //     },
-            //     {
-            //         labels: ['female', 'male', 'other'],
-            //         datasets: [
-            //             {
-            //                 label: 'What is your gender?',
-            //                 backgroundColor: '#444444',
-            //                 data: [6, 16, 8],
-            //             },
-            //         ],
-            //     },
-            //     {
-            //         labels: ['Ja', 'Nein', 'Enthaltung'],
-            //         datasets: [
-            //             {
-            //                 label: 'Do you like cake?',
-            //                 backgroundColor: '#888888',
-            //                 data: [3, 3, 14],
-            //             },
-            //         ],
-            //     },
-            // ],
         }
     },
     computed: {
+        /**
+         * creates array with all the questionId in a list, not needed right now, but might come in handy
+         * @returns an array with all the ids from questionList
+         */
+
         idList() {
             const l = []
             for (let i = 0; i < this.PollResult.questionList.length; i++) {
@@ -198,39 +169,22 @@ export default {
             return l
         },
 
+        /**
+         * Gives us the highest questionId
+         * @returns {number} length of questionList
+         */
+
         highestQuestionId() {
             return this.PollResult.questionList.length
         },
-        // chartdataSets() {
-        //     const c = []
-        //     for (let i = 0; i < this.PollResult.questionList; i++) {
-        //         c.push({
-        //             labels: this.PollResult.questionList[i].answerPossibilities,
-        //             datasets: [
-        //                 {
-        //                     label: this.PollResult.questionList[i].title,
-        //                     backgroundColor: this.defaultColor,
-        //                     data: this.questionList[i].data,
-        //                 },
-        //             ],
-        //         })
-        //     }
-        //
-        //     return c
-        // },
-        // chartdataSets() {
-        //     const c = []
-        //     for (let i = 0; i < this.PollResult.questionList; i++) {
-        //         c.push(this.firstchartdataSet)
-        //     }
-        //
-        //     return c
-        // },
-        // chartdataSet() {
-        //     return this.chartdataSets[0]
-        // },
     },
     methods: {
+        /*
+
+        this method is emitted by the settings window.
+        Once its called we update the visual settings of all the choiceQuestionEvaluationWidgets
+
+         */
         updateVisuals(showDiagram, DiagramType, DiagramColor, showTable) {
             this.showDiagram = showDiagram
             this.defaultDiagramType = DiagramType
@@ -238,6 +192,11 @@ export default {
             this.showTable = showTable
             this.dialog = false
         },
+
+        /*
+        this method creates a unique href link for a question by concatenating the String "#Frage" with its id
+        and saves it in linkToQuestion. It also resets questionToJumpTo to 1.
+         */
 
         changeLinkToQuestion() {
             this.linkToQuestion = '#Frage' + this.questionToJumpTo
