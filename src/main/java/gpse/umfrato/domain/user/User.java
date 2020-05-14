@@ -7,6 +7,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;
 
+
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -17,7 +18,7 @@ import java.util.List;
 
 @Entity
 @Data
-@NoArgsConstructor
+// @NoArgsConstructor
 public class User implements UserDetails {
 
     /**
@@ -70,6 +71,8 @@ public class User implements UserDetails {
         this.password = password;
     }
 
+    protected User() {
+    }
     /**
      * This method returns the authorities from the user.
      *

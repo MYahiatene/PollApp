@@ -54,6 +54,12 @@ export default {
             this.requestToken(this.auth).then(() => this.$router.push('/'))
         },
     },
+    watch: {
+        count (newCount, oldCount) {
+            // Our fancy notification (2).
+            console.log(`We have ${newCount} fruits now, yay!`)
+        }
+    }
 }
 </script>
 
