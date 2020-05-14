@@ -8,7 +8,7 @@
                         <v-flex class="ma-n4">
                             <v-list v-for="categorie in categories" :key="categorie.id" two-line>
                                 <v-subheader class="headline">{{ categorie.name }}</v-subheader>
-                                <draggable v-model="categories.items" group="questions">
+                                <draggable v-model="categories.items" category="questions">
                                     <v-list v-for="item in categorie.items" :key="item.id">
                                         <v-list-item-title :key="item.title">
                                             <v-list-item-content>

@@ -44,11 +44,9 @@ public class AnswerController {
      *
      * @param answerCmd the answerCmd which has the requested data
      */
-    @PostMapping("/poll/{pollId:\\d+}/question/{questionId:\\d+}/addanswer")
-    public void addAnswer(
-        /*@PathVariable("questionId") final String questionId*/final @RequestBody AnswerCmd answerCmd) {
-        answerService.giveAnswer(answerCmd.getAnswer(), answerCmd.getQuestionId(), answerCmd.getAnswerType(), answerCmd.
-            getUsername());
+    @PostMapping("/poll/{pollId:\\d+}/addanswer")
+    public void addAnswer(final @RequestBody AnswerCmd answerCmd) {
+        answerService.giveAnswer(answerCmd.getUsername(),answerCmd.getQuestionId(), answerCmd.getAnswerList());
     }
 
     /**
@@ -57,12 +55,12 @@ public class AnswerController {
      * @param questionId the question id from the question
      * @param answerId   the answer id from the answer
      */
-    @PostMapping("/poll/{pollId:\\d+}/question/{questionId:\\d+}/deleteanswer/{answerId:\\d+}")
+    /*@PostMapping("/poll/{pollId:\\d+}/question/{questionId:\\d+}/deleteanswer/{answerId:\\d+}")
     public void deleteAnswer(
         @PathVariable("questionId") final String questionId,
         @PathVariable("answerId") final String answerId) {
         answerService.deleteAnswer(questionId, answerId);
-    }
+    }*/
 
     /**
      * This method returns a requested answer.
@@ -70,19 +68,9 @@ public class AnswerController {
      * @param answerCmd gives the answerId of the requested answer
      * @return the requested answer
      */
-    @GetMapping("/poll/{pollId:\\d+}/question/{questionId:\\d+}/getanswer/{answerId:\\d+}")
-    public Answer getAnswer(final @RequestBody AnswerCmd answerCmd) {
-        return answerService.getAnswer(Long.valueOf(answerCmd.getAnswerId()));
-    }
-
-    /**
-     * This method returns all answers from a requested question.
-     *
-     * @param answerCmd gives the answerId of the answer
-     * @return the requested answers of a questions in a list
-     */
-    @GetMapping("/poll/{pollId:\\d+}/question/{questionId:\\d+}/getanswers}")
-    public List<Answer> getAnswers(final @RequestBody AnswerCmd answerCmd) {
-        return answerService.getAllAnswers(answerCmd.getQuestionId());
+    //todo: url anpassen
+    @GetMapping("/poll/getAnswer")
+    public List<Answer> getAnswerFromOneQuestion(final @RequestBody AnswerCmd answerCmd) {
+        return answerService.getAnswerFromOneQuestion(Long.valueOf(answerCmd.getQuestionId()));
     }
 }

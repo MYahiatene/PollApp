@@ -1,7 +1,6 @@
 package gpse.umfrato.domain.question;
 
 import gpse.umfrato.domain.answer.Answer;
-import gpse.umfrato.domain.pollgroup.Group;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -16,15 +15,14 @@ import java.util.List;
 @NoArgsConstructor
 public class Question {
 
-    //private static final long serialVersionUID = 1;
-
     /**
      * This attribute represents an unique id from the object question.
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long questionId;
 
+    private Long categoryId;
     /**
      * This attribute represents the question message.
      */
@@ -36,22 +34,9 @@ public class Question {
 
 
     /**
-     * This attribute represents the group where the question is assigned.
-     */
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Group group;
-
-
-    /**
      * This attribute represents the type of question (dropdown, text field, ...).
      */
     private String questionType;
-
-    /**
-     * This attribute represents a list with all answers for this question.
-     */
-    @OneToMany(cascade = CascadeType.ALL)
-    private List<Answer> givenAnswers;
 
     private int numberOfPossibleAnswers;
     /**

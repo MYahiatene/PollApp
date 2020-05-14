@@ -1,7 +1,6 @@
-package gpse.umfrato.domain.pollgroup;
+package gpse.umfrato.domain.category;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import gpse.umfrato.domain.poll.Poll;
 import gpse.umfrato.domain.question.Question;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,7 +12,7 @@ import java.util.List;
 @Entity
 @Data
 @NoArgsConstructor
-public class Group {
+public class Category {
 
 
     /**
@@ -21,15 +20,14 @@ public class Group {
      */
     @Id
     @GeneratedValue
-    private long id;
+    private long categoryId;
 
-    private String groupName;
+    private String categoryName;
 
     /**
      * This attribute represents the poll where the group is assigned.
      */
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Poll poll;
+    private Long pollId;
 
     /**
      * This attribute represents a question list with all questions of this poll.
@@ -38,8 +36,9 @@ public class Group {
     @OneToMany(cascade = CascadeType.ALL)
     private List<Question> questionList = new ArrayList<>();
 
-    public Group(final String name) {
-        this.groupName = name;
+    public Category(final String name, final Long pollId) {
+        this.categoryName = name;
+        this.pollId = pollId;
     }
 
 }
