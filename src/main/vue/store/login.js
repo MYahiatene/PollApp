@@ -3,8 +3,8 @@ import api from '../api/login'
 // import Vuex from 'Vuex'
 
 export const state = () => ({
-    authenticated: null,
-    token: null,
+    authenticated: false,
+    token: '',
 })
 export const mutations = {
     authenticate(state, token) {
