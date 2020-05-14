@@ -55,11 +55,11 @@ export default {
         },
     },
     watch: {
-        count (newCount, oldCount) {
+        count(newCount, oldCount) {
             // Our fancy notification (2).
             console.log(`We have ${newCount} fruits now, yay!`)
-        }
-    }
+        },
+    },
 }
 </script>
 

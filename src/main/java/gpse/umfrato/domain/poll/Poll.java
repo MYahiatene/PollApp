@@ -80,5 +80,4 @@ public class Poll {
     public Poll(final String pollName) {
         this.pollname = pollName;
     }
-
 }

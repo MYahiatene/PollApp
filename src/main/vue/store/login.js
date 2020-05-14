@@ -1,6 +1,5 @@
 import axios from 'axios'
 import api from '../api/login'
-// import Vuex from 'Vuex'
 
 export const state = () => ({
     authenticated: null,
@@ -40,7 +39,7 @@ export const actions = {
     },
 }
 
-store.subscribe((mutation, state) => {
+/* store.subscribe((mutation, state) => {
     localStorage.setItem('store', JSON.stringify(state))
     axios.defaults.headers.Authorization = state.token
-})
+}) */

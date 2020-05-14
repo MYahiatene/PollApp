@@ -1,3 +1,4 @@
+/*
 package gpse.umfrato.domain;
 
 import gpse.umfrato.domain.answer.AnswerService;
@@ -22,14 +23,16 @@ public class InitializeDatabase implements InitializingBean {
     private final AnswerService answerService;
 
 
-    /**
+    */
+/**
      * This method initializes the database.
      *
      * @param userService     the object user service
      * @param pollService     the object poll service
      * @param questionService the object question service
      * @param answerService   the object answer service
-     */
+     *//*
+
     @Autowired
     public InitializeDatabase(final UserService userService, final PollService pollService,
                               final QuestionService questionService, final AnswerService answerService) {
@@ -40,9 +43,11 @@ public class InitializeDatabase implements InitializingBean {
 
     }
 
-    /**
+    */
+/**
      * This method loads a test user in user service and creates a poll.
-     */
+     *//*
+
     @Override
     public void afterPropertiesSet() {
         try {
@@ -56,6 +61,6 @@ public class InitializeDatabase implements InitializingBean {
                 "{bcrypt}$2a$10$WoG5Z4YN9Z37EWyNCkltyeFr6PtrSXSLMeFWOeDUwcanht5CIJgPa",
                 "Bob", "Martin", "ROLE_USER");
         }
-
     }
 }
+*/
