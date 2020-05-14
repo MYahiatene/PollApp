@@ -1,6 +1,7 @@
 package gpse.umfrato.domain.poll;
 
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface PollService {
@@ -14,7 +15,7 @@ public interface PollService {
      * @param pollStatus      status of the poll if it is activated or deactivated
      * @return the created poll
      */
-    Poll createPoll(final String pollcreator, final String anonymityStatus, final String pollname,
+    Poll createPoll(final String pollcreator, final String anonymityStatus, final String pollname, final String activatedAt, final String deactivatedAt,
                     final int pollStatus);
 
     /**

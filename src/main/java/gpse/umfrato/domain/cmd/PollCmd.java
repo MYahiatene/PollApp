@@ -2,6 +2,8 @@ package gpse.umfrato.domain.cmd;
 
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 @Data
 public class PollCmd {
 
@@ -9,13 +11,13 @@ public class PollCmd {
 
     private String pollcreator;
 
-    //private LocalDateTime pollCreatedAt;
+    //private String pollCreatedAt;
 
-    //private LocalDateTime lastEditAt;
+    //private String lastEditAt;
 
-    //private LocalDateTime activatedAt;
+    private String activatedAt;
 
-    //private LocalDateTime deactivatedAt;
+    private String deactivatedAt;
 
     private String anonymityStatus;
 

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import gpse.umfrato.domain.pollgroup.Group;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.tomcat.jni.Local;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -34,26 +35,25 @@ public class Poll {
      * This attribute represents the date when the poll was created.
      */
     @JsonIgnore
-    private LocalDateTime creationDate;
+    private String creationDate;
 
     /**
      * This attribute represents the date when the poll was edited the last time.
      */
     @JsonIgnore
-    private LocalDateTime lastEditAt;
+    private String lastEditAt;
 
     /**
      * This attribute represents the date when the poll was activated.
      */
     // use Instant instead , cause of time zone
-    @JsonIgnore
-    private LocalDateTime activatedDate;
+    private String activatedDate;
 
     /**
      * This attribute represents the date when the poll was deactivated.
      */
     @JsonIgnore
-    private LocalDateTime deactivatedDate;
+    private String deactivatedDate;
 
     /**
      * This attribute represents the status of the anonymity if it is anonymous, part-anonymous
@@ -84,10 +84,12 @@ public class Poll {
      * @param anonymityStatus the anonymitystatus of the poll
      * @param pollStatus the status (activated/deactivated) of the poll
      */
-    public Poll(final String pollCreator, final String pollName, final String anonymityStatus, final int pollStatus) {
+    public Poll(final String pollCreator, final String pollName, final String anonymityStatus, final String activatedAt, final String deactivatedAt, final int pollStatus) {
         this.pollname = pollName;
         this.pollCreator = pollCreator;
         this.anonymityStatus = anonymityStatus;
+        this.activatedDate = activatedAt;
+        this.deactivatedDate = deactivatedAt;
         this.pollStatus = pollStatus;
         //this.groupList.add(new Group("Keine Gruppe"));
     }

@@ -34,8 +34,36 @@
                     </v-row>
 
                     <v-row v-if="switch1" no-gutters>
-                        <v-col cols="12" md="4">
-                            <date-time-picker />
+                        <v-col cols="12" lg="2">
+                            <v-menu
+                                ref="menu"
+                                v-model="menu"
+                                :close-on-content-click="false"
+                                transition="scale-transition"
+                                offset-y
+                                max-width="290px"
+                                min-width="290px"
+                            >
+                                <template v-slot:activator="{ on }">
+                                    <v-text-field
+                                        v-model="dateFormatted"
+                                        label="Datum"
+                                        persistent-hint
+                                        @blur="date = parseDate(dateFormatted)"
+                                        v-on="on"
+                                    ></v-text-field>
+                                </template>
+                                <v-date-picker
+                                    id="datePicker"
+                                    v-model="date"
+                                    no-title
+                                    show-current="true"
+                                    locale="de"
+                                    :min="new Date().toISOString().substr(0, 10)"
+                                    max="2100-01-01"
+                                    @input="closeMenuAndUpdate"
+                                ></v-date-picker>
+                            </v-menu>
                         </v-col>
                     </v-row>
 
@@ -44,7 +72,8 @@
                     </v-row>
                     <v-row v-if="switch2" no-gutters>
                         <v-col cols="12" md="4">
-                            <date-time-picker />
+                            <dateTimePicker v-model="deactivatedDate"></dateTimePicker>
+                            <p>{{ deactivatedDate }}</p>
                         </v-col>
                     </v-row>
                 </v-container>
@@ -58,8 +87,6 @@
 </template>
 
 <script>
-import DateTimePicker from '../components/dateTimePicker'
-
 const axios = require('axios')
 const instance = axios.create({
     baseURL: 'http://127.0.0.1:8088/api/',
@@ -68,13 +95,18 @@ const instance = axios.create({
 })
 export default {
     name: 'QuestionCreation',
-    components: { DateTimePicker },
+    components: {},
     data() {
         return {
             switch1: false,
             switch2: false,
             valid: false,
             title: '',
+            activatedDate: new Date(),
+            deactivatedDate: new Date(),
+            date: new Date().toISOString().substr(0, 10),
+            dateFormatted: this.formatDate(new Date().toISOString().substr(0, 10)),
+            menu: false,
             selectedAnonymityType: '',
             anonomityTypes: [
                 {
@@ -94,6 +126,7 @@ export default {
             anonymityRules: [(v) => !!v || 'Anonymitätsgrad fehlt.'],
         }
     },
+    computed: {},
     methods: {
         validate() {
             this.$refs.form.validate()
@@ -103,6 +136,8 @@ export default {
                 pollcreator: 'Richie',
                 anonymityStatus: this.selectedAnonymityType,
                 pollname: this.title,
+                activatedAt: this.dateFormatted,
+                deactivatededAt: null,
                 pollStatus: 0,
             }
             instance
@@ -113,6 +148,24 @@ export default {
                 .catch((error) => {
                     console.log(error)
                 })
+        },
+        formatDate(date) {
+            if (!date) return null
+            const [year, month, day] = date.split('-')
+            return `${day}.${month}.${year}`
+        },
+        parseDate(date) {
+            if (!date) return null
+            const [day, month, year] = date.split('.')
+            return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
+        },
+        reformatDate() {
+            this.dateFormatted = this.formatDate(this.date)
+        },
+
+        closeMenuAndUpdate() {
+            this.menu = false
+            this.reformatDate()
         },
     },
 }
