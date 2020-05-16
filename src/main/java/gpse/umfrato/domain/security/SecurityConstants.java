@@ -1,21 +1,21 @@
 package gpse.umfrato.domain.security;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@ConfigurationProperties("security") //<1>
+@ConfigurationProperties("security")
 final class SecurityConstants {
 
-    private String authLoginUrl; //<2>
+    private String authLoginUrl;
 
     // Signing key für den HS512-Algorithm
     // Eigene Schlüssel könnt ihr unter http://www.allkeysgenerator.com/ erstellen lassen.
-    private String jwtSecret; //<3>
+    private String jwtSecret;
 
     // JWT Token-Standardwerte
-    private String tokenHeader; //<4>
-    private String tokenPrefix; //<5>
-    private String tokenType; //<6>
-    private String tokenIssuer; //<7>
-    private String tokenAudience; //<8>
+    private String tokenHeader;
+    private String tokenPrefix;
+    private String tokenType;
+    private String tokenIssuer;
+    private String tokenAudience;
 
     public String getJwtSecret() {
         return jwtSecret;

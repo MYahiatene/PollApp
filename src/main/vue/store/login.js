@@ -28,11 +28,11 @@ export const mutations = {
     }, */
 }
 export const actions = {
-    requestToken({ commit }, credentials) {
+    requestToken({ commit }, input) {
         return new Promise((resolve, reject) => {
             const credentials = new URLSearchParams()
-            credentials.append('username', credentials.username)
-            credentials.append('password', credentials.password)
+            credentials.append('username', input.username)
+            credentials.append('password', input.password)
             instance
                 .post('/api/authenticate', credentials)
                 .then((res) => {
