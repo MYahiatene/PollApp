@@ -2,8 +2,12 @@ package gpse.umfrato.domain.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import gpse.umfrato.domain.answer.Answer;
+import gpse.umfrato.domain.poll.Poll;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -44,6 +48,10 @@ public class User implements UserDetails {
     @JsonIgnore
     private String password;
 
+    @OneToMany
+    private List<Poll> poll;
+
+
     /**
      * This attribute represents a list with the roles of this user.
      */
@@ -56,6 +64,7 @@ public class User implements UserDetails {
     /**
      * This attribute represents a list with all answers for this question.
      */
+    @LazyCollection(LazyCollectionOption.FALSE)
     @OneToMany(cascade = CascadeType.ALL)
     private List<Answer> givenAnswers;
 
