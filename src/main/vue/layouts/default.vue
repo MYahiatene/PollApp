@@ -1,7 +1,10 @@
 <template>
     <v-app light>
         <v-app-bar fixed app>
-            <v-toolbar-title v-text="title" />
+            <v-toolbar-title>
+                <v-btn x-large text :to="'/'"> {{ title }} </v-btn>
+            </v-toolbar-title>
+
             <v-spacer />
 
             <v-div v-for="(item, i) in items" :key="i" router exact>
@@ -9,6 +12,8 @@
                     {{ item.title }}
                 </v-btn>
             </v-div>
+
+            <v-btn text :to="'/Login'"> <v-icon>mdi-account</v-icon> Account </v-btn>
         </v-app-bar>
         <v-content>
             <v-container>
@@ -28,21 +33,17 @@ export default {
         return {
             fixed: false,
             items: [
-                {
-                    icon: 'mdi-apps',
-                    title: 'Start',
-                    to: '/',
-                },
-                {
-                    icon: 'mdi-account',
-                    title: 'Login',
-                    to: '/Login',
-                },
-                {
-                    icon: 'mdi-account-multiple',
-                    title: 'Administration',
-                    to: '/Administration',
-                },
+                // {
+                //     icon: 'mdi-apps',
+                //     title: 'Start',
+                //     to: '/',
+                // },
+                // {
+                //     icon: 'mdi-account',
+                //     title: 'Login',
+                //     to: '/Login',
+                // },
+
                 {
                     icon: 'mdi-pencil',
                     title: 'Konfiguration',
@@ -52,6 +53,11 @@ export default {
                     icon: 'mdi-chart-bubble',
                     title: 'Auswertung',
                     to: '/Analyse',
+                },
+                {
+                    icon: 'mdi-account-multiple',
+                    title: 'Administration',
+                    to: '/Administration',
                 },
             ],
 
