@@ -30,6 +30,12 @@ public class UserController {
         this.userRepository = userRepository;
     }
 
+    @PostMapping("/authenticate")
+    public String authenticateUser(final @RequestBody String text)
+    {
+        LOGGER.info(text);
+        return null;
+    }
     /**
      * This method creates a user.
      *

@@ -13,6 +13,7 @@
                     prepend-icon="mdi-lock"
                     :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
                     @click:append="showPassword = !showPassword"
+                    :error="authenticated === false"
                 />
             </v-form>
         </v-card-text>
@@ -50,9 +51,8 @@ export default {
         },
     },
     watch: {
-        count(newCount, oldCount) {
-            // Our fancy notification (2).
-            console.log(`We have ${newCount} fruits now, yay!`)
+        authenticated: () => {
+            alert('Willkommen')
         },
     },
 }
