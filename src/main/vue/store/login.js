@@ -11,6 +11,11 @@ const instance = axios.create({
     timeout: 1000,
     headers: { 'X-Custom-Header': 'foobar' },
 })
+export const getters = {
+    isAuthenticated: (state) => {
+        return state.authenticated
+    },
+}
 export const mutations = {
     authenticate(state, token) {
         if (token !== null) {
