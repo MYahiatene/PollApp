@@ -6,6 +6,7 @@
                 <v-card-title class="headline">
                     Willkommen zu Umfrato!
                 </v-card-title>
+                <v-img src="Logo.svg"></v-img>
                 <v-card-text>
                     Viel Spaß beim Umfragen erstellen!
                 </v-card-text>
