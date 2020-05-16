@@ -67,7 +67,7 @@ export default {
         },
           light: {
               base: colors.teal.lighten4,
-              primary: colors.teal.lighten1,
+              primary: '#114455',
               accent: colors.grey.darken3,
               secondary: colors.amber.darken3,
               info: colors.teal.lighten1,

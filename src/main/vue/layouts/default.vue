@@ -1,5 +1,5 @@
 <template>
-    <v-app style="background: #b2dfdb;">
+    <v-app style="background: #eefcfa;">
         <v-app-bar>
             <!--<v-img src="LogoEinfach" contain></v-img>
             <v-toolbar-title v-text="title" />
