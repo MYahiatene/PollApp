@@ -1,5 +1,6 @@
 package gpse.umfrato.domain.answer;
 
+import gpse.umfrato.domain.question.Question;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -27,6 +28,7 @@ public class Answer {
      */
     @ElementCollection
     private List<String> givenAnswerList;
+
 
     /**
      * This attribute represents the question id where the answer is assigned.

@@ -1,8 +1,12 @@
 package gpse.umfrato.domain.category;
 
 import gpse.umfrato.domain.poll.PollRepository;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import javax.persistence.EntityNotFoundException;
+import javax.transaction.Transactional;
 
 @Service
 public class CategoryServiceImpl implements CategoryService {
@@ -15,11 +19,13 @@ public class CategoryServiceImpl implements CategoryService {
         this.categoryRepository = categoryRepository;
         this.pollRepository = pollRepository;
     }
-
     @Override
     public Category addCategory(final String name, final long pollId) {
         final Category category = new Category(name, pollId);
+        category.setPollId(pollId);
+        pollRepository.findById(pollId).orElseThrow(EntityNotFoundException::new).getCategoryList().add(category);
         categoryRepository.save(category);
+
         return category;
     }
 

@@ -19,8 +19,8 @@ public class Category {
      * This attribute is an unique id from the object group.
      */
     @Id
-    @GeneratedValue
-    private long categoryId;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
 
     private String categoryName;
 
@@ -32,8 +32,7 @@ public class Category {
     /**
      * This attribute represents a question list with all questions of this poll.
      */
-    @JsonIgnore
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     private List<Question> questionList = new ArrayList<>();
 
     public Category(final String name, final Long pollId) {

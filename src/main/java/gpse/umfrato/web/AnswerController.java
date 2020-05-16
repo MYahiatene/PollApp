@@ -67,9 +67,9 @@ public class AnswerController {
     public List<Answer> getAnswerFromOneQuestion(final @RequestBody AnswerCmd answerCmd) {
         return answerService.getAnswerFromOneQuestion(Long.valueOf(answerCmd.getQuestionId()));
     }
-
+    //todo: fix this function in controller and service impl
     @GetMapping("/poll/getAnswerFromUser")
-    public List<Answer> getAnswersFromPollByUser(final @RequestBody AnswerCmd answerCmd) {
+    public List<String> getAnswersFromPollByUser(final @RequestBody AnswerCmd answerCmd) {
         return answerService.getAllAnswersFromPollByUser(Long.valueOf(answerCmd.getPollId()), answerCmd.getUsername());
     }
 }

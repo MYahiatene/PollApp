@@ -1,7 +1,9 @@
 package gpse.umfrato.domain.question;
 
+import gpse.umfrato.domain.category.Category;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 
 import javax.persistence.*;
 import java.util.List;
@@ -28,9 +30,8 @@ public class Question {
     @Lob
     private String questionMessage;
 
-    @ElementCollection(fetch = FetchType.EAGER)
+    @ElementCollection
     private List<String> answerPossibilities;
-
 
     /**
      * This attribute represents the type of question (dropdown, text field, ...).

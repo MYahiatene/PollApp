@@ -1,10 +1,11 @@
 package gpse.umfrato.domain.poll;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import gpse.umfrato.domain.category.Category;
 import gpse.umfrato.domain.user.User;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -22,7 +23,7 @@ public class Poll {
      * This attribute is an unique id from the object poll.
      */
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     /**
@@ -68,10 +69,11 @@ public class Poll {
     private int pollStatus;
 
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     private List<Category> categoryList = new ArrayList<>();
-    // todo: find out why h2 doesnt create poll_userList
+
     @OneToMany(cascade = CascadeType.ALL)
+    @LazyCollection(LazyCollectionOption.FALSE)
     private List<User> userList = new ArrayList<>();
 
 

@@ -1,16 +1,19 @@
 package gpse.umfrato.domain.poll;
 
+import gpse.umfrato.domain.user.UserRepository;
 import gpse.umfrato.web.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
+import javax.transaction.Transactional;
 import java.util.List;
 
 @Service
 class PollServiceImpl implements PollService {
 
     private final PollRepository pollRepository;
+    private final UserRepository userRepository;
 
     /**
      * This class constructor initializes the poll repository.
@@ -18,8 +21,9 @@ class PollServiceImpl implements PollService {
      * @param pollRepository the poll repository
      */
     @Autowired
-    public PollServiceImpl(final PollRepository pollRepository) {
+    public PollServiceImpl(final PollRepository pollRepository, final UserRepository userRepository) {
         this.pollRepository = pollRepository;
+        this.userRepository = userRepository;
     }
 
     /**
@@ -32,9 +36,11 @@ class PollServiceImpl implements PollService {
      * @return the created poll
      */
     @Override
+    @Transactional
     public Poll createPoll(final String pollcreator, final String anonymityStatus, final String pollname,
                            final String activatedAt, final String deactivatedAt, final int pollStatus) {
         final Poll poll = new Poll(pollcreator, pollname, anonymityStatus, activatedAt, deactivatedAt, pollStatus);
+        poll.getUserList().add(userRepository.findById(pollcreator).orElseThrow(EntityNotFoundException::new));
 
         pollRepository.save(poll);
 

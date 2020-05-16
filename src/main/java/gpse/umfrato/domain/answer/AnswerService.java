@@ -37,5 +37,5 @@ public interface AnswerService {
      * @return all answers from a question in a list
      */
     //todo: cmd with username and pollId
-    List<Answer> getAllAnswersFromPollByUser(final Long pollId, String username);
+    List<String> getAllAnswersFromPollByUser(final Long pollId, String username);
 }

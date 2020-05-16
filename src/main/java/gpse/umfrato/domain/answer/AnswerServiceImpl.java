@@ -1,7 +1,10 @@
 package gpse.umfrato.domain.answer;
 
+import gpse.umfrato.domain.category.Category;
 import gpse.umfrato.domain.category.CategoryRepository;
+import gpse.umfrato.domain.poll.Poll;
 import gpse.umfrato.domain.poll.PollRepository;
+import gpse.umfrato.domain.question.Question;
 import gpse.umfrato.domain.question.QuestionRepository;
 import gpse.umfrato.domain.user.User;
 import gpse.umfrato.domain.user.UserRepository;
@@ -9,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -49,9 +53,9 @@ public class AnswerServiceImpl implements AnswerService {
     @Override
     public Answer giveAnswer(final String username, final String questionId, final List<String> answerList) {
         final Answer answer = new Answer(answerList, questionId);
-        User user= userRepository.findById(username).orElseThrow(EntityNotFoundException::new);
-      Long categoryID =  questionRepository.findById(Long.valueOf(questionId)).orElseThrow(EntityNotFoundException::new)
-          .getCategoryId();
+        User user = userRepository.findById(username).orElseThrow(EntityNotFoundException::new);
+        Long categoryID = questionRepository.findById(Long.valueOf(questionId)).orElseThrow(EntityNotFoundException::new)
+            .getCategoryId();
         Long pollId = categoryRepository.findById(categoryID).orElseThrow(EntityNotFoundException::new).getPollId();
         pollRepository.findById(pollId).orElseThrow(EntityNotFoundException::new).getUserList().add(user);
         userRepository.findById(username).orElseThrow(() -> new EntityNotFoundException()).getGivenAnswers()
@@ -85,11 +89,16 @@ public class AnswerServiceImpl implements AnswerService {
     }
 
     @Override
-    public List<Answer> getAllAnswersFromPollByUser(final Long pollId, String username) {
-        List<User> pollUserList = pollRepository.findById(pollId).orElseThrow(EntityNotFoundException::new).getUserList();
-        User user = pollUserList.stream().filter(u -> u.getUsername().equals(username)).findFirst()
-            .orElseThrow(EntityNotFoundException::new);
-        return user.getGivenAnswers();
+    public List<String> getAllAnswersFromPollByUser(final Long pollId, String username) {
+        User user = userRepository.findById(username).orElseThrow(EntityNotFoundException::new);
+        Poll poll = user.getPoll().get(0);
+        List<List<Question>> questionsList = new ArrayList<>();
+        List<Question> questionList=new ArrayList<>();
+        List<String> answersList = new ArrayList<>();
+        poll.getCategoryList().stream().map(Category::getQuestionList).forEach(questions -> questionsList.add(questions));
+        questionsList.stream().forEach(questions -> questions.stream().forEach(question -> questionList.add(question)));
+        questionList.stream().forEach(question -> question.getAnswerPossibilities().stream().forEach(l->answersList.add(l)));
+        return answersList;
 
     }
 }
