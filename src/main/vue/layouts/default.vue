@@ -3,12 +3,17 @@
         <v-app-bar fixed app>
             <!--            <v-img src="LogoEinfach" contain></v-img>-->
             <!--            <v-toolbar-title v-text="title" />-->
-<!--            <v-app-bar-nav-icon>-->
-<!--                <v-icon>favicon.ico</v-icon>-->
-<!--            </v-app-bar-nav-icon>-->
-            <v-btn text x-large to="/">
-                {{ title }}
-            </v-btn>
+            <!--            <v-app-bar-nav-icon>-->
+            <!--                <v-icon>favicon.ico</v-icon>-->
+            <!--            </v-app-bar-nav-icon>-->
+            <!--            <v-btn text x-large to="/">-->
+            <!--                {{ title }}-->
+            <!--            </v-btn>-->
+
+            <nuxt-link to="/" style="text-decoration: none;">
+                <h1><img src="LogoEinfach.svg" alt="Logo" width="25" /> {{ title }}</h1>
+            </nuxt-link>
+
             <v-spacer />
 
             <v-div v-for="(item, i) in items" :key="i" router exact>
