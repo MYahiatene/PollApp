@@ -10,6 +10,7 @@
                 Umfrato
             </v-btn>
             <v-spacer />
+
             <v-div v-for="(item, i) in items" :key="i" router exact>
                 <v-btn class="ma-3" :to="item.to" color="primary">
                     {{ item.title }}
@@ -38,11 +39,6 @@ export default {
             fixed: false,
             items: [
                 {
-                    icon: 'mdi-account-multiple',
-                    title: 'Administration',
-                    to: '/Administration',
-                },
-                {
                     icon: 'mdi-pencil',
                     title: 'Konfiguration',
                     to: '/Configuration',
@@ -51,6 +47,11 @@ export default {
                     icon: 'mdi-chart-bubble',
                     title: 'Auswertung',
                     to: '/Analyse',
+                },
+                {
+                    icon: 'mdi-account-multiple',
+                    title: 'Administration',
+                    to: '/Administration',
                 },
             ],
 
