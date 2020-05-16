@@ -1,8 +1,15 @@
-import axios from 'axios'
+// import api from '../api/login'
+// import axios from 'axios'
 
 export const state = () => ({
     authenticated: false,
     token: '',
+})
+const axios = require('axios')
+const instance = axios.create({
+    baseURL: 'http://127.0.0.1:8088/api/',
+    timeout: 1000,
+    headers: { 'X-Custom-Header': 'foobar' },
 })
 export const mutations = {
     authenticate(state, token) {
@@ -26,7 +33,7 @@ export const actions = {
             const credentials = new URLSearchParams()
             credentials.append('username', credentials.username)
             credentials.append('password', credentials.password)
-            axios
+            instance
                 .post('/api/authenticate', credentials)
                 .then((res) => {
                     const token = res.headers.authorization
