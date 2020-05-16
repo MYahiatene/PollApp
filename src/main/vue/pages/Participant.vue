@@ -55,6 +55,7 @@ import { mapActions, mapGetters } from 'vuex'
 
 export default {
     name: 'Participant',
+    layout: 'participant',
     data: () => ({
         enabled: false,
         questions: [],
