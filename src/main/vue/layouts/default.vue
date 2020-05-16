@@ -1,13 +1,13 @@
 <template>
     <v-app style="background: #eefcfa;">
-        <v-app-bar>
-            <!--<v-img src="LogoEinfach" contain></v-img>
-            <v-toolbar-title v-text="title" />
-            <v-app-bar-nav-icon>
-                <v-icon>favicon.ico</v-icon>
-            </v-app-bar-nav-icon>-->
+        <v-app-bar fixed app>
+            <!--            <v-img src="LogoEinfach" contain></v-img>-->
+            <!--            <v-toolbar-title v-text="title" />-->
+<!--            <v-app-bar-nav-icon>-->
+<!--                <v-icon>favicon.ico</v-icon>-->
+<!--            </v-app-bar-nav-icon>-->
             <v-btn text x-large to="/">
-                Umfrato
+                {{ title }}
             </v-btn>
             <v-spacer />
 
