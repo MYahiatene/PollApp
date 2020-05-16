@@ -1,14 +1,23 @@
 <template>
-    <v-app light>
-        <v-app-bar fixed app>
+    <v-app style="background: #b2dfdb;">
+        <v-app-bar>
+            <!--<v-img src="LogoEinfach" contain></v-img>
             <v-toolbar-title v-text="title" />
+            <v-app-bar-nav-icon>
+                <v-icon>favicon.ico</v-icon>
+            </v-app-bar-nav-icon>-->
+            <v-btn text="true" to="/">
+                Umfrato
+            </v-btn>
             <v-spacer />
-
             <v-div v-for="(item, i) in items" :key="i" router exact>
                 <v-btn class="ma-3" :to="item.to" color="primary">
                     {{ item.title }}
                 </v-btn>
             </v-div>
+            <v-app-bar-nav-icon>
+                <v-icon>mdi-account</v-icon>
+            </v-app-bar-nav-icon>
         </v-app-bar>
         <v-content>
             <v-container>
@@ -28,16 +37,6 @@ export default {
         return {
             fixed: false,
             items: [
-                {
-                    icon: 'mdi-apps',
-                    title: 'Start',
-                    to: '/',
-                },
-                {
-                    icon: 'mdi-account',
-                    title: 'Login',
-                    to: '/Login',
-                },
                 {
                     icon: 'mdi-account-multiple',
                     title: 'Administration',
