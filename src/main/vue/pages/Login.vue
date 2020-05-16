@@ -5,10 +5,11 @@
         </v-card-title>
         <v-card-text>
             <v-form>
-                <v-text-field label="Username" prepend-icon="mdi-account-circle" />
+                <v-text-field label="Username" v-model="auth.username" prepend-icon="mdi-account-circle" />
                 <v-text-field
                     :type="showPassword ? 'text' : 'password'"
                     label="Password"
+                    v-model="auth.password"
                     prepend-icon="mdi-lock"
                     :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
                     @click:append="showPassword = !showPassword"

@@ -7,7 +7,7 @@ export const state = () => ({
 })
 const axios = require('axios')
 const instance = axios.create({
-    baseURL: 'http://127.0.0.1:8088/api/',
+    baseURL: 'http://127.0.0.1:8088/api',
     timeout: 1000,
     headers: { 'X-Custom-Header': 'foobar' },
 })
@@ -34,7 +34,7 @@ export const actions = {
             credentials.append('username', input.username)
             credentials.append('password', input.password)
             instance
-                .post('/api/authenticate', credentials)
+                .post('/authenticate', credentials)
                 .then((res) => {
                     const token = res.headers.authorization
                     commit('authenticate', token)
