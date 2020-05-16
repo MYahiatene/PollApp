@@ -1,5 +1,4 @@
 import axios from 'axios'
-import api from '../api/login'
 
 export const state = () => ({
     authenticated: false,
@@ -24,8 +23,11 @@ export const mutations = {
 export const actions = {
     requestToken({ commit }, credentials) {
         return new Promise((resolve, reject) => {
-            api.login
-                .login(credentials.username, credentials.password)
+            const credentials = new URLSearchParams()
+            credentials.append('username', credentials.username)
+            credentials.append('password', credentials.password)
+            axios
+                .post('/api/authenticate', credentials)
                 .then((res) => {
                     const token = res.headers.authorization
                     commit('authenticate', token)
