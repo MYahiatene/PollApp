@@ -6,7 +6,7 @@
             <v-app-bar-nav-icon>
                 <v-icon>favicon.ico</v-icon>
             </v-app-bar-nav-icon>-->
-            <v-btn text="true" to="/">
+            <v-btn text x-large to="/">
                 Umfrato
             </v-btn>
             <v-spacer />
@@ -16,9 +16,7 @@
                     {{ item.title }}
                 </v-btn>
             </v-div>
-            <v-app-bar-nav-icon>
-                <v-icon>mdi-account</v-icon>
-            </v-app-bar-nav-icon>
+            <v-btn text> <v-icon>mdi-account</v-icon> Login </v-btn>
         </v-app-bar>
         <v-content>
             <v-container>
