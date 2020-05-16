@@ -17,21 +17,20 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter { //<1>
+public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
 
     private final SecurityConstants securityConstants;
 
-    public JwtAuthenticationFilter(AuthenticationManager authenticationManager, final SecurityConstants securityConstants) { //<2>
+    public JwtAuthenticationFilter(AuthenticationManager authenticationManager, final SecurityConstants securityConstants) {
         this.authenticationManager = authenticationManager;
         this.securityConstants = securityConstants;
-
         setFilterProcessesUrl(this.securityConstants.getAuthLoginUrl());
     }
 
     @Override
-    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) { //<3>
+    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
@@ -41,7 +40,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response,
-                                            FilterChain filterChain, Authentication authentication) { //<4>
+                                            FilterChain filterChain, Authentication authentication) {
         UserDetails user = (UserDetails) authentication.getPrincipal();
 
         List<String> roles = user.getAuthorities()
@@ -57,7 +56,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             .setIssuer(securityConstants.getTokenIssuer())
             .setAudience(securityConstants.getTokenAudience())
             .setSubject(user.getUsername())
-            .setExpiration(new Date(System.currentTimeMillis() + 864000000)) // + 10 Tage
+            .setExpiration(new Date(System.currentTimeMillis() + 864000000))
             .claim("rol", roles)
             .compact();
 

@@ -1,6 +1,6 @@
 import axios from '@nuxtjs/axios'
 export default {
-    login(username, password) {
+    authenticate(username, password) {
         const credentials = new URLSearchParams()
         credentials.append('username', username)
         credentials.append('password', password)

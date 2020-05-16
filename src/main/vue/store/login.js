@@ -15,11 +15,11 @@ export const mutations = {
             this.state.authenticated = false
         }
     },
-    initializeStore(state) {
+    /*    initializeStore(state) {
         if (localStorage.getItem('store')) {
             this.replaceState(Object.assign(state, JSON.parse(localStorage.getItem('store'))))
         }
-    },
+    }, */
 }
 export const actions = {
     requestToken({ commit }, credentials) {

@@ -37,7 +37,7 @@ export default {
             showPassword: false,
         }
     },
-    login(username, password) {
+    authenticate(username, password) {
         const credentials = new URLSearchParams()
         credentials.append('username', username)
         credentials.append('password', password)
