@@ -1,16 +1,11 @@
-// import api from '../api/login'
-// import axios from 'axios'
+import axios from 'axios'
+import auth from '../api/auth'
 
 export const state = () => ({
     authenticated: false,
     token: '',
 })
-const axios = require('axios')
-const instance = axios.create({
-    baseURL: 'http://127.0.0.1:8088/api',
-    timeout: 1000,
-    headers: { 'X-Custom-Header': 'foobar' },
-})
+
 export const getters = {
     isAuthenticated: (state) => {
         return state.authenticated
@@ -26,7 +21,7 @@ export const mutations = {
             this.state.authenticated = false
         }
     },
-    /*    initializeStore(state) {
+    /* initializeStore(state) {
         if (localStorage.getItem('store')) {
             this.replaceState(Object.assign(state, JSON.parse(localStorage.getItem('store'))))
         }
@@ -35,11 +30,7 @@ export const mutations = {
 export const actions = {
     requestToken({ commit }, input) {
         return new Promise((resolve, reject) => {
-            const credentials = new URLSearchParams()
-            credentials.append('username', input.username)
-            credentials.append('password', input.password)
-            instance
-                .post('/authenticate', credentials)
+            auth.login(input.username, input.password)
                 .then((res) => {
                     const token = res.headers.authorization
                     commit('authenticate', token)
@@ -53,7 +44,9 @@ export const actions = {
     },
 }
 
-/* store.subscribe((mutation, state) => {
+/*
+store.subscribe((mutation, state) => {
     localStorage.setItem('store', JSON.stringify(state))
-    axios.defaults.headers.Authorization = state.token
-}) */
+    axiosInstance.defaults.headers.Authorization = state.token
+})
+*/
