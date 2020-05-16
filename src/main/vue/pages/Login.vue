@@ -18,13 +18,13 @@
         <v-divider></v-divider>
         <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="info">Login</v-btn>
+            <v-btn color="info" @click="requestToken">Login</v-btn>
         </v-card-actions>
     </v-card>
 </template>
 
 <script>
-import axios from 'axios'
+// import axios from 'axios'
 import { mapActions, mapGetters } from 'vuex'
 export default {
     name: 'Login',
@@ -37,21 +37,15 @@ export default {
             showPassword: false,
         }
     },
-    authenticate(username, password) {
-        const credentials = new URLSearchParams()
-        credentials.append('username', username)
-        credentials.append('password', password)
-        return axios.post('/api/authenticate', credentials)
-    },
     computed: {
         ...mapGetters({
             authenticated: 'isAuthenticated',
         }),
     },
     methods: {
-        ...mapActions(['requestToken']),
-        login() {
-            this.requestToken(this.auth).then(() => this.$router.push('/'))
+        ...mapActions({ requestToken: 'login/requestToken' }),
+        requestToken() {
+            this.$store.dispatch('login/requestToken', this.auth)
         },
     },
     watch: {
