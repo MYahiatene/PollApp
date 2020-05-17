@@ -2,7 +2,7 @@
     <v-layout>
         <v-flex class="text-center">
             <v-card class="pa-5">
-                <h1>Farben im Light Mode:</h1>
+                <h1>Farben im jetzigen Mode:</h1>
 
                 <v-btn color="primary">
                     primary

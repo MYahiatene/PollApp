@@ -1,5 +1,5 @@
 <template>
-    <v-app :dark="setTheme" style="background: #eefcfa;">
+    <v-app :dark="setTheme" :style="backgroundColor">
         <v-app-bar fixed app>
             <nuxt-link to="/" style="text-decoration: none;">
                 <div>
@@ -15,7 +15,9 @@
                 </v-btn>
             </v-div>
             <v-btn text :to="'/Login'"> <v-icon>mdi-account</v-icon> Login </v-btn>
-            <v-icon @click="setTheme()">{{ modeIcon }}</v-icon>
+            <v-btn text>
+                <v-icon @click="setTheme()">{{ modeIcon }}</v-icon>
+            </v-btn>
         </v-app-bar>
 
         <v-content>
@@ -35,6 +37,7 @@ import { mdiBrightness4 } from '@mdi/js'
 export default {
     data() {
         return {
+            goDark: false,
             fixed: false,
             modeIcon: mdiBrightness4,
             items: [
@@ -58,13 +61,21 @@ export default {
             title: 'Umfrato',
         }
     },
+    computed: {
+        backgroundColor() {
+            if (this.goDark) {
+                return 'background: #000000'
+            } else {
+                return 'background: #eefcfa'
+            }
+        },
+    },
     methods: {
         setTheme() {
+            this.goDark = !this.goDark
             if (this.goDark === true) {
-                this.goDark = !this.goDark
                 return (this.$vuetify.theme.dark = true)
             } else {
-                this.goDark = !this.goDark
                 return (this.$vuetify.theme.dark = false)
             }
         },
