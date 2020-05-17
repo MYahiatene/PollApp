@@ -1,5 +1,6 @@
 package gpse.umfrato.domain.poll;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import gpse.umfrato.domain.category.Category;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -30,11 +31,13 @@ public class Poll {
     /**
      * This attribute represents the date when the poll was created.
      */
+    @JsonIgnore
     private String creationDate;
 
     /**
      * This attribute represents the date when the poll was edited the last time.
      */
+    @JsonIgnore
     private String lastEditAt;
 
     /**
