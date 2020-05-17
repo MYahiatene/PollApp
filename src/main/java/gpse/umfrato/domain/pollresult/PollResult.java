@@ -12,9 +12,6 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 public class PollResult {
-    /**
-     * This attribute is an unique id from the object pollResult.
-     */
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long pollResultId;

@@ -19,9 +19,9 @@ public class QuestionServiceImpl implements QuestionService {
     /**
      * Initializes the poll service.
      */
-    /* default */ final PollService pollService;
+    /*default*/ final PollService pollService;
 
-    /* default */ final CategoryRepository categoryRepository;
+    /*default*/ final CategoryRepository categoryRepository;
 
     /**
      * Initializes the poll repository.
@@ -106,14 +106,12 @@ public class QuestionServiceImpl implements QuestionService {
      */
     @Override
     public List<Question> getAllQuestions(final long pollId) {
-        final Poll poll = pollRepository.findById(pollId).orElseThrow(() -> new EntityNotFoundException());
+        final Poll poll = pollRepository.findById(pollId).orElseThrow(EntityNotFoundException::new);
         final List<Category> categories = poll.getCategoryList();
         final List<Question> allQuestions = new ArrayList<>();
 
         for (final Category g : categories) {
-            for (final Question q : g.getQuestionList()) {
-                allQuestions.add(q);
-            }
+            allQuestions.addAll(g.getQuestionList());
         }
         if (allQuestions.isEmpty()) {
             throw new BadRequestException();

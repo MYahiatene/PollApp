@@ -18,7 +18,6 @@ public class User implements UserDetails {
     /**
      * The serial version of the object user.
      */
-
     private static final long serialVersionUID = 0L;
 
     /**
@@ -47,8 +46,6 @@ public class User implements UserDetails {
     /**
      * This attribute represents a list with the roles of this user.
      */
-
-
     @JsonIgnore
     @ElementCollection(fetch = FetchType.EAGER)
     private List<String> roles;

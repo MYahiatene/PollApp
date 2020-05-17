@@ -3,8 +3,6 @@ package gpse.umfrato.web;
 import gpse.umfrato.domain.answer.Answer;
 import gpse.umfrato.domain.answer.AnswerService;
 import gpse.umfrato.domain.cmd.AnswerCmd;
-import gpse.umfrato.domain.question.QuestionRepository;
-import gpse.umfrato.domain.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,24 +13,17 @@ import java.util.List;
 @CrossOrigin
 public class AnswerController {
 
-    /* default */ final UserService userService;
-    /* default */ final QuestionRepository questionRepository;
     private final AnswerService answerService;
 
 
     /**
      * This class constructor initializes the objects.
      *
-     * @param userService        the user service
      * @param answerService      the answer service
-     * @param questionRepository the question repository
      */
     @Autowired
-    public AnswerController(final UserService userService,
-                            final AnswerService answerService, final QuestionRepository questionRepository) {
+    public AnswerController(final AnswerService answerService) {
         this.answerService = answerService;
-        this.userService = userService;
-        this.questionRepository = questionRepository;
 
     }
 
@@ -49,7 +40,7 @@ public class AnswerController {
 
     /**
      * This method deletes an answer.
-     * @param answerCmd the requested answer which has to be deleted
+     * @param answerCmd the needed information is saved in the answerCmd object
      */
     @PostMapping("/question/{questionId:\\d+}/deleteanswer")
     public void deleteAnswer(final @RequestBody AnswerCmd answerCmd) {

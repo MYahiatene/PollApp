@@ -11,7 +11,6 @@ import java.util.List;
 @Service
 class UserServiceImpl implements UserService {
 
-
     private final UserRepository userRepository;
 
     @Autowired
@@ -24,15 +23,15 @@ class UserServiceImpl implements UserService {
      *
      * @param username  the user name from user
      * @param password  the password from user
-     * @param firstname the first name from user
-     * @param lastname  the last name from user
+     * @param firstName the first name from user
+     * @param lastName  the last name from user
      * @param roles     the roles from user
      * @return created user
      */
     @Override
-    public User createUser(final String username, final String password, final String firstname, final String lastname,
+    public User createUser(final String username, final String password, final String firstName, final String lastName,
                            final String... roles) {
-        final User user = new User(username, firstname, lastname, password);
+        final User user = new User(username, firstName, lastName, password);
         for (final String role : roles) {
             user.addRole(role);
         }
@@ -64,6 +63,6 @@ class UserServiceImpl implements UserService {
     @Override
     public UserDetails loadUserByUsername(final String username) {
         return userRepository.findById(username)
-            .orElseThrow(() -> new UsernameNotFoundException("User name " + username + " not found."));
+            .orElseThrow(() -> new UsernameNotFoundException("Username " + username + " not found."));
     }
 }

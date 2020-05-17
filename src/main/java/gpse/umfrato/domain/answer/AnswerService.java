@@ -6,7 +6,7 @@ public interface AnswerService {
     /**
      * This method adds an answer to the answer list of the question.
      *
-     * @param pollId     the id of the poll which the answer belongs to
+     * @param pollId the id of the poll
      * @param questionId the id of the given question
      * @param username   the username of the user who gives the answer
      * @param answerList the list of all possible answers
@@ -33,8 +33,8 @@ public interface AnswerService {
     /**
      * This method returns all answers from a selected question.
      *
-     * @param username the id of the selected question
-     * @param pollId   the id of the selected poll
+     * @param pollId the id of the poll
+     * @param username the id of the user
      * @return all answers from a question in a list
      */
     //todo: cmd with username and pollId
