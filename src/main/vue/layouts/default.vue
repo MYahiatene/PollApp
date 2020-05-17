@@ -15,8 +15,8 @@
                 </v-btn>
             </v-div>
             <v-btn text :to="'/Login'"> <v-icon>mdi-account</v-icon> Login </v-btn>
-            <v-btn text>
-                <v-icon @click="setTheme()">{{ modeIcon }}</v-icon>
+            <v-btn icon>
+                <v-icon color="primary" @click="setTheme()">{{ modeIcon }}</v-icon>
             </v-btn>
         </v-app-bar>
 
@@ -64,9 +64,9 @@ export default {
     computed: {
         backgroundColor() {
             if (this.goDark) {
-                return 'background: #000000'
+                return 'background:' + this.$vuetify.theme.themes.dark.background
             } else {
-                return 'background: #eefcfa'
+                return 'background:' + this.$vuetify.theme.themes.light.background
             }
         },
     },

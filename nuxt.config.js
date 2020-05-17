@@ -56,6 +56,7 @@ export default {
             dark: false,
             themes: {
                 dark: {
+                    background: '#09181a',
                     primary: colors.teal.lighten1,
                     accent: '#992078',
                     secondary: '#337982',
