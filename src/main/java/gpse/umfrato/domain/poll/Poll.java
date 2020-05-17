@@ -3,7 +3,6 @@ package gpse.umfrato.domain.poll;
 import gpse.umfrato.domain.category.Category;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
