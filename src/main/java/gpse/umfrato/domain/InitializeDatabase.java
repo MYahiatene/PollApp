@@ -1,6 +1,7 @@
 package gpse.umfrato.domain;
 
 import gpse.umfrato.domain.answer.AnswerService;
+import gpse.umfrato.domain.poll.Poll;
 import gpse.umfrato.domain.poll.PollService;
 import gpse.umfrato.domain.question.QuestionService;
 import gpse.umfrato.domain.user.UserService;
@@ -50,15 +51,19 @@ public class InitializeDatabase implements InitializingBean {
     @Override
     @Transactional
     public void afterPropertiesSet() {
+
         final String testUser = "testUser";
-        final String pollId = "1";
+        final String one = "1";
+
+        final Poll testPoll = new Poll(testUser, "anonym", "testPoll", Instant.now().toString(), Instant.now().toString(),
+            Instant.now().toString(), 0);
+
         try {
             userService.createUser(testUser, "hallo", "test", "heay",
                 "Admin", "User");
-            pollService.createPoll(testUser, "anonym", "testPoll", Instant.now().toString(),Instant.now().toString(),
-                Instant.now().toString(), 0);
-            questionService.addQuestion(pollId, "testFrage", Arrays.asList("Frage1", "Frage2", "Frage3"), "freitext");
-            answerService.giveAnswer(testUser, pollId, "3", Arrays.asList("Ja", "Nein"));
+            pollService.createPoll(testPoll);
+            questionService.addQuestion(one, "testFrage", Arrays.asList("Frage1", "Frage2", "Frage3"), "freitext");
+            answerService.giveAnswer(testUser, one, "3", Arrays.asList("Ja", "Nein"));
         } catch (Exception e) {
             e.printStackTrace();
         }

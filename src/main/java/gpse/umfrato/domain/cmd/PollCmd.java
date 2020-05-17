@@ -26,7 +26,8 @@ public class PollCmd {
     private int pollStatus;
 
     public Poll getCmdPoll() {
-        Poll poll = new Poll(pollcreator, anonymityStatus, pollname, pollCreatedAt, activatedAt, deactivatedAt, pollStatus);
+        final Poll poll = new Poll(pollcreator, anonymityStatus, pollname, pollCreatedAt, activatedAt, deactivatedAt,
+            pollStatus);
         return poll;
     }
 

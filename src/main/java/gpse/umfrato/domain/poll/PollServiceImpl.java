@@ -20,9 +20,9 @@ class PollServiceImpl implements PollService {
     /**
      * This class constructor initializes the poll repository.
      *
-     * @param categoryService the object category service
+     * @param categoryService    the object category service
      * @param categoryRepository the repository where the categories are saved
-     * @param pollRepository the poll repository
+     * @param pollRepository     the poll repository
      */
     @Autowired
     public PollServiceImpl(final PollRepository pollRepository, final CategoryService categoryService,
@@ -35,17 +35,12 @@ class PollServiceImpl implements PollService {
     /**
      * This method creates a poll with all required parameters.
      *
-     * @param pollName        name of the poll
-     * @param pollCreator     name of the creator of the poll
-     * @param anonymityStatus status of the poll if it is anonymous, part anonymous and non anonymous
-     * @param pollStatus      status of the poll if it is activated or deactivated
      * @return the created poll
      */
     @Override
     @Transactional
-    public Poll createPoll(final String pollCreator, final String anonymityStatus, final String pollName, final String createdAt,
-                           final String activatedAt, final String deactivatedAt, final int pollStatus) {
-        final Poll poll = new Poll(pollCreator, pollName, anonymityStatus, createdAt, activatedAt, deactivatedAt, pollStatus);
+    public Poll createPoll(final Poll poll) {
+        // final Poll newPoll = poll;
         pollRepository.save(poll);
         categoryRepository.save(categoryService.createCategory("Keine Kategorie", poll.getPollId()));
 

@@ -6,6 +6,7 @@ import gpse.umfrato.domain.poll.PollService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RequestMapping(value = "/api", method = RequestMethod.GET)
@@ -28,8 +29,7 @@ public class PollController {
     @PostMapping(value = "/createpoll", produces = MediaType.APPLICATION_JSON_VALUE)
     public String createPoll(final @RequestBody PollCmd pollCmd) {
         try {
-            pollService.createPoll(pollCmd.getPollcreator(), pollCmd.getAnonymityStatus(), pollCmd.getPollname(),
-                pollCmd.getPollCreatedAt(), pollCmd.getActivatedAt(), pollCmd.getDeactivatedAt(), pollCmd.getPollStatus());
+            pollService.createPoll(pollCmd.getCmdPoll());
             return "Poll created!";
         } catch (BadRequestException e) {
             return "Poll creation failed!";
