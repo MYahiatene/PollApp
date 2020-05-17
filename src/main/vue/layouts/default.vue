@@ -1,23 +1,22 @@
 <template>
     <v-app style="background: #eefcfa;">
         <v-app-bar fixed app>
-            <!--            <v-img src="LogoEinfach" contain></v-img>-->
-            <!--            <v-toolbar-title v-text="title" />-->
-<!--            <v-app-bar-nav-icon>-->
-<!--                <v-icon>favicon.ico</v-icon>-->
-<!--            </v-app-bar-nav-icon>-->
-            <v-btn text x-large to="/">
-                {{ title }}
-            </v-btn>
-            <v-spacer />
+            <nuxt-link to="/" style="text-decoration: none;">
+                <div>
+                    <h1><img src="LogoEinfach.svg" alt="Logo" width="25" /> {{ title }}</h1>
+                </div>
+            </nuxt-link>
+
+            <v-spacer></v-spacer>
 
             <v-div v-for="(item, i) in items" :key="i" router exact>
                 <v-btn class="ma-3" :to="item.to" color="primary">
                     {{ item.title }}
                 </v-btn>
             </v-div>
-            <v-btn text> <v-icon>mdi-account</v-icon> Login </v-btn>
+            <v-btn text :to="'/Login'"> <v-icon>mdi-account</v-icon> Login </v-btn>
         </v-app-bar>
+
         <v-content>
             <v-container>
                 <nuxt />

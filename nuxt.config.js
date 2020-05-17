@@ -70,7 +70,7 @@ export default {
                     secondary: '#337982',
                     info: colors.teal.lighten1,
                     warning: '#F5D63C',
-                    error: '#E5572B',
+                    error: '#F5420C',
                     success: '#8EC136',
                     myColor: '#1f5355',
                 },
