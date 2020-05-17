@@ -19,9 +19,9 @@ public class QuestionServiceImpl implements QuestionService {
     /**
      * Initializes the poll service.
      */
-    final PollService pollService;
+    /* default */ final PollService pollService;
 
-    final CategoryRepository categoryRepository;
+    /* default */ final CategoryRepository categoryRepository;
 
     /**
      * Initializes the poll repository.

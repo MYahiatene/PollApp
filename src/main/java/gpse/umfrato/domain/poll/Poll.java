@@ -32,7 +32,6 @@ public class Poll {
     /**
      * This attribute represents the date when the poll was created.
      */
-    @JsonIgnore
     private String creationDate;
 
     /**
@@ -69,7 +68,7 @@ public class Poll {
     private int pollStatus;
 
 
-    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Category> categoryList = new ArrayList<>();
 
 
@@ -80,14 +79,16 @@ public class Poll {
      * @param pollName        the name of the poll
      * @param anonymityStatus the anonymitystatus of the poll
      * @param pollStatus      the status (activated/deactivated) of the poll
+     * @param createdAt       the date when the poll is created
      * @param activatedAt     the date when the poll activated
      * @param deactivatedAt   the date when the poll deactivates
      */
-    public Poll(final String pollCreator, final String pollName, final String anonymityStatus, final String activatedAt,
-                final String deactivatedAt, final int pollStatus) {
+    public Poll(final String pollCreator, final String anonymityStatus, final String pollName, final String createdAt,
+                final String activatedAt, final String deactivatedAt, final int pollStatus) {
         this.pollName = pollName;
         this.pollCreator = pollCreator;
         this.anonymityStatus = anonymityStatus;
+        this.creationDate = createdAt;
         this.activatedDate = activatedAt;
         this.deactivatedDate = deactivatedAt;
         this.pollStatus = pollStatus;

@@ -64,7 +64,7 @@
                                     @input="closeMenuAndUpdateA"
                                 ></v-date-picker>
                             </v-menu>
-                            <p>{{ activateDate }}</p>
+                            <p>{{ time }}</p>
                         </v-col>
                         <v-col
                             ><v-text-field
@@ -148,6 +148,7 @@ export default {
             title: '',
             activateDate: this.formatDate(new Date().toISOString().substr(0, 10)),
             deactivateDate: this.formatDate(new Date().toISOString().substr(0, 10)),
+            creationDate: this.formatDate(new Date().toISOString().substr(0, 10)),
             date: new Date().toISOString().substr(0, 10),
             menu: false,
             selectedAnonymityType: '',
@@ -184,6 +185,7 @@ export default {
                 pollcreator: 'Richie',
                 anonymityStatus: this.selectedAnonymityType,
                 pollname: this.title,
+                pollCreatedAt: this.creationDate,
                 activatedAt: this.activateDate,
                 deactivatedAt: this.deactivateDate,
                 pollStatus: 0,
@@ -223,7 +225,10 @@ export default {
         reformatDeactivateDate() {
             this.deactivateDate = this.formatDate(this.date)
         },
-
+        parseTime(date) {
+            if (!date) return null
+            return date.getHours() + ':' + date.getMinutes()
+        },
         closeMenuAndUpdateA() {
             this.menu = false
             this.reformatActivateDate()

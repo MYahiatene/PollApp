@@ -1,17 +1,14 @@
 package gpse.umfrato.domain.category;
 
 import gpse.umfrato.domain.poll.PollRepository;
-import gpse.umfrato.domain.question.Question;
-import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
-import javax.transaction.Transactional;
 
 @Service
 public class CategoryServiceImpl implements CategoryService {
-    final PollRepository pollRepository;
+    /* default */ final PollRepository pollRepository;
     private final CategoryRepository categoryRepository;
 
 

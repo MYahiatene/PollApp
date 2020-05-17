@@ -1,5 +1,6 @@
 package gpse.umfrato.domain.cmd;
 
+import gpse.umfrato.domain.poll.Poll;
 import lombok.Data;
 
 
@@ -10,7 +11,7 @@ public class PollCmd {
 
     private String pollcreator;
 
-    //private String pollCreatedAt;
+    private String pollCreatedAt;
 
     //private String lastEditAt;
 
@@ -24,4 +25,12 @@ public class PollCmd {
 
     private int pollStatus;
 
+    public Poll getCmdPoll() {
+        Poll poll = new Poll(pollcreator, anonymityStatus, pollname, pollCreatedAt, activatedAt, deactivatedAt, pollStatus);
+        return poll;
+    }
+
+
 }
+
+

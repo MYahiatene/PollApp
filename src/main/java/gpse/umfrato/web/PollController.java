@@ -15,7 +15,7 @@ import java.util.logging.Logger;
 @RestController
 @CrossOrigin
 public class PollController {
-    static final Logger LOGGER = Logger.getLogger("PollController");
+    /* default */ static final Logger LOGGER = Logger.getLogger("PollController");
     private final PollService pollService;
 
     /**
@@ -32,7 +32,8 @@ public class PollController {
     public String createPoll(final @RequestBody PollCmd pollCmd) {
         try {
             pollService.createPoll(pollCmd.getPollcreator(), pollCmd.getAnonymityStatus(), pollCmd.getPollname(),
-                pollCmd.getActivatedAt(), pollCmd.getDeactivatedAt(), pollCmd.getPollStatus());
+                pollCmd.getPollCreatedAt(), pollCmd.getActivatedAt(), pollCmd.getDeactivatedAt(),
+                pollCmd.getPollStatus());
             return "Poll created!";
         } catch (BadRequestException e) {
             return "Poll creation failed!";

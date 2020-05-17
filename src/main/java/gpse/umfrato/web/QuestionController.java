@@ -16,13 +16,13 @@ import java.util.logging.Logger;
 @RestController
 @CrossOrigin(origins = "http://127.0.0.1:8080")
 public class QuestionController {
-    static final Logger LOGGER = Logger.getLogger("QuestionController");
+    /* default */ static final Logger LOGGER = Logger.getLogger("QuestionController");
 
-    Question question;
-    final UserService userService;
-    final PollService pollService;
-    final AnswerService answerService;
-    final PollRepository pollRepository;
+    /* default */ Question question;
+    /* default */ final UserService userService;
+    /* default */ final PollService pollService;
+    /* default */ final AnswerService answerService;
+    /* default */ final PollRepository pollRepository;
     private final QuestionService questionService;
 
 

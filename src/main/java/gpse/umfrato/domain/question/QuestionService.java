@@ -12,7 +12,7 @@ public interface QuestionService {
      * @param questionType        the type how the answers should be like
      * @return the question which is created
      */
-    public Question addQuestion(final String pollId,
+    Question addQuestion(final String pollId,
                                 final String questionMessage,
                                 final List<String> answerPossibilities,
                                 final String questionType);

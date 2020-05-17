@@ -1,11 +1,8 @@
 package gpse.umfrato.domain.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import gpse.umfrato.domain.answer.Answer;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 

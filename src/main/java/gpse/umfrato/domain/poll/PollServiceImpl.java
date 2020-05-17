@@ -15,7 +15,7 @@ import java.util.List;
 class PollServiceImpl implements PollService {
 
     private final PollRepository pollRepository;
-    private final UserRepository userRepository;
+    /* default */ final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
     private final CategoryService categoryService;
 
@@ -44,9 +44,15 @@ class PollServiceImpl implements PollService {
      */
     @Override
     @Transactional
-    public Poll createPoll(final String pollCreator, final String anonymityStatus, final String pollName,
-                           final String activatedAt, final String deactivatedAt, final int pollStatus) {
-        final Poll poll = new Poll(pollCreator, pollName, anonymityStatus, activatedAt, deactivatedAt, pollStatus);
+    public Poll createPoll(final String pollCreator,
+                           final String anonymityStatus,
+                           final String pollName,
+                           final String createdAt,
+                           final String activatedAt,
+                           final String deactivatedAt,
+                           final int pollStatus) {
+        final Poll poll = new Poll(pollCreator, pollName, anonymityStatus, createdAt, activatedAt, deactivatedAt,
+            pollStatus);
         pollRepository.save(poll);
         categoryRepository.save(categoryService.createCategory("Keine Kategorie", poll.getPollId()));
 

@@ -8,7 +8,6 @@ import gpse.umfrato.domain.poll.PollService;
 
 import gpse.umfrato.domain.question.QuestionService;
 
-import gpse.umfrato.domain.user.User;
 import gpse.umfrato.domain.user.UserRepository;
 import gpse.umfrato.domain.user.UserService;
 
@@ -16,20 +15,23 @@ import org.springframework.beans.factory.InitializingBean;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 
-import javax.annotation.PostConstruct;
 import javax.transaction.Transactional;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.Arrays;
 
 @Service
 public class InitializeDatabase implements InitializingBean {
+
+    private static final String TEST_USER = "testUser";
+
+    private static final String ONE = "1";
+
+    private static final String YES = "Ja";
+
+    private static final String NO = "Nein";
 
     private final UserService userService;
 
@@ -39,19 +41,22 @@ public class InitializeDatabase implements InitializingBean {
 
     private final AnswerService answerService;
 
-    private final UserRepository userRepository;
+     /* default */ final UserRepository userRepository;
 
-    private final CategoryService categoryService;
+    /* default */ final CategoryService categoryService;
 
-    private final CategoryRepository categoryRepository;
+    /* default */ final CategoryRepository categoryRepository;
 
     /**
      * This method initializes the database.
      *
-     * @param userService     the object user service
-     * @param pollService     the object poll service
-     * @param questionService the object question service
-     * @param answerService   the object answer service
+     * @param userService        the object user service
+     * @param pollService        the object poll service
+     * @param questionService    the object question service
+     * @param answerService      the object answer service
+     * @param userRepository     the user repository with all users
+     * @param categoryService    the object category service
+     * @param categoryRepository the category repository with all categories
      */
 
     @Autowired
@@ -82,12 +87,12 @@ public class InitializeDatabase implements InitializingBean {
     @Transactional
     public void afterPropertiesSet() {
         try {
-            userService.createUser("testUser", "hallo", "test", "heay"
-                , "Admin", "User");
-            pollService.createPoll("testUser", "anonym", "testPoll", Instant.now().toString()
-                , Instant.now().toString(), 0);
-            questionService.addQuestion("1", "testFrage", Arrays.asList("Ja", "Nein", "Vielleicht"), "freitext");
-            answerService.giveAnswer("testUser","1","3",Arrays.asList("Ja", "Nein"));
+            userService.createUser(TEST_USER, "hallo", "test", "heay", "Admin", "User");
+            pollService.createPoll(TEST_USER, "anonym", "testPoll", Instant.now().toString(),
+                Instant.now().toString(), Instant.now().toString(), 0);
+            questionService.addQuestion(ONE, "testFrage", Arrays.asList(YES, NO, "Vielleicht"),
+                "freitext");
+            answerService.giveAnswer(TEST_USER, ONE, "3", Arrays.asList(YES, NO));
         } catch (Exception e) {
             e.printStackTrace();
         }
