@@ -8,6 +8,7 @@ import gpse.umfrato.domain.user.UserService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import javax.transaction.Transactional;
 import java.time.Instant;
 import java.util.Arrays;
@@ -55,8 +56,8 @@ public class InitializeDatabase implements InitializingBean {
         final String testUser = "testUser";
         final String one = "1";
 
-        final Poll testPoll = new Poll(testUser, "anonym", "testPoll", Instant.now().toString(), Instant.now().toString(),
-            Instant.now().toString(), 0);
+        final Poll testPoll = new Poll(testUser, "anonym", "testPoll", Instant.now().toString(),
+            Instant.now().toString(), Instant.now().toString(), 0);
 
         try {
             userService.createUser(testUser, "hallo", "test", "heay",
