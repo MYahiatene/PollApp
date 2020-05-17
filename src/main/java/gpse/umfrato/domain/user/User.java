@@ -58,7 +58,7 @@ public class User implements UserDetails {
      * @param lastName  the last name of user
      * @param password  the password of user
      */
-    public User(final String username, final String firstName, final String lastName, final String password) {
+    public User(final String username, final String password, final String firstName, final String lastName) {
         this.username = username;
         this.firstName = firstName;
         this.lastName = lastName;

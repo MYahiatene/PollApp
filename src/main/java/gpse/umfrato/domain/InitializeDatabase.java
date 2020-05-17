@@ -4,6 +4,7 @@ import gpse.umfrato.domain.answer.AnswerService;
 import gpse.umfrato.domain.poll.Poll;
 import gpse.umfrato.domain.poll.PollService;
 import gpse.umfrato.domain.question.QuestionService;
+import gpse.umfrato.domain.user.User;
 import gpse.umfrato.domain.user.UserService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,18 +54,19 @@ public class InitializeDatabase implements InitializingBean {
     @Transactional
     public void afterPropertiesSet() {
 
-        final String testUser = "testUser";
+        final String testUsername = "testUser";
         final String one = "1";
 
-        final Poll testPoll = new Poll(testUser, "anonym", "testPoll", Instant.now().toString(),
+        final Poll testPoll = new Poll(testUsername, "anonym", "testPoll", Instant.now().toString(),
             Instant.now().toString(), Instant.now().toString(), 0);
+        final User testUser = new User(testUsername, "password", "Markus", "Mueller");
 
         try {
-            userService.createUser(testUser, "hallo", "test", "heay",
-                "Admin", "User");
+            userService.createUser(testUser);
             pollService.createPoll(testPoll);
+
             questionService.addQuestion(one, "testFrage", Arrays.asList("Frage1", "Frage2", "Frage3"), "freitext");
-            answerService.giveAnswer(testUser, one, "3", Arrays.asList("Ja", "Nein"));
+            answerService.giveAnswer(testUsername, one, "3", Arrays.asList("Ja", "Nein"));
         } catch (Exception e) {
             e.printStackTrace();
         }

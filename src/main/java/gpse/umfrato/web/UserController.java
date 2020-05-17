@@ -39,8 +39,7 @@ public class UserController {
     @PostMapping("/createuser")
     public String createUser(final @RequestBody UserCmd userCmd) {
         try {
-            userService.createUser(userCmd.getUsername(), userCmd.getPassword(), userCmd.getFirstName(),
-                userCmd.getLastName());
+            userService.createUser(userCmd.getCmdUser());
 
         } catch (BadRequestException e) {
             LOGGER.info("couldnt create user");
