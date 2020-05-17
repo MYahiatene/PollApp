@@ -30,7 +30,7 @@
                     <v-col cols="12" lg="3"></v-col>
                     <v-col cols="12" lg="6" align="center" justify="center">
                         <v-card class="pa-2" style="background-color: #ffffff;">
-                            <v-img src="LogoMitMehr.svg"></v-img>
+                            <v-img src="LogoMitMehr2.png"></v-img>
                         </v-card>
                     </v-col>
                     <v-col cols="12" lg="3"></v-col>
