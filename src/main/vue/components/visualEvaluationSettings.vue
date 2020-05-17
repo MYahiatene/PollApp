@@ -69,7 +69,7 @@ export default {
         },
         chosenDiagramColor: {
             type: String,
-            default: '#555555',
+            default: '#aaaaaa',
         },
         showTable: {
             type: Boolean,
@@ -90,8 +90,8 @@ export default {
 
             chosenDiagramColorAsWord: '',
 
-            diagramColorsInWords: ['Grau', 'Blau', 'Grün', 'Rot'],
-            diagramColors: ['#555555', '#000088', '#008800', '#880000'],
+            diagramColorsInWords: ['Grau', 'Petrol', 'Grün', 'Violet', 'Türkis'],
+            diagramColors: ['#aaaaaa', '#114955', '#8EC136', '#551044', '#009999'],
 
             forbidColorSwitch: true,
         }

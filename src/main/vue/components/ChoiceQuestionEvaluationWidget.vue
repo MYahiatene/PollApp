@@ -11,7 +11,7 @@
 
             <!--            this button leads to the settings page for this specific question-->
 
-            <v-btn icon color="teal" @click="visualSettings = !visualSettings">
+            <v-btn icon color="primary" @click="visualSettings = !visualSettings">
                 <v-icon>mdi-pencil</v-icon>
             </v-btn>
         </v-app-bar>

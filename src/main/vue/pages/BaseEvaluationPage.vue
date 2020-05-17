@@ -35,8 +35,8 @@ the input will be deleted as it is invalid-->
                 ></v-text-field>
                 <v-spacer></v-spacer>
                 <!--                After pressing this button we will jump to he href that is associated with the questionId we have entered -->
-                <a :href="linkToQuestion" id="jump">
-                    <v-btn>
+                <a :href="linkToQuestion" style="text-decoration: none;" id="jump">
+                    <v-btn color="info">
                         Los
                     </v-btn>
                 </a>
@@ -46,14 +46,14 @@ the input will be deleted as it is invalid-->
 
             <!--            This button will lead to the Page where we can filter and analyse the data-->
 
-            <v-btn>
+            <v-btn color="primary">
                 Analyse
             </v-btn>
 
             <!--            here we have a sub menu, that can hold a list of different options or setings-->
             <v-menu bottom left>
                 <template v-slot:activator="{ on }">
-                    <v-btn icon color="teal" v-on="on">
+                    <v-btn icon color="primary" v-on="on">
                         <v-icon>mdi-dots-vertical</v-icon>
                     </v-btn>
                 </template>
@@ -110,7 +110,7 @@ export default {
             // the dialog (setting window) is closed by default
             dialog: false,
             // default settings for the visual settings, they are passed as props into the choiceQuestionEvaluationWidgets
-            defaultColor: '#888888',
+            defaultColor: '#aaaaaa',
             defaultDiagramType: 'bar',
             showDiagram: true,
             showTable: true,
@@ -121,11 +121,16 @@ export default {
             PollResult: {
                 name: 'Mittagessen Umfrage',
                 questionList: [
-                    { id: 1, title: 'How are you?', answerPossibilities: ['Good', 'Bad', 'Okay'], data: [22, 6, 7] },
+                    {
+                        id: 1,
+                        title: 'Wie geht es Ihnen heute?',
+                        answerPossibilities: ['Gut', 'In Ordnung', 'Schlecht'],
+                        data: [22, 8, 7],
+                    },
                     {
                         id: 2,
-                        title: 'What is your gender?',
-                        answerPossibilities: ['female', 'male', 'other'],
+                        title: 'Welches Geschlecht haben Sie?',
+                        answerPossibilities: ['Weiblich', 'Männlich', 'Divers'],
                         data: [20, 19, 1],
                     },
                     {
@@ -143,6 +148,17 @@ export default {
                     {
                         id: 5,
                         title: 'When was the last time you ate cake?',
+                        answerPossibilities: [
+                            'Today!',
+                            'I can not even remember...',
+                            'I have never eaten cake in my life!',
+                            'Some time during the last month.',
+                        ],
+                        data: [17, 22, 5, 55],
+                    },
+                    {
+                        id: 5,
+                        title: 'Wie zufrieden ware Sie insgesamt mit der Veranstaltung?',
                         answerPossibilities: [
                             'Today!',
                             'I can not even remember...',
