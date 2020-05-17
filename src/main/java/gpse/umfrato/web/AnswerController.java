@@ -45,7 +45,8 @@ public class AnswerController {
      */
     @PostMapping("/poll/{pollId:\\d+}/addanswer")
     public void addAnswer(final @RequestBody AnswerCmd answerCmd) {
-        answerService.giveAnswer(answerCmd.getUsername(), answerCmd.getQuestionId(), answerCmd.getAnswerList());
+        answerService.giveAnswer(answerCmd.getUsername(),answerCmd.getPollId(),
+            answerCmd.getQuestionId(),answerCmd.getAnswerList());
     }
 
     /**

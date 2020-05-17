@@ -13,7 +13,7 @@ public interface AnswerService {
      * @param answerList the list of all possible answers
      * @return the given answer
      */
-    Answer giveAnswer(final String username, final String questionId, final List<String> answerList);
+    Answer giveAnswer(final String username, final String pollId, final String questionId, final List<String> answerList);
 
     /**
      * This method deletes an selected answer.

@@ -2,8 +2,6 @@ package gpse.umfrato.domain.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import gpse.umfrato.domain.answer.Answer;
-import gpse.umfrato.domain.poll.Poll;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.LazyCollection;
@@ -35,21 +33,18 @@ public class User implements UserDetails {
     /**
      * This attribute represents the first name of the user.
      */
-    private String firstname;
+    private String firstName;
 
     /**
      * This attribute represents the last name of the user.
      */
-    private String lastname;
+    private String lastName;
 
     /**
      * This attribute represents the password of the user.
      */
     @JsonIgnore
     private String password;
-
-    @OneToMany
-    private List<Poll> poll;
 
 
     /**
@@ -62,24 +57,17 @@ public class User implements UserDetails {
     private List<String> roles;
 
     /**
-     * This attribute represents a list with all answers for this question.
-     */
-    @LazyCollection(LazyCollectionOption.FALSE)
-    @OneToMany(cascade = CascadeType.ALL)
-    private List<Answer> givenAnswers;
-
-    /**
      * This constructor receives the required parameter for the user object.
      *
      * @param username  the username of user
-     * @param firstname the first name of user
-     * @param lastname  the last name of user
+     * @param firstName the first name of user
+     * @param lastName  the last name of user
      * @param password  the password of user
      */
-    public User(final String username, final String firstname, final String lastname, final String password) {
+    public User(final String username, final String firstName, final String lastName, final String password) {
         this.username = username;
-        this.firstname = firstname;
-        this.lastname = lastname;
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.password = password;
     }
 

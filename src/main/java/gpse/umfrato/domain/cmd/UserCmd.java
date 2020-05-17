@@ -7,9 +7,9 @@ public class UserCmd {
 
     private String username;
 
-    private String firstname;
+    private String firstName;
 
-    private String lastname;
+    private String lastName;
 
     private String password;
 

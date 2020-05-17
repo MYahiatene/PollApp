@@ -1,5 +1,7 @@
 package gpse.umfrato.domain.poll;
 
+import gpse.umfrato.domain.category.CategoryRepository;
+import gpse.umfrato.domain.category.CategoryService;
 import gpse.umfrato.domain.user.UserRepository;
 import gpse.umfrato.web.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +16,8 @@ class PollServiceImpl implements PollService {
 
     private final PollRepository pollRepository;
     private final UserRepository userRepository;
+    private final CategoryRepository categoryRepository;
+    private final CategoryService categoryService;
 
     /**
      * This class constructor initializes the poll repository.
@@ -21,28 +25,30 @@ class PollServiceImpl implements PollService {
      * @param pollRepository the poll repository
      */
     @Autowired
-    public PollServiceImpl(final PollRepository pollRepository, final UserRepository userRepository) {
+    public PollServiceImpl(final PollRepository pollRepository, final UserRepository userRepository,
+                           final CategoryService categoryService, final CategoryRepository categoryRepository) {
         this.pollRepository = pollRepository;
         this.userRepository = userRepository;
+        this.categoryService = categoryService;
+        this.categoryRepository = categoryRepository;
     }
 
     /**
      * This method creates a poll with all required parameters.
      *
-     * @param pollname        name of the poll
-     * @param pollcreator     name of the creator of the poll
+     * @param pollName        name of the poll
+     * @param pollCreator     name of the creator of the poll
      * @param anonymityStatus status of the poll if it is anonymous, part anonymous and non anonymous
      * @param pollStatus      status of the poll if it is activated or deactivated
      * @return the created poll
      */
     @Override
     @Transactional
-    public Poll createPoll(final String pollcreator, final String anonymityStatus, final String pollname,
+    public Poll createPoll(final String pollCreator, final String anonymityStatus, final String pollName,
                            final String activatedAt, final String deactivatedAt, final int pollStatus) {
-        final Poll poll = new Poll(pollcreator, pollname, anonymityStatus, activatedAt, deactivatedAt, pollStatus);
-        poll.getUserList().add(userRepository.findById(pollcreator).orElseThrow(EntityNotFoundException::new));
-
+        final Poll poll = new Poll(pollCreator, pollName, anonymityStatus, activatedAt, deactivatedAt, pollStatus);
         pollRepository.save(poll);
+        categoryRepository.save(categoryService.createCategory("Keine Kategorie", poll.getPollId()));
 
         return poll;
     }
@@ -72,6 +78,6 @@ class PollServiceImpl implements PollService {
     @Override
     public Poll getPoll(final String id) {
         final Long pollId = Long.valueOf(id);
-        return pollRepository.findById(pollId).orElseThrow(() -> new EntityNotFoundException());
+        return pollRepository.findById(pollId).orElseThrow(EntityNotFoundException::new);
     }
 }

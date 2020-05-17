@@ -82,13 +82,12 @@ public class InitializeDatabase implements InitializingBean {
     @Transactional
     public void afterPropertiesSet() {
         try {
-            User user = userService.createUser("testUser", "hallo", "test", "heay"
-                , new String[]{"Admin", "User"});
+            userService.createUser("testUser", "hallo", "test", "heay"
+                , "Admin", "User");
             pollService.createPoll("testUser", "anonym", "testPoll", Instant.now().toString()
                 , Instant.now().toString(), 0);
-            categoryService.addCategory("Keine Kategorie", 1);
             questionService.addQuestion("1", "testFrage", Arrays.asList("Ja", "Nein", "Vielleicht"), "freitext");
-            answerService.giveAnswer("testUser", "4", Arrays.asList("Ja", "Nein", "Vielleicht"));
+            answerService.giveAnswer("testUser","1","3",Arrays.asList("Ja", "Nein"));
         } catch (Exception e) {
             e.printStackTrace();
         }

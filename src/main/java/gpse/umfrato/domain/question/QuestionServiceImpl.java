@@ -63,16 +63,11 @@ public class QuestionServiceImpl implements QuestionService {
                                 final List<String> answerPossibilities,
                                 final String questionType) {
         final Question question = new Question(questionMessage, answerPossibilities, questionType);
-        List<Category> categoryList = pollRepository.findById(Long.valueOf(pollId)).orElseThrow(
-            EntityNotFoundException::new).getCategoryList();
-        if (categoryList.isEmpty()) {
-            Category category = new Category("Keine Kategorie", Long.valueOf(pollId));
-            categoryRepository.save(category);
-            categoryList.add(category);
-        }
-        question.setCategoryId(categoryList.get(0).getId());
+        final Category category = categoryRepository.findCategoryByPollId(Long.valueOf(pollId));
+        category.getQuestionList().add(question);
+        question.setCategoryId(category.getCategoryId());
         questionRepository.save(question);
-        categoryList.get(0).getQuestionList().add(question);
+        categoryRepository.save(category);
         return question;
     }
 
@@ -101,10 +96,7 @@ public class QuestionServiceImpl implements QuestionService {
     @Override
     public Question getQuestion(final Long questionId) {
 
-        final Question question = questionRepository.findById(questionId).orElseThrow(() ->
-            new EntityNotFoundException());
-
-        return question;
+        return questionRepository.findById(questionId).orElseThrow(EntityNotFoundException::new);
     }
 
     /**

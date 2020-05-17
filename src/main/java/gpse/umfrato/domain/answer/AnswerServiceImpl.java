@@ -4,6 +4,8 @@ import gpse.umfrato.domain.category.Category;
 import gpse.umfrato.domain.category.CategoryRepository;
 import gpse.umfrato.domain.poll.Poll;
 import gpse.umfrato.domain.poll.PollRepository;
+import gpse.umfrato.domain.pollresult.PollResult;
+import gpse.umfrato.domain.pollresult.PollResultRepository;
 import gpse.umfrato.domain.question.Question;
 import gpse.umfrato.domain.question.QuestionRepository;
 import gpse.umfrato.domain.user.User;
@@ -19,11 +21,12 @@ import java.util.stream.Collectors;
 @Service
 public class AnswerServiceImpl implements AnswerService {
 
-    final QuestionRepository questionRepository;
-    final UserRepository userRepository;
+    private final QuestionRepository questionRepository;
+    private final UserRepository userRepository;
     private final AnswerRepository answerRepository;
     private final PollRepository pollRepository;
     private final CategoryRepository categoryRepository;
+    private final PollResultRepository pollResultRepository;
 
     /**
      * This class constructor initializes the answer- and question repository.
@@ -35,12 +38,14 @@ public class AnswerServiceImpl implements AnswerService {
     @Autowired
     public AnswerServiceImpl(final AnswerRepository answerRepository, final QuestionRepository questionRepository,
                              final UserRepository userRepository, final PollRepository pollRepository,
-                             final CategoryRepository categoryRepository) {
+                             final CategoryRepository categoryRepository,
+                             final PollResultRepository pollResultRepository) {
         this.answerRepository = answerRepository;
         this.questionRepository = questionRepository;
         this.userRepository = userRepository;
         this.pollRepository = pollRepository;
         this.categoryRepository = categoryRepository;
+        this.pollResultRepository = pollResultRepository;
     }
 
     /**
@@ -51,15 +56,14 @@ public class AnswerServiceImpl implements AnswerService {
      * @return the given answer
      */
     @Override
-    public Answer giveAnswer(final String username, final String questionId, final List<String> answerList) {
+    public Answer giveAnswer(final String username, final String pollId, final String questionId, final List<String> answerList) {
         final Answer answer = new Answer(answerList, questionId);
-        User user = userRepository.findById(username).orElseThrow(EntityNotFoundException::new);
-        Long categoryID = questionRepository.findById(Long.valueOf(questionId)).orElseThrow(EntityNotFoundException::new)
-            .getCategoryId();
-        Long pollId = categoryRepository.findById(categoryID).orElseThrow(EntityNotFoundException::new).getPollId();
-        pollRepository.findById(pollId).orElseThrow(EntityNotFoundException::new).getUserList().add(user);
-        userRepository.findById(username).orElseThrow(() -> new EntityNotFoundException()).getGivenAnswers()
-            .add(answer);
+        PollResult pollResult = pollResultRepository.findPollResultByPollId(Long.valueOf(pollId));
+        if (pollResult == null){
+            pollResult = new PollResult(Long.valueOf(pollId),username);
+        }
+        pollResult.getAnswerList().add(answer);
+        pollResultRepository.save(pollResult);
         answerRepository.save(answer);
         return answer;
     }
@@ -90,15 +94,7 @@ public class AnswerServiceImpl implements AnswerService {
 
     @Override
     public List<String> getAllAnswersFromPollByUser(final Long pollId, String username) {
-        User user = userRepository.findById(username).orElseThrow(EntityNotFoundException::new);
-        Poll poll = user.getPoll().get(0);
-        List<List<Question>> questionsList = new ArrayList<>();
-        List<Question> questionList=new ArrayList<>();
-        List<String> answersList = new ArrayList<>();
-        poll.getCategoryList().stream().map(Category::getQuestionList).forEach(questions -> questionsList.add(questions));
-        questionsList.stream().forEach(questions -> questions.stream().forEach(question -> questionList.add(question)));
-        questionList.stream().forEach(question -> question.getAnswerPossibilities().stream().forEach(l->answersList.add(l)));
-        return answersList;
+        return null;
 
     }
 }

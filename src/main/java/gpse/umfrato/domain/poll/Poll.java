@@ -1,11 +1,8 @@
 package gpse.umfrato.domain.poll;
 
 import gpse.umfrato.domain.category.Category;
-import gpse.umfrato.domain.user.User;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -24,7 +21,7 @@ public class Poll {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    private Long pollId;
 
     /**
      * This attribute represents the creator of the poll.
@@ -61,7 +58,7 @@ public class Poll {
     /**
      * This attribute represents the name of the poll.
      */
-    private String pollname;
+    private String pollName;
 
     /**
      * This attribute represents the status of the poll if it is activated or deactivated.
@@ -71,11 +68,6 @@ public class Poll {
 
     @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     private List<Category> categoryList = new ArrayList<>();
-
-    @OneToMany(cascade = CascadeType.ALL)
-    @LazyCollection(LazyCollectionOption.FALSE)
-    private List<User> userList = new ArrayList<>();
-
 
 
     /**
@@ -90,7 +82,7 @@ public class Poll {
      */
     public Poll(final String pollCreator, final String pollName, final String anonymityStatus, final String activatedAt,
                 final String deactivatedAt, final int pollStatus) {
-        this.pollname = pollName;
+        this.pollName = pollName;
         this.pollCreator = pollCreator;
         this.anonymityStatus = anonymityStatus;
         this.activatedDate = activatedAt;
