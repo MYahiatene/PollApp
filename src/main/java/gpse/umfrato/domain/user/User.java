@@ -85,9 +85,7 @@ public class User implements UserDetails {
      * @return user password
      */
     @Override
-    public String getPassword() {
-        return null;
-    }
+    public String getPassword() { return password; }
 
     /**
      * This method returns the username of the user.
@@ -96,7 +94,7 @@ public class User implements UserDetails {
      */
     @Override
     public String getUsername() {
-        return null;
+        return username;
     }
 
     /**
@@ -106,7 +104,7 @@ public class User implements UserDetails {
      */
     @Override
     public boolean isAccountNonExpired() {
-        return false;
+        return true;
     }
 
     /**
@@ -116,7 +114,7 @@ public class User implements UserDetails {
      */
     @Override
     public boolean isAccountNonLocked() {
-        return false;
+        return true;
     }
 
     /**
@@ -126,7 +124,7 @@ public class User implements UserDetails {
      */
     @Override
     public boolean isCredentialsNonExpired() {
-        return false;
+        return true;
     }
 
     /**
@@ -136,7 +134,7 @@ public class User implements UserDetails {
      */
     @Override
     public boolean isEnabled() {
-        return false;
+        return true;
     }
 
     /**

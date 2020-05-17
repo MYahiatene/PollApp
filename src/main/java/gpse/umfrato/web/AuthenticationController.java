@@ -3,6 +3,8 @@ package gpse.umfrato.web;
 import gpse.umfrato.domain.security.*;
 import gpse.umfrato.domain.user.User;
 import gpse.umfrato.domain.user.UserService;
+import org.apache.commons.logging.Log;
+import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -12,11 +14,15 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-@CrossOrigin(origins = "*", maxAge = 3600)
+import java.util.logging.Logger;
+
+@CrossOrigin
 @RestController
-@RequestMapping("/token")
+@RequestMapping(value = "/token", method = RequestMethod.GET)
+
 public class AuthenticationController {
 
+    private static final Logger LOGGER = Logger.getLogger("AuthenticationController");
     @Autowired
     private AuthenticationManager authenticationManager;
 
@@ -26,13 +32,15 @@ public class AuthenticationController {
     @Autowired
     private UserService userService;
 
-    @RequestMapping(value = "/generate-token", method = RequestMethod.POST)
-    public ApiResponse<AuthToken> register(@RequestBody LoginUser loginUser) throws AuthenticationException {
-
+    @PostMapping("/generate-token")
+    public ApiResponse<AuthToken> register(@RequestBody String input) throws AuthenticationException {
+        LOGGER.info("register");
+        LoginUser loginUser = new LoginUser(input);
+        LOGGER.info(loginUser.getUsername());
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginUser.getUsername(), loginUser.getPassword()));
         User user = (User) userService.loadUserByUsername(loginUser.getUsername());
         final String token = jwtTokenUtil.generateToken(user);
+        LOGGER.info(token);
         return new ApiResponse<>(200, "success",new AuthToken(token, user.getUsername()));
     }
-
 }

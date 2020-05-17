@@ -12,10 +12,8 @@ import org.springframework.stereotype.Component;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.function.Function;
-
-import static gpse.umfrato.domain.security.Constants.ACCESS_TOKEN_VALIDITY_SECONDS;
-import static gpse.umfrato.domain.security.Constants.SIGNING_KEY;
 
 @Component
 public class JwtTokenUtil implements Serializable {
@@ -37,7 +35,7 @@ public class JwtTokenUtil implements Serializable {
 
     private Claims getAllClaimsFromToken(String token) {
         return Jwts.parser()
-            .setSigningKey(SIGNING_KEY)
+            .setSigningKey(Constants.jwtSecret.getBytes())
             .parseClaimsJws(token)
             .getBody();
     }
@@ -48,19 +46,18 @@ public class JwtTokenUtil implements Serializable {
     }
 
     public String generateToken(User user) {
-        return doGenerateToken(user.getUsername());
+        return doGenerateToken(user);
     }
 
-    private String doGenerateToken(String subject) {
-
-        Claims claims = Jwts.claims().setSubject(subject);
-        claims.put("scopes", Collections.singletonList(new SimpleGrantedAuthority("ROLE_ADMIN")));
+    private String doGenerateToken(User user) {
         return Jwts.builder()
-            .setClaims(claims)
-            .setIssuer("")
-            .setIssuedAt(new Date(System.currentTimeMillis()))
-            .setExpiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_VALIDITY_SECONDS*1000))
-            .signWith(Keys.hmacShaKeyFor(Constants.SIGNING_KEY.getBytes()), SignatureAlgorithm.HS512)
+            .signWith(Keys.hmacShaKeyFor(Constants.jwtSecret.getBytes()), SignatureAlgorithm.HS512)
+            .setHeaderParam("typ", Constants.tokenType)
+            .setIssuer(Constants.tokenIssuer)
+            .setAudience(Constants.tokenAudience)
+            .setSubject(user.getUsername())
+            .setExpiration(new Date(System.currentTimeMillis() + 864000000)) // + 10 Tage
+            .claim("rol", user.getRoles())
             .compact();
     }
 

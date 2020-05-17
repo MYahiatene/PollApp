@@ -33,6 +33,7 @@ export const actions = {
             auth.login(input.username, input.password)
                 .then((res) => {
                     const token = res.headers.authorization
+                    console.log(res.toString())
                     commit('authenticate', token)
                     resolve()
                 })
