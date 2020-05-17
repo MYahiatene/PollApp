@@ -1,3 +1,4 @@
+<!--this widget enables the user to configure a choice question including all of its unique features-->
 <template>
     <v-container>
         <v-row no-gutters>
@@ -29,6 +30,7 @@
             <v-switch label="Teilnehmer darf eigene Antworten hinzufügen"></v-switch>
         </v-row>
         <v-row no-gutters>
+            <!--maybe not necessary inside this widget? could be moved into an independent question type-->
             <v-switch label="Teilnehmer darf eigene Dateien hochladen"></v-switch>
         </v-row>
     </v-container>
