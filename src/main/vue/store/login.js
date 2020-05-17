@@ -1,8 +1,7 @@
 import axios from 'axios'
-import auth from '../api/auth'
 
 export const state = () => ({
-    authenticated: false,
+    authenticated: null,
     token: '',
 })
 
@@ -11,14 +10,15 @@ export const getters = {
         return state.authenticated
     },
 }
+
 export const mutations = {
     authenticate(state, token) {
         if (token !== null) {
-            this.state.token = token
-            this.state.authenticated = true
+            state.token = token
+            state.authenticated = true
             axios.defaults.headers.Authorization = token
         } else {
-            this.state.authenticated = false
+            state.authenticated = false
         }
     },
     /* initializeStore(state) {
@@ -30,24 +30,25 @@ export const mutations = {
 export const actions = {
     requestToken({ commit }, input) {
         return new Promise((resolve, reject) => {
-            auth.login(input.username, input.password)
+            const credentials = new URLSearchParams()
+            credentials.append('username', input.username)
+            credentials.append('password', input.password)
+            axios
+                .post('http://localhost:8088/token/generate-token', credentials)
                 .then((res) => {
-                    const token = res.headers.authorization
-                    console.log(res.toString())
+                    const token = res.data.result.token
                     commit('authenticate', token)
                     resolve()
                 })
                 .catch(() => {
                     commit('authenticate', null)
-                    reject(new Error('Authentification failed'))
+                    // reject(new Error('Authentification failed'))
                 })
         })
     },
 }
 
-/*
-store.subscribe((mutation, state) => {
+/* store.subscribe((mutation, state) => {
     localStorage.setItem('store', JSON.stringify(state))
-    axiosInstance.defaults.headers.Authorization = state.token
-})
-*/
+    axios.defaults.headers.Authorization = state.token
+}) */

@@ -26,7 +26,6 @@
 </template>
 
 <script>
-// import axios from 'axios'
 import { mapActions, mapGetters } from 'vuex'
 export default {
     name: 'Login',
@@ -46,13 +45,11 @@ export default {
     },
     methods: {
         ...mapActions({ requestToken: 'login/requestToken' }),
-        requestToken() {
-            this.$store.dispatch('login/requestToken', this.auth)
-        },
-    },
-    watch: {
-        authenticated: () => {
-            alert('Willkommen')
+        async requestToken() {
+            await this.$store.dispatch('login/requestToken', this.auth)
+            if (this.authenticated) {
+                await this.$router.push('/')
+            }
         },
     },
 }

@@ -19,7 +19,6 @@ import java.util.logging.Logger;
 @CrossOrigin
 @RestController
 @RequestMapping(value = "/token", method = RequestMethod.GET)
-
 public class AuthenticationController {
 
     private static final Logger LOGGER = Logger.getLogger("AuthenticationController");
@@ -36,11 +35,9 @@ public class AuthenticationController {
     public ApiResponse<AuthToken> register(@RequestBody String input) throws AuthenticationException {
         LOGGER.info("register");
         LoginUser loginUser = new LoginUser(input);
-        LOGGER.info(loginUser.getUsername());
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginUser.getUsername(), loginUser.getPassword()));
         User user = (User) userService.loadUserByUsername(loginUser.getUsername());
         final String token = jwtTokenUtil.generateToken(user);
-        LOGGER.info(token);
         return new ApiResponse<>(200, "success",new AuthToken(token, user.getUsername()));
     }
 }
