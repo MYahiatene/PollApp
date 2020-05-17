@@ -1,28 +1,33 @@
 <template>
-    <b-container>
-        <b-row>
-            <b-col cols="6" offset="3" class="mt-3">
-                <b-card header="Login">
-                    <b-form @submit.prevent="login">
-                        <b-form-group label="Username:">
-                            <b-form-input v-model="auth.username" type="text"></b-form-input>
-                        </b-form-group>
-                        <b-form-group label="Passwort:">
-                            <b-form-input v-model="auth.password" type="password"></b-form-input>
-                        </b-form-group>
-                        <b-button type="submit" variant="primary">Login</b-button>
-                    </b-form>
-                    <b-alert variant="danger" :show="authenticated === false">
-                        Bitte überprüfen Sie Ihre Angaben.
-                    </b-alert>
-                </b-card>
-            </b-col>
-        </b-row>
-    </b-container>
+    <v-card width="400" class="mx-auto mt-5">
+        <v-card-title>
+            <h1 class="display-1">Login</h1>
+        </v-card-title>
+        <v-card-text>
+            <v-form>
+                <v-text-field v-model="auth.username" label="Username" prepend-icon="mdi-account-circle" />
+                <v-text-field
+                    v-model="auth.password"
+                    :type="showPassword ? 'text' : 'password'"
+                    label="Password"
+                    prepend-icon="mdi-lock"
+                    :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+                    :error="authenticated === false"
+                    @click:append="showPassword = !showPassword"
+                />
+            </v-form>
+        </v-card-text>
+        <v-divider></v-divider>
+        <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="info" @click="requestToken">Login</v-btn>
+        </v-card-actions>
+    </v-card>
 </template>
 
 <script>
-import { mapGetters, mapMutations } from 'vuex'
+// import axios from 'axios'
+import { mapActions, mapGetters } from 'vuex'
 export default {
     name: 'Login',
     data() {
@@ -31,20 +36,23 @@ export default {
                 username: '',
                 password: '',
             },
+            showPassword: false,
         }
     },
     computed: {
         ...mapGetters({
-            authenticated: 'isAuthenticated',
+            authenticated: 'login/isAuthenticated',
         }),
     },
     methods: {
-        ...mapMutations(['authenticate']),
-        login() {
-            this.authenticate(this.auth)
-            if (this.authenticated) {
-                this.$router.push('/')
-            }
+        ...mapActions({ requestToken: 'login/requestToken' }),
+        requestToken() {
+            this.$store.dispatch('login/requestToken', this.auth)
+        },
+    },
+    watch: {
+        authenticated: () => {
+            alert('Willkommen')
         },
     },
 }
