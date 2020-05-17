@@ -49,7 +49,10 @@ it passes the attributes:
         </v-row>
         <!-- Button that will send the picked data to the parennt component -->
         <v-row no-gutters>
-            <v-btn @click="$emit('update-Visuals', showDiagram, chosenDiagram, chosenDiagramColor, showTable)">
+            <v-btn
+                color="success"
+                @click="$emit('update-Visuals', showDiagram, chosenDiagram, chosenDiagramColor, showTable)"
+            >
                 Anwenden
             </v-btn>
         </v-row>
@@ -91,7 +94,7 @@ export default {
             chosenDiagramColorAsWord: '',
 
             diagramColorsInWords: ['Grau', 'Petrol', 'Grün', 'Violet', 'Türkis'],
-            diagramColors: ['#aaaaaa', '#114955', '#8EC136', '#551044', '#009999'],
+            diagramColors: ['#aaaaaa', '#114955', '#8EC136', '#551044', '#26A599'],
 
             forbidColorSwitch: true,
         }

@@ -4,76 +4,77 @@ It provides a first overview of the result by displaying a table as well as a di
 Thusly the user can easily get a first impression on the results.
 -->
     <v-container>
-        <!--        the app bar is used to navigate the page.
-All the buttons here apply to the entire poll, nit one individual question-->
-        <v-app-bar fixed app elevate-on-scroll>
-            <v-toolbar-title> {{ PollResult.name }}</v-toolbar-title>
-
-            <v-dialog v-model="dialog">
-                <!--             Here we open a setting window
-where the user can change the visual settings of every question at the same time-->
-                <v-card
-                    ><visual-evaluation-settings v-on:update-Visuals="updateVisuals"> </visual-evaluation-settings
-                ></v-card>
-            </v-dialog>
-            <v-spacer></v-spacer>
-            <!-- here we have a search component, that allows the user to jump to a specific question in the poll-->
-            <v-app-bar flat>
-                <!--                 oninput: When the user types a number that is higher that the highest question Id or below zero,
-the input will be deleted as it is invalid-->
-                <v-text-field
-                    id="startValue"
-                    :value="highestQuestionId"
-                    v-model="questionToJumpTo"
-                    prefix="Springe zu Frage: "
-                    type="number"
-                    @input="changeLinkToQuestion()"
-                    oninput="validity.valid||(value='')"
-                    min="1"
-                    :max="PollResult.questionList.length"
-                    class="shrink"
-                ></v-text-field>
-                <v-spacer></v-spacer>
-                <!--                After pressing this button we will jump to he href that is associated with the questionId we have entered -->
-                <a :href="linkToQuestion" style="text-decoration: none;" id="jump">
-                    <v-btn color="info">
-                        Los
-                    </v-btn>
-                </a>
-            </v-app-bar>
-
-            <v-spacer></v-spacer>
-
-            <!--            This button will lead to the Page where we can filter and analyse the data-->
-
-            <v-btn color="primary">
-                Analyse
-            </v-btn>
-
-            <!--            here we have a sub menu, that can hold a list of different options or setings-->
-            <v-menu bottom left>
-                <template v-slot:activator="{ on }">
-                    <v-btn icon color="primary" v-on="on">
-                        <v-icon>mdi-dots-vertical</v-icon>
-                    </v-btn>
-                </template>
-
-                <v-list>
-                    <v-list-item v-for="(item, i) in menuItems" :key="i">
-                        <v-list-item-title @click="dialog = true">{{ item.title }}</v-list-item-title>
-                    </v-list-item>
-                </v-list>
-            </v-menu>
-        </v-app-bar>
-
         <!--        this is the real content of the page, a list of ChoiceQuestionEvaluationWidgets,
 that each display a basic evaluation of one specific question-->
         <v-container>
             <v-row>
-                <v-col cols="12" lg="3"> </v-col>
+                <!--        the app bar is used to navigate the page.
+   All the buttons here apply to the entire poll, nit one individual question-->
+                <v-toolbar>
+                    <v-card-title>{{ PollResult.name }}</v-card-title>
+
+                    <v-dialog v-model="dialog">
+                        <!--             Here we open a setting window
+        where the user can change the visual settings of every question at the same time-->
+                        <v-card
+                            ><visual-evaluation-settings v-on:update-Visuals="updateVisuals">
+                            </visual-evaluation-settings
+                        ></v-card>
+                    </v-dialog>
+                    <v-spacer></v-spacer>
+
+                    <v-spacer></v-spacer>
+
+                    <!--            This button will lead to the Page where we can filter and analyse the data-->
+
+                    <v-btn color="primary">
+                        Analyse
+                    </v-btn>
+
+                    <!--            here we have a sub menu, that can hold a list of different options or setings-->
+                    <v-menu bottom left>
+                        <template v-slot:activator="{ on }">
+                            <v-btn icon color="primary" v-on="on">
+                                <v-icon>mdi-dots-vertical</v-icon>
+                            </v-btn>
+                        </template>
+
+                        <v-list>
+                            <v-list-item v-for="(item, i) in menuItems" :key="i">
+                                <v-list-item-title @click="dialog = true">{{ item.title }}</v-list-item-title>
+                            </v-list-item>
+                        </v-list>
+                    </v-menu>
+                </v-toolbar>
             </v-row>
             <v-row>
-                <v-col cols="12" fluid>
+                <v-col cols="12" lg="2">
+                    <!-- here we have a search component, that allows the user to jump to a specific question in the poll-->
+                    <v-card class="pa-1">
+                        <!--                 oninput: When the user types a number that is higher that the highest question Id or below zero,
+        the input will be deleted as it is invalid-->
+                        <v-text-field
+                            id="startValue"
+                            :value="highestQuestionId"
+                            v-model="questionToJumpTo"
+                            prefix="Springe zu Frage: "
+                            type="number"
+                            @input="changeLinkToQuestion()"
+                            oninput="validity.valid||(value='')"
+                            min="1"
+                            :max="PollResult.questionList.length"
+                            class="shrink"
+                        ></v-text-field>
+                        <v-spacer></v-spacer>
+                        <!--                After pressing this button we will jump to he href that is associated with the questionId we have entered -->
+                        <a :href="linkToQuestion" style="text-decoration: none;" id="jump">
+                            <v-btn color="info">
+                                Los
+                            </v-btn>
+                        </a>
+                    </v-card>
+                </v-col>
+                <v-col cols="12" lg="8" fluid>
                     <div v-for="question in PollResult.questionList" :key="question.id">
                         <a :id="'Frage' + question.id"> <v-spacer></v-spacer></a>
                         <ChoiceQuestionEvaluationWidget
@@ -119,53 +120,50 @@ export default {
 
             // mock data set
             PollResult: {
-                name: 'Mittagessen Umfrage',
+                name: 'Umfrage zur IT-Messe 2021',
                 questionList: [
                     {
                         id: 1,
-                        title: 'Wie geht es Ihnen heute?',
-                        answerPossibilities: ['Gut', 'In Ordnung', 'Schlecht'],
-                        data: [22, 8, 7],
+                        title: 'Wie hat Ihnen die Veranstaltung insgesamt gefallen?',
+                        answerPossibilities: ['Sehr gut', 'Gut', 'Überwiegend gut', 'Schlecht', 'Ich weiß nicht'],
+                        data: [70, 65, 30, 5, 25],
                     },
+
                     {
                         id: 2,
                         title: 'Welches Geschlecht haben Sie?',
                         answerPossibilities: ['Weiblich', 'Männlich', 'Divers'],
                         data: [20, 19, 1],
                     },
+
                     {
                         id: 3,
-                        title: 'Do you like cake?',
-                        answerPossibilities: ['Yes', 'Why not?', 'I prefer something else', 'Disgusting'],
-                        data: [17, 8, 4, 2],
+                        title: 'Wie geht es Ihnen heute?',
+                        answerPossibilities: ['Gut', 'In Ordnung', 'Schlecht'],
+                        data: [22, 8, 7],
                     },
                     {
                         id: 4,
-                        title: 'What is your favorite frosting?',
-                        answerPossibilities: ['Chocolate', 'Vanilla'],
-                        data: [17, 22],
+                        title: 'Was hat Sie am Meisten überzeugt?',
+                        answerPossibilities: [
+                            'Die Vorträge',
+                            'Die Informationsstände',
+                            'Das Catering',
+                            'Ich kann mich nicht entscheiden',
+                        ],
+                        data: [17, 8, 4, 2],
                     },
                     {
                         id: 5,
-                        title: 'When was the last time you ate cake?',
-                        answerPossibilities: [
-                            'Today!',
-                            'I can not even remember...',
-                            'I have never eaten cake in my life!',
-                            'Some time during the last month.',
-                        ],
-                        data: [17, 22, 5, 55],
+                        title: 'Werden Sie uns nächstes Jahr wieder besuchen?',
+                        answerPossibilities: ['Ja', 'Nein'],
+                        data: [50, 21],
                     },
                     {
-                        id: 5,
-                        title: 'Wie zufrieden ware Sie insgesamt mit der Veranstaltung?',
-                        answerPossibilities: [
-                            'Today!',
-                            'I can not even remember...',
-                            'I have never eaten cake in my life!',
-                            'Some time during the last month.',
-                        ],
-                        data: [17, 22, 5, 55],
+                        id: 6,
+                        title: 'Wie viel Zeit haben sie auf der Messe verbracht?',
+                        answerPossibilities: ['unter einer Stunde', '1-2 Stunden', '2-5 Stunden', 'über 5 Stunden'],
+                        data: [12, 45, 40, 20],
                     },
                 ],
             },
