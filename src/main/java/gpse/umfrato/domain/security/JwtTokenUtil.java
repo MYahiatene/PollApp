@@ -20,6 +20,8 @@ import static gpse.umfrato.domain.security.Constants.SIGNING_KEY;
 @Component
 public class JwtTokenUtil implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+
     public String getUsernameFromToken(String token) {
         return getClaimFromToken(token, Claims::getSubject);
     }
