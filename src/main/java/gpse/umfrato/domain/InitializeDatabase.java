@@ -55,7 +55,7 @@ public class InitializeDatabase implements InitializingBean {
         try {
             userService.createUser(testUser, "hallo", "test", "heay",
                 "Admin", "User");
-            pollService.createPoll(testUser, "anonym", "testPoll", Instant.now().toString(),
+            pollService.createPoll(testUser, "anonym", "testPoll", Instant.now().toString(),Instant.now().toString(),
                 Instant.now().toString(), 0);
             questionService.addQuestion(pollId, "testFrage", Arrays.asList("Frage1", "Frage2", "Frage3"), "freitext");
             answerService.giveAnswer(testUser, pollId, "3", Arrays.asList("Ja", "Nein"));

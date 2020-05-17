@@ -43,9 +43,9 @@ class PollServiceImpl implements PollService {
      */
     @Override
     @Transactional
-    public Poll createPoll(final String pollCreator, final String anonymityStatus, final String pollName,
+    public Poll createPoll(final String pollCreator, final String anonymityStatus, final String pollName, final String createdAt,
                            final String activatedAt, final String deactivatedAt, final int pollStatus) {
-        final Poll poll = new Poll(pollCreator, pollName, anonymityStatus, activatedAt, deactivatedAt, pollStatus);
+        final Poll poll = new Poll(pollCreator, pollName, anonymityStatus, createdAt, activatedAt, deactivatedAt, pollStatus);
         pollRepository.save(poll);
         categoryRepository.save(categoryService.createCategory("Keine Kategorie", poll.getPollId()));
 
