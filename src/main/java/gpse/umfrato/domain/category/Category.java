@@ -1,6 +1,5 @@
 package gpse.umfrato.domain.category;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import gpse.umfrato.domain.question.Question;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -32,7 +31,7 @@ public class Category {
     /**
      * This attribute represents a question list with all questions of this poll.
      */
-    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Question> questionList = new ArrayList<>();
 
     public Category(final String name, final Long pollId) {

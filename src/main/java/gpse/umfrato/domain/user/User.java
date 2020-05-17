@@ -1,11 +1,8 @@
 package gpse.umfrato.domain.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import gpse.umfrato.domain.answer.Answer;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -21,7 +18,6 @@ public class User implements UserDetails {
     /**
      * The serial version of the object user.
      */
-
     private static final long serialVersionUID = 0L;
 
     /**
@@ -50,8 +46,6 @@ public class User implements UserDetails {
     /**
      * This attribute represents a list with the roles of this user.
      */
-
-
     @JsonIgnore
     @ElementCollection(fetch = FetchType.EAGER)
     private List<String> roles;

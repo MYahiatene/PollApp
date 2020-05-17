@@ -1,7 +1,6 @@
 package gpse.umfrato.domain.pollresult;
 
 import gpse.umfrato.domain.answer.Answer;
-import gpse.umfrato.domain.user.User;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -13,9 +12,6 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 public class PollResult {
-    /**
-     * This attribute is an unique id from the object pollResult.
-     */
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long pollResultId;
@@ -27,7 +23,7 @@ public class PollResult {
     @OneToMany(cascade = CascadeType.ALL)
     private List<Answer> answerList = new ArrayList<>();
 
-    public PollResult(Long pollId, String username) {
+    public PollResult(final Long pollId, final String username) {
         this.pollId = pollId;
         this.pollTaker = username;
     }

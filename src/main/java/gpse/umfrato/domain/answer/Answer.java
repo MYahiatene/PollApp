@@ -1,6 +1,5 @@
 package gpse.umfrato.domain.answer;
 
-import gpse.umfrato.domain.question.Question;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

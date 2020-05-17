@@ -2,7 +2,6 @@ package gpse.umfrato.domain.poll;
 
 import gpse.umfrato.domain.category.CategoryRepository;
 import gpse.umfrato.domain.category.CategoryService;
-import gpse.umfrato.domain.user.UserRepository;
 import gpse.umfrato.web.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,20 +14,20 @@ import java.util.List;
 class PollServiceImpl implements PollService {
 
     private final PollRepository pollRepository;
-    private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
     private final CategoryService categoryService;
 
     /**
      * This class constructor initializes the poll repository.
      *
+     * @param categoryService the object category service
+     * @param categoryRepository the repository where the categories are saved
      * @param pollRepository the poll repository
      */
     @Autowired
-    public PollServiceImpl(final PollRepository pollRepository, final UserRepository userRepository,
-                           final CategoryService categoryService, final CategoryRepository categoryRepository) {
+    public PollServiceImpl(final PollRepository pollRepository, final CategoryService categoryService,
+                           final CategoryRepository categoryRepository) {
         this.pollRepository = pollRepository;
-        this.userRepository = userRepository;
         this.categoryService = categoryService;
         this.categoryRepository = categoryRepository;
     }
