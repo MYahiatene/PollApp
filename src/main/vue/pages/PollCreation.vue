@@ -46,10 +46,10 @@
                             >
                                 <template v-slot:activator="{ on }">
                                     <v-text-field
-                                        v-model="dateFormatted"
+                                        v-model="activateDate"
                                         label="Datum"
                                         persistent-hint
-                                        @blur="date = parseDate(dateFormatted)"
+                                        @blur="date = parseDate(activateDate)"
                                         v-on="on"
                                     ></v-text-field>
                                 </template>
@@ -61,20 +61,64 @@
                                     locale="de"
                                     :min="new Date().toISOString().substr(0, 10)"
                                     max="2100-01-01"
-                                    @input="closeMenuAndUpdate"
+                                    @input="closeMenuAndUpdateA"
                                 ></v-date-picker>
                             </v-menu>
+                            <p>{{ activateDate }}</p>
                         </v-col>
+                        <v-col
+                            ><v-text-field
+                                label="Uhrzeit"
+                                :value="time"
+                                type="time"
+                                style="width: 170px;"
+                            ></v-text-field
+                        ></v-col>
                     </v-row>
 
                     <v-row no-gutters>
                         <v-switch v-model="switch2" label="lege Deaktivierungsdatum fest"></v-switch>
                     </v-row>
                     <v-row v-if="switch2" no-gutters>
-                        <v-col cols="12" md="4">
-                            <dateTimePicker v-model="deactivatedDate"></dateTimePicker>
-                            <p>{{ deactivatedDate }}</p>
+                        <v-col cols="12" md="2">
+                            <v-menu
+                                ref="menu"
+                                v-model="menu"
+                                :close-on-content-click="false"
+                                transition="scale-transition"
+                                offset-y
+                                max-width="290px"
+                                min-width="290px"
+                            >
+                                <template v-slot:activator="{ on }">
+                                    <v-text-field
+                                        v-model="deactivateDate"
+                                        label="Datum"
+                                        persistent-hint
+                                        @blur="date = parseDate(deactivateDate)"
+                                        v-on="on"
+                                    ></v-text-field>
+                                </template>
+                                <v-date-picker
+                                    id="datePicker"
+                                    v-model="date"
+                                    no-title
+                                    show-current="true"
+                                    locale="de"
+                                    :min="getActivationDate(activateDate)"
+                                    max="2100-01-01"
+                                    @input="closeMenuAndUpdateD"
+                                ></v-date-picker>
+                            </v-menu>
                         </v-col>
+                        <v-col
+                            ><v-text-field
+                                label="Uhrzeit"
+                                :value="time"
+                                type="time"
+                                style="width: 170px;"
+                            ></v-text-field
+                        ></v-col>
                     </v-row>
                 </v-container>
 
@@ -102,10 +146,9 @@ export default {
             switch2: false,
             valid: false,
             title: '',
-            activatedDate: new Date(),
-            deactivatedDate: new Date(),
+            activateDate: this.formatDate(new Date().toISOString().substr(0, 10)),
+            deactivateDate: this.formatDate(new Date().toISOString().substr(0, 10)),
             date: new Date().toISOString().substr(0, 10),
-            dateFormatted: this.formatDate(new Date().toISOString().substr(0, 10)),
             menu: false,
             selectedAnonymityType: '',
             anonomityTypes: [
@@ -126,7 +169,12 @@ export default {
             anonymityRules: [(v) => !!v || 'Anonymitätsgrad fehlt.'],
         }
     },
-    computed: {},
+    computed: {
+        time() {
+            const today = new Date()
+            return today.getHours() + ':' + today.getMinutes() + ':00'
+        },
+    },
     methods: {
         validate() {
             this.$refs.form.validate()
@@ -136,8 +184,8 @@ export default {
                 pollcreator: 'Richie',
                 anonymityStatus: this.selectedAnonymityType,
                 pollname: this.title,
-                activatedAt: this.dateFormatted,
-                deactivatededAt: null,
+                activatedAt: this.activateDate,
+                deactivatedAt: this.deactivateDate,
                 pollStatus: 0,
             }
             instance
@@ -159,13 +207,30 @@ export default {
             const [day, month, year] = date.split('.')
             return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
         },
-        reformatDate() {
-            this.dateFormatted = this.formatDate(this.date)
+        unparseDate(date) {
+            if (!date) return new Date().toISOString.substr(0, 10)
+            const [year, month, day] = date.split('-')
+            return `${day.padStart(2, '0')}.${month.padStart(2, '0')}.${year}`
+        },
+        getActivationDate(date) {
+            if (date === null) return new Date().toISOString.substr(0, 10)
+            const [day, month, year] = date.split('.')
+            return `${year}-${month}-${day}`
+        },
+        reformatActivateDate() {
+            this.activateDate = this.formatDate(this.date)
+        },
+        reformatDeactivateDate() {
+            this.deactivateDate = this.formatDate(this.date)
         },
 
-        closeMenuAndUpdate() {
+        closeMenuAndUpdateA() {
             this.menu = false
-            this.reformatDate()
+            this.reformatActivateDate()
+        },
+        closeMenuAndUpdateD() {
+            this.menu = false
+            this.reformatDeactivateDate()
         },
     },
 }
