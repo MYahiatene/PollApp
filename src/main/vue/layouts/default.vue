@@ -42,17 +42,14 @@ export default {
             fixed: false,
             items: [
                 {
-                    icon: 'mdi-pencil',
-                    title: 'Konfiguration',
-                    to: '/Configuration',
+                    title: 'Umfragen',
+                    to: '/navigation',
                 },
                 {
-                    icon: 'mdi-chart-bubble',
                     title: 'Auswertung',
                     to: '/Analyse',
                 },
                 {
-                    icon: 'mdi-account-multiple',
                     title: 'Administration',
                     to: '/Administration',
                 },

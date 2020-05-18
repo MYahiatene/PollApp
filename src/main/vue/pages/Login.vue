@@ -14,13 +14,14 @@
                     :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
                     :error="authenticated === false"
                     @click:append="showPassword = !showPassword"
+                    @keydown.enter="requestToken"
                 />
             </v-form>
         </v-card-text>
         <v-divider></v-divider>
         <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="info" @click="requestToken">Login</v-btn>
+            <v-btn color="secondary" @click="requestToken">Login</v-btn>
         </v-card-actions>
     </v-card>
 </template>
