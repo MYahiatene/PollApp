@@ -15,9 +15,47 @@
                                 <v-card-text>
                                     <v-container>
                                         <v-row>
-                                            Viel Spaß beim Umfragen erstellen!
+                                            <v-col v-if="isAuthenticated">
+                                                <div>
+                                                    <v-card>
+                                                        <v-toolbar color="primary" dark>
+                                                            <v-toolbar-title>Zuletzt angesehen: </v-toolbar-title>
+                                                            <v-spacer></v-spacer>
+                                                        </v-toolbar>
+                                                        <v-list subheader cols="12" lg="5">
+                                                            <v-list-item v-for="item in umfragen" :key="item.id" link>
+                                                                <v-list-item-content>
+                                                                    <v-list-item-title
+                                                                        v-text="item.title"
+                                                                    ></v-list-item-title>
+                                                                    <v-list-item-subtitle
+                                                                        v-text="item.subtitle"
+                                                                    ></v-list-item-subtitle>
+                                                                </v-list-item-content>
+                                                                <v-list-item-action>
+                                                                    <v-btn icon>
+                                                                        <v-icon color="secondary">
+                                                                            {{ item.iconStatus }}
+                                                                        </v-icon>
+                                                                    </v-btn>
+                                                                </v-list-item-action>
+                                                                <v-list-item-action>
+                                                                    <v-btn icon>
+                                                                        <v-icon color="primary">
+                                                                            {{ item.iconAction }}
+                                                                        </v-icon>
+                                                                    </v-btn>
+                                                                </v-list-item-action>
+                                                            </v-list-item>
+                                                        </v-list>
+                                                    </v-card>
+                                                </div>
+                                            </v-col>
+                                            <div v-else>
+                                                Bitte melden Sie sich an.
+                                            </div>
                                             <v-spacer />
-                                            <v-btn color="accent" nuxt to="/login">
+                                            <v-btn v-if="isAuthenticated !== true" color="accent" nuxt to="/login">
                                                 Login
                                             </v-btn>
                                         </v-row>
@@ -39,3 +77,42 @@
         </v-layout>
     </v-container>
 </template>
+
+<script>
+import { mapGetters } from 'vuex'
+export default {
+    name: 'index',
+    data() {
+        return {
+            umfragen: [
+                {
+                    title: 'Meinungsbild Teambuilding',
+                    id: '418',
+                    subtitle: 'Fragen: 3 Bearbeiter: 1 Zuletzt: NHILLE (14.05.2020)',
+                    iconAction: 'mdi-pencil',
+                    iconStatus: 'mdi-play',
+                },
+                {
+                    title: 'Wahl der Vertrauensperson',
+                    id: '215',
+                    subtitle: 'Teilgenommen: 52% (18/34) Tage übrig: 5 (26.05.2020)',
+                    iconAction: 'mdi-magnify',
+                    iconStatus: 'mdi-pause',
+                },
+                {
+                    title: 'Weihnachtsfeier 2019 Rückblick',
+                    id: '183',
+                    subtitle: 'Automatisch geschlossen seit 01.02.2020',
+                    iconAction: 'mdi-magnify',
+                    iconStatus: 'mdi-content-duplicate',
+                },
+            ],
+        }
+    },
+    computed: {
+        ...mapGetters({
+            isAuthenticated: 'login/isAuthenticated',
+        }),
+    },
+}
+</script>

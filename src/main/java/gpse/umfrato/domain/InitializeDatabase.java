@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Service
 public class InitializeDatabase implements InitializingBean {
 
-    private static final String TEST_USER = "Uncle_Bob";
+    private static final String TEST_USER = "tbrettmann";
 
     private final UserService userService;
     private final PollService pollService;
@@ -45,6 +45,7 @@ public class InitializeDatabase implements InitializingBean {
      */
     @Override
     public void afterPropertiesSet() {
+        final String dummyPassword = "$2a$10$WoG5Z4YN9Z37EWyNCkltyeFr6PtrSXSLMeFWOeDUwcanht5CIJgPa";
         try {
             userService.loadUserByUsername(TEST_USER);
             pollService.createPoll("Erste Umfrage", TEST_USER, LocalDateTime.now(),
@@ -53,9 +54,22 @@ public class InitializeDatabase implements InitializingBean {
 
         } catch (UsernameNotFoundException ex) {
             userService.createUser(TEST_USER,
-                "{bcrypt}$2a$10$WoG5Z4YN9Z37EWyNCkltyeFr6PtrSXSLMeFWOeDUwcanht5CIJgPa",
-                "Bob", "Martin", "ROLE_USER");
+                dummyPassword,
+                "Tobias", "Brettmann", "ROLE_POLL_CREATOR");
         }
-
+        try {
+            userService.loadUserByUsername("jneimeier");
+        } catch (UsernameNotFoundException ex) {
+            userService.createUser("jniemeier",
+                dummyPassword,
+                "Jan", "Niemeier", "ROLE_ADMIN");
+        }
+        try {
+            userService.loadUserByUsername("nhille");
+        } catch (UsernameNotFoundException ex) {
+            userService.createUser("nhille",
+                dummyPassword,
+                "Nora", "Hille", "ROLE_POLL_EDITOR");
+        }
     }
 }

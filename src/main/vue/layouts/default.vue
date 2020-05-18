@@ -14,12 +14,17 @@
             <v-spacer></v-spacer>
             <!--            Buttons defined in items-->
             <v-div v-for="(item, i) in items" :key="i" router exact>
-                <v-btn class="ma-3" :to="item.to" color="primary">
+                <v-btn class="ma-3" :to="item.to" color="primary" :disabled="isAuthenticated !== true">
                     {{ item.title }}
                 </v-btn>
             </v-div>
             <!--            Login Button-->
-            <v-btn text :to="'/Login'"> <v-icon>mdi-account</v-icon> Login </v-btn>
+            <div v-if="isAuthenticated">
+                <v-btn text :to="'/Login'"> <v-icon>mdi-account</v-icon> {{ getUsername }} </v-btn>
+            </div>
+            <div v-else>
+                <v-btn text :to="'/Login'"> <v-icon>mdi-account</v-icon> Login </v-btn>
+            </div>
             <!--            light/dark mode button-->
             <v-btn icon>
                 <v-icon color="primary" @click="setTheme()">{{ modeIcon }}</v-icon>
@@ -40,6 +45,7 @@
 
 <script>
 import { mdiBrightness4 } from '@mdi/js'
+import { mapGetters } from 'vuex'
 export default {
     data() {
         return {
@@ -49,11 +55,11 @@ export default {
             items: [
                 {
                     icon: 'mdi-pencil',
-                    title: 'Konfiguration',
-                    to: '/Configuration',
+                    title: 'Umfragen',
+                    to: '/navigation',
                 },
                 {
-                    icon: 'mdi-chart-bubble',
+                    icon: 'mdi-chart-line',
                     title: 'Auswertung',
                     to: '/Analyse',
                 },
@@ -63,15 +69,13 @@ export default {
                     to: '/Administration',
                 },
             ],
-
             title: 'Umfrato',
         }
     },
-
-    /**
-     * returns a css compatible string that sets the background to the color specified in th nuxt.config.js
-     */
     computed: {
+        /**
+         * returns a css compatible string that sets the background to the color specified in th nuxt.config.js
+         */
         backgroundColor() {
             if (this.goDark) {
                 return 'background:' + this.$vuetify.theme.themes.dark.background
@@ -79,6 +83,10 @@ export default {
                 return 'background:' + this.$vuetify.theme.themes.light.background
             }
         },
+        ...mapGetters({
+            isAuthenticated: 'login/isAuthenticated',
+            getUsername: 'login/getUsername',
+        }),
     },
     /**
      * Switches the boolean stored in go dark and sets the theme in the nuxt.config.js
