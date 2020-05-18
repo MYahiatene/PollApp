@@ -64,7 +64,6 @@
                                     @input="closeMenuAndUpdateA"
                                 ></v-date-picker>
                             </v-menu>
-                            <p>{{ time }}</p>
                         </v-col>
                         <v-col
                             ><v-text-field

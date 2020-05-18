@@ -9,10 +9,10 @@
                             <v-list v-for="categorie in categories" :key="categorie.id" two-line>
                                 <v-subheader class="headline">{{ categorie.name }}</v-subheader>
                                 <draggable v-model="categories.items" category="questions">
-                                    <v-list v-for="item in categorie.items" :key="item.id">
+                                    <v-list v-for="item in updateQuestionList" :key="item">
                                         <v-list-item-title :key="item.title">
                                             <v-list-item-content>
-                                                <v-list-item-title>{{ item.title }}</v-list-item-title>
+                                                <v-list-item-title>{{ item }}</v-list-item-title>
                                             </v-list-item-content>
                                             <v-list-item-action>
                                                 <v-btn depressed small icon>
@@ -25,12 +25,13 @@
                             </v-list>
                         </v-flex>
                     </v-container>
-                    <div class="ma-8" @click="createSurvey()">
+                    <div class="ma-8" @click="createCategory()">
                         <v-btn depressed small>Neue Kategorie</v-btn>
                     </div>
                 </v-col>
                 <v-col cols="8">
                     <QuestionBuildWidget></QuestionBuildWidget>
+                    <p>{{ updateQuestionList }}</p>
                 </v-col>
             </v-row>
         </v-content>
@@ -42,6 +43,12 @@ import draggable from 'vuedraggable'
 import QuestionBuildWidget from '../components/QuestionBuildWidget'
 // import axios from "../../../../.nuxt/axios";
 
+const axios = require('axios')
+const instance = axios.create({
+    baseURL: 'http://127.0.0.1:8088/api/',
+    timeout: 1000,
+    headers: { 'X-Custom-Header': 'foobar' },
+})
 export default {
     name: 'DragDropTest',
     components: { QuestionBuildWidget, draggable },
@@ -51,45 +58,33 @@ export default {
                 {
                     id: '1',
                     name: 'Hauptkategorie',
-                    items: [
-                        {
-                            id: '1',
-                            title: 'Frage 1',
-                            symbol: 'mdi-pencil-outline',
-                        },
-                        {
-                            id: '2',
-                            title: 'Frage 2',
-                            symbol: 'mdi-pencil-outline',
-                        },
-                    ],
-                },
-                {
-                    id: '2',
-                    name: 'Kategorie 1',
-                    items: [
-                        {
-                            id: '3',
-                            title: 'Frage 3',
-                            symbol: 'mdi-pencil-outline',
-                        },
-                        {
-                            id: '4',
-                            title: 'Frage 4',
-                            symbol: 'mdi-pencil-outline',
-                        },
-                        {
-                            id: '5',
-                            title: 'Frage 5',
-                            symbol: 'mdi-pencil-outline',
-                        },
-                    ],
                 },
             ],
         }
     },
+    computed: {
+        updateQuestionList() {
+            return this.$store.state.questionOverview.questionText
+        },
+    },
     methods: {
-        createSurvey() {},
+        createCategory() {},
+        sendData() {
+            const obj = {
+                pollId: '',
+                questionMessage: this.test,
+                answerPossibilites: [],
+                questionType: '',
+            }
+            instance
+                .post('/poll/' + this.pollId + '/addquestion', obj)
+                .then((response) => {
+                    console.log(response)
+                })
+                .catch((error) => {
+                    console.log(error)
+                })
+        },
     },
 }
 </script>
