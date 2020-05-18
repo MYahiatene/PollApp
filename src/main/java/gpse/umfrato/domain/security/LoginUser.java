@@ -9,7 +9,7 @@ public class LoginUser {
 
     }
 
-    public LoginUser(String input) {
+    public LoginUser(final String input) {
         username = input.split("&")[0].replace("username=", "");
         password = input.split("&")[1].replace("password=", "");
     }
@@ -18,7 +18,7 @@ public class LoginUser {
         return username;
     }
 
-    public void setUsername(String username) {
+    public void setUsername(final String username) {
         this.username = username;
     }
 
@@ -26,7 +26,7 @@ public class LoginUser {
         return password;
     }
 
-    public void setPassword(String password) {
+    public void setPassword(final String password) {
         this.password = password;
     }
 }

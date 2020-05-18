@@ -15,9 +15,10 @@ import java.util.function.Function;
 @Component
 public class JwtTokenUtil implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+private static final long serialVersionUID = 1L;
+public static final int TEN_DAYS_IN_MILLISECONDS = 864000000;
 
-    public String getUsernameFromToken(String token) {
+public String getUsernameFromToken(String token) {
         return getClaimFromToken(token, Claims::getSubject);
     }
 
@@ -37,28 +38,28 @@ public class JwtTokenUtil implements Serializable {
             .getBody();
     }
 
-    private Boolean isTokenExpired(String token) {
+    private Boolean isTokenExpired(final String token) {
         final Date expiration = getExpirationDateFromToken(token);
         return expiration.before(new Date());
     }
 
-    public String generateToken(User user) {
+    public String generateToken(final User user) {
         return doGenerateToken(user);
     }
 
-    private String doGenerateToken(User user) {
+    private String doGenerateToken(final User user) {
         return Jwts.builder()
             .signWith(Keys.hmacShaKeyFor(Constants.JWT_SECRET.getBytes()), SignatureAlgorithm.HS512)
             .setHeaderParam("typ", Constants.TOKEN_TYPE)
             .setIssuer(Constants.TOKEN_ISSUER)
             .setAudience(Constants.TOKEN_AUDIENCE)
             .setSubject(user.getUsername())
-            .setExpiration(new Date(System.currentTimeMillis() + 864000000)) // + 10 Tage
+            .setExpiration(new Date(System.currentTimeMillis() + TEN_DAYS_IN_MILLISECONDS))
             .claim("rol", user.getRoles())
             .compact();
     }
 
-    public Boolean validateToken(String token, UserDetails userDetails) {
+    public Boolean validateToken(final String token, final UserDetails userDetails) {
         final String username = getUsernameFromToken(token);
         return (
             username.equals(userDetails.getUsername())

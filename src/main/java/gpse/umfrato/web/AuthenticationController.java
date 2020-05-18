@@ -10,8 +10,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.logging.Logger;
-
 @CrossOrigin
 @RestController
 @RequestMapping(value = "/token", method = RequestMethod.GET)
@@ -29,12 +27,12 @@ public class AuthenticationController {
     private UserService userService;
 
     @PostMapping("/generate-token")
-    public ApiResponse<AuthToken> register(@RequestBody String input) throws AuthenticationException {
+    public ApiResponse<AuthToken> register(@RequestBody final String input) throws AuthenticationException {
         LOGGER.info("register");
-        LoginUser loginUser = new LoginUser(input);
+        final LoginUser loginUser = new LoginUser(input);
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginUser.getUsername(),
             loginUser.getPassword()));
-        User user = (User) userService.loadUserByUsername(loginUser.getUsername());
+        final User user = (User) userService.loadUserByUsername(loginUser.getUsername());
         final String token = jwtTokenUtil.generateToken(user);
         return new ApiResponse<>(STATUS_OK, "success", new AuthToken(token, user.getUsername()));
     }

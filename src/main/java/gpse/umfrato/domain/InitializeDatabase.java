@@ -55,7 +55,7 @@ public class InitializeDatabase implements InitializingBean {
         } catch (UsernameNotFoundException ex) {
             userService.createUser(TEST_USER,
                 dummyPassword,
-                "Tobias", "Brettmann", "ROLE_ADMIN");
+                "Tobias", "Brettmann", "ROLE_POLL_CREATOR");
         }
         try {
             userService.loadUserByUsername("jneimeier");
@@ -69,7 +69,7 @@ public class InitializeDatabase implements InitializingBean {
         } catch (UsernameNotFoundException ex) {
             userService.createUser("nhille",
                 dummyPassword,
-                "Nora", "Hille", "ROLE_ADMIN");
+                "Nora", "Hille", "ROLE_POLL_EDITOR");
         }
     }
 }

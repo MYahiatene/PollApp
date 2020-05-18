@@ -9,12 +9,12 @@ public class AuthToken {
 
     }
 
-    public AuthToken(String token, String username) {
+    public AuthToken(final String token, final String username) {
         this.token = token;
         this.username = username;
     }
 
-    public AuthToken(String token) {
+    public AuthToken(final String token) {
         this.token = token;
     }
 
@@ -22,7 +22,7 @@ public class AuthToken {
         return token;
     }
 
-    public void setToken(String token) {
+    public void setToken(final String token) {
         this.token = token;
     }
 
@@ -30,7 +30,7 @@ public class AuthToken {
         return username;
     }
 
-    public void setUsername(String username) {
+    public void setUsername(final String username) {
         this.username = username;
     }
 }

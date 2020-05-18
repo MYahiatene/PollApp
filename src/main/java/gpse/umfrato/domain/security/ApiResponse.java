@@ -6,7 +6,7 @@ public class ApiResponse<T> {
     private String message;
     private Object result;
 
-    public ApiResponse(int status, String message, Object result) {
+    public ApiResponse(final int status, final String message, final Object result) {
         this.status = status;
         this.message = message;
         this.result = result;
@@ -16,7 +16,7 @@ public class ApiResponse<T> {
         return status;
     }
 
-    public void setStatus(int status) {
+    public void setStatus(final int status) {
         this.status = status;
     }
 
@@ -24,7 +24,7 @@ public class ApiResponse<T> {
         return message;
     }
 
-    public void setMessage(String message) {
+    public void setMessage(final String message) {
         this.message = message;
     }
 
@@ -32,7 +32,7 @@ public class ApiResponse<T> {
         return result;
     }
 
-    public void setResult(Object result) {
+    public void setResult(final Object result) {
         this.result = result;
     }
 }
