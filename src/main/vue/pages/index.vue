@@ -11,10 +11,10 @@
                                 <v-card-title class="headline">
                                     Willkommen bei Umfrato!
                                 </v-card-title>
-
                                 <v-card-text>
                                     <v-container>
                                         <v-row>
+                                            <!--Is shown after Loged In-->
                                             <v-col v-if="isAuthenticated">
                                                 <div>
                                                     <v-card>
@@ -51,6 +51,7 @@
                                                     </v-card>
                                                 </div>
                                             </v-col>
+                                            <!--Is shown before Loged In-->
                                             <div v-else>
                                                 Bitte melden Sie sich an.
                                             </div>
