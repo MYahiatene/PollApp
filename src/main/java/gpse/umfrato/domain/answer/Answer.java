@@ -23,7 +23,7 @@ public class Answer {
 
 
     /**
-     * This attribute represents the message of the answer.
+     * This attribute represents the given answers.
      */
     @ElementCollection
     private List<String> givenAnswerList;

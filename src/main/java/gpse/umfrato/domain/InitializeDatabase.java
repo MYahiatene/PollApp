@@ -10,6 +10,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import java.time.Instant;
 import java.util.Arrays;
@@ -67,7 +68,7 @@ public class InitializeDatabase implements InitializingBean {
 
             questionService.addQuestion(one, "testFrage", Arrays.asList("Frage1", "Frage2", "Frage3"), "freitext");
             answerService.giveAnswer(testUsername, one, "3", Arrays.asList("Ja", "Nein"));
-        } catch (Exception e) {
+        } catch (EntityNotFoundException e) {
             e.printStackTrace();
         }
 
