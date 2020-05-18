@@ -5,14 +5,11 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 import java.util.function.Function;
 
 @Component
@@ -35,7 +32,7 @@ public class JwtTokenUtil implements Serializable {
 
     private Claims getAllClaimsFromToken(String token) {
         return Jwts.parser()
-            .setSigningKey(Constants.jwtSecret.getBytes())
+            .setSigningKey(Constants.JWT_SECRET.getBytes())
             .parseClaimsJws(token)
             .getBody();
     }
@@ -51,10 +48,10 @@ public class JwtTokenUtil implements Serializable {
 
     private String doGenerateToken(User user) {
         return Jwts.builder()
-            .signWith(Keys.hmacShaKeyFor(Constants.jwtSecret.getBytes()), SignatureAlgorithm.HS512)
-            .setHeaderParam("typ", Constants.tokenType)
-            .setIssuer(Constants.tokenIssuer)
-            .setAudience(Constants.tokenAudience)
+            .signWith(Keys.hmacShaKeyFor(Constants.JWT_SECRET.getBytes()), SignatureAlgorithm.HS512)
+            .setHeaderParam("typ", Constants.TOKEN_TYPE)
+            .setIssuer(Constants.TOKEN_ISSUER)
+            .setAudience(Constants.TOKEN_AUDIENCE)
             .setSubject(user.getUsername())
             .setExpiration(new Date(System.currentTimeMillis() + 864000000)) // + 10 Tage
             .claim("rol", user.getRoles())

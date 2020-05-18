@@ -85,7 +85,9 @@ public class User implements UserDetails {
      * @return user password
      */
     @Override
-    public String getPassword() { return password; }
+    public String getPassword() {
+        return password;
+    }
 
     /**
      * This method returns the username of the user.

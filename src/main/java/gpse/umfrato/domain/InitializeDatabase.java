@@ -45,6 +45,7 @@ public class InitializeDatabase implements InitializingBean {
      */
     @Override
     public void afterPropertiesSet() {
+        final String dummyPassword = "$2a$10$WoG5Z4YN9Z37EWyNCkltyeFr6PtrSXSLMeFWOeDUwcanht5CIJgPa";
         try {
             userService.loadUserByUsername(TEST_USER);
             pollService.createPoll("Erste Umfrage", TEST_USER, LocalDateTime.now(),
@@ -53,21 +54,21 @@ public class InitializeDatabase implements InitializingBean {
 
         } catch (UsernameNotFoundException ex) {
             userService.createUser(TEST_USER,
-                "$2a$10$WoG5Z4YN9Z37EWyNCkltyeFr6PtrSXSLMeFWOeDUwcanht5CIJgPa",
+                dummyPassword,
                 "Tobias", "Brettmann", "ROLE_ADMIN");
         }
         try {
             userService.loadUserByUsername("jneimeier");
         } catch (UsernameNotFoundException ex) {
             userService.createUser("jniemeier",
-                "$2a$10$WoG5Z4YN9Z37EWyNCkltyeFr6PtrSXSLMeFWOeDUwcanht5CIJgPa",
+                dummyPassword,
                 "Jan", "Niemeier", "ROLE_ADMIN");
         }
         try {
             userService.loadUserByUsername("nhille");
         } catch (UsernameNotFoundException ex) {
             userService.createUser("nhille",
-                "$2a$10$WoG5Z4YN9Z37EWyNCkltyeFr6PtrSXSLMeFWOeDUwcanht5CIJgPa",
+                dummyPassword,
                 "Nora", "Hille", "ROLE_ADMIN");
         }
     }

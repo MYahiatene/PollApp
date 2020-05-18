@@ -1,21 +1,17 @@
 package gpse.umfrato.domain.security;
 
-import org.apache.commons.logging.Log;
-
 public class LoginUser {
 
     private String username;
     private String password;
 
-    public LoginUser()
-    {
+    public LoginUser() {
 
     }
 
-    public LoginUser(String input)
-    {
-        username = input.split("&")[0].replace("username=","");
-        password = input.split("&")[1].replace("password=","");
+    public LoginUser(String input) {
+        username = input.split("&")[0].replace("username=", "");
+        password = input.split("&")[1].replace("password=", "");
     }
 
     public String getUsername() {

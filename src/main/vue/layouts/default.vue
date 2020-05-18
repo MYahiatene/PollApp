@@ -54,7 +54,6 @@ export default {
                     to: '/Administration',
                 },
             ],
-
             title: 'Umfrato',
         }
     },
