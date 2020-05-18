@@ -3,11 +3,15 @@ import axios from 'axios'
 export const state = () => ({
     authenticated: null,
     token: '',
+    username: '',
 })
 
 export const getters = {
     isAuthenticated: (state) => {
         return state.authenticated
+    },
+    getUsername: (state) => {
+        return state.username
     },
 }
 
@@ -20,6 +24,9 @@ export const mutations = {
         } else {
             state.authenticated = false
         }
+    },
+    setUsername(state, username) {
+        state.username = username
     },
     /* initializeStore(state) {
         if (localStorage.getItem('store')) {
@@ -38,6 +45,7 @@ export const actions = {
                 .then((res) => {
                     const token = res.data.result.token
                     commit('authenticate', token)
+                    commit('setUsername', input.username)
                     resolve()
                 })
                 .catch(() => {

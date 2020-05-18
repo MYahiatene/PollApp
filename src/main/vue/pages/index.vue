@@ -17,7 +17,7 @@
                                         <v-row>
                                             Viel Spaß beim Umfragen erstellen!
                                             <v-spacer />
-                                            <v-btn color="accent" nuxt to="/login">
+                                            <v-btn v-if="isAuthenticated !== true" color="accent" nuxt to="/login">
                                                 Login
                                             </v-btn>
                                         </v-row>
@@ -39,3 +39,15 @@
         </v-layout>
     </v-container>
 </template>
+
+<script>
+import { mapGetters } from 'vuex'
+export default {
+    name: 'index',
+    computed: {
+        ...mapGetters({
+            isAuthenticated: 'login/isAuthenticated',
+        }),
+    },
+}
+</script>

@@ -10,11 +10,16 @@
             <v-spacer></v-spacer>
 
             <v-div v-for="(item, i) in items" :key="i" router exact>
-                <v-btn class="ma-3" :to="item.to" color="primary">
+                <v-btn class="ma-3" :to="item.to" color="primary" :disabled="isAuthenticated !== true">
                     {{ item.title }}
                 </v-btn>
             </v-div>
-            <v-btn text :to="'/Login'"> <v-icon>mdi-account</v-icon> Login </v-btn>
+            <div v-if="isAuthenticated">
+                <v-btn text :to="'/Login'"> <v-icon>mdi-account</v-icon> {{ getUsername }} </v-btn>
+            </div>
+            <div v-else>
+                <v-btn text :to="'/Login'"> <v-icon>mdi-account</v-icon> Login </v-btn>
+            </div>
         </v-app-bar>
 
         <v-content>
@@ -30,6 +35,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 export default {
     data() {
         return {
@@ -54,6 +60,12 @@ export default {
 
             title: 'Umfrato',
         }
+    },
+    computed: {
+        ...mapGetters({
+            isAuthenticated: 'login/isAuthenticated',
+            getUsername: 'login/getUsername',
+        }),
     },
 }
 </script>
