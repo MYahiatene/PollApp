@@ -71,5 +71,12 @@ public class InitializeDatabase implements InitializingBean {
                 dummyPassword,
                 "Nora", "Hille", "ROLE_POLL_EDITOR");
         }
+        try {
+            userService.loadUserByUsername("nziegenbein");
+        } catch (UsernameNotFoundException ex) {
+            userService.createUser("nziegenbein",
+                dummyPassword,
+                "Nina", "Ziegenbein", "ROLE_POLL_ADMIN");
+        }
     }
 }

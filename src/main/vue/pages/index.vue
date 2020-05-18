@@ -7,7 +7,7 @@
                 <v-row>
                     <v-col cols="12" lg="12">
                         <row>
-                            <v-card hover>
+                            <v-card hover align="center">
                                 <v-card-title class="headline">
                                     Willkommen bei Umfrato!
                                 </v-card-title>
@@ -15,15 +15,21 @@
                                     <v-container>
                                         <v-row>
                                             <!--Is shown after Loged In-->
-                                            <v-col v-if="isAuthenticated">
+                                            <v-col v-if="isAuthenticated" cols="12" lg="3"></v-col>
+                                            <v-col v-if="isAuthenticated" cols="12" lg="6">
                                                 <div>
                                                     <v-card>
-                                                        <v-toolbar color="primary" dark>
+                                                        <v-toolbar>
                                                             <v-toolbar-title>Zuletzt angesehen: </v-toolbar-title>
                                                             <v-spacer></v-spacer>
                                                         </v-toolbar>
                                                         <v-list subheader cols="12" lg="5">
-                                                            <v-list-item v-for="item in umfragen" :key="item.id" link>
+                                                            <v-list-item
+                                                                v-for="item in umfragen"
+                                                                :key="item.id"
+                                                                link
+                                                                align="left"
+                                                            >
                                                                 <v-list-item-content>
                                                                     <v-list-item-title
                                                                         v-text="item.title"

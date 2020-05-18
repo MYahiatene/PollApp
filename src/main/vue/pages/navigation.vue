@@ -10,14 +10,14 @@
                     hide-default-footer
                 >
                     <template v-slot:header>
-                        <v-toolbar dark color="primary" class="mb-1">
+                        <v-toolbar class="mb-1">
                             <v-text-field
                                 v-model="search"
                                 clearable
                                 flat
                                 solo-inverted
                                 hide-details
-                                prepend-inner-icon="mdi-baguette"
+                                prepend-inner-icon="mdi-pencil"
                                 label="Search"
                             ></v-text-field>
                             <template v-if="$vuetify.breakpoint.mdAndUp">
@@ -28,15 +28,15 @@
                                     solo-inverted
                                     hide-details
                                     :items="keys"
-                                    prepend-inner-icon="mdi-baguette"
+                                    prepend-inner-icon="mdi-pencil"
                                     label="Sort by"
                                 ></v-select>
                                 <v-spacer></v-spacer>
                                 <v-btn-toggle v-model="sortDesc" mandatory>
-                                    <v-btn large depressed color="secondary" :value="false">
+                                    <v-btn large depressed :value="false">
                                         <v-icon>mdi-arrow-up</v-icon>
                                     </v-btn>
-                                    <v-btn large depressed color="secondary" :value="true">
+                                    <v-btn large depressed :value="true">
                                         <v-icon>mdi-arrow-down</v-icon>
                                     </v-btn>
                                 </v-btn-toggle>
@@ -54,12 +54,12 @@
 
                                     <v-list dense>
                                         <v-list-item v-for="(key, index) in filteredKeys" :key="index">
-                                            <v-list-item-content :class="{ 'blue--text': sortBy === key }"
+                                            <v-list-item-content :class="{ 'teal--text': sortBy === key }"
                                                 >{{ key }}:</v-list-item-content
                                             >
                                             <v-list-item-content
                                                 class="align-end"
-                                                :class="{ 'blue--text': sortBy === key }"
+                                                :class="{ 'teal--text': sortBy === key }"
                                                 >{{ item[key.toLowerCase()] }}</v-list-item-content
                                             >
                                         </v-list-item>
@@ -70,128 +70,6 @@
                     </template>
                 </v-data-iterator>
             </v-container>
-
-            <!--<v-flex>
-                <v-card>
-                    <v-toolbar color="light-blue" dark>
-                        <v-toolbar-title>Aktive Umfragen</v-toolbar-title>
-                        <v-spacer></v-spacer>
-                    </v-toolbar>
-                    <v-list two-line subheader>
-                        <v-list-item v-for="item in customSort" :key="item.title" link>
-                            <v-list-item-avatar>
-                                <v-icon></v-icon>
-                            </v-list-item-avatar>
-                            <v-list-item-content>
-                                <v-list-item-title v-text="item.title"></v-list-item-title>
-                                <v-list-item-subtitle v-text="item.subtitle"></v-list-item-subtitle>
-                            </v-list-item-content>
-                            <v-list-item-action>
-                                <v-btn icon>
-                                    <v-icon color="grey lighten-1">mdi-information</v-icon>
-                                </v-btn>
-                            </v-list-item-action>
-                            <v-list-item-action>
-                                <v-btn icon>
-                                    <v-icon color="grey lighten-1">mdi-stop</v-icon>
-                                </v-btn>
-                            </v-list-item-action>
-                        </v-list-item>
-                    </v-list>
-                </v-card>
-            </v-flex>-->
-            <!--<v-list>
-                    <v-list-item>
-                        <v-list-item-icon>
-                            <v-icon>mdi-home</v-icon>
-                        </v-list-item-icon>
-
-                        <v-list-item-title>Home</v-list-item-title>
-                    </v-list-item>
-
-                    <v-list-group no-action sub-group value="true">
-                        <template v-slot:activator>
-                            <v-list-item-content>
-                                <v-list-item-title>Aktive Umfragen</v-list-item-title>
-                            </v-list-item-content>
-                        </template>
-
-                        <v-list-item v-for="item in items2" :key="item.title" link>
-                            <v-list-item-avatar>
-                                <v-icon></v-icon>
-                            </v-list-item-avatar>
-                            <v-list-item-content>
-                                <v-list-item-title v-text="item.title"></v-list-item-title>
-                                <v-list-item-subtitle v-text="item.subtitle"></v-list-item-subtitle>
-                            </v-list-item-content>
-                            <v-list-item-action>
-                                <v-btn icon>
-                                    <v-icon color="grey lighten-1">mdi-information</v-icon>
-                                </v-btn>
-                            </v-list-item-action>
-                            <v-list-item-action>
-                                <v-btn icon>
-                                    <v-icon color="grey lighten-1">mdi-stop</v-icon>
-                                </v-btn>
-                            </v-list-item-action>
-                        </v-list-item>
-                    </v-list-group>
-
-                    <v-list-group no-action sub-group value="true">
-                        <template v-slot:activator>
-                            <v-list-item-content>
-                                <v-list-item-title>Bearbeitbare Umfragen</v-list-item-title>
-                            </v-list-item-content>
-                        </template>
-
-                        <v-list-item v-for="item in items2" :key="item.title" link>
-                            <v-list-item-avatar>
-                                <v-icon></v-icon>
-                            </v-list-item-avatar>
-                            <v-list-item-content>
-                                <v-list-item-title v-text="item.title"></v-list-item-title>
-                                <v-list-item-subtitle v-text="item.subtitle"></v-list-item-subtitle>
-                            </v-list-item-content>
-                            <v-list-item-action>
-                                <v-btn icon>
-                                    <v-icon color="grey lighten-1">mdi-baguette</v-icon>
-                                </v-btn>
-                            </v-list-item-action>
-                            <v-list-item-action>
-                                <v-btn icon>
-                                    <v-icon color="grey lighten-1">mdi-play</v-icon>
-                                </v-btn>
-                            </v-list-item-action>
-                        </v-list-item>
-                    </v-list-group>
-                    <v-list-group no-action sub-group value="true">
-                        <template v-slot:activator>
-                            <v-list-item-content>
-                                <v-list-item-title>Inaktive Umfragen</v-list-item-title>
-                            </v-list-item-content>
-                        </template>
-
-                        <v-list-item v-for="item in items2" :key="item.title" link>
-                            <v-list-item-avatar>
-                                <v-icon></v-icon>
-                            </v-list-item-avatar>
-                            <v-list-item-content>
-                                <v-list-item-title v-text="item.title"></v-list-item-title>
-                                <v-list-item-subtitle v-text="item.subtitle"></v-list-item-subtitle>
-                            </v-list-item-content>
-                            <v-list-item-action>
-                                <v-btn icon>
-                                    <v-icon color="grey lighten-1">mdi-information</v-icon>
-                                </v-btn>
-                            </v-list-item-action>
-                            <v-list-item-action>
-                                <v-btn icon>
-                                    <v-icon color="grey lighten-1">mdi-play</v-icon>
-                                </v-btn>
-                            </v-list-item-action>
-                        </v-list-item>
-                    </v-list-group>
-                </v-list>-->
         </v-layout>
     </v-container>
 </template>
@@ -205,13 +83,13 @@ export default {
             sortBy: 'name',
             keys: ['Title', 'Editable', 'Active'],
             items2: [
-                { title: 'Umfrage1', id: '0', icon: 'mdi-baguette', active: true, editable: false },
-                { title: 'Umfrage2', id: '1', icon: 'mdi-baguette', active: false, editable: false },
-                { title: 'Umfrage3', id: '2', icon: 'mdi-baguette', active: false, editable: false },
-                { title: 'Umfrage4', id: '3', icon: 'mdi-baguette', active: false, editable: false },
-                { title: 'Umfrage5', id: '4', icon: 'mdi-baguette', active: false, editable: false },
-                { title: 'Umfrage6', id: '5', icon: 'mdi-baguette', active: false, editable: false },
-                { title: 'Umfrage7', id: '6', icon: 'mdi-baguette', active: false, editable: false },
+                { title: 'Umfrage1', id: '0', icon: 'mdi-pencil', active: true, editable: false },
+                { title: 'Umfrage2', id: '1', icon: 'mdi-pencil', active: false, editable: false },
+                { title: 'Umfrage3', id: '2', icon: 'mdi-pencil', active: false, editable: false },
+                { title: 'Umfrage4', id: '3', icon: 'mdi-pencil', active: false, editable: false },
+                { title: 'Umfrage5', id: '4', icon: 'mdi-pencil', active: false, editable: false },
+                { title: 'Umfrage6', id: '5', icon: 'mdi-pencil', active: false, editable: false },
+                { title: 'Umfrage7', id: '6', icon: 'mdi-pencil', active: false, editable: false },
             ],
         }
     },
