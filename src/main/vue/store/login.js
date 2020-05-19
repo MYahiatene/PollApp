@@ -40,6 +40,7 @@ export const actions = {
             const credentials = new URLSearchParams()
             credentials.append('username', input.username)
             credentials.append('password', input.password)
+            axios.defaults.headers.Authorization = state.token
             axios
                 .post('http://localhost:8088/token/generate-token', credentials)
                 .then((res) => {
