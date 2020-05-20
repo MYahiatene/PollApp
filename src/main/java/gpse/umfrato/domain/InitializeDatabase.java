@@ -11,23 +11,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import java.time.Instant;
-import java.util.Arrays;
 
 @Service
 public class InitializeDatabase implements InitializingBean {
 
-    private static final String TEST_USER = "tbrettmann";
+    /* default */ final QuestionService questionService;
+
+    /* default */ final AnswerService answerService;
 
     private final UserService userService;
 
     private final PollService pollService;
-
-    private final QuestionService questionService;
-
-    private final AnswerService answerService;
 
     /**
      * This method initializes the database.
@@ -58,23 +54,24 @@ public class InitializeDatabase implements InitializingBean {
     @Transactional
     public void afterPropertiesSet() {
 
-        final String one = "1";
+        final String testUsername = "tbrettmann";
         final String dummyPassword = "$2a$10$WoG5Z4YN9Z37EWyNCkltyeFr6PtrSXSLMeFWOeDUwcanht5CIJgPa";
 
 
-        final Poll testPoll = new Poll(TEST_USER, "anonym", "testPoll", Instant.now().toString(),
+        final Poll testPoll = new Poll(testUsername, "anonym", "testPoll", Instant.now().toString(),
             Instant.now().toString(), Instant.now().toString(), 0);
-        final User testUser = new User(TEST_USER, dummyPassword, "Markus", "Mueller");
+        final User testUser = new User("testNutzer", dummyPassword, "Markus", "Mueller");
+        final User testUserTbrettmann = new User(testUsername, dummyPassword, "Tobias", "Brettmann");
 
 
         try {
-            userService.loadUserByUsername(TEST_USER);
+            userService.loadUserByUsername(testUsername);
             pollService.createPoll(testPoll);
 
-            questionService.addQuestion(one, "testFrage", Arrays.asList("Frage1", "Frage2", "Frage3"), "freitext");
-            answerService.giveAnswer(TEST_USER, one, "3", Arrays.asList("Ja", "Nein"));
-        } catch (EntityNotFoundException e) {
-            userService.createUser(testUser);
+            //questionService.addQuestion(one, "testFrage", Arrays.asList("Frage1", "Frage2", "Frage3"), "freitext");
+            //answerService.giveAnswer(testUsername, one, "3", Arrays.asList("Ja", "Nein"));
+        } catch (UsernameNotFoundException e) {
+            userService.createUser(testUserTbrettmann, "ROLE_POLL_CREATOR");
         }
 
         try {

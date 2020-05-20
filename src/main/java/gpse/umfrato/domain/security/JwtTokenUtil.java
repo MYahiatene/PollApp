@@ -16,22 +16,22 @@ import java.util.function.Function;
 public class JwtTokenUtil implements Serializable {
 
 private static final long serialVersionUID = 1L;
-public static final int TEN_DAYS_IN_MILLISECONDS = 864000000;
+private static final int TEN_DAYS_IN_MILLISECONDS = 864_000_000;
 
-public String getUsernameFromToken(String token) {
+public String getUsernameFromToken(final String token) {
         return getClaimFromToken(token, Claims::getSubject);
     }
 
-    public Date getExpirationDateFromToken(String token) {
+    public Date getExpirationDateFromToken(final String token) {
         return getClaimFromToken(token, Claims::getExpiration);
     }
 
-    public <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
+    public <T> T getClaimFromToken(final String token, final Function<Claims, T> claimsResolver) {
         final Claims claims = getAllClaimsFromToken(token);
         return claimsResolver.apply(claims);
     }
 
-    private Claims getAllClaimsFromToken(String token) {
+    private Claims getAllClaimsFromToken(final String token) {
         return Jwts.parser()
             .setSigningKey(Constants.JWT_SECRET.getBytes())
             .parseClaimsJws(token)
@@ -61,9 +61,7 @@ public String getUsernameFromToken(String token) {
 
     public Boolean validateToken(final String token, final UserDetails userDetails) {
         final String username = getUsernameFromToken(token);
-        return (
-            username.equals(userDetails.getUsername())
-                && !isTokenExpired(token));
+        return username.equals(userDetails.getUsername()) && !isTokenExpired(token);
     }
 
 }

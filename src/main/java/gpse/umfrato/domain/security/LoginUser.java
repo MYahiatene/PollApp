@@ -2,6 +2,7 @@ package gpse.umfrato.domain.security;
 
 public class LoginUser {
 
+    private static final String AND = "&";
     private String username;
     private String password;
 
@@ -10,8 +11,8 @@ public class LoginUser {
     }
 
     public LoginUser(final String input) {
-        username = input.split("&")[0].replace("username=", "");
-        password = input.split("&")[1].replace("password=", "");
+        username = input.split(AND)[0].replace("username=", "");
+        password = input.split(AND)[1].replace("password=", "");
     }
 
     public String getUsername() {

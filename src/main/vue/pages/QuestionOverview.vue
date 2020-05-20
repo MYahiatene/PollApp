@@ -9,7 +9,7 @@
                             <v-list v-for="categorie in categories" :key="categorie.id" two-line>
                                 <v-subheader class="headline">{{ categorie.name }}</v-subheader>
                                 <draggable v-model="categories.items" category="questions">
-                                    <v-list v-for="item in updateQuestionList" :key="item">
+                                    <v-list v-for="item in items" :key="item">
                                         <v-list-item-title :key="item.title">
                                             <v-list-item-content>
                                                 <v-list-item-title>{{ item }}</v-list-item-title>
@@ -31,7 +31,6 @@
                 </v-col>
                 <v-col cols="8">
                     <QuestionBuildWidget></QuestionBuildWidget>
-                    <p>{{ updateQuestionList }}</p>
                 </v-col>
             </v-row>
         </v-content>
@@ -62,9 +61,9 @@ export default {
         }
     },
     computed: {
-        updateQuestionList() {
+        /** updateQuestionList() {
             return this.$store.state.questionOverview.questionText
-        },
+        }, */
     },
     methods: {
         createCategory() {},
