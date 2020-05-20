@@ -1,42 +1,42 @@
 <template>
-    <v-app dark>
-        <v-navigation-drawer v-model="drawer" :mini-variant="miniVariant" :clipped="clipped" fixed app>
-            <v-list>
-                <v-list-item v-for="(item, i) in items" :key="i" :to="item.to" router exact>
-                    <v-list-item-action>
-                        <v-icon>{{ item.icon }}</v-icon>
-                    </v-list-item-action>
-                    <v-list-item-content>
-                        <v-list-item-title v-text="item.title" />
-                    </v-list-item-content>
-                </v-list-item>
-            </v-list>
-        </v-navigation-drawer>
-        <v-app-bar :clipped-left="clipped" fixed app>
-            <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
-            <v-btn icon @click.stop="miniVariant = !miniVariant">
-                <v-icon>mdi-{{ `chevron-${miniVariant ? 'right' : 'left'}` }}</v-icon>
+    <!--     In this file we define the header that will be displayed on all pages in the entire app -->
+    <v-app :dark="setTheme" :style="backgroundColor">
+        <!--        set Theme returns a boolean value depending on the theme the user wants (light=false, dark=true)-->
+        <!--        backgroundColor is a computed string that sets the background to the color defined in the nuxt.config.js depending on the chosen theme-->
+        <v-app-bar fixed app>
+            <!--            Logo and Name of the App-->
+            <nuxt-link to="/" style="text-decoration: none;">
+                <div>
+                    <h1><img src="LogoEinfach.svg" alt="Logo" width="25" /> {{ title }}</h1>
+                </div>
+            </nuxt-link>
+
+            <v-spacer></v-spacer>
+            <!--            Buttons defined in items-->
+            <v-div v-for="(item, i) in items" :key="i" router exact>
+                <v-btn class="ma-3" :to="item.to" color="primary" :disabled="isAuthenticated !== true">
+                    {{ item.title }}
+                </v-btn>
+            </v-div>
+            <!--            Login Button-->
+            <div v-if="isAuthenticated">
+                <v-btn text :to="'/Login'"> <v-icon>mdi-account</v-icon> {{ getUsername }} </v-btn>
+            </div>
+            <div v-else>
+                <v-btn text :to="'/Login'"> <v-icon>mdi-account</v-icon> Login </v-btn>
+            </div>
+            <!--            light/dark mode button-->
+            <v-btn icon>
+                <v-icon color="primary" @click="setTheme()">{{ modeIcon }}</v-icon>
             </v-btn>
-            <v-toolbar-title v-text="title" />
-            <v-spacer />
         </v-app-bar>
+        <!--content of the individual page-->
         <v-content>
             <v-container>
                 <nuxt />
             </v-container>
         </v-content>
-        <v-navigation-drawer v-model="rightDrawer" :right="right" temporary fixed>
-            <v-list>
-                <v-list-item @click.native="right = !right">
-                    <v-list-item-action>
-                        <v-icon light>
-                            mdi-repeat
-                        </v-icon>
-                    </v-list-item-action>
-                    <v-list-item-title>Switch drawer (click me)</v-list-item-title>
-                </v-list-item>
-            </v-list>
-        </v-navigation-drawer>
+        <!--footer-->
         <v-footer :fixed="fixed" app>
             <span>&copy; {{ new Date().getFullYear() }}</span>
         </v-footer>
@@ -44,44 +44,63 @@
 </template>
 
 <script>
+import { mdiBrightness4 } from '@mdi/js'
+import { mapGetters } from 'vuex'
 export default {
     data() {
         return {
-            clipped: false,
-            drawer: true,
+            goDark: false,
             fixed: false,
+            modeIcon: mdiBrightness4,
             items: [
                 {
-                    icon: 'mdi-apps',
-                    title: 'Start',
-                    to: '/',
+                    icon: 'mdi-pencil',
+                    title: 'Umfragen',
+                    to: '/navigation',
                 },
                 {
-                    icon: 'mdi-account',
-                    title: 'Login',
-                    to: '/Login',
+                    icon: 'mdi-chart-line',
+                    title: 'Auswertung',
+                    to: '/Analyse',
                 },
                 {
                     icon: 'mdi-account-multiple',
                     title: 'Administration',
                     to: '/Administration',
                 },
-                {
-                    icon: 'mdi-pencil',
-                    title: 'Konfiguration',
-                    to: '/Configuration',
-                },
-                {
-                    icon: 'mdi-chart-bubble',
-                    title: 'Auswertung',
-                    to: '/Analyse',
-                },
             ],
-            miniVariant: false,
-            right: true,
-            rightDrawer: false,
             title: 'Umfrato',
         }
+    },
+    computed: {
+        /**
+         * returns a css compatible string that sets the background to the color specified in th nuxt.config.js
+         */
+        backgroundColor() {
+            if (this.goDark) {
+                return 'background:' + this.$vuetify.theme.themes.dark.background
+            } else {
+                return 'background:' + this.$vuetify.theme.themes.light.background
+            }
+        },
+        ...mapGetters({
+            isAuthenticated: 'login/isAuthenticated',
+            getUsername: 'login/getUsername',
+        }),
+    },
+    /**
+     * Switches the boolean stored in go dark and sets the theme in the nuxt.config.js
+     * (this method is called, when the user switches the mode (light/dark)
+     */
+    methods: {
+        setTheme() {
+            this.goDark = !this.goDark
+            if (this.goDark === true) {
+                return (this.$vuetify.theme.dark = true)
+            } else {
+                return (this.$vuetify.theme.dark = false)
+            }
+        },
     },
 }
 </script>

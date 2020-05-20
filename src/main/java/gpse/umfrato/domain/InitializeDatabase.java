@@ -8,6 +8,7 @@ import gpse.umfrato.domain.user.User;
 import gpse.umfrato.domain.user.UserService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
@@ -17,6 +18,8 @@ import java.util.Arrays;
 
 @Service
 public class InitializeDatabase implements InitializingBean {
+
+    private static final String TEST_USER = "tbrettmann";
 
     private final UserService userService;
 
@@ -55,23 +58,30 @@ public class InitializeDatabase implements InitializingBean {
     @Transactional
     public void afterPropertiesSet() {
 
-        final String testUsername = "testUser";
         final String one = "1";
+        final String dummyPassword = "$2a$10$WoG5Z4YN9Z37EWyNCkltyeFr6PtrSXSLMeFWOeDUwcanht5CIJgPa";
 
-        final Poll testPoll = new Poll(testUsername, "anonym", "testPoll", Instant.now().toString(),
+
+        final Poll testPoll = new Poll(TEST_USER, "anonym", "testPoll", Instant.now().toString(),
             Instant.now().toString(), Instant.now().toString(), 0);
-        final User testUser = new User(testUsername, "password", "Markus", "Mueller");
+        final User testUser = new User(TEST_USER, dummyPassword, "Markus", "Mueller");
+
 
         try {
-            userService.createUser(testUser);
+            userService.loadUserByUsername(TEST_USER);
             pollService.createPoll(testPoll);
 
             questionService.addQuestion(one, "testFrage", Arrays.asList("Frage1", "Frage2", "Frage3"), "freitext");
-            answerService.giveAnswer(testUsername, one, "3", Arrays.asList("Ja", "Nein"));
+            answerService.giveAnswer(TEST_USER, one, "3", Arrays.asList("Ja", "Nein"));
         } catch (EntityNotFoundException e) {
-            e.printStackTrace();
+            userService.createUser(testUser);
+        }
+
+        try {
+            userService.loadUserByUsername("testnutzer");
+        } catch (UsernameNotFoundException ex) {
+            userService.createUser(testUser);
         }
 
     }
-
 }

@@ -41,7 +41,6 @@
 <script>
 import draggable from 'vuedraggable'
 import QuestionBuildWidget from '../components/QuestionBuildWidget'
-// import axios from "../../../../.nuxt/axios";
 
 const axios = require('axios')
 const instance = axios.create({
