@@ -84,6 +84,7 @@ public class Poll {
      */
     public Poll(final String pollCreator, final String anonymityStatus, final String pollName, final String createdAt,
                 final String activatedAt, final String deactivatedAt, final int pollStatus) {
+        this.pollId = 1922L;
         this.pollName = pollName;
         this.pollCreator = pollCreator;
         this.anonymityStatus = anonymityStatus;

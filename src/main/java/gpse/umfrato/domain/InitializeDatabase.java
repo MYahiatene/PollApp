@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.Instant;
+import java.util.List;
 
 @Service
 public class InitializeDatabase implements InitializingBean {
@@ -62,7 +63,6 @@ public class InitializeDatabase implements InitializingBean {
             Instant.now().toString(), Instant.now().toString(), 0);
         final User testUser = new User("testNutzer", dummyPassword, "Markus", "Mueller");
         final User testUserTbrettmann = new User(testUsername, dummyPassword, "Tobias", "Brettmann");
-
 
         try {
             userService.loadUserByUsername(testUsername);
