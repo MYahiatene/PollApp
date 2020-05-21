@@ -10,20 +10,10 @@ public interface PollService {
     /**
      * This method creates a poll with all required parameters.
      *
-     * @param pollname        name of the poll
-     * @param pollcreator     name of the creator of the poll
-     * @param pollCreatedAt   date when the poll was created
-     * @param lastEditAt      date when the poll was last edit
-     * @param activatedAt     date when the poll was activated
-     * @param deactivatedAt   date when the poll was deactivated
-     * @param anonymityStatus status of the poll if it is anonymous, part anonymous and non anonymous
-     * @param pollStatus      status of the poll if it is activated or deactivated
+     * @param poll the poll with all data to create it
      * @return the created poll
      */
-    Poll createPoll(final String pollname, final String pollcreator, final LocalDateTime pollCreatedAt,
-                    final LocalDateTime lastEditAt, final LocalDateTime activatedAt,
-                    final LocalDateTime deactivatedAt, final String anonymityStatus, final int pollStatus,
-                    final List<Question> questions);
+    Poll createPoll(Poll poll);
 
     /**
      * This method returns a list with all polls.

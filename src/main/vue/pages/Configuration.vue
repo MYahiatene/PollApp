@@ -1,10 +1,23 @@
 <template>
-    <v-layout>
-        <v-flex class="text-center">
-            <h1>Konfigurationsseite</h1>
-        </v-flex>
-        <v-btn color="primary" nuxt to="/PollCreation">
-            Umfrage erstellen
-        </v-btn>
-    </v-layout>
+    <div>
+        <AuthGate v-if="isAuthenticated !== true"></AuthGate>
+        <v-layout v-else>
+            <v-flex class="text-center">
+                <h1>Umfrageseite</h1>
+            </v-flex>
+        </v-layout>
+    </div>
 </template>
+
+<script>
+import { mapGetters } from 'vuex'
+import AuthGate from '../components/AuthGate'
+export default {
+    components: { AuthGate },
+    computed: {
+        ...mapGetters({
+            isAuthenticated: 'login/isAuthenticated',
+        }),
+    },
+}
+</script>

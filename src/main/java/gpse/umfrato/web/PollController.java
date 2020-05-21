@@ -5,6 +5,7 @@ import gpse.umfrato.domain.cmd.PollCmd;
 import gpse.umfrato.domain.poll.Poll;
 import gpse.umfrato.domain.poll.PollService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -15,7 +16,7 @@ import java.util.logging.Logger;
 @RestController
 @CrossOrigin
 public class PollController {
-    private static final Logger LOGGER = Logger.getLogger("PollController");
+    //private static final Logger LOGGER = Logger.getLogger("PollController");
     private final PollService pollService;
 
     /**
@@ -28,13 +29,10 @@ public class PollController {
         this.pollService = pollService;
     }
 
-    @PostMapping("/PollCreation")
+    @PostMapping(value = "/PollCreation", produces = MediaType.APPLICATION_JSON_VALUE)
     public String createPoll(final @RequestBody PollCmd pollCmd) {
         try {
-            pollService.createPoll(pollCmd.getPollname(), pollCmd.getPollcreator(), pollCmd.getPollCreatedAt(),
-                pollCmd.getLastEditAt(), pollCmd.getActivatedAt(), pollCmd.getDeactivatedAt(),
-                pollCmd.getAnonymityStatus(), pollCmd.getPollStatus(), new ArrayList<>()); //arraylist vorübergehend
-                // TODO: Add new attributes here
+            pollService.createPoll(pollCmd.getCmdPoll());
             return "Poll created!";
         } catch (BadRequestException e) {
             return "Poll creation failed!";
@@ -58,11 +56,11 @@ public class PollController {
     /**
      * This method returns a selected poll.
      *
-     * param pollCmd has the id of the poll
+     * @param pollCmd has the id of the poll
      * @return a selected poll
      */
-    @GetMapping("/participant") // TODO: /poll/{id:\d+} wieder einfügen
-    public Poll getPoll(/*@PathVariable("id") final String id final @RequestBody PollCmd pollCmd */) {
+    @GetMapping("/participant") //"/poll/{id:\\d+}"
+    public Poll getPoll(final @RequestBody PollCmd pollCmd) {
 
         return pollService.getPoll("2"); // TODO: pollCmd.getId()
     }

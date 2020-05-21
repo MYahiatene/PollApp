@@ -11,7 +11,10 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableJpaRepositories
 @EnableTransactionManagement
 public class UmfratoApplication {
-
+    /**
+     * This method starts the program.
+     * @param args the program arguments from the console
+     */
     public static void main(final String... args) {
         SpringApplication.run(UmfratoApplication.class, args);
     }

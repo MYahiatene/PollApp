@@ -1,5 +1,7 @@
 package gpse.umfrato.domain.question;
 
+import gpse.umfrato.domain.category.Category;
+import gpse.umfrato.domain.category.CategoryRepository;
 import gpse.umfrato.domain.poll.Poll;
 import gpse.umfrato.domain.poll.PollRepository;
 import gpse.umfrato.domain.poll.PollService;
@@ -8,25 +10,28 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class QuestionServiceImpl implements QuestionService {
 
     /**
-     * initializes the poll repository.
+     * Initializes the poll service.
+     */
+    /*default*/ final PollService pollService;
+
+    /*default*/ final CategoryRepository categoryRepository;
+
+    /**
+     * Initializes the poll repository.
      */
     private final PollRepository pollRepository;
 
     /**
-     * initializes the question repository.
+     * Initializes the question repository.
      */
     private final QuestionRepository questionRepository;
-
-    /**
-     * initializes the poll service.
-     */
-    private final PollService pollService;
 
     /**
      * This class constructor initializes the poll-, question repository and the poll service.
@@ -34,30 +39,35 @@ public class QuestionServiceImpl implements QuestionService {
      * @param pollRepository     the repository for the polls
      * @param questionRepository the repository for the questions
      * @param pollService        the class to work with polls
+     * @param categoryRepository the repository for the groups
      */
     @Autowired
     public QuestionServiceImpl(final PollRepository pollRepository, final QuestionRepository questionRepository,
-                               final PollService pollService) {
+                               final PollService pollService, final CategoryRepository categoryRepository) {
         this.pollRepository = pollRepository;
         this.questionRepository = questionRepository;
         this.pollService = pollService;
+        this.categoryRepository = categoryRepository;
     }
+
 
     /**
      * This method creates a question for a poll.
      *
      * @param questionMessage the given question
-     * @param pollId          the id of the poll
      * @return the question which is created
      */
     @Override
-    public Question addQuestion(final String questionMessage, final String pollId) {
-        final Poll poll = pollRepository.findById(Long.valueOf(pollId)).orElseThrow(() ->
-            new EntityNotFoundException());
-        final Question question = new Question(questionMessage);
-        question.setPoll(poll);
-        poll.getQuestionList().add(question);
-        pollRepository.save(poll);
+    public Question addQuestion(final String pollId,
+                                final String questionMessage,
+                                final List<String> answerPossibilities,
+                                final String questionType) {
+        final Question question = new Question(questionMessage, answerPossibilities, questionType);
+        final Category category = categoryRepository.findCategoryByPollId(Long.valueOf(pollId));
+        category.getQuestionList().add(question);
+        question.setCategoryId(category.getCategoryId());
+        questionRepository.save(question);
+        categoryRepository.save(category);
         return question;
     }
 
@@ -69,11 +79,12 @@ public class QuestionServiceImpl implements QuestionService {
      */
     @Override
     public void removeQuestion(final String pollId, final String questionId) {
-        final Poll poll = pollRepository.findById(Long.valueOf(pollId)).orElseThrow(() ->
-            new EntityNotFoundException());
-        final List<Question> questionList = poll.getQuestionList();
-        questionList.removeIf(obj -> obj.getId() == Long.valueOf(questionId));
-        pollRepository.save(poll);
+        try {
+            questionRepository.deleteById(Long.valueOf(questionId));
+
+        } catch (EntityNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -85,10 +96,7 @@ public class QuestionServiceImpl implements QuestionService {
     @Override
     public Question getQuestion(final Long questionId) {
 
-        final Question question = questionRepository.findById(questionId).orElseThrow(() ->
-            new EntityNotFoundException());
-
-        return question;
+        return questionRepository.findById(questionId).orElseThrow(EntityNotFoundException::new);
     }
 
     /**
@@ -97,15 +105,24 @@ public class QuestionServiceImpl implements QuestionService {
      * @return all questions from a poll
      */
     @Override
-    public List<Question> getAllQuestions() {
+    public List<Question> getAllQuestions(final long pollId) {
+        final Poll poll = pollRepository.findById(pollId).orElseThrow(EntityNotFoundException::new);
+        final List<Category> categories = poll.getCategoryList();
+        final List<Question> allQuestions = new ArrayList<>();
 
-        final List<Question> questions = questionRepository.findAll();
-
-        if (questions.isEmpty()) {
+        for (final Category g : categories) {
+            allQuestions.addAll(g.getQuestionList());
+        }
+        if (allQuestions.isEmpty()) {
             throw new BadRequestException();
         }
 
-        return questions;
+        return allQuestions;
+    }
+
+    @Override
+    public List<Question> getQuestionsFromCategory(final long categoryId) {
+        return questionRepository.findQuestionByCategoryId(categoryId);
     }
 
 

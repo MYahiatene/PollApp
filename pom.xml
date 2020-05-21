@@ -371,7 +371,7 @@
                 <version>1.9.1</version>
                 <configuration>
    <installDirectory>${NODE_PATH}</installDirectory>
-   <workingDirectory>${YOUR_WORKING_DIRECTORY}</workingDirectory>
+   <workingDirectory>./</workingDirectory>
 </configuration>
                 <executions>
 

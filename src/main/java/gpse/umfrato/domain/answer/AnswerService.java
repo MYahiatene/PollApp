@@ -6,35 +6,37 @@ public interface AnswerService {
     /**
      * This method adds an answer to the answer list of the question.
      *
-     * @param message    the answer from the user
+     * @param pollId the id of the poll
      * @param questionId the id of the given question
-     * @param answerType type of given answer
-     * @param username   name of the user creating the answer
+     * @param username   the username of the user who gives the answer
+     * @param answerList the list of all possible answers
      * @return the given answer
      */
-    Answer addAnswer(final String message, final String questionId, final String answerType, final String username);
+    Answer giveAnswer(final String username, final String pollId, final String questionId,
+                      final List<String> answerList);
 
     /**
      * This method deletes an selected answer.
      *
-     * @param questionId the id of the question containing the answer
-     * @param answerId   the id of the selected answer
+     * @param answerId the id of the selected answer
      */
-    void deleteAnswer(final String questionId, final String answerId);
+    String deleteAnswer(final String answerId);
 
     /**
      * This method returns the requested answer.
      *
-     * @param answerId the id of the requested answer
+     * @param questionId the id of the requested answer
      * @return the requested answer
      */
-    Answer getAnswer(Long answerId);
+    List<Answer> getAnswerFromOneQuestion(Long questionId);
 
     /**
      * This method returns all answers from a selected question.
      *
-     * @param questionId the id of the selected question
+     * @param pollId the id of the poll
+     * @param username the id of the user
      * @return all answers from a question in a list
      */
-    List<Answer> getAllAnswers(String questionId);
+    //todo: cmd with username and pollId
+    List<String> getAllAnswersFromPollByUser(final Long pollId, String username);
 }

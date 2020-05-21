@@ -1,9 +1,11 @@
 package gpse.umfrato.domain;
 
 import gpse.umfrato.domain.answer.AnswerService;
+import gpse.umfrato.domain.poll.Poll;
 import gpse.umfrato.domain.poll.PollService;
 import gpse.umfrato.domain.question.Question;
 import gpse.umfrato.domain.question.QuestionService;
+import gpse.umfrato.domain.user.User;
 import gpse.umfrato.domain.user.UserService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,16 +15,16 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import javax.transaction.Transactional;
+import java.time.Instant;
 
 @Service
 public class InitializeDatabase implements InitializingBean {
 
-    private static final String TEST_USER = "Uncle_Bob";
-
+    /* default */ final QuestionService questionService;
+    /* default */ final AnswerService answerService;
     private final UserService userService;
     private final PollService pollService;
-    private final QuestionService questionService;
-    private final AnswerService answerService;
 
 
     /**
@@ -44,36 +46,40 @@ public class InitializeDatabase implements InitializingBean {
     }
 
     /**
-     * This method loads a test user in user service and creates a poll.
+     * This method initializes the database with an user, a poll, a question and an answer.
      */
     @Override
+    @Transactional
     public void afterPropertiesSet() {
-        try {
-            userService.loadUserByUsername(TEST_USER);
 
-            /*
-            erstmal nur mit Testdaten, da questionService Fehler auswirft
-            org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'initializeDatabase'
-            defined in file [/Users/annalena/IdeaProjects/gp-se-ss-2020-team5-1/target/classes/gpse/umfrato/domain/
-            InitializeDatabase.class]:
-            Invocation of init method failed; nested exception is org.hibernate.LazyInitializationException: failed to
-            lazily initialize a collection of role: gpse.umfrato.domain.poll.Poll.questionList, could not initialize
-            proxy - no Session
-             */
+        final String testUsername = "tbrettmann";
+        final String dummyPassword = "$2a$10$WoG5Z4YN9Z37EWyNCkltyeFr6PtrSXSLMeFWOeDUwcanht5CIJgPa";
+
+
+        final Poll testPoll = new Poll(testUsername, "anonym", "testPoll", Instant.now().toString(),
+            Instant.now().toString(), Instant.now().toString(), 0);
+        final User testUser = new User("testNutzer", dummyPassword, "Markus", "Mueller");
+        final User testUserTbrettmann = new User(testUsername, dummyPassword, "Tobias", "Brettmann");
+
+
+        try {
+            userService.loadUserByUsername(testUsername);
+            pollService.createPoll(testPoll);
+
             final List<Question> questions = new ArrayList<>(); // später import Arraylist löschen
             questions.add(new Question("Wie ist das Wetter heute?"));
             questions.add(new Question("Wie war dein Tag?"));
             questions.add(new Question("Come ti chiami?"));
+            //questionService.addQuestion(one, "testFrage", Arrays.asList("Frage1", "Frage2", "Frage3"), "freitext");
+            //answerService.giveAnswer(testUsername, one, "3", Arrays.asList("Ja", "Nein"));
+        } catch (UsernameNotFoundException e) {
+            userService.createUser(testUserTbrettmann, "ROLE_POLL_CREATOR");
+        }
 
-            pollService.createPoll("Erste Umfrage", TEST_USER, LocalDateTime.now(),
-                LocalDateTime.now(), LocalDateTime.now(), LocalDateTime.now(), "true", 0, questions);
-            // questionService.addQuestion("Wie ist das Wetter heute?", "1");
-            // questionService.addQuestion("Wie scheiße ist Nuxt?", "1");
-
+        try {
+            userService.loadUserByUsername("testnutzer");
         } catch (UsernameNotFoundException ex) {
-            userService.createUser(TEST_USER,
-                "{bcrypt}$2a$10$WoG5Z4YN9Z37EWyNCkltyeFr6PtrSXSLMeFWOeDUwcanht5CIJgPa",
-                "Bob", "Martin", "ROLE_USER");
+            userService.createUser(testUser);
         }
 
     }
