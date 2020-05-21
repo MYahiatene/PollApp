@@ -55,16 +55,19 @@ export default {
         theme: {
             dark: false,
             themes: {
-                primary: colors.teal.lighten1,
                 dark: {
-                    accent: colors.grey.darken3,
-                    secondary: colors.amber.darken3,
-                    info: colors.teal.lighten1,
-                    warning: colors.amber.base,
-                    error: colors.deepOrange.accent4,
-                    success: colors.green.accent3,
+                    background: '#09181a',
+                    primary: colors.teal.lighten1,
+                    accent: '#992078',
+                    secondary: '#337982',
+                    info: '#114955',
+                    warning: '#F5D63C',
+                    error: '#F5420C',
+                    success: '#5E9112',
+                    myColor: '#1f5355',
                 },
                 light: {
+                    background: '#eefcfa',
                     primary: '#114955',
                     accent: '#551044',
                     secondary: '#337982',
