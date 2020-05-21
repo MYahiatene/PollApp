@@ -2,11 +2,13 @@ package gpse.umfrato.domain.poll;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import gpse.umfrato.domain.category.Category;
+import gpse.umfrato.domain.question.Question;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
+import java.sql.Blob;
+// import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -115,21 +117,5 @@ public class Poll {
         this.activatedDate = activatedAt;
         this.deactivatedDate = deactivatedAt;
         this.pollStatus = pollStatus;
-    }
-
-    public List<Question> getQuestionList() {
-        return questionList;
-    }
-
-    public void setQuestionList(List<Question> questionList) {
-        this.questionList = questionList;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 }

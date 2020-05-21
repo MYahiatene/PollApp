@@ -1,5 +1,7 @@
 package gpse.umfrato.domain.question;
 
+import gpse.umfrato.domain.answer.Answer;
+import gpse.umfrato.domain.poll.Poll;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import javax.persistence.*;
@@ -46,39 +48,6 @@ public class Question {
         this.questionMessage = question;
         this.answerPossibilities = answerPossibilities;
         this.questionType = questionType;
-    }
-
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getQuestionMessage() {
-        return questionMessage;
-    }
-
-    public void setQuestionMessage(String questionMessage) {
-        this.questionMessage = questionMessage;
-    }
-
-    public Poll getPoll() {
-        return poll;
-    }
-
-    public void setPoll(Poll poll) {
-        this.poll = poll;
-    }
-
-    public List<Answer> getAnswerList() {
-        return answerList;
-    }
-
-    public void setAnswerList(List<Answer> answerList) {
-        this.answerList = answerList;
     }
 }
 

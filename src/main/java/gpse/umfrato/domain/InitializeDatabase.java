@@ -66,10 +66,10 @@ public class InitializeDatabase implements InitializingBean {
             userService.loadUserByUsername(testUsername);
             pollService.createPoll(testPoll);
 
-            final List<Question> questions = new ArrayList<>(); // später import Arraylist löschen
-            questions.add(new Question("Wie ist das Wetter heute?"));
-            questions.add(new Question("Wie war dein Tag?"));
-            questions.add(new Question("Come ti chiami?"));
+//            final List<Question> questions = new ArrayList<>(); // später import Arraylist löschen
+//            questions.add(new Question("Wie ist das Wetter heute?"));
+//            questions.add(new Question("Wie war dein Tag?"));
+//            questions.add(new Question("Come ti chiami?"));
             //questionService.addQuestion(one, "testFrage", Arrays.asList("Frage1", "Frage2", "Frage3"), "freitext");
             //answerService.giveAnswer(testUsername, one, "3", Arrays.asList("Ja", "Nein"));
         } catch (UsernameNotFoundException e) {
