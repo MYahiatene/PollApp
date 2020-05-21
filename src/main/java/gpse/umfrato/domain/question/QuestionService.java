@@ -6,11 +6,16 @@ public interface QuestionService {
     /**
      * This method creates a question for a poll.
      *
-     * @param questionMessage the given question
-     * @param pollId          the id of the poll
+     * @param questionMessage     the given question
+     * @param pollId              the id of the poll where the question belongs to
+     * @param answerPossibilities a list of possible answers to the question
+     * @param questionType        the type how the answers should be like
      * @return the question which is created
      */
-    Question addQuestion(String questionMessage, String pollId);
+    Question addQuestion(final String pollId,
+                                final String questionMessage,
+                                final List<String> answerPossibilities,
+                                final String questionType);
 
     /**
      * This method removes a selected question.
@@ -31,7 +36,10 @@ public interface QuestionService {
     /**
      * This method returns all questions from a poll.
      *
+     * @param pollId the id of the poll
      * @return all questions from a poll
      */
-    List<Question> getAllQuestions();
+    List<Question> getAllQuestions(final long pollId);
+
+    List<Question> getQuestionsFromCategory(final long categoryId);
 }

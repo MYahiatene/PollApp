@@ -1,49 +1,26 @@
 package gpse.umfrato.web;
 
-import gpse.umfrato.domain.answer.AnswerService;
 import gpse.umfrato.domain.cmd.QuestionCmd;
-import gpse.umfrato.domain.poll.PollRepository;
-import gpse.umfrato.domain.poll.PollService;
 import gpse.umfrato.domain.question.Question;
 import gpse.umfrato.domain.question.QuestionService;
-import gpse.umfrato.domain.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.logging.Logger;
-
 @RequestMapping(value = "/api", method = RequestMethod.GET)
 @RestController
-@CrossOrigin
+@CrossOrigin(origins = "http://127.0.0.1:8080")
 public class QuestionController {
-    private static final Logger LOGGER = Logger.getLogger("QuestionController");
 
     private final QuestionService questionService;
-    private final UserService userService;
-    private final PollService pollService;
-    private final AnswerService answerService;
-    private Question question;
-    private final PollRepository pollRepository;
-
 
     /**
      * This class constructor initializes the services and repository.
      *
      * @param questionService the question service
-     * @param userService     the user service
-     * @param pollService     the poll service
-     * @param answerService   the answer service
-     * @param pollRepository  the poll repository
      */
     @Autowired
-    public QuestionController(final QuestionService questionService, final UserService userService,
-                              final PollService pollService, final AnswerService answerService,
-                              final PollRepository pollRepository) {
+    public QuestionController(final QuestionService questionService) {
         this.questionService = questionService;
-        this.userService = userService;
-        this.pollService = pollService;
-        this.answerService = answerService;
-        this.pollRepository = pollRepository;
     }
 
     /**
@@ -53,7 +30,8 @@ public class QuestionController {
      */
     @PostMapping("/poll/{id:\\d+}/addquestion")
     public void addQuestion(/*@PathVariable("id") final String id*/ final @RequestBody QuestionCmd questionCmd) {
-        questionService.addQuestion(questionCmd.getQuestion(), questionCmd.getId());
+        questionService.addQuestion(questionCmd.getPollId(), questionCmd.getQuestionMessage(),
+            questionCmd.getAnswerPossibilities(), questionCmd.getQuestionType());
     }
 
     /**
@@ -66,9 +44,8 @@ public class QuestionController {
         /*@PathVariable("pollId") final String pollId,
         @PathVariable("questionId") final String questionId*/
         final @RequestBody QuestionCmd questionCmd) {
-        final String pollId = questionService.getQuestion(Long.valueOf(questionCmd.getId())).getPoll().getId().
-            toString();
-        questionService.removeQuestion(pollId, questionCmd.getId());
+        final String pollId = questionCmd.getPollId();
+        questionService.removeQuestion(pollId, questionCmd.getPollId());
     }
 
     /**
@@ -80,6 +57,6 @@ public class QuestionController {
     @GetMapping("/poll/{pollId:\\d+}/getquestion/{questionId:\\d+}")
     public Question getQuestion(final @RequestBody QuestionCmd questionCmd) {
 
-        return questionService.getQuestion(Long.valueOf(questionCmd.getId()));
+        return questionService.getQuestion(Long.valueOf(questionCmd.getPollId()));
     }
 }

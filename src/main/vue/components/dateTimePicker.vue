@@ -47,7 +47,6 @@ export default {
         dateFormatted: vm.formatDate(new Date().toISOString().substr(0, 10)),
         menu: false,
     }),
-
     computed: {
         time() {
             const today = new Date()

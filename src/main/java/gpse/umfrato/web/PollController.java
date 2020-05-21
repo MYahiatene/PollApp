@@ -1,20 +1,19 @@
 package gpse.umfrato.web;
 
-
 import gpse.umfrato.domain.cmd.PollCmd;
 import gpse.umfrato.domain.poll.Poll;
 import gpse.umfrato.domain.poll.PollService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.logging.Logger;
 
 @RequestMapping(value = "/api", method = RequestMethod.GET)
 @RestController
 @CrossOrigin
 public class PollController {
-    private static final Logger LOGGER = Logger.getLogger("PollController");
+
     private final PollService pollService;
 
     /**
@@ -27,12 +26,10 @@ public class PollController {
         this.pollService = pollService;
     }
 
-    @PostMapping("/createpoll")
+    @PostMapping(value = "/createpoll", produces = MediaType.APPLICATION_JSON_VALUE)
     public String createPoll(final @RequestBody PollCmd pollCmd) {
         try {
-            pollService.createPoll(pollCmd.getPollname(), pollCmd.getPollcreator(), pollCmd.getPollCreatedAt(),
-                pollCmd.getLastEditAt(), pollCmd.getActivatedAt(), pollCmd.getDeactivatedAt(),
-                pollCmd.getAnonymityStatus(), pollCmd.getPollStatus());
+            pollService.createPoll(pollCmd.getCmdPoll());
             return "Poll created!";
         } catch (BadRequestException e) {
             return "Poll creation failed!";
@@ -60,7 +57,7 @@ public class PollController {
      * @return a selected poll
      */
     @GetMapping("/poll/{id:\\d+}")
-    public Poll getPoll(/*@PathVariable("id") final String id*/ final @RequestBody PollCmd pollCmd) {
+    public Poll getPoll(final @RequestBody PollCmd pollCmd) {
 
         return pollService.getPoll(pollCmd.getId());
 

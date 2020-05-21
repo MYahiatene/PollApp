@@ -1,33 +1,31 @@
-<!--This page lists the categories of questions and gives buttons to edit a question and to create new categories-->
-<!--This will include Drag and Drop of the questions to group them into the categories-->
 <template>
     <v-container>
-        <v-subheader class="display-2"> Umfrage 1</v-subheader>
+        <v-subheader class="display-2">Umfrage 1</v-subheader>
         <v-content>
             <v-row>
                 <v-col cols="4">
                     <v-container fluid>
                         <v-flex class="ma-n4">
                             <v-list v-for="categorie in categories" :key="categorie.id" two-line>
-                                <v-subheader class="headline"> {{ categorie.name }} </v-subheader>
-                                <draggable v-model="categorie.items" group="questions">
-                                    <v-list v-for="item in categorie.items" :key="item.id">
-                                        <v-list-tile :key="item.title">
-                                            <v-list-tile-content>
-                                                <v-list-tile-title>{{ item.title }}</v-list-tile-title>
-                                            </v-list-tile-content>
+                                <v-subheader class="headline">{{ categorie.name }}</v-subheader>
+                                <draggable v-model="categories.items" category="questions">
+                                    <v-list v-for="item in items" :key="item">
+                                        <v-list-item-title :key="item.title">
+                                            <v-list-item-content>
+                                                <v-list-item-title>{{ item }}</v-list-item-title>
+                                            </v-list-item-content>
                                             <v-list-item-action>
                                                 <v-btn depressed small icon>
                                                     <v-icon>{{ item.symbol }}</v-icon>
                                                 </v-btn>
                                             </v-list-item-action>
-                                        </v-list-tile>
+                                        </v-list-item-title>
                                     </v-list>
                                 </draggable>
                             </v-list>
                         </v-flex>
                     </v-container>
-                    <div class="ma-8" @click="createSurvey()">
+                    <div class="ma-8" @click="createCategory()">
                         <v-btn depressed small>Neue Kategorie</v-btn>
                     </div>
                 </v-col>
@@ -40,54 +38,51 @@
 </template>
 
 <script>
+import draggable from 'vuedraggable'
 import QuestionBuildWidget from '../components/QuestionBuildWidget'
 
+const axios = require('axios')
+const instance = axios.create({
+    baseURL: 'http://127.0.0.1:8088/api/',
+    timeout: 1000,
+    headers: { 'X-Custom-Header': 'foobar' },
+})
 export default {
     name: 'DragDropTest',
-    components: { QuestionBuildWidget },
-    data: () => ({
-        categories: [
-            {
-                id: '1',
-                name: 'Hauptkategorie',
-                items: [
-                    {
-                        id: '1',
-                        title: 'Frage 1',
-                        symbol: 'mdi-pencil-outline',
-                    },
-                    {
-                        id: '2',
-                        title: 'Frage 2',
-                        symbol: 'mdi-pencil-outline',
-                    },
-                ],
-            },
-            {
-                id: '2',
-                name: 'Kategorie 1',
-                items: [
-                    {
-                        id: '3',
-                        title: 'Frage 3',
-                        symbol: 'mdi-pencil-outline',
-                    },
-                    {
-                        id: '4',
-                        title: 'Frage 4',
-                        symbol: 'mdi-pencil-outline',
-                    },
-                    {
-                        id: '5',
-                        title: 'Frage 5',
-                        symbol: 'mdi-pencil-outline',
-                    },
-                ],
-            },
-        ],
-    }),
+    components: { QuestionBuildWidget, draggable },
+    data() {
+        return {
+            categories: [
+                {
+                    id: '1',
+                    name: 'Hauptkategorie',
+                },
+            ],
+        }
+    },
+    computed: {
+        /** updateQuestionList() {
+            return this.$store.state.questionOverview.questionText
+        }, */
+    },
     methods: {
-        createSurvey() {},
+        createCategory() {},
+        sendData() {
+            const obj = {
+                pollId: '',
+                questionMessage: this.test,
+                answerPossibilites: [],
+                questionType: '',
+            }
+            instance
+                .post('/poll/' + this.pollId + '/addquestion', obj)
+                .then((response) => {
+                    console.log(response)
+                })
+                .catch((error) => {
+                    console.log(error)
+                })
+        },
     },
 }
 </script>

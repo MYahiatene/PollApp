@@ -30,7 +30,7 @@
                     <component :is="currentComponent"></component>
                 </v-row>
                 <v-row no-gutters>
-                    <h1>*preview wenn fertig*</h1>
+                    <v-btn color="success" class="mr-4" @click="sendData()">Erstellen</v-btn>
                 </v-row>
             </v-container>
         </v-card>
@@ -38,9 +38,11 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 import ChoiceQuestionConfigWidget from './ChoiceQuestionConfigWidget'
 import TextQuestion from './textQuestion'
 import RangeQuestion from './rangeQuestion'
+
 export default {
     name: 'QuestionBuildWidget',
     components: { ChoiceQuestionConfigWidget, TextQuestion, RangeQuestion },
@@ -55,6 +57,18 @@ export default {
                 this.currentComponent = this.allComponents[this.questionTypes.indexOf(this.questionChoice)]
             },
         }
+    },
+    computed: {},
+    methods: {
+        ...mapActions({
+            setQuestionText: 'questionOverview/setQuestionText',
+        }),
+        sendData() {
+            // mapActions(['questionOverview/setQuestionText', { text: this.questionText }])
+            // this.$store.dispatch('questionOverview/setQuestionText', this.questionText)
+            // this.test()
+            this.setQuestionText(this.questionText)
+        },
     },
 }
 </script>
