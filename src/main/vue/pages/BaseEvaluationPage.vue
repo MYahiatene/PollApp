@@ -78,6 +78,7 @@ that each display a basic evaluation of one specific question-->
                     <div v-for="question in PollResult.questionList" :key="question.id">
                         <a :id="'Frage' + question.id"> <v-spacer></v-spacer></a>
                         <ChoiceQuestionEvaluationWidget
+                            :key="widgetKey"
                             :show-table="showTable"
                             :show-diagram="showDiagram"
                             :questionId="question.id"
@@ -105,6 +106,8 @@ export default {
     components: { ChoiceQuestionEvaluationWidget, visualEvaluationSettings },
     data() {
         return {
+            // this key does not carry a meaning it simply exists so we can force the widget to rerender
+            widgetKey: '0',
             // by default we will jump to question 1
             questionToJumpTo: '',
             linkToQuestion: '#Frage1',
@@ -205,6 +208,9 @@ export default {
             this.defaultColor = DiagramColor
             this.showTable = showTable
             this.dialog = false
+            this.$forceUpdate()
+            this.widgetKey += 1
+            console.log(this.widgetKey)
         },
 
         /*

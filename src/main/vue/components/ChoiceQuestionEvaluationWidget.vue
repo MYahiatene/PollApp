@@ -34,10 +34,10 @@
             <v-row v-if="showDiagram">
                 <v-col cols="12" lg="12">
                     <!--                    we check in diagramType which one the user wants-->
-                    <div v-if="diagramType === 'bar'">
+                    <div v-if="diagramType === 'bar'" :key="diagramKey">
                         <BarChartView :chartdata="chartdataSet" :options="options"></BarChartView>
                     </div>
-                    <div v-if="diagramType === 'pie'">
+                    <div v-if="diagramType === 'pie'" :key="diagramKey">
                         <PieChartView :chartdata="chartdataSet" :options="options"></PieChartView>
                     </div>
                 </v-col>
@@ -95,6 +95,8 @@ export default {
     },
     name: 'ChoiceQuestionEvaluationWidget',
     data: () => ({
+        // key that forces the diagram to update (value does not have a meaning)
+        diagramKey: '',
         // these options are needed to display a visual diagram, they are passed as props into that component
         options: {
             responsive: true,
@@ -160,6 +162,8 @@ export default {
             this.backgroundColor = DiagramColor
             this.showTable = showTable
             this.visualSettings = false
+            this.$forceUpdate()
+            this.diagramKey += 1
         },
     },
 }

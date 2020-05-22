@@ -31,27 +31,33 @@ it passes the attributes:
             </v-col>
         </v-row>
         <!--        this part is only shown and enabled when a diagram is wanted and the diagram type has been updated -->
-        <v-row v-show="!forbidColorSwitch && showDiagram">
+
+        <v-row v-show="showDiagram">
+            <!--            <v-row v-show="!forbidColorSwitch && showDiagram">-->
             <v-col cols="12" lg="5">
                 <!--                overflowbutton for diagramColor-->
+
+                <!--                    :disabled="forbidColorSwitch"-->
                 <v-overflow-btn
-                    :disabled="forbidColorSwitch"
                     v-model="chosenDiagramColorAsWord"
                     :items="diagramColorsInWords"
                     label="Farbe des Diagrams"
                     @change="changeDiagramColor()"
                 ></v-overflow-btn>
             </v-col>
+            <v-col>
+                <v-color-picker v-model="setChosenDiagramColor"> </v-color-picker>
+            </v-col>
         </v-row>
         <!--switch for "ShowTable"-->
         <v-row no-gutters>
             <v-switch v-model="showTable" label="Zeige eine Tabelle an"> </v-switch>
         </v-row>
-        <!-- Button that will send the picked data to the parennt component -->
+        <!-- Button that will send the picked data to the parent component -->
         <v-row no-gutters>
             <v-btn
                 color="success"
-                @click="$emit('update-Visuals', showDiagram, chosenDiagram, chosenDiagramColor, showTable)"
+                @click="$emit('update-Visuals', showDiagram, chosenDiagram, setChosenDiagramColor, showTable)"
             >
                 Anwenden
             </v-btn>
@@ -82,6 +88,7 @@ export default {
         this.forbidColorSwitch = this.chosenDiagram === ''
         this.chosenDiagramAsWord = this.diagramTypesInWords[this.diagramTypes.indexOf(this.chosenDiagram)]
         this.chosenDiagramColorAsWord = this.diagramColorsInWords[this.diagramColors.indexOf(this.chosenDiagramColor)]
+        this.setChosenDiagramColor = this.chosenDiagramColor
     },
     name: 'visualEvaluationSettings',
     data() {
@@ -97,12 +104,17 @@ export default {
             diagramColors: ['#aaaaaa', '#114955', '#8EC136', '#551044', '#26A599'],
 
             forbidColorSwitch: true,
+
+            setChosenDiagramColor: '',
         }
     },
 
     methods: {
         changeDiagramColor() {
-            this.chosenDiagramColor = this.diagramColors[
+            // this.chosenDiagramColor = this.diagramColors[
+            //     this.diagramColorsInWords.indexOf(this.chosenDiagramColorAsWord)
+            // ]
+            this.setChosenDiagramColor = this.diagramColors[
                 this.diagramColorsInWords.indexOf(this.chosenDiagramColorAsWord)
             ]
             this.disableColorSwitch()
