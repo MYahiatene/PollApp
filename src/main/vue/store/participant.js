@@ -1,4 +1,5 @@
-// mport axios from 'axios'
+// import axios from 'axios'
+import api from '../api/participant'
 export const state = () => ({
     // visibility: false,
     poll: ['Object'],
@@ -19,8 +20,8 @@ export const mutations = {
 }
 export const actions = {
     async showPoll({ commit }) {
-        const poll = await this.$axios.$get('http://localhost:8088/api/participant')
-        // const poll = await axios.get('https://jsonplaceholder.typicode.com/todos/1')
+        // const poll = await instance.get('/participant')
+        const poll = await api.getPoll()
         commit('setPoll', poll)
     },
 }

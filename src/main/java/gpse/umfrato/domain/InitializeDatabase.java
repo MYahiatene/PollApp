@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import javax.transaction.Transactional;
 import java.time.Instant;
@@ -61,16 +62,19 @@ public class InitializeDatabase implements InitializingBean {
         final User testUser = new User("testNutzer", dummyPassword, "Markus", "Mueller");
         final User testUserTbrettmann = new User(testUsername, dummyPassword, "Tobias", "Brettmann");
 
-
         try {
-            userService.loadUserByUsername(testUsername);
             pollService.createPoll(testPoll);
 
+            questionService.addQuestion("1", "testFrage", Arrays.asList("Ja", "Nein", "Vielleicht"), "choicebox");
+            questionService.addQuestion("1", "testFrage2", Arrays.asList("Jein", "Fein", "Vielschwer"), "choicebox");
+            questionService.addQuestion("1", "testFrage3", new ArrayList<>(), "textfield");
+
+            userService.loadUserByUsername(testUsername);
 //            final List<Question> questions = new ArrayList<>(); // später import Arraylist löschen
 //            questions.add(new Question("Wie ist das Wetter heute?"));
 //            questions.add(new Question("Wie war dein Tag?"));
 //            questions.add(new Question("Come ti chiami?"));
-            //questionService.addQuestion(one, "testFrage", Arrays.asList("Frage1", "Frage2", "Frage3"), "freitext");
+            // questionService.addQuestion("1", "testFrage", Arrays.asList("Ja", "Nein", "Vielleicht"), "choicebox");
             //answerService.giveAnswer(testUsername, one, "3", Arrays.asList("Ja", "Nein"));
         } catch (UsernameNotFoundException e) {
             userService.createUser(testUserTbrettmann, "ROLE_POLL_CREATOR");

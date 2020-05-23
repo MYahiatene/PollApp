@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -16,7 +17,7 @@ import java.util.logging.Logger;
 @RestController
 @CrossOrigin
 public class PollController {
-    //private static final Logger LOGGER = Logger.getLogger("PollController");
+    private static final Logger LOGGER = Logger.getLogger("PollController");
     private final PollService pollService;
 
     /**
@@ -53,16 +54,9 @@ public class PollController {
         }
     }
 
-    /**
-     * This method returns a selected poll.
-     *
-     * @param pollCmd has the id of the poll
-     * @return a selected poll
-     */
-    @GetMapping("/participant") //"/poll/{id:\\d+}"
+    @GetMapping("/poll/{id:\\d+}")
     public Poll getPoll(final @RequestBody PollCmd pollCmd) {
-
-        return pollService.getPoll("2"); // TODO: pollCmd.getId()
+        return pollService.getPoll(pollCmd.getId());
     }
 
 

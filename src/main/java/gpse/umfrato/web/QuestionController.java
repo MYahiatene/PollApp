@@ -1,16 +1,22 @@
 package gpse.umfrato.web;
 
 import gpse.umfrato.domain.cmd.QuestionCmd;
+import gpse.umfrato.domain.poll.Poll;
 import gpse.umfrato.domain.question.Question;
 import gpse.umfrato.domain.question.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.EntityNotFoundException;
+import java.util.List;
+import java.util.logging.Logger;
+
 @RequestMapping(value = "/api", method = RequestMethod.GET)
 @RestController
-@CrossOrigin(origins = "http://127.0.0.1:8080")
+@CrossOrigin //(origins = "http://127.0.0.1:8080")
 public class QuestionController {
 
+    private static final Logger LOGGER = Logger.getLogger("QuestionController");
     private final QuestionService questionService;
 
     /**
@@ -58,5 +64,20 @@ public class QuestionController {
     public Question getQuestion(final @RequestBody QuestionCmd questionCmd) {
 
         return questionService.getQuestion(Long.valueOf(questionCmd.getPollId()));
+    }
+
+    /**
+     * This method returns a selected poll.
+     *
+     * @return a selected poll
+     */
+    @GetMapping("/participant")
+    public List<Question> getParticipant() {
+        try {
+            return questionService.getAllQuestions(1L);
+        } catch(EntityNotFoundException e) {
+            return null;
+        }
+
     }
 }
