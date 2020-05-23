@@ -4,6 +4,7 @@ import gpse.umfrato.domain.answer.Answer;
 import gpse.umfrato.domain.answer.AnswerService;
 import gpse.umfrato.domain.category.CategoryService;
 import gpse.umfrato.domain.cmd.AnswerCmd;
+import gpse.umfrato.domain.cmd.FilterCmd;
 import gpse.umfrato.domain.poll.PollService;
 import gpse.umfrato.domain.question.QuestionService;
 import gpse.umfrato.domain.user.UserService;
@@ -34,12 +35,16 @@ public class EvaluationController {
     }
 
     /**Returns JSON string to be interpreted, hier wird der jsonInput in ein Filterobjekt deserialisiert und dort können wir herausfinden, um welchen Filter es sich genau handelt.*/
-    /*TODO: Filter erstellen, Daten auswählen*/
+
     @GetMapping("/generateDiagram")
-    public String populateDiagram(final @RequestBody String jsonInput) {
-
-
-
+    public String populateDiagram(final @RequestBody List<FilterCmd> input) {
+        /*TODO:
+            1. Filter parsen
+            2. Filter ordnen
+            3. Daten auswählen
+            4. Rechnen und evtl. wieder zu 3
+            5. als Diagramm aufarbeiten
+            6. abschicken*/
         return null;
     }
 

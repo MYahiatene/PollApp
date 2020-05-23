@@ -1,5 +1,6 @@
 package gpse.umfrato.web;
 
+import gpse.umfrato.domain.cmd.UserCmd;
 import gpse.umfrato.domain.security.*;
 import gpse.umfrato.domain.user.User;
 import gpse.umfrato.domain.user.UserService;
@@ -29,7 +30,7 @@ public class AuthenticationController {
     @PostMapping("/generate-token")
     public ApiResponse<AuthToken> register(@RequestBody final String input) throws AuthenticationException {
         LOGGER.info("register");
-        final LoginUser loginUser = new LoginUser(input);
+        LoginUser loginUser = new LoginUser(input);
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginUser.getUsername(),
             loginUser.getPassword()));
         final User user = (User) userService.loadUserByUsername(loginUser.getUsername());

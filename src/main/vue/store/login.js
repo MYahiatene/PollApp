@@ -34,6 +34,7 @@ export const mutations = {
         }
     }, */
 }
+
 export const actions = {
     requestToken({ commit }, input) {
         return new Promise((resolve, reject) => {
