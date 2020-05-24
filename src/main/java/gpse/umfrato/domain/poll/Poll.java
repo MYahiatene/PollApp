@@ -63,12 +63,12 @@ public class Poll {
     /**
      * This attribute represents the chosen background color as hexa.
      */
-    private int hexaBackground;
+    private String hexaBackground;
 
     /**
      * This attribute represents the chosen font color as hexa.
      */
-    private int hexaFont;
+    private String hexaFont;
 
     /**
      * This attribute represents the uploades logo.
@@ -109,7 +109,7 @@ public class Poll {
      * @param deactivatedAt   the date when the poll deactivates
      */
     public Poll(final String pollCreator, final String anonymityStatus, final String pollName, final String createdAt,
-                final String activatedAt, final String deactivatedAt, final int pollStatus) {
+                final String activatedAt, final String deactivatedAt, final int pollStatus, final String hexaBackground) {
         this.pollName = pollName;
         this.pollCreator = pollCreator;
         this.anonymityStatus = anonymityStatus;
@@ -117,5 +117,6 @@ public class Poll {
         this.activatedDate = activatedAt;
         this.deactivatedDate = deactivatedAt;
         this.pollStatus = pollStatus;
+        this.hexaBackground = hexaBackground;
     }
 }
