@@ -60,11 +60,22 @@ public class InitializeDatabase implements InitializingBean {
         final String testUsername = "tbrettmann";
         final String dummyPassword = "$2a$10$WoG5Z4YN9Z37EWyNCkltyeFr6PtrSXSLMeFWOeDUwcanht5CIJgPa";
 
+        String mockData = "{\"name\":\"Umfrage zur IT-Messe 2020\",\"questionList\": [{\"id\": 1,\"title\": \"Wie hat" +
+            " Ihnen die Veranstaltung insgesamt gefallen?\",\"answerPossibilities\": [\"Sehr gut\",\"Gut\",\"Überwieg" +
+            "end gut\",\"Schlecht\",\"Ich weiß nicht\"],\"data\": [70,65,30,5,25]},{\"id\": 2,\"title\": \"Welches Ge" +
+            "schlecht haben Sie?\",\"answerPossibilities\": [\"Weiblich\",\"Männlich\",\"Divers\"],\"data\": [20,19,1" +
+            "]},{\"id\": 3,\"title\": \"Wie geht es Ihnen heute?\",\"answerPossibilities\": [\"Gut\",\"In Ordnung\"," +
+            "\"Schlecht\"],\"data\": [22,8,7]},{\"id\": 4,\"title\": \"Was hat Sie am Meisten überzeugt?\",\"answerPo" +
+            "ssibilities\": [\"Die Vorträge\",\"Die Informationsstände\",\"Das Catering\",\"Ich kann mich nicht entsc" +
+            "heiden\"],\"data\": [17,8,4,2]},{\"id\": 5,\"title\": \"Werden Sie uns nächstes Jahr wieder besuchen?\"," +
+            "\"answerPossibilities\": [\"Ja\",\"Nein\"],\"data\": [50,21]},{\"id\": 6,\"title\": \"Wie viel Zeit habe" +
+            "n sie auf der Messe verbracht?\",\"answerPossibilities\": [\"unter einer Stunde\",\"1-2 Stunden\",\"2-5 " +
+            "Stunden\",\"über 5 Stunden\"],\"data\": [12,45,40,20]}]}";
 
         final Poll testPoll = new Poll(testUsername, "anonym", "testPoll", Instant.now().toString(),
             Instant.now().toString(), Instant.now().toString(), 0);
-        final User testUser = new User("testNutzer", dummyPassword, "Markus", "Mueller");
         final User testUserTbrettmann = new User(testUsername, dummyPassword, "Tobias", "Brettmann");
+        final User testUser = new User("testNutzer", dummyPassword, "Markus", "Mueller");
 
         try {
             userService.loadUserByUsername(testUsername);
@@ -79,9 +90,7 @@ public class InitializeDatabase implements InitializingBean {
         } catch (UsernameNotFoundException ex) {
             userService.createUser(testUser);
         }
-
         pollService.createPoll(testPoll);
-        Question question = questionService.addQuestion(testPoll.getPollId().toString(),"Ka", Arrays.asList(new String[] { "10", "20", "30", "40" }),"ChoiceQuestion");
-        answerService.giveAnswer(testUsername,testPoll.getPollId().toString(),question.getQuestionId().toString(),Arrays.asList(new String[] { "10", "40" }));
+
     }
 }

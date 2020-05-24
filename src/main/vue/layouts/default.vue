@@ -1,6 +1,6 @@
 <template>
     <!--     In this file we define the header that will be displayed on all pages in the entire app -->
-    <v-app :dark="setTheme" :style="backgroundColor">
+    <v-app :dark="setTheme === 'true'" :style="backgroundColor">
         <!--        set Theme returns a boolean value depending on the theme the user wants (light=false, dark=true)-->
         <!--        backgroundColor is a computed string that sets the background to the color defined in the nuxt.config.js depending on the chosen theme-->
         <v-app-bar fixed app>

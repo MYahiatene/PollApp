@@ -6,19 +6,19 @@ Thusly the user can easily get a first impression on the results.
     <v-container>
         <!--        this is the real content of the page, a list of ChoiceQuestionEvaluationWidgets,
 that each display a basic evaluation of one specific question-->
-        <v-container>
+        <AuthGate v-if="isAuthenticated !== true"></AuthGate>
+        <v-container v-else-if="diagramData !== undefined">
             <v-row>
                 <!--        the app bar is used to navigate the page.
    All the buttons here apply to the entire poll, nit one individual question-->
                 <v-toolbar>
-                    <v-card-title>{{ PollResult.name }}</v-card-title>
+                    <v-card-title>{{ pollName }}</v-card-title>
 
                     <v-dialog v-model="dialog">
                         <!--             Here we open a setting window
         where the user can change the visual settings of every question at the same time-->
                         <v-card
-                            ><visual-evaluation-settings v-on:update-Visuals="updateVisuals">
-                            </visual-evaluation-settings
+                            ><visual-evaluation-settings @update-Visuals="updateVisuals"> </visual-evaluation-settings
                         ></v-card>
                     </v-dialog>
                     <v-spacer></v-spacer>
@@ -55,19 +55,19 @@ that each display a basic evaluation of one specific question-->
         the input will be deleted as it is invalid-->
                         <v-text-field
                             id="startValue"
-                            :value="highestQuestionId"
                             v-model="questionToJumpTo"
+                            :value="highestQuestionId"
                             prefix="Springe zu Frage: "
                             type="number"
-                            @input="changeLinkToQuestion()"
                             oninput="validity.valid||(value='')"
                             min="1"
-                            :max="PollResult.questionList.length"
+                            :max="diagramData.length"
                             class="shrink"
+                            @input="changeLinkToQuestion()"
                         ></v-text-field>
                         <v-spacer></v-spacer>
                         <!--                After pressing this button we will jump to he href that is associated with the questionId we have entered -->
-                        <a :href="linkToQuestion" style="text-decoration: none;" id="jump">
+                        <a id="jump" :href="linkToQuestion" style="text-decoration: none;">
                             <v-btn color="info">
                                 Los
                             </v-btn>
@@ -75,7 +75,7 @@ that each display a basic evaluation of one specific question-->
                     </v-card>
                 </v-col>
                 <v-col cols="12" lg="8" fluid>
-                    <div v-for="question in PollResult.questionList" :key="question.id">
+                    <div v-for="question in diagramData" :key="question.id">
                         <a :id="'Frage' + question.id"> <v-spacer></v-spacer></a>
                         <ChoiceQuestionEvaluationWidget
                             :key="widgetKey"
@@ -94,16 +94,23 @@ that each display a basic evaluation of one specific question-->
                 </v-col>
             </v-row>
         </v-container>
+        <v-container v-else>
+            <v-card>
+                <v-card-title>Der Server antwortet nicht</v-card-title>
+            </v-card>
+        </v-container>
     </v-container>
 </template>
 
 <script>
+import { mapActions, mapGetters } from 'vuex'
+import AuthGate from '../components/AuthGate'
 import ChoiceQuestionEvaluationWidget from '../components/ChoiceQuestionEvaluationWidget'
 import visualEvaluationSettings from '../components/visualEvaluationSettings'
 
 export default {
     name: 'BaseEvaluationPage',
-    components: { ChoiceQuestionEvaluationWidget, visualEvaluationSettings },
+    components: { AuthGate, ChoiceQuestionEvaluationWidget, visualEvaluationSettings },
     data() {
         return {
             // this key does not carry a meaning it simply exists so we can force the widget to rerender
@@ -120,68 +127,28 @@ export default {
             showTable: true,
             // options that will be displayed in the sub menu
             menuItems: [{ title: 'Visuelle Einstellungen' }, { title: 'Exportieren' }],
-
-            // mock data set
-            PollResult: {
-                name: 'Umfrage zur IT-Messe 2021',
-                questionList: [
-                    {
-                        id: 1,
-                        title: 'Wie hat Ihnen die Veranstaltung insgesamt gefallen?',
-                        answerPossibilities: ['Sehr gut', 'Gut', 'Überwiegend gut', 'Schlecht', 'Ich weiß nicht'],
-                        data: [70, 65, 30, 5, 25],
-                    },
-
-                    {
-                        id: 2,
-                        title: 'Welches Geschlecht haben Sie?',
-                        answerPossibilities: ['Weiblich', 'Männlich', 'Divers'],
-                        data: [20, 19, 1],
-                    },
-
-                    {
-                        id: 3,
-                        title: 'Wie geht es Ihnen heute?',
-                        answerPossibilities: ['Gut', 'In Ordnung', 'Schlecht'],
-                        data: [22, 8, 7],
-                    },
-                    {
-                        id: 4,
-                        title: 'Was hat Sie am Meisten überzeugt?',
-                        answerPossibilities: [
-                            'Die Vorträge',
-                            'Die Informationsstände',
-                            'Das Catering',
-                            'Ich kann mich nicht entscheiden',
-                        ],
-                        data: [17, 8, 4, 2],
-                    },
-                    {
-                        id: 5,
-                        title: 'Werden Sie uns nächstes Jahr wieder besuchen?',
-                        answerPossibilities: ['Ja', 'Nein'],
-                        data: [50, 21],
-                    },
-                    {
-                        id: 6,
-                        title: 'Wie viel Zeit haben sie auf der Messe verbracht?',
-                        answerPossibilities: ['unter einer Stunde', '1-2 Stunden', '2-5 Stunden', 'über 5 Stunden'],
-                        data: [12, 45, 40, 20],
-                    },
-                ],
-            },
         }
+    },
+    mounted() {
+        this.initialize()
     },
     computed: {
         /**
          * creates array with all the questionId in a list, not needed right now, but might come in handy
          * @returns an array with all the ids from questionList
          */
+        ...mapGetters({
+            diagramData: 'evaluation/getDiagramData',
+            pollName: 'evaluation/getPollName',
+            isAuthenticated: 'login/isAuthenticated',
+        }),
 
         idList() {
             const l = []
-            for (let i = 0; i < this.PollResult.questionList.length; i++) {
-                l.push(i + 1)
+            if (this.diagramData !== undefined) {
+                for (let i = 0; i < this.diagramData.length; i++) {
+                    l.push(i + 1)
+                }
             }
             return l
         },
@@ -192,7 +159,11 @@ export default {
          */
 
         highestQuestionId() {
-            return this.PollResult.questionList.length
+            if (this.diagramData !== undefined) {
+                return this.diagramData.length
+            } else {
+                return 0
+            }
         },
     },
     methods: {
@@ -202,6 +173,7 @@ export default {
         Once its called we update the visual settings of all the choiceQuestionEvaluationWidgets
 
          */
+        ...mapActions({ initialize: 'evaluation/initialize' }),
         updateVisuals(showDiagram, DiagramType, DiagramColor, showTable) {
             this.showDiagram = showDiagram
             this.defaultDiagramType = DiagramType
