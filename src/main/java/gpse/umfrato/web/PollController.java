@@ -4,6 +4,7 @@ package gpse.umfrato.web;
 import gpse.umfrato.domain.cmd.PollCmd;
 import gpse.umfrato.domain.poll.Poll;
 import gpse.umfrato.domain.poll.PollService;
+import gpse.umfrato.domain.question.Question;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -59,5 +60,19 @@ public class PollController {
         return pollService.getPoll(pollCmd.getId());
     }
 
+//    /**
+//     * This method returns the design setting of a poll.
+//     *
+//     * @return a selected poll
+//     */
+//    @GetMapping("/participant")
+//    public List<Question> getParticipant() {
+//        try {
+//            return pollService.getPoll(1).;
+//        } catch(EntityNotFoundException e) {
+//            return null;
+//        }
+//
+//    }
 
 }

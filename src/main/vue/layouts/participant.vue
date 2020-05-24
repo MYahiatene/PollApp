@@ -45,7 +45,7 @@
 
 <script>
 import { mdiBrightness4 } from '@mdi/js'
-import { mapActions, mapGetters } from 'vuex'
+import { mapGetters } from 'vuex'
 export default {
     data() {
         return {
@@ -84,19 +84,17 @@ export default {
         backgroundColor() {
             if (this.goDark) {
                 return 'background:' + this.$vuetify.theme.themes.dark.background
+                // } else if (this._participant.showPoll().backgroundColor() != null) {
+                //     return 'background:' + this._participant.showPoll().backgroundColor() // '#c42843' // insert picked color here
             } else {
-                return 'background:' + '#c42843' // this._participant.showPoll().backgroundColor() // '#c42843' // insert picked color here
+                return 'background:' + this.$vuetify.theme.themes.light.background
             }
         },
-        ...mapGetters({
-            isAuthenticated: 'login/isAuthenticated',
-            getUsername: 'login/getUsername',
-        }),
     },
-    /**
-     * Switches the boolean stored in go dark and sets the theme in the nuxt.config.js
-     * (this method is called, when the user switches the mode (light/dark)
-     */
+    ...mapGetters({
+        isAuthenticated: 'login/isAuthenticated',
+        getUsername: 'login/getUsername',
+    }),
     methods: {
         setTheme() {
             this.goDark = !this.goDark
@@ -106,10 +104,12 @@ export default {
                 return (this.$vuetify.theme.dark = false)
             }
         },
-        showPoll() {
-            this.$store.dispatch('participant/showPoll')
-        },
-        ...mapActions({ showPoll: 'participant/showPoll' }),
+        // show Poll only gives back the questions, so I need a new request, that either gets entire Poll or
+        // just Design Settings
+        // showPoll() {
+        //     this.$store.dispatch('participant/showPoll')
+        // },
+        // ...mapActions({ showPoll: 'participant/showPoll' }),
     },
 }
 </script>

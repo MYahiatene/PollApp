@@ -18,6 +18,7 @@ export const mutations = {
         state.poll.push(poll)
     },
 }
+// What is given back here? Just the questions(over /participant) or the entire poll?
 export const actions = {
     async showPoll({ commit }) {
         // const poll = await instance.get('/participant')
