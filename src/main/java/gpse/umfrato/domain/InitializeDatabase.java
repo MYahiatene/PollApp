@@ -4,7 +4,6 @@ import gpse.umfrato.domain.answer.AnswerService;
 import gpse.umfrato.domain.poll.Poll;
 import gpse.umfrato.domain.poll.PollService;
 import gpse.umfrato.domain.question.QuestionService;
-import gpse.umfrato.domain.user.User;
 import gpse.umfrato.domain.user.UserService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.Instant;
+import java.util.Arrays;
 
 @Service
 public class InitializeDatabase implements InitializingBean {
@@ -55,14 +55,11 @@ public class InitializeDatabase implements InitializingBean {
     public void afterPropertiesSet() {
 
         final String testUsername = "tbrettmann";
-        final String dummyPassword = "$2a$10$WoG5Z4YN9Z37EWyNCkltyeFr6PtrSXSLMeFWOeDUwcanht5CIJgPa";
+        final String dummyPassword = "{bcrypt}$2a$10$WoG5Z4YN9Z37EWyNCkltyeFr6PtrSXSLMeFWOeDUwcanht5CIJgPa";
 
 
         final Poll testPoll = new Poll(testUsername, "anonym", "testPoll", Instant.now().toString(),
             Instant.now().toString(), Instant.now().toString(), 0);
-        final User testUser = new User("testNutzer", dummyPassword, "Markus", "Mueller");
-        final User testUserTbrettmann = new User(testUsername, dummyPassword, "Tobias", "Brettmann");
-
 
         try {
             userService.loadUserByUsername(testUsername);
@@ -71,13 +68,15 @@ public class InitializeDatabase implements InitializingBean {
             //questionService.addQuestion(one, "testFrage", Arrays.asList("Frage1", "Frage2", "Frage3"), "freitext");
             //answerService.giveAnswer(testUsername, one, "3", Arrays.asList("Ja", "Nein"));
         } catch (UsernameNotFoundException e) {
-            userService.createUser(testUserTbrettmann, "ROLE_POLL_CREATOR");
+            userService.createUser(testUsername, dummyPassword, "Tobias", "Brettmann",
+                Arrays.asList("Admin", "User"));
         }
 
         try {
             userService.loadUserByUsername("testnutzer");
         } catch (UsernameNotFoundException ex) {
-            userService.createUser(testUser);
+            userService.createUser("testNutzer", dummyPassword, "Markus", "Mueller",
+                Arrays.asList("User"));
         }
 
     }

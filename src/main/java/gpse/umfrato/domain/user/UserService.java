@@ -9,11 +9,15 @@ public interface UserService extends UserDetailsService {
     /**
      * This method creates a user with every required data.
      *
-     * @param user  the user who should be created
-     * @param roles the roles from user
+     * @param username  the username of the user
+     * @param password  the passwor of the user
+     * @param firstName first name of the user
+     * @param lastName  last name of the user
+     * @param roles     the roles from user
      * @return created user
      */
-    User createUser(User user, String... roles);
+    User createUser(final String username, final String password, final String firstName,
+                    final String lastName, final List<String> roles);
 
     /**
      * This method returns a list with all users.
