@@ -5,7 +5,7 @@
                 <v-data-iterator
                     :items="items"
                     :search="search"
-                    :sort-by="sortBy"
+                    :sort-by="sortBy.toLowerCase()"
                     :sort-desc="sortDesc"
                     hide-default-footer
                 >
@@ -45,36 +45,93 @@
                         </v-toolbar>
                     </template>
 
-                    <template v-slot:default="props">
-                        <v-row>
-                            <v-col v-for="item in props.items" :key="item.pollId" cols="12" sm="6" md="4" lg="3">
-                                <v-card>
+                    <v-container>
+                        <template>
+                            <v-data-table
+                                :headers="headers"
+                                :items="items"
+                                :search="search"
+                                :custom-filter="filterOnlyCapsText"
+                                hide-actions
+                                class="elevation-1"
+                            >
+                                <!--<thead>
+                                        <tr>
+                                            <th class="text-left">Name</th>
+                                            <th class="text-left">PollIDs</th>
+                                            <th class="text-left">PollCreator</th>
+                                            <th class="text-left">CreationDate</th>
+                                            <th class="text-left">ActivatedDate</th>
+                                            <th class="text-left">DeactivatedDate</th>
+                                            <th class="text-left">Anonymitätsgrad</th>
+                                            <th class="text-left">Status</th>
+                                            <th class="text-left">Kategorienliste</th>
+                                            <th class="text-left">Fragenanzahl</th>
+                                        </tr>
+                                    </thead>-->
+                                <!--<td v-for="header in headers">
+                                        {{ myprops.item[header.value] }}
+                                    </td>-->
+                                <!--<template slot="items">
+                                    <td
+                                        v-for="(key, index) in filteredKeys"
+                                        :key="index"
+                                        :class="{ 'teal--text': sortBy === key }"
+                                    >
+                                        {{ key }}
+                                    </td>
+                                </template>-->
+                                <!--<td :class="{ 'teal--text': sortBy === key }">{{ key }}:</td>
+                                            <td class="align-end" :class="{ 'teal--text': sortBy === key }">
+                                                {{ items[index][key.toLowerCase()] }}
+                                            </td>-->
+                                <!--<tr v-for="item in desserts" :key="item.pollId">
+                                            <td class="text-left">{{ item.name }}</td>
+                                            <td class="text-left">{{ item.pollId }}</td>
+                                            <td class="text-left">{{ item.pollCreator }}</td>
+                                            <td class="text-left">{{ item.creationDate }}</td>
+                                            <td class="text-left">{{ item.activatedAt }}</td>
+                                            <td class="text-left">{{ item.deactivatedAt }}</td>
+                                            <td class="text-left">{{ item.anonymityStatus }}</td>
+                                            <td class="text-left">{{ item.status }}</td>
+                                        </tr>-->
+                            </v-data-table>
+                        </template>
+                    </v-container>
+
+                    <!--<template>
+                        <div>{{ itemsList }}</div>
+                        <v-data-table :items="itemsList" class="elevation-1" hide-actions hide-headers>
+                            <template slot="items" slot-scope="props">
+                                <td>@{{ props.item.name }}</td>
+                                <td class="text-xs-right">@{{ props.items }}</td>
+                            </template>
+                        </v-data-table>
+                    </template>-->
+                    <!--<template>
+                        <v-card>
+                            <v-simple-table dense>
+                                <template v-slot:default="props">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-left">Name</th>
+                                            <th class="text-left">PollStatus</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="item in props.items" :key="item.pollId">
+                                            <td>{{ item.pollId }}</td>
+                                            <td>{{ item.pollName }}</td>
+                                        </tr>
+                                    </tbody>
+                                </template>
+                            </v-simple-table>
+                        </v-card>
+                    </template>-->
+                    <!--<v-card>
                                     <v-card-title class="subheading font-weight-bold"
                                         >#{{ item.pollId }} {{ item.pollName }}
                                         <v-spacer></v-spacer>
-                                        <v-btn icon @click="activatePoll(props.items.indexOf(item))">
-                                            <v-icon>{{ getStatusIcon(item.pollStatus) }}</v-icon>
-                                        </v-btn>
-                                        <v-btn icon nuxt :to="generateLink(item.pollStatus, item.pollId)">
-                                            <v-icon>{{ getActionIcon(item.pollStatus) }}</v-icon>
-                                        </v-btn>
-                                        <v-menu bottom left>
-                                            <template v-slot:activator="{ on }">
-                                                <v-btn icon v-on="on">
-                                                    <v-icon>mdi-dots-vertical</v-icon>
-                                                </v-btn>
-                                            </template>
-
-                                            <v-list>
-                                                <v-list-item
-                                                    v-for="(action, i) in contextActions"
-                                                    :key="i"
-                                                    :to="action.link"
-                                                >
-                                                    <v-list-item-title>{{ action.title }}</v-list-item-title>
-                                                </v-list-item>
-                                            </v-list>
-                                        </v-menu>
                                     </v-card-title>
                                     <v-divider></v-divider>
                                     <v-list dense>
@@ -89,10 +146,7 @@
                                             >
                                         </v-list-item>
                                     </v-list>
-                                </v-card>
-                            </v-col>
-                        </v-row>
-                    </template>
+                                </v-card>-->
                 </v-data-iterator>
             </v-container>
         </v-layout>
@@ -103,6 +157,7 @@ import { mapActions, mapGetters } from 'vuex'
 export default {
     data() {
         return {
+            itemsList: [],
             search: '',
             filter: {},
             sortDesc: false,
@@ -112,6 +167,41 @@ export default {
                 { title: 'Bearbeiten', link: '/QuestionOverview' },
                 { title: 'Aktivieren', link: '/' },
                 { title: 'Löschen', link: '/' },
+            ],
+            headers: [
+                {
+                    text: 'Poll Creator',
+                    value: 'pollCreator',
+                },
+                { text: 'Poll ID', value: 'pollId' },
+                { text: 'Creation Date', value: 'creationDate' },
+                { text: 'Status', value: 'status' },
+                { text: 'questionCount', value: 'questionCount' },
+                { text: 'FuckThis', value: 'anonymityStatus' },
+            ],
+            items: [
+                {
+                    name: 'Frozen Yogurt',
+                    pollCreator: 'tbrettmann',
+                    pollId: '159',
+                    creationDate: '1945',
+                    activatedDate: '1945',
+                    deactivatedDate: '1990',
+                    anonymityStatus: '1',
+                    status: 2,
+                    questionCount: 1,
+                },
+                {
+                    name: 'Ice cream sandwich',
+                    pollCreator: 'kony2012',
+                    pollId: '237',
+                    creationDate: '1945',
+                    activatedDate: '1945',
+                    deactivatedDate: '1990',
+                    anonymityStatus: '1',
+                    status: '2012',
+                    questioncount: '9000',
+                },
             ],
         }
     },
@@ -131,8 +221,10 @@ export default {
         },
     },
     mounted() {
+        console.log(this.items)
         this.initialize()
     },
+
     methods: {
         ...mapActions({ initialize: 'navigation/initialize' }),
         getActionIcon(active) {
@@ -160,18 +252,10 @@ export default {
             }
         },
         showValue(item, key) {
-            if (key === 'categoryList') {
-                return item.categoryList.length
-            } else if (key === 'questionCount') {
-                let questionNumber = 0
-                for (let i = 0; i < item.categoryList.length; i++) {
-                    questionNumber = questionNumber + item.categoryList[i].questionList.length
-                }
-                return questionNumber
-            } else {
-                return item[key]
-            }
+            alert(item[key])
+            return item[key]
         },
+
         translateKey(key) {
             switch (key) {
                 case 'pollCreator':
@@ -193,6 +277,14 @@ export default {
                 default:
                     return key
             }
+        },
+        filterOnlyCapsText(value, search, item) {
+            return (
+                value != null &&
+                search != null &&
+                typeof value === 'string' &&
+                value.toString().toLowerCase().includes(search.toLowerCase())
+            )
         },
     },
 }
