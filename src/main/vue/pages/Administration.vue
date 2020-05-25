@@ -59,7 +59,15 @@
                 </v-card>
             </v-dialog>
         </v-card-title>
-        <v-data-table :headers="headers" :items="users" :search="search">
+        <v-data-table
+            :headers="headers"
+            :items="users"
+            :search="search"
+            item-key="username"
+            :single-expand="singleExpand"
+            :expanded.sync="expanded"
+            show-expand
+        >
             <template v-slot:item.actions="{ item }">
                 <v-icon small class="mr-2" @click="editUser(item)">
                     mdi-pencil
@@ -76,6 +84,9 @@
                     <v-avatar v-else color="indigo"><v-icon dark>mdi-account-circle</v-icon></v-avatar>
                 </div>
             </template>
+            <template v-slot:expanded-item="{ headers, item }">
+                <td :colspan="headers.length">More info about {{ item.username }}</td>
+            </template>
         </v-data-table>
     </v-card>
 </template>
@@ -85,6 +96,8 @@ export default {
         return {
             dialog: false,
             search: '',
+            expanded: [],
+            singleExpand: false,
             sortBy: '',
             editedIndex: -1,
             editedUser: {
@@ -114,6 +127,12 @@ export default {
                     text: '',
                     value: 'actions',
                     sortable: false,
+                },
+                {
+                    text: '',
+                    value: 'data-table-expand',
+                    sortable: false,
+                    width: '1',
                 },
             ],
             users: [
