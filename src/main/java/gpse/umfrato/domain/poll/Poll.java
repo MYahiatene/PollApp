@@ -86,8 +86,6 @@ public class Poll {
      */
     public Poll(final String pollCreator, final String anonymityStatus, final String pollName, final String createdAt,
                 final String activatedAt, final String deactivatedAt, final int pollStatus) {
-        //TODO: Zeit durch laufende ID ersetzen
-        this.pollId = System.currentTimeMillis();
         this.pollName = pollName;
         this.pollCreator = pollCreator;
         this.anonymityStatus = anonymityStatus;

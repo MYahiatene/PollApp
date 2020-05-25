@@ -1,6 +1,8 @@
 package gpse.umfrato.domain;
 
 import gpse.umfrato.domain.answer.AnswerService;
+import gpse.umfrato.domain.category.Category;
+import gpse.umfrato.domain.category.CategoryService;
 import gpse.umfrato.domain.poll.Poll;
 import gpse.umfrato.domain.poll.PollService;
 import gpse.umfrato.domain.question.Question;
@@ -13,6 +15,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.awt.*;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
@@ -60,19 +63,7 @@ public class InitializeDatabase implements InitializingBean {
         final String testUsername = "tbrettmann";
         final String dummyPassword = "$2a$10$WoG5Z4YN9Z37EWyNCkltyeFr6PtrSXSLMeFWOeDUwcanht5CIJgPa";
 
-        String mockData = "{\"name\":\"Umfrage zur IT-Messe 2020\",\"questionList\": [{\"id\": 1,\"title\": \"Wie hat" +
-            " Ihnen die Veranstaltung insgesamt gefallen?\",\"answerPossibilities\": [\"Sehr gut\",\"Gut\",\"Überwieg" +
-            "end gut\",\"Schlecht\",\"Ich weiß nicht\"],\"data\": [70,65,30,5,25]},{\"id\": 2,\"title\": \"Welches Ge" +
-            "schlecht haben Sie?\",\"answerPossibilities\": [\"Weiblich\",\"Männlich\",\"Divers\"],\"data\": [20,19,1" +
-            "]},{\"id\": 3,\"title\": \"Wie geht es Ihnen heute?\",\"answerPossibilities\": [\"Gut\",\"In Ordnung\"," +
-            "\"Schlecht\"],\"data\": [22,8,7]},{\"id\": 4,\"title\": \"Was hat Sie am Meisten überzeugt?\",\"answerPo" +
-            "ssibilities\": [\"Die Vorträge\",\"Die Informationsstände\",\"Das Catering\",\"Ich kann mich nicht entsc" +
-            "heiden\"],\"data\": [17,8,4,2]},{\"id\": 5,\"title\": \"Werden Sie uns nächstes Jahr wieder besuchen?\"," +
-            "\"answerPossibilities\": [\"Ja\",\"Nein\"],\"data\": [50,21]},{\"id\": 6,\"title\": \"Wie viel Zeit habe" +
-            "n sie auf der Messe verbracht?\",\"answerPossibilities\": [\"unter einer Stunde\",\"1-2 Stunden\",\"2-5 " +
-            "Stunden\",\"über 5 Stunden\"],\"data\": [12,45,40,20]}]}";
-
-        final Poll testPoll = new Poll(testUsername, "anonym", "testPoll", Instant.now().toString(),
+        final Poll testPoll = new Poll(testUsername, "anonym", "Umfrage zur IT-Messe 2020", Instant.now().toString(),
             Instant.now().toString(), Instant.now().toString(), 0);
         final User testUserTbrettmann = new User(testUsername, dummyPassword, "Tobias", "Brettmann");
         final User testUser = new User("testNutzer", dummyPassword, "Markus", "Mueller");
@@ -86,11 +77,24 @@ public class InitializeDatabase implements InitializingBean {
         }
 
         try {
-            userService.loadUserByUsername("testnutzer");
+            userService.loadUserByUsername("testNutzer");
         } catch (UsernameNotFoundException ex) {
             userService.createUser(testUser);
         }
         pollService.createPoll(testPoll);
+        Question q1 = questionService.addQuestion(testPoll.getPollId().toString(),"Wie hat Ihnen die Veranstaltung insgesamt gefallen?",Arrays.asList("Sehr gut", "Gut", "Überwiegend gut", "Schlecht", "Ich weiß nicht"), "ChoiceQuestion");
+        Question q2 = questionService.addQuestion(testPoll.getPollId().toString(),"Welches Geschlecht haben Sie?",Arrays.asList("Weiblich", "Männlich", "Divers"), "ChoiceQuestion");
+        Question q3 = questionService.addQuestion(testPoll.getPollId().toString(),"Wie geht es Ihnen heute?",Arrays.asList("Gut", "In Ordnung", "Schlecht"), "ChoiceQuestion");
+        Question q4 = questionService.addQuestion(testPoll.getPollId().toString(),"Was hat Sie am Meisten überzeugt?",Arrays.asList("Die Vorträge", "Die Informationsstände", "Das Catering", "Ich kann mich nicht entscheiden"), "ChoiceQuestion");
+        Question q5 = questionService.addQuestion(testPoll.getPollId().toString(),"Werden Sie uns nächstes Jahr wieder besuchen?",Arrays.asList("Ja", "Nein", "Vielleicht"), "ChoiceQuestion");
+        Question q6 = questionService.addQuestion(testPoll.getPollId().toString(),"Wie viel Zeit haben sie auf der Messe verbracht?",Arrays.asList("unter einer Stunde", "1-2 Stunden", "2-5 Stunden", "über 5 Stunden"), "ChoiceQuestion");
+//        answerService.giveAnswer(testUserTbrettmann.getUsername(),testPoll.getPollId().toString(),q1.getQuestionId().toString(),Arrays.asList("1"));
+//        answerService.giveAnswer(testUserTbrettmann.getUsername(),testPoll.getPollId().toString(),q2.getQuestionId().toString(),Arrays.asList("1"));
+//        answerService.giveAnswer(testUserTbrettmann.getUsername(),testPoll.getPollId().toString(),q3.getQuestionId().toString(),Arrays.asList("1"));
+//        answerService.giveAnswer(testUserTbrettmann.getUsername(),testPoll.getPollId().toString(),q4.getQuestionId().toString(),Arrays.asList("2"));
+//        answerService.giveAnswer(testUserTbrettmann.getUsername(),testPoll.getPollId().toString(),q5.getQuestionId().toString(),Arrays.asList("1"));
+//        answerService.giveAnswer(testUserTbrettmann.getUsername(),testPoll.getPollId().toString(),q6.getQuestionId().toString(),Arrays.asList("3"));
+
 
     }
 }

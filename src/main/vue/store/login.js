@@ -1,4 +1,4 @@
-import axios from 'axios'
+import auth from '../api/auth'
 
 export const state = () => ({
     authenticated: null,
@@ -7,6 +7,12 @@ export const state = () => ({
 })
 
 export const getters = {
+    getToken: (state) => {
+        if (state !== undefined) {
+            return state.token
+        }
+        return null
+    },
     isAuthenticated: (state) => {
         return state.authenticated
     },
@@ -18,9 +24,9 @@ export const getters = {
 export const mutations = {
     authenticate(state, token) {
         if (token !== null) {
+            console.log(token)
             state.token = token
             state.authenticated = true
-            axios.defaults.headers.Authorization = token
         } else {
             state.authenticated = false
         }
@@ -38,12 +44,7 @@ export const mutations = {
 export const actions = {
     requestToken({ commit }, input) {
         return new Promise((resolve, reject) => {
-            const credentials = new URLSearchParams()
-            credentials.append('username', input.username)
-            credentials.append('password', input.password)
-            axios.defaults.headers.Authorization = state.token
-            axios
-                .post('http://localhost:8088/token/generate-token', credentials)
+            auth.login(input.username, input.password)
                 .then((res) => {
                     const token = res.data.result.token
                     commit('authenticate', token)

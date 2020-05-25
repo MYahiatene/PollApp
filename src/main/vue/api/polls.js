@@ -1,7 +1,7 @@
 import axios from 'axios'
-// import { state } from '../store/login'
+// import { getters } from '../store/login'
 const instance = axios.create({
-    baseURL: 'http://127.0.0.1:8088/api/evaluation',
+    baseURL: 'http://127.0.0.1:8088/api',
     timeout: 1000,
     headers: {
         Authorization:
@@ -9,8 +9,7 @@ const instance = axios.create({
     },
 })
 export default {
-    async getInitialDiagrams() {
-        console.log(instance.defaults.headers)
-        return await instance.get('/initialDiagrams')
+    async getPolls() {
+        return await instance.get('/poll')
     },
 }
