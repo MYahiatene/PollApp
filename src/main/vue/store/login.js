@@ -11,6 +11,9 @@ export const getters = {
     getUsername: (state) => {
         return state.username
     },
+    getToken: (state) => {
+        return state.token
+    },
 }
 
 export const mutations = {
