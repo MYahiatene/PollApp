@@ -1,5 +1,3 @@
-import auth from '../api/auth'
-
 export const state = () => ({
     authenticated: null,
     token: '',
@@ -24,9 +22,10 @@ export const getters = {
 export const mutations = {
     authenticate(state, token) {
         if (token !== null) {
-            console.log(token)
             state.token = token
             state.authenticated = true
+            localStorage.setItem('user-token', token)
+            this.$axios.defaults.headers.Authorization = token
         } else {
             state.authenticated = false
         }
@@ -40,22 +39,15 @@ export const mutations = {
         }
     }, */
 }
-
 export const actions = {
-    requestToken({ commit }, input) {
-        return new Promise((resolve, reject) => {
-            auth.login(input.username, input.password)
-                .then((res) => {
-                    const token = res.data.result.token
-                    commit('authenticate', token)
-                    commit('setUsername', input.username)
-                    resolve()
-                })
-                .catch(() => {
-                    commit('authenticate', null)
-                    // reject(new Error('Authentification failed'))
-                })
-        })
+    async requestToken({ commit }, input) {
+        const credentials = new URLSearchParams()
+        credentials.append('username', input.username)
+        credentials.append('password', input.password)
+        const response = await this.$axios.post('http://127.0.0.1:8088/api/authenticate', credentials).catch()
+        const token = response.data
+        commit('authenticate', token)
+        commit('setUsername', input.username)
     },
 }
 

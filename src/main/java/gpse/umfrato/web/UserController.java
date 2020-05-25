@@ -7,6 +7,7 @@ import gpse.umfrato.domain.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -39,7 +40,9 @@ public class UserController {
     @PostMapping("/createuser")
     public String createUser(final @RequestBody UserCmd userCmd) {
         try {
-            userService.createUser(userCmd.getCmdUser());
+            userService.createUser(
+                userCmd.getUsername(), userCmd.getPassword(), userCmd.getFirstName(), userCmd.getLastName(),
+                Arrays.asList(new String[]{"User"}));
 
         } catch (BadRequestException e) {
             LOGGER.info("couldnt create user");

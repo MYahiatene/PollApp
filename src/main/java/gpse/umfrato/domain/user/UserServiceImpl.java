@@ -2,12 +2,14 @@ package gpse.umfrato.domain.user;
 
 import gpse.umfrato.web.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Primary;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Primary
 @Service
 class UserServiceImpl implements UserService {
 
@@ -21,14 +23,13 @@ class UserServiceImpl implements UserService {
     /**
      * This method creates a user with every required data.
      *
-     * @param roles     the roles from user
+     * @param roles the roles from user
      * @return created user
      */
     @Override
-    public User createUser(final User user, final String... roles) {
-        for (final String role : roles) {
-            user.addRole(role);
-        }
+    public User createUser(final String username, final String password, final String firstName,
+                           final String lastName, final List<String> roles) {
+        final User user = new User(username, password, firstName, lastName, roles);
         return userRepository.save(user);
     }
 

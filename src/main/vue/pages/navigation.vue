@@ -154,7 +154,10 @@
 </template>
 <script>
 import { mapActions, mapGetters } from 'vuex'
+import AuthGate from '../components/AuthGate'
 export default {
+    name: 'navigation',
+    components: { AuthGate },
     data() {
         return {
             itemsList: [],

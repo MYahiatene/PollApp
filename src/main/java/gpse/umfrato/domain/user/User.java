@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
@@ -57,12 +58,15 @@ public class User implements UserDetails {
      * @param firstName the first name of user
      * @param lastName  the last name of user
      * @param password  the password of user
+     * @param roles     user roles
      */
-    public User(final String username, final String password, final String firstName, final String lastName) {
+    public User(final String username, final String password, final String firstName,
+                final String lastName, final List<String> roles) {
         this.username = username;
         this.firstName = firstName;
         this.lastName = lastName;
         this.password = password;
+        this.roles = roles;
     }
 
     /**
@@ -72,7 +76,12 @@ public class User implements UserDetails {
      */
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        final List<GrantedAuthority> authorities
+            = new ArrayList<>();
+        for (final String role : roles) {
+            authorities.add(new SimpleGrantedAuthority(role));
+        }
+        return authorities;
     }
 
     /**

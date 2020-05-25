@@ -14,7 +14,7 @@
                 id="endValue"
                 v-model="endValue"
                 label="Ende der Skala bei"
-                :value="this.startValue"
+                :value="startValue"
                 type="number"
                 :rules="endValueRules"
             ></v-text-field>
