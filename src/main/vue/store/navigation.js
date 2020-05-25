@@ -10,7 +10,6 @@ export const getters = {
 export const mutations = {
     setPolls: (state, data) => {
         state.Polls = data.data
-        console.log(state.Polls)
     },
 }
 export const actions = {
