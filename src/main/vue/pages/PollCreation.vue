@@ -198,15 +198,7 @@ export default {
                 deactivatedAt: this.deactivateDate,
                 pollStatus: 0,
             }
-            instance
-                .post('/createpoll', obj)
-                .then((response) => {
-                    console.log(response)
-                    this.$router.push('/')
-                })
-                .catch((error) => {
-                    console.log(error)
-                })
+            instance.post('/createpoll', obj).catch()
         },
         formatDate(date) {
             if (!date) return null
