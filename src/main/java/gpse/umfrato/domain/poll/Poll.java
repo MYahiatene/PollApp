@@ -87,6 +87,16 @@ public class Poll {
     private int pollStatus;
 
     /**
+     * This attribute represents the ability to see the number of questions for the participant
+     */
+    private boolean visibility;
+
+    /**
+     * This attribute represents the ability of the participant to change between the categories/pages of the poll
+     */
+    private boolean categoryChange;
+
+    /**
      * This attribute represents a question list with all questions of this poll.
      */
     @OneToMany(cascade = CascadeType.ALL)
@@ -109,7 +119,8 @@ public class Poll {
      * @param deactivatedAt   the date when the poll deactivates
      */
     public Poll(final String pollCreator, final String anonymityStatus, final String pollName, final String createdAt,
-                final String activatedAt, final String deactivatedAt, final int pollStatus, final String hexaBackground) {
+                final String activatedAt, final String deactivatedAt, final int pollStatus, final String hexaBackground,
+                final boolean visibility, final boolean categoryChange) {
         this.pollName = pollName;
         this.pollCreator = pollCreator;
         this.anonymityStatus = anonymityStatus;
@@ -118,5 +129,7 @@ public class Poll {
         this.deactivatedDate = deactivatedAt;
         this.pollStatus = pollStatus;
         this.hexaBackground = hexaBackground;
+        this.visibility = visibility;
+        this.categoryChange = categoryChange;
     }
 }

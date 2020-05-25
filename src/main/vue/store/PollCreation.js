@@ -1,21 +1,23 @@
+// import axios from 'axios';
+import api from '../api/poll'
 export const state = () => ({
-    // visibility: false,
+    poll: null,
 })
 export const mutations = {
-    // sets the attribute visibility
-    changeVisible(state) {
-        state.visibility = !state.visibility
-    },
     savePoll(state, poll) {
-        // let id = this.state.articles.length
-        // article.id = id + 1
-        // this.state.articles.push(article)
-        this.poll.push(poll)
+        this.poll = poll
     },
-} /*
-export const actions: {
-savePoll(){
-    this.commit('savePoll','polltest') etc.
-} })
+}
+export const actions = {
+    createPoll({ commit }, poll) {
+        api.save(poll)
+            .then((res) => {
+                const newPoll = res.data
+                commit('savePoll', newPoll)
+            })
+            .catch(() => {
+                commit('savePoll', null)
+                // reject(new Error('Authentification failed'))
+            })
     },
-} */
+}

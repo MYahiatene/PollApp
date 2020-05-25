@@ -32,12 +32,13 @@ public class PollController {
     }
 
     @PostMapping(value = "/PollCreation", produces = MediaType.APPLICATION_JSON_VALUE)
-    public String createPoll(final @RequestBody PollCmd pollCmd) {
+    public Poll createPoll(final @RequestBody PollCmd pollCmd) {
         try {
-            pollService.createPoll(pollCmd.getCmdPoll());
-            return "Poll created!";
+            return pollService.createPoll(pollCmd.getCmdPoll());
+            // return "Poll created!";
         } catch (BadRequestException e) {
-            return "Poll creation failed!";
+            return null;
+            // return "Poll creation failed!";
         }
     }
 

@@ -51,18 +51,13 @@
 
                     <v-row no-gutters>
                         <v-switch
-                            v-model="switch3"
+                            v-model="poll.categoryChange"
                             label="Vor- und Zurückspringen zwischen Kategorien erlaubt"
                         ></v-switch>
                     </v-row>
 
                     <v-row no-gutters>
-                        <v-switch
-                            v-model="switch4"
-                            label="Sichtbarkeit der Gesamtanzahl der Fragen"
-                            @change="changeVisibility()"
-                        >
-                        </v-switch>
+                        <v-switch v-model="poll.visibility" label="Sichtbarkeit der Gesamtanzahl der Fragen"></v-switch>
                     </v-row>
 
                     <v-row no-gutters>
@@ -87,7 +82,8 @@
 
                 <br />
 
-                <v-btn color="primary" nuxt to="/PollEditing" @click="savePoll">
+                <!-- nuxt to="/PollEditing" -->
+                <v-btn color="primary" @click="createPoll()">
                     Erstellen
                 </v-btn>
             </v-form>
@@ -96,8 +92,9 @@
 </template>
 
 <script>
-import { mapMutations, mapActions } from 'vuex'
+import { mapActions } from 'vuex'
 import DateTimePicker from '../components/dateTimePicker'
+// import poll from "../api/poll";
 
 export default {
     name: 'QuestionCreation',
@@ -112,14 +109,11 @@ export default {
                 logo: null,
                 hexaBackground: null,
                 hexaFont: null,
-                // flag-settings for visbility of numbers of questions and allowing back/forth should also be added
+                visibility: false,
+                categoryChange: false,
             },
             switch1: false,
             switch2: false,
-            // flag to set the attribute of changing the sites as a participant
-            switch3: false,
-            // flag to set the visibility of the number of questions
-            switch4: false,
             switch5: false,
             valid: false,
             anonymityTypes: ['Anonym', 'Teilanonym', 'Nicht anonym'],
@@ -130,10 +124,7 @@ export default {
         }
     },
     methods: {
-        ...mapMutations({
-            changeVisibility: 'questionCreation/changeVisible',
-        }),
-        ...mapActions(['savePoll']),
+        ...mapActions(['savePoll', 'createVisibility']),
         // validates the form (so the button is only enabled when the inputs are correct)
         validate() {
             this.$refs.form.validate()
@@ -149,9 +140,8 @@ export default {
         },
         // creates and saves the poll in the database
         createPoll() {
-            // this.$store.dispatch('PollCreation/createPoll')
+            this.$store.dispatch('PollCreation/createPoll', this.poll)
         },
-        ...mapActions({ createPoll: 'PollCreation/createPoll' }),
         backgroundColor(e) {
             this.hexaBackground = e.payload[0].hexa
         },
