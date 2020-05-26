@@ -4,6 +4,7 @@ import gpse.umfrato.domain.pollresult.PollResult;
 import gpse.umfrato.domain.pollresult.PollResultRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
@@ -43,7 +44,7 @@ public class AnswerServiceImpl implements AnswerService {
         }
         pollResult.getAnswerList().add(answer);
         pollResultRepository.save(pollResult);
-        answerRepository.save(answer);
+        //answerRepository.save(answer); // Unnötig? Fügt jedenfalls doppelte Antworten ein - Jan
         return answer;
     }
 

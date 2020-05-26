@@ -170,7 +170,9 @@ export default {
                     value: 3,
                 },
             ],
-            titleRules: [(v) => !!v || 'Titel fehlt', (v) => v.length <= 10 || 'Name must be less than 10 characters'], // TODO: Weihnachts...(feier) ???
+            titleRules: [
+                (v) => !!v || 'Titel fehlt' /*, (v) => v.length <= 10 || 'Name must be less than 10 characters' */,
+            ], // TODO: Weihnachts...(feier) ???
             anonymityRules: [(v) => !!v || 'Anonymitätsgrad fehlt.'],
         }
     },
@@ -199,6 +201,7 @@ export default {
                 pollStatus: 0,
             }
             instance.post('/createpoll', obj).catch()
+            this.$router.push('/navigation')
         },
         formatDate(date) {
             if (!date) return null

@@ -1,17 +1,23 @@
 package gpse.umfrato.web;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import gpse.umfrato.domain.Evaluation.DiagramData;
 import gpse.umfrato.domain.answer.Answer;
 import gpse.umfrato.domain.answer.AnswerService;
 import gpse.umfrato.domain.category.CategoryService;
 import gpse.umfrato.domain.cmd.AnswerCmd;
 import gpse.umfrato.domain.cmd.FilterCmd;
 import gpse.umfrato.domain.cmd.PollCmd;
+import gpse.umfrato.domain.poll.Poll;
 import gpse.umfrato.domain.poll.PollService;
+import gpse.umfrato.domain.question.Question;
 import gpse.umfrato.domain.question.QuestionService;
 import gpse.umfrato.domain.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Filter;
 import java.util.logging.Logger;
@@ -27,6 +33,9 @@ public class EvaluationController {
     private final QuestionService questionService;
     private final PollService pollService;
     private final CategoryService categoryService;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Autowired
     public EvaluationController(final AnswerService answerService, final UserService userService, final QuestionService questionService, final PollService pollService, final CategoryService categoryService) {
@@ -47,7 +56,7 @@ public class EvaluationController {
         {
             LOGGER.info(e.getLocalizedMessage());
         }*/
-        String mockData = "{\"name\":\"Umfrage zur IT-Messe 2020\",\"questionList\": [{\"id\": 1,\"title\": \"Wie hat" +
+        String cheetSheet = "{\"id\": 1,\"title\": \"Wie hat" +
             " Ihnen die Veranstaltung insgesamt gefallen?\",\"answerPossibilities\": [\"Sehr gut\",\"Gut\",\"Überwieg" +
             "end gut\",\"Schlecht\",\"Ich weiß nicht\"],\"data\": [70,65,30,5,25]},{\"id\": 2,\"title\": \"Welches Ge" +
             "schlecht haben Sie?\",\"answerPossibilities\": [\"Weiblich\",\"Männlich\",\"Divers\"],\"data\": [20,19,1" +
@@ -57,8 +66,39 @@ public class EvaluationController {
             "heiden\"],\"data\": [17,8,4,2]},{\"id\": 5,\"title\": \"Werden Sie uns nächstes Jahr wieder besuchen?\"," +
             "\"answerPossibilities\": [\"Ja\",\"Nein\"],\"data\": [50,21]},{\"id\": 6,\"title\": \"Wie viel Zeit habe" +
             "n sie auf der Messe verbracht?\",\"answerPossibilities\": [\"unter einer Stunde\",\"1-2 Stunden\",\"2-5 " +
-            "Stunden\",\"über 5 Stunden\"],\"data\": [12,45,40,20]}]}";
-        return mockData;
+            "Stunden\",\"über 5 Stunden\"],\"data\": [12,45,40,20]}";
+        String data = "{\"name\":\"" + pollService.getPoll("1").getPollName() + "\",\"questionList\": [$]}";
+        cheetSheet = data.replace("$",cheetSheet);
+        List<Question> questions = questionService.getAllQuestions(1L);
+        while(questions.size() > 6)
+        {
+            questions.remove(6);
+        }
+        for(Question q:questions)
+        {
+            if(q.getQuestionType().equals("ChoiceQuestion"))
+            {
+                List<Answer> answers = answerService.getAnswerFromOneQuestion(q.getQuestionId());
+                List<Integer> answerData = new ArrayList<>();
+                for (int i = 0; i < q.getAnswerPossibilities().size(); i++) {
+                    answerData.add(0);
+                }
+                for (Answer a: answers) {
+                    for (String s: a.getGivenAnswerList()) {
+                        Integer index = Integer.valueOf(s);
+                        answerData.set(index,answerData.get(index) + 1);
+                    }
+                }
+                DiagramData dd = new DiagramData(q.getQuestionId(), q.getQuestionMessage(), q.getAnswerPossibilities(), answerData);
+                data = data.replace("$", dd.toJSON() + ",$");
+            }
+        }
+        data = data.replace(",$","");
+        System.out.println("vorlage");
+        System.out.println(cheetSheet);
+        System.out.println("sende");
+        System.out.println(data);
+        return data;
     }
 
     /**Returns JSON string to be interpreted, hier wird der jsonInput in ein Filterobjekt deserialisiert und dort können wir herausfinden, um welchen Filter es sich genau handelt.*/
