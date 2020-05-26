@@ -22,6 +22,7 @@ it passes the attributes:
             <v-col cols="12" lg="5">
                 <!--                overflowbutton for diagramType-->
                 <v-overflow-btn
+                    dense
                     :disabled="!showDiagram"
                     v-model="chosenDiagramAsWord"
                     :items="diagramTypesInWords"
@@ -39,6 +40,7 @@ it passes the attributes:
 
                 <!--                    :disabled="forbidColorSwitch"-->
                 <v-overflow-btn
+                    dense
                     v-model="chosenDiagramColorAsWord"
                     :items="diagramColorsInWords"
                     label="Farbe des Diagrams"

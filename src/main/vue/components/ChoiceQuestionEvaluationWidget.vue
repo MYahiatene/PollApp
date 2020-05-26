@@ -17,17 +17,19 @@
         </v-app-bar>
         <v-container>
             <v-row v-if="visualSettings">
-                <v-card>
-                    <!--                    the visual settings the widget has right noe are passed as props-->
-                    <visual-evaluation-settings
-                        @input="onShow()"
-                        :chosen-diagram="diagramType"
-                        :chosen-diagram-color="backgroundColor"
-                        :show-diagram="showDiagram"
-                        :show-table="showTable"
-                        v-on:update-Visuals="updateVisuals"
-                    ></visual-evaluation-settings>
-                </v-card>
+                <v-col cols="12" lg="12">
+                    <v-card>
+                        <!--                    the visual settings the widget has right noe are passed as props-->
+                        <visual-evaluation-settings
+                            @input="onShow()"
+                            :chosen-diagram="diagramType"
+                            :chosen-diagram-color="backgroundColor"
+                            :show-diagram="showDiagram"
+                            :show-table="showTable"
+                            v-on:update-Visuals="updateVisuals"
+                        ></visual-evaluation-settings>
+                    </v-card>
+                </v-col>
             </v-row>
 
             <!--            here we display a visual diagram-->
@@ -95,7 +97,8 @@ export default {
     },
     name: 'ChoiceQuestionEvaluationWidget',
     data: () => ({
-        // key that forces the diagram to update (value does not have a meaning)
+        // key that forces the diagram to update
+        // (value is set on the color of the diagram and update whenever updateVisuals is called)
         diagramKey: '',
         // these options are needed to display a visual diagram, they are passed as props into that component
         options: {
@@ -154,6 +157,7 @@ export default {
 
       this method is emitted by the settings window.
       Once its called we update the visual settings.
+      the diagram key is added to force the widget to actually update the color
 
        */
         updateVisuals(showDiagram, DiagramType, DiagramColor, showTable) {
@@ -162,8 +166,7 @@ export default {
             this.backgroundColor = DiagramColor
             this.showTable = showTable
             this.visualSettings = false
-            this.$forceUpdate()
-            this.diagramKey += 1
+            this.diagramKey = DiagramColor
         },
     },
 }

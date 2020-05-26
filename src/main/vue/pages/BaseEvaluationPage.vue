@@ -48,51 +48,102 @@ that each display a basic evaluation of one specific question-->
                 </v-toolbar>
             </v-row>
             <v-row>
-                <v-col cols="12" lg="2">
-                    <!-- here we have a search component, that allows the user to jump to a specific question in the poll-->
-                    <v-card class="pa-1">
-                        <!--                 oninput: When the user types a number that is higher that the highest question Id or below zero,
-        the input will be deleted as it is invalid-->
-                        <v-text-field
-                            id="startValue"
-                            :value="highestQuestionId"
-                            v-model="questionToJumpTo"
-                            prefix="Springe zu Frage: "
-                            type="number"
-                            @input="changeLinkToQuestion()"
-                            oninput="validity.valid||(value='')"
-                            min="1"
-                            :max="PollResult.questionList.length"
-                            class="shrink"
-                        ></v-text-field>
-                        <v-spacer></v-spacer>
-                        <!--                After pressing this button we will jump to he href that is associated with the questionId we have entered -->
-                        <a :href="linkToQuestion" style="text-decoration: none;" id="jump">
-                            <v-btn color="info">
-                                Los
-                            </v-btn>
-                        </a>
-                    </v-card>
-                </v-col>
-                <v-col cols="12" lg="8" fluid>
-                    <div v-for="question in PollResult.questionList" :key="question.id">
-                        <a :id="'Frage' + question.id"> <v-spacer></v-spacer></a>
-                        <ChoiceQuestionEvaluationWidget
-                            :key="widgetKey"
-                            :show-table="showTable"
-                            :show-diagram="showDiagram"
-                            :questionId="question.id"
-                            :question-title="question.title"
-                            :answer-possibilities="question.answerPossibilities"
-                            :data="question.data"
-                            :background-color="defaultColor"
-                            :diagram-type="defaultDiagramType"
-                        ></ChoiceQuestionEvaluationWidget>
+                <v-col cols="12" lg="12">
+                    <v-data-iterator
+                        :items="items"
+                        :items-per-page.sync="itemsPerPage"
+                        :page="page"
+                        :search="search"
+                        :sort-by="'id'"
+                        :sort-desc="sortDesc"
+                        hide-default-footer
+                    >
+                        <template v-slot:header>
+                            <v-toolbar class="mb-1">
+                                <v-text-field
+                                    v-model="search"
+                                    clearable
+                                    flat
+                                    hide-details
+                                    prepend-inner-icon="mdi-magnify"
+                                    label="Search"
+                                ></v-text-field>
+                                <template v-if="$vuetify.breakpoint.mdAndUp">
+                                    <v-spacer></v-spacer>
+                                    <v-btn-toggle v-model="sortDesc" mandatory>
+                                        <v-btn depressed :value="false">
+                                            <v-icon>mdi-arrow-up</v-icon>
+                                        </v-btn>
+                                        <v-btn depressed :value="true">
+                                            <v-icon>mdi-arrow-down</v-icon>
+                                        </v-btn>
+                                    </v-btn-toggle>
+                                </template>
+                                <v-spacer></v-spacer>
+                                <template>
+                                    <v-row class="mt-2" align="center" justify="center">
+                                        <span class="black--text">Items per page</span>
+                                        <v-menu offset-y>
+                                            <template v-slot:activator="{ on }">
+                                                <v-btn text class="ml-2" v-on="on">
+                                                    {{ itemsPerPage }}
+                                                    <v-icon>mdi-chevron-down</v-icon>
+                                                </v-btn>
+                                            </template>
+                                            <v-list>
+                                                <v-list-item
+                                                    v-for="(number, index) in itemsPerPageArray"
+                                                    :key="index"
+                                                    @click="updateItemsPerPage(number)"
+                                                >
+                                                    <v-list-item-title>{{ number }}</v-list-item-title>
+                                                </v-list-item>
+                                            </v-list>
+                                        </v-menu>
 
-                        <v-spacer></v-spacer>
-                    </div>
+                                        <v-spacer></v-spacer>
+
+                                        <span class="mr-4 black--text"> Page {{ page }} of {{ numberOfPages }} </span>
+                                        <v-btn dark color="secondary" class="mr-1" @click="formerPage">
+                                            <v-icon>mdi-chevron-left</v-icon>
+                                        </v-btn>
+                                        <v-btn dark color="secondary" class="ml-1" @click="nextPage">
+                                            <v-icon>mdi-chevron-right</v-icon>
+                                        </v-btn>
+                                    </v-row>
+                                </template>
+                            </v-toolbar>
+                        </template>
+
+                        <template v-slot:default="props">
+                            <!--            <template>-->
+                            <v-row>
+                                <v-col v-for="question in props.items" :key="question.id" fluid>
+                                    <!--                    <v-col v-for="question in props.PollResult.questionList" :key="question.id">-->
+                                    <a :id="'Frage' + question.id"> <v-spacer></v-spacer></a>
+                                    <ChoiceQuestionEvaluationWidget
+                                        :key="widgetKey"
+                                        :show-table="showTable"
+                                        :show-diagram="showDiagram"
+                                        :questionId="question.id"
+                                        :question-title="question.title"
+                                        :answer-possibilities="question.answerPossibilities"
+                                        :data="question.data"
+                                        :background-color="defaultColor"
+                                        :diagram-type="defaultDiagramType"
+                                    ></ChoiceQuestionEvaluationWidget>
+                                    <v-spacer></v-spacer>
+                                    <!--                    </v-col>-->
+                                </v-col>
+                            </v-row>
+                        </template>
+                    </v-data-iterator>
                 </v-col>
+
+                <v-spacer></v-spacer>
             </v-row>
+            <v-row> </v-row>
+            <v-row> </v-row>
         </v-container>
     </v-container>
 </template>
@@ -106,8 +157,9 @@ export default {
     components: { ChoiceQuestionEvaluationWidget, visualEvaluationSettings },
     data() {
         return {
-            // this key does not carry a meaning it simply exists so we can force the widget to rerender
-            widgetKey: '0',
+            // key that forces the diagram to update
+            // (value is set on the color of the diagram and update whenever updateVisuals is called)
+            widgetKey: '',
             // by default we will jump to question 1
             questionToJumpTo: '',
             linkToQuestion: '#Frage1',
@@ -170,6 +222,14 @@ export default {
                     },
                 ],
             },
+
+            // itemsPerPageArray: [1, 2, 3],
+            search: '',
+            filter: {},
+            sortDesc: false,
+            page: 1,
+            itemsPerPage: 2,
+            sortBy: 'id',
         }
     },
     computed: {
@@ -194,12 +254,27 @@ export default {
         highestQuestionId() {
             return this.PollResult.questionList.length
         },
+
+        numberOfPages() {
+            return Math.ceil(this.items.length / this.itemsPerPage)
+        },
+        filteredKeys() {
+            return this.keys.filter((key) => key !== `id`)
+        },
+        items() {
+            return this.PollResult.questionList
+        },
+
+        itemsPerPageArray() {
+            return [1, this.items.length / 2, this.items.length]
+        },
     },
     methods: {
         /*
 
         this method is emitted by the settings window.
         Once its called we update the visual settings of all the choiceQuestionEvaluationWidgets
+        the widget key is added to force the widget to actually update the color
 
          */
         updateVisuals(showDiagram, DiagramType, DiagramColor, showTable) {
@@ -208,9 +283,7 @@ export default {
             this.defaultColor = DiagramColor
             this.showTable = showTable
             this.dialog = false
-            this.$forceUpdate()
-            this.widgetKey += 1
-            console.log(this.widgetKey)
+            this.widgetKey = DiagramColor
         },
 
         /*
@@ -221,6 +294,16 @@ export default {
         changeLinkToQuestion() {
             this.linkToQuestion = '#Frage' + this.questionToJumpTo
             this.questionToJumpTo = 1
+        },
+
+        nextPage() {
+            if (this.page + 1 <= this.numberOfPages) this.page += 1
+        },
+        formerPage() {
+            if (this.page - 1 >= 1) this.page -= 1
+        },
+        updateItemsPerPage(number) {
+            this.itemsPerPage = number
         },
     },
 }
