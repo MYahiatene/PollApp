@@ -5,6 +5,7 @@ import gpse.umfrato.domain.user.User;
 import gpse.umfrato.domain.user.UserRepository;
 import gpse.umfrato.domain.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
@@ -55,6 +56,7 @@ public class UserController {
      *
      * @return a list with all users
      */
+    @Secured({"Admin","User"})
     @GetMapping("/users")
     public List<User> getUsers() {
         return userRepository.findAll();

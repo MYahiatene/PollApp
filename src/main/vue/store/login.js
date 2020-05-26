@@ -22,7 +22,7 @@ export const mutations = {
             state.token = token
             state.authenticated = true
             localStorage.setItem('user-token', token)
-            this.$axios.defaults.headers.Authorization = token
+            // this.$axios.defaults.headers.Authorization = token
         } else {
             state.authenticated = false
         }
@@ -42,7 +42,9 @@ export const actions = {
         credentials.append('username', input.username)
         credentials.append('password', input.password)
         const response = await this.$axios.post('http://127.0.0.1:8088/api/authenticate', credentials).catch()
+        // const token = response.data
         const token = response.data
+        console.log(token)
         commit('authenticate', token)
         commit('setUsername', input.username)
     },

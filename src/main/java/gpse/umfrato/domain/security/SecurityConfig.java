@@ -36,7 +36,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.headers().frameOptions().sameOrigin(); //allows h2-console for debugging but security problem
         http.cors().and().csrf().disable()
             .authorizeRequests()
-            .antMatchers("/api/**").permitAll()
+            .antMatchers("/api/authenticate").permitAll()
             .and()
             .addFilter(new JwtAuthenticationFilter(authenticationManager(), securityConstants))
             .addFilter(new JwtAuthorizationFilter(authenticationManager(), securityConstants))
