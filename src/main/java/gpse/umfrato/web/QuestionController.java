@@ -66,18 +66,18 @@ public class QuestionController {
         return questionService.getQuestion(Long.valueOf(questionCmd.getPollId()));
     }
 
-    /**
-     * This method returns a selected poll.
-     *
-     * @return a selected poll
-     */
-    @GetMapping("/participant")
-    public List<Question> getParticipant() {
-        try {
-            return questionService.getAllQuestions(1L);
-        } catch(EntityNotFoundException e) {
-            return null;
-        }
-
-    }
+//    /**
+//     * This method returns a selected poll.
+//     *
+//     * @return a selected poll
+//     */
+//    @GetMapping("/participant")
+//    public List<Question> getParticipant() {
+//        try {
+//            return questionService.getAllQuestions(1L);
+//        } catch(EntityNotFoundException e) {
+//            return null;
+//        }
+//
+//    }
 }

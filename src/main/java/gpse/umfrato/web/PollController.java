@@ -61,19 +61,20 @@ public class PollController {
         return pollService.getPoll(pollCmd.getId());
     }
 
-//    /**
-//     * This method returns the design setting of a poll.
-//     *
-//     * @return a selected poll
-//     */
-//    @GetMapping("/participant")
-//    public List<Question> getParticipant() {
-//        try {
-//            return pollService.getPoll(1).;
-//        } catch(EntityNotFoundException e) {
-//            return null;
-//        }
-//
-//    }
+
+    /**
+     * This method returns the design setting of a poll.
+     *
+     * @return a selected poll
+     */
+    @GetMapping("/participant")
+    public Poll getParticipant() {
+        try {
+            return pollService.getPoll("1");
+        } catch(EntityNotFoundException e) {
+            return null;
+        }
+
+    }
 
 }

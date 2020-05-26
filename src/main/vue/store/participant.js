@@ -20,9 +20,9 @@ export const mutations = {
 }
 // What is given back here? Just the questions(over /participant) or the entire poll?
 export const actions = {
-    async showPoll({ commit }) {
+    async getPoll({ commit }) {
         // const poll = await instance.get('/participant')
-        const poll = await api.getPoll()
-        commit('setPoll', poll)
+        const poll = await api.getPoll() // calls api/participant, which calls PollController, which calls PollService and gives back a poll
+        commit('setPoll', poll) // what is this?
     },
 }

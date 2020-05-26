@@ -45,10 +45,11 @@
 
 <script>
 import { mdiBrightness4 } from '@mdi/js'
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 export default {
     data() {
         return {
+            poll: null,
             goDark: false,
             fixed: false,
             modeIcon: mdiBrightness4,
@@ -82,10 +83,11 @@ export default {
          * returns a css compatible string that sets the background to the color specified in th nuxt.config.js
          */
         backgroundColor() {
+            // getPoll(); Ich dachte wenn ich hier getPoll von unten aufrufe, holt er den Poll und der background ist nicht länger null
             if (this.goDark) {
                 return 'background:' + this.$vuetify.theme.themes.dark.background
-                // } else if (this._participant.showPoll().backgroundColor() != null) {
-                //     return 'background:' + this._participant.showPoll().backgroundColor() // '#c42843' // insert picked color here
+            } else if (this.poll.hexaBackground != "") {
+                return 'background:' + this.poll.hexaBackground // '#c42843' // insert picked color here
             } else {
                 return 'background:' + this.$vuetify.theme.themes.light.background
             }
@@ -104,12 +106,10 @@ export default {
                 return (this.$vuetify.theme.dark = false)
             }
         },
-        // show Poll only gives back the questions, so I need a new request, that either gets entire Poll or
-        // just Design Settings
-        // showPoll() {
-        //     this.$store.dispatch('participant/showPoll')
-        // },
-        // ...mapActions({ showPoll: 'participant/showPoll' }),
+        getPoll() {
+            this.poll = this.$store.dispatch('participant/getPoll')
+        },
+        ...mapActions({ showPoll: 'participant/getPoll' }),
     },
 }
 </script>

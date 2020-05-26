@@ -85,6 +85,5 @@ public class InitializeDatabase implements InitializingBean {
         } catch (UsernameNotFoundException ex) {
             userService.createUser(testUser);
         }
-
     }
 }

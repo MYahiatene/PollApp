@@ -75,9 +75,9 @@ export default {
     },
     methods: {
         showPoll() {
-            this.$store.dispatch('participant/showPoll')
+            this.$store.dispatch('participant/getPoll')
         },
-        ...mapActions({ showPoll: 'participant/showPoll' }),
+        ...mapActions({ showPoll: 'participant/getPoll' }),
     },
 }
 </script>
