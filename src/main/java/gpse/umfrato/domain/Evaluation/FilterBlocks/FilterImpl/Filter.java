@@ -6,7 +6,7 @@ import gpse.umfrato.domain.pollresult.PollResult;
 
 import java.util.List;
 
-public interface filter {
+public interface Filter {
 
     List<PollResult> filter(List<PollResult> input);
 

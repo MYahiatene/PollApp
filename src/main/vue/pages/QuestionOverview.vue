@@ -74,14 +74,7 @@ export default {
                 answerPossibilites: [],
                 questionType: '',
             }
-            instance
-                .post('/poll/' + this.pollId + '/addquestion', obj)
-                .then((response) => {
-                    console.log(response)
-                })
-                .catch((error) => {
-                    console.log(error)
-                })
+            instance.post('/poll/' + this.pollId + '/addquestion', obj).catch()
         },
     },
 }

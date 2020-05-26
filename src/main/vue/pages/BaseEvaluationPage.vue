@@ -6,19 +6,19 @@ Thusly the user can easily get a first impression on the results.
     <v-container>
         <!--        this is the real content of the page, a list of ChoiceQuestionEvaluationWidgets,
 that each display a basic evaluation of one specific question-->
-        <v-container>
+        <AuthGate v-if="isAuthenticated !== true"></AuthGate>
+        <v-container v-else-if="diagramData !== undefined">
             <v-row>
                 <!--        the app bar is used to navigate the page.
    All the buttons here apply to the entire poll, nit one individual question-->
                 <v-toolbar>
-                    <v-card-title>{{ PollResult.name }}</v-card-title>
+                    <v-card-title>{{ pollName }}</v-card-title>
 
                     <v-dialog v-model="dialog">
                         <!--             Here we open a setting window
         where the user can change the visual settings of every question at the same time-->
                         <v-card
-                            ><visual-evaluation-settings v-on:update-Visuals="updateVisuals">
-                            </visual-evaluation-settings
+                            ><visual-evaluation-settings @update-Visuals="updateVisuals"> </visual-evaluation-settings
                         ></v-card>
                     </v-dialog>
                     <v-spacer></v-spacer>
@@ -139,22 +139,25 @@ that each display a basic evaluation of one specific question-->
                         </template>
                     </v-data-iterator>
                 </v-col>
-
-                <v-spacer></v-spacer>
             </v-row>
-            <v-row> </v-row>
-            <v-row> </v-row>
+        </v-container>
+        <v-container v-else>
+            <v-card>
+                <v-card-title>Der Server antwortet nicht</v-card-title>
+            </v-card>
         </v-container>
     </v-container>
 </template>
 
 <script>
+import { mapActions, mapGetters } from 'vuex'
+import AuthGate from '../components/AuthGate'
 import ChoiceQuestionEvaluationWidget from '../components/ChoiceQuestionEvaluationWidget'
 import visualEvaluationSettings from '../components/visualEvaluationSettings'
 
 export default {
     name: 'BaseEvaluationPage',
-    components: { ChoiceQuestionEvaluationWidget, visualEvaluationSettings },
+    components: { AuthGate, ChoiceQuestionEvaluationWidget, visualEvaluationSettings },
     data() {
         return {
             // key that forces the diagram to update
@@ -232,16 +235,26 @@ export default {
             sortBy: 'id',
         }
     },
+    mounted() {
+        this.initialize()
+    },
     computed: {
         /**
          * creates array with all the questionId in a list, not needed right now, but might come in handy
          * @returns an array with all the ids from questionList
          */
+        ...mapGetters({
+            diagramData: 'evaluation/getDiagramData',
+            pollName: 'evaluation/getPollName',
+            isAuthenticated: 'login/isAuthenticated',
+        }),
 
         idList() {
             const l = []
-            for (let i = 0; i < this.PollResult.questionList.length; i++) {
-                l.push(i + 1)
+            if (this.diagramData !== undefined) {
+                for (let i = 0; i < this.diagramData.length; i++) {
+                    l.push(i + 1)
+                }
             }
             return l
         },
@@ -252,7 +265,11 @@ export default {
          */
 
         highestQuestionId() {
-            return this.PollResult.questionList.length
+            if (this.diagramData !== undefined) {
+                return this.diagramData.length
+            } else {
+                return 0
+            }
         },
 
         numberOfPages() {
@@ -262,7 +279,7 @@ export default {
             return this.keys.filter((key) => key !== `id`)
         },
         items() {
-            return this.PollResult.questionList
+            return this.diagramData
         },
 
         itemsPerPageArray() {
@@ -277,6 +294,7 @@ export default {
         the widget key is added to force the widget to actually update the color
 
          */
+        ...mapActions({ initialize: 'evaluation/initialize' }),
         updateVisuals(showDiagram, DiagramType, DiagramColor, showTable) {
             this.showDiagram = showDiagram
             this.defaultDiagramType = DiagramType

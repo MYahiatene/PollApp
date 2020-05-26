@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import gpse.umfrato.domain.category.Category;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.tomcat.jni.Time;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -84,7 +86,6 @@ public class Poll {
      */
     public Poll(final String pollCreator, final String anonymityStatus, final String pollName, final String createdAt,
                 final String activatedAt, final String deactivatedAt, final int pollStatus) {
-        this.pollId = 1922L;
         this.pollName = pollName;
         this.pollCreator = pollCreator;
         this.anonymityStatus = anonymityStatus;

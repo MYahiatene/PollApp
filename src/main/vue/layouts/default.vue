@@ -1,6 +1,6 @@
 <template>
     <!--     In this file we define the header that will be displayed on all pages in the entire app -->
-    <v-app :dark="setTheme" :style="backgroundColor">
+    <v-app :dark="setTheme === 'true'" :style="backgroundColor">
         <!--        set Theme returns a boolean value depending on the theme the user wants (light=false, dark=true)-->
         <!--        backgroundColor is a computed string that sets the background to the color defined in the nuxt.config.js depending on the chosen theme-->
         <v-app-bar fixed app>
@@ -13,11 +13,11 @@
 
             <v-spacer></v-spacer>
             <!--            Buttons defined in items-->
-            <v-div v-for="(item, i) in items" :key="i" router exact>
+            <div v-for="(item, i) in items" :key="i" router exact>
                 <v-btn class="ma-3" :to="item.to" color="primary" :disabled="isAuthenticated !== true">
                     {{ item.title }}
                 </v-btn>
-            </v-div>
+            </div>
             <!--            Login Button-->
             <div v-if="isAuthenticated">
                 <v-btn text :to="'/Login'"> <v-icon>mdi-account</v-icon> {{ getUsername }} </v-btn>

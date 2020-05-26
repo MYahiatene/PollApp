@@ -130,14 +130,19 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+
 const axios = require('axios')
 const instance = axios.create({
     baseURL: 'http://127.0.0.1:8088/api/',
     timeout: 1000,
-    headers: { 'X-Custom-Header': 'foobar' },
+    headers: {
+        Authorization:
+            'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InRicmV0dG1hbm4iLCJleHAiOjE1OTEwOTA1MTYsInJvbCI6WyJST0xFX1BPTExfQ1JFQVRPUiJdfQ.ogSwSm8smzA1zNeSoaH-qH5fZjBUyeqcjShqaSD1Du6q7bIVLN2-OnycU-hsj2cbaY6HjD_D2MKr4aglgz4NEg',
+    },
 })
 export default {
-    name: 'QuestionCreation',
+    name: 'PollCreation',
     components: {},
     data() {
         return {
@@ -165,11 +170,15 @@ export default {
                     value: 3,
                 },
             ],
-            titleRules: [(v) => !!v || 'Titel fehlt', (v) => v.length <= 10 || 'Name must be less than 10 characters'],
+            titleRules: [(v) => !!v || 'Titel fehlt', (v) => v.length <= 10 || 'Name must be less than 10 characters'], // TODO: Weihnachts...(feier) ???
             anonymityRules: [(v) => !!v || 'Anonymitätsgrad fehlt.'],
         }
     },
     computed: {
+        ...mapGetters({
+            isAuthenticated: 'login/isAuthenticated',
+            getUsername: 'login/getUsername',
+        }),
         time() {
             const today = new Date()
             return today.getHours() + ':' + today.getMinutes() + ':00'
@@ -181,7 +190,7 @@ export default {
         },
         sendData() {
             const obj = {
-                pollcreator: 'Richie',
+                pollcreator: this.getUsername,
                 anonymityStatus: this.selectedAnonymityType,
                 pollname: this.title,
                 pollCreatedAt: this.creationDate,
@@ -189,14 +198,7 @@ export default {
                 deactivatedAt: this.deactivateDate,
                 pollStatus: 0,
             }
-            instance
-                .post('/createpoll', obj)
-                .then((response) => {
-                    console.log(response)
-                })
-                .catch((error) => {
-                    console.log(error)
-                })
+            instance.post('/createpoll', obj).catch()
         },
         formatDate(date) {
             if (!date) return null

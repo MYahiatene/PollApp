@@ -8,10 +8,10 @@
             </template>
 
             <v-card>
-                <v-card-title class="#222222" primary-title>
+                <v-card-title primary-title>
                     Analyse
                     <v-col align="right">
-                        <v-btn color="#444444" @click="dialog = false">
+                        <v-btn color="primary" @click="dialog = false">
                             Anwenden
                         </v-btn>
                     </v-col>

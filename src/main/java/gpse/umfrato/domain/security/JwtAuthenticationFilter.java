@@ -1,66 +1,74 @@
 package gpse.umfrato.domain.security;
 
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.security.SignatureException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
-import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
-public class JwtAuthenticationFilter extends OncePerRequestFilter {
+public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
-    @Qualifier("userServiceImpl")
-    @Autowired
-    private UserDetailsService userDetailsService;
+    private final AuthenticationManager authenticationManager;
 
-    @Autowired
-    private JwtTokenUtil jwtTokenUtil;
+    private final SecurityConstants securityConstants;
+
+    public JwtAuthenticationFilter(final AuthenticationManager authenticationManager,
+                                   final SecurityConstants securityConstants) {
+        this.authenticationManager = authenticationManager;
+        this.securityConstants = securityConstants;
+
+        setFilterProcessesUrl(this.securityConstants.getAuthLoginUrl());
+    }
 
     @Override
-    protected void doFilterInternal(final HttpServletRequest req,
-                                    final HttpServletResponse res, final FilterChain chain)
-        throws IOException, ServletException {
-        final String header = req.getHeader(Constants.TOKEN_HEADER);
-        String username = null;
-        String authToken = null;
-        if (header != null && header.startsWith(Constants.TOKEN_PREFIX)) {
-            authToken = header.replace(Constants.TOKEN_PREFIX, "");
-            try {
-                username = jwtTokenUtil.getUsernameFromToken(authToken);
-            } catch (IllegalArgumentException e) {
-                logger.error("an error occured during getting username from token", e);
-            } catch (ExpiredJwtException e) {
-                logger.warn("the token is expired and not valid anymore", e);
-            } catch (SignatureException e) {
-                logger.error("Authentication Failed. Username or Password not valid.");
-            }
-        } else {
-            logger.warn("couldn't find bearer string, will ignore the header");
-        }
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+    public Authentication attemptAuthentication(final HttpServletRequest request, final HttpServletResponse response) {
+        final String username = request.getParameter("username");
+        final String password = request.getParameter("password");
+        final UsernamePasswordAuthenticationToken authenticationToken =
+            new UsernamePasswordAuthenticationToken(username, password);
+        return authenticationManager.authenticate(authenticationToken);
+    }
 
-            final UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+    @Override
+    protected void successfulAuthentication(final HttpServletRequest request, final HttpServletResponse response,
+                                            final FilterChain filterChain, final Authentication authentication)
+        throws IOException {
+        final UserDetails user = (UserDetails) authentication.getPrincipal();
 
-            if (jwtTokenUtil.validateToken(authToken, userDetails)) {
-                final UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                    userDetails, null, Arrays.asList(new SimpleGrantedAuthority("ROLE_ADMIN")));
-                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(req));
-                logger.info("authenticated user " + username + ", setting security context");
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-            }
-        }
-        chain.doFilter(req, res);
+        final List<String> roles = user.getAuthorities()
+            .stream()
+            .map(GrantedAuthority::getAuthority)
+            .collect(Collectors.toList());
+
+        final byte[] signingKey = securityConstants.getJwtSecret().getBytes();
+
+        final String token = Jwts.builder()
+            .signWith(Keys.hmacShaKeyFor(signingKey), SignatureAlgorithm.HS512)
+            .setHeaderParam("typ", securityConstants.getTokenType())
+            .setIssuer(securityConstants.getTokenIssuer())
+            .setAudience(securityConstants.getTokenAudience())
+            .setSubject(user.getUsername())
+            .setExpiration(new Date(System.currentTimeMillis() + 864_000_000))
+            .claim("rol", roles)
+            .compact();
+        final ObjectMapper mapper = new ObjectMapper();
+        response.setContentType("application/json;charset=UTF-8");
+        response.getWriter().print(mapper.writeValueAsString(token));
+        response.getWriter().flush();
     }
 }
+
+
