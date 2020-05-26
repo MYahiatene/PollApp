@@ -131,16 +131,6 @@
 
 <script>
 import { mapGetters } from 'vuex'
-
-const axios = require('axios')
-const instance = axios.create({
-    baseURL: 'http://127.0.0.1:8088/api/',
-    timeout: 1000,
-    headers: {
-        Authorization:
-            'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InRicmV0dG1hbm4iLCJleHAiOjE1OTEwOTA1MTYsInJvbCI6WyJST0xFX1BPTExfQ1JFQVRPUiJdfQ.ogSwSm8smzA1zNeSoaH-qH5fZjBUyeqcjShqaSD1Du6q7bIVLN2-OnycU-hsj2cbaY6HjD_D2MKr4aglgz4NEg',
-    },
-})
 export default {
     name: 'PollCreation',
     components: {},
@@ -200,6 +190,11 @@ export default {
                 deactivatedAt: this.deactivateDate,
                 pollStatus: 0,
             }
+            const instance = this.$axios.create({
+                baseURL: 'http://127.0.0.1:8088/api',
+                timeout: 1000,
+                headers: { Authorization: 'Bearer ' + mapGetters(['getToken']) },
+            })
             instance.post('/createpoll', obj).catch()
             this.$router.push('/navigation')
         },
