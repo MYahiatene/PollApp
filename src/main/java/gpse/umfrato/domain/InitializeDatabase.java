@@ -13,7 +13,9 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 @Service
 public class InitializeDatabase implements InitializingBean {
@@ -48,6 +50,22 @@ public class InitializeDatabase implements InitializingBean {
         this.answerService = answerService;
     }
 
+    private List<String> generateAnswers(int[] repeats)
+    {
+        List<String> answers = new ArrayList<>();
+        int i = 0;
+        for(int r:repeats)
+        {
+            while(r > 0)
+            {
+                answers.add(String.valueOf(i));
+                r--;
+            }
+            i++;
+        }
+        return answers;
+    }
+
     /**
      * This method initializes the database with an user, a poll, a question and an answer.
      */
@@ -55,27 +73,29 @@ public class InitializeDatabase implements InitializingBean {
     @Transactional
     public void afterPropertiesSet() {
 
-        final String testUsername = "tbrettmann";
+        final String tbrettmannUserName = "tbrettmann";
+        final String testUserName = "testNutzer";
         final String dummyPassword = "{bcrypt}$2a$10$WoG5Z4YN9Z37EWyNCkltyeFr6PtrSXSLMeFWOeDUwcanht5CIJgPa";
 
-        final Poll testPoll = new Poll(testUsername, "anonym", "Umfrage zur IT-Messe 2020", Instant.now().toString(),
+        final Poll testPoll = new Poll(tbrettmannUserName, "1", "Umfrage zur IT-Messe 2020", Instant.now().toString(),
             Instant.now().toString(), Instant.now().toString(), 0);
 
         try {
-            userService.loadUserByUsername(testUsername);
+            userService.loadUserByUsername(tbrettmannUserName);
             //questionService.addQuestion(one, "testFrage", Arrays.asList("Frage1", "Frage2", "Frage3"), "freitext");
             //answerService.giveAnswer(testUsername, one, "3", Arrays.asList("Ja", "Nein"));
         } catch (UsernameNotFoundException e) {
-            userService.createUser(testUsername, dummyPassword, "Tobias", "Brettmann",
+            userService.createUser(tbrettmannUserName, dummyPassword, "Tobias", "Brettmann",
                 Arrays.asList("Admin", "User"));
         }
 
         try {
-            userService.loadUserByUsername("testNutzer");
+            userService.loadUserByUsername("testUserName");
         } catch (UsernameNotFoundException ex) {
-            userService.createUser("testNutzer", dummyPassword, "Markus", "Mueller",
+            userService.createUser("testUserName", dummyPassword, "Markus", "Mueller",
                 Arrays.asList("User"));
         }
+        generateAnswers(new int[]{1, 2, 3});
         pollService.createPoll(testPoll);
         Question q1 = questionService.addQuestion(testPoll.getPollId().toString(),"Wie hat Ihnen die Veranstaltung insgesamt gefallen?",Arrays.asList("Sehr gut", "Gut", "Überwiegend gut", "Schlecht", "Ich weiß nicht"), "ChoiceQuestion");
         Question q2 = questionService.addQuestion(testPoll.getPollId().toString(),"Welches Geschlecht haben Sie?",Arrays.asList("Weiblich", "Männlich", "Divers"), "ChoiceQuestion");
@@ -83,13 +103,11 @@ public class InitializeDatabase implements InitializingBean {
         Question q4 = questionService.addQuestion(testPoll.getPollId().toString(),"Was hat Sie am Meisten überzeugt?",Arrays.asList("Die Vorträge", "Die Informationsstände", "Das Catering", "Ich kann mich nicht entscheiden"), "ChoiceQuestion");
         Question q5 = questionService.addQuestion(testPoll.getPollId().toString(),"Werden Sie uns nächstes Jahr wieder besuchen?",Arrays.asList("Ja", "Nein", "Vielleicht"), "ChoiceQuestion");
         Question q6 = questionService.addQuestion(testPoll.getPollId().toString(),"Wie viel Zeit haben sie auf der Messe verbracht?",Arrays.asList("unter einer Stunde", "1-2 Stunden", "2-5 Stunden", "über 5 Stunden"), "ChoiceQuestion");
-//        answerService.giveAnswer(testUserTbrettmann.getUsername(),testPoll.getPollId().toString(),q1.getQuestionId().toString(),Arrays.asList("1"));
-//        answerService.giveAnswer(testUserTbrettmann.getUsername(),testPoll.getPollId().toString(),q2.getQuestionId().toString(),Arrays.asList("1"));
-//        answerService.giveAnswer(testUserTbrettmann.getUsername(),testPoll.getPollId().toString(),q3.getQuestionId().toString(),Arrays.asList("1"));
-//        answerService.giveAnswer(testUserTbrettmann.getUsername(),testPoll.getPollId().toString(),q4.getQuestionId().toString(),Arrays.asList("2"));
-//        answerService.giveAnswer(testUserTbrettmann.getUsername(),testPoll.getPollId().toString(),q5.getQuestionId().toString(),Arrays.asList("1"));
-//        answerService.giveAnswer(testUserTbrettmann.getUsername(),testPoll.getPollId().toString(),q6.getQuestionId().toString(),Arrays.asList("3"));
-
-
+        answerService.giveAnswer(tbrettmannUserName,testPoll.getPollId().toString(),q1.getQuestionId().toString(),generateAnswers(new int[]{70,65,30,5,25}));
+        answerService.giveAnswer(tbrettmannUserName,testPoll.getPollId().toString(),q2.getQuestionId().toString(),generateAnswers(new int[]{20,19,1}));
+        answerService.giveAnswer(tbrettmannUserName,testPoll.getPollId().toString(),q3.getQuestionId().toString(),generateAnswers(new int[]{22,8,7}));
+        answerService.giveAnswer(tbrettmannUserName,testPoll.getPollId().toString(),q4.getQuestionId().toString(),generateAnswers(new int[]{17,8,4,2}));
+        answerService.giveAnswer(tbrettmannUserName,testPoll.getPollId().toString(),q5.getQuestionId().toString(),generateAnswers(new int[]{50,21}));
+        answerService.giveAnswer(tbrettmannUserName,testPoll.getPollId().toString(),q6.getQuestionId().toString(),generateAnswers(new int[]{12,45,40,20}));
     }
 }

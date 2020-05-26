@@ -1,61 +1,44 @@
 <template>
-    <v-container v-if="items !== undefined" grid-list-md text-xs-center>
-        <v-layout row wrap>
-            <v-container fluid>
-                <v-data-iterator
-                    :items="items"
-                    :search="search"
-                    :sort-by="sortBy.toLowerCase()"
-                    :sort-desc="sortDesc"
-                    hide-default-footer
-                >
-                    <template v-slot:header>
-                        <v-toolbar class="mb-1">
-                            <v-btn large color="primary" to="/PollCreation">
-                                <v-icon>mdi-plus</v-icon>
-                            </v-btn>
-                            <v-spacer />
-                            <v-text-field
-                                v-model="search"
-                                clearable
-                                hide-details
-                                prepend-inner-icon="mdi-magnify"
-                                label="Suchen"
-                            ></v-text-field>
-                            <template v-if="$vuetify.breakpoint.mdAndUp">
-                                <v-spacer></v-spacer>
-                                <v-select
-                                    v-model="sortBy"
+    <div>
+        <AuthGate v-if="isAuthenticated !== true"></AuthGate>
+        <v-container v-else-if="items[0].pollId !== undefined">
+            <v-layout row wrap>
+                <v-container fluid>
+                    <v-data-iterator
+                        :items="prepareItems"
+                        :search="search"
+                        :sort-by="sortBy"
+                        :sort-desc="sortDesc"
+                        hide-default-footer
+                    >
+                        <template v-slot:header>
+                            <v-toolbar class="mb-1">
+                                <v-spacer />
+                                <v-text-field
+                                    v-model="search"
                                     clearable
                                     hide-details
-                                    :items="pollKeys"
-                                    prepend-inner-icon="mdi-sort"
-                                    label="Sortiere nach"
-                                ></v-select>
-                                <v-spacer></v-spacer>
-                                <v-btn-toggle v-model="sortDesc" mandatory>
-                                    <v-btn large depressed :value="false">
-                                        <v-icon>mdi-sort-ascending</v-icon>
-                                    </v-btn>
-                                    <v-btn large depressed :value="true">
-                                        <v-icon>mdi-sort-descending</v-icon>
-                                    </v-btn>
-                                </v-btn-toggle>
-                            </template>
-                        </v-toolbar>
-                    </template>
+                                    prepend-inner-icon="mdi-magnify"
+                                    label="Suchen"
+                                ></v-text-field>
+                                <v-spacer />
+                                <v-btn large color="primary" to="/PollCreation">
+                                    <v-icon>mdi-plus</v-icon>
+                                </v-btn>
+                            </v-toolbar>
+                        </template>
 
-                    <v-container>
-                        <template>
-                            <v-data-table
-                                :headers="headers"
-                                :items="items"
-                                :search="search"
-                                :custom-filter="filterOnlyCapsText"
-                                hide-actions
-                                class="elevation-1"
-                            >
-                                <!--<thead>
+                        <v-container>
+                            <template>
+                                <v-data-table
+                                    :headers="headers"
+                                    :items="prepareItems"
+                                    :search="search"
+                                    :custom-filter="filterOnlyCapsText"
+                                    class="elevation-1"
+                                    :footer-props="footerProps"
+                                >
+                                    <!--<thead>
                                         <tr>
                                             <th class="text-left">Name</th>
                                             <th class="text-left">PollIDs</th>
@@ -69,10 +52,10 @@
                                             <th class="text-left">Fragenanzahl</th>
                                         </tr>
                                     </thead>-->
-                                <!--<td v-for="header in headers">
+                                    <!--<td v-for="header in headers">
                                         {{ myprops.item[header.value] }}
                                     </td>-->
-                                <!--<template slot="items">
+                                    <!--<template slot="items">
                                     <td
                                         v-for="(key, index) in filteredKeys"
                                         :key="index"
@@ -81,11 +64,11 @@
                                         {{ key }}
                                     </td>
                                 </template>-->
-                                <!--<td :class="{ 'teal--text': sortBy === key }">{{ key }}:</td>
+                                    <!--<td :class="{ 'teal--text': sortBy === key }">{{ key }}:</td>
                                             <td class="align-end" :class="{ 'teal--text': sortBy === key }">
                                                 {{ items[index][key.toLowerCase()] }}
                                             </td>-->
-                                <!--<tr v-for="item in desserts" :key="item.pollId">
+                                    <!--<tr v-for="item in desserts" :key="item.pollId">
                                             <td class="text-left">{{ item.name }}</td>
                                             <td class="text-left">{{ item.pollId }}</td>
                                             <td class="text-left">{{ item.pollCreator }}</td>
@@ -95,11 +78,21 @@
                                             <td class="text-left">{{ item.anonymityStatus }}</td>
                                             <td class="text-left">{{ item.status }}</td>
                                         </tr>-->
-                            </v-data-table>
-                        </template>
-                    </v-container>
+                                    <template v-slot:item.status="{ item }">
+                                        <v-icon @click="activatePoll(item)">
+                                            {{ item.statusIcon }}
+                                        </v-icon>
+                                    </template>
+                                    <template v-slot:item.action="{ item }">
+                                        <v-icon @click="itemAction(item)">
+                                            {{ item.actionIcon }}
+                                        </v-icon>
+                                    </template>
+                                </v-data-table>
+                            </template>
+                        </v-container>
 
-                    <!--<template>
+                        <!--<template>
                         <div>{{ itemsList }}</div>
                         <v-data-table :items="itemsList" class="elevation-1" hide-actions hide-headers>
                             <template slot="items" slot-scope="props">
@@ -108,7 +101,7 @@
                             </template>
                         </v-data-table>
                     </template>-->
-                    <!--<template>
+                        <!--<template>
                         <v-card>
                             <v-simple-table dense>
                                 <template v-slot:default="props">
@@ -128,7 +121,7 @@
                             </v-simple-table>
                         </v-card>
                     </template>-->
-                    <!--<v-card>
+                        <!--<v-card>
                                     <v-card-title class="subheading font-weight-bold"
                                         >#{{ item.pollId }} {{ item.pollName }}
                                         <v-spacer></v-spacer>
@@ -147,16 +140,29 @@
                                         </v-list-item>
                                     </v-list>
                                 </v-card>-->
-                </v-data-iterator>
-            </v-container>
-        </v-layout>
-    </v-container>
+                    </v-data-iterator>
+                </v-container>
+            </v-layout>
+        </v-container>
+        <v-container v-else>
+            <v-card>
+                <v-card-title>
+                    <v-spacer />
+                    <v-icon>
+                        mdi-sync-alert
+                    </v-icon>
+                    Der Umfrato-Server antwortet nicht
+                    <v-spacer
+                /></v-card-title>
+            </v-card>
+        </v-container>
+    </div>
 </template>
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import AuthGate from '../components/AuthGate'
 export default {
-    name: 'navigation',
+    name: 'Navigation',
     components: { AuthGate },
     data() {
         return {
@@ -172,40 +178,23 @@ export default {
                 { title: 'Löschen', link: '/' },
             ],
             headers: [
-                {
-                    text: 'Poll Creator',
-                    value: 'pollCreator',
-                },
-                { text: 'Poll ID', value: 'pollId' },
-                { text: 'Creation Date', value: 'creationDate' },
-                { text: 'Status', value: 'status' },
-                { text: 'questionCount', value: 'questionCount' },
-                { text: 'FuckThis', value: 'anonymityStatus' },
+                { text: '', value: 'status', sortable: false },
+                { text: '', value: 'action', sortable: false },
+                { text: 'Umfrage', value: 'pollName' },
+                { text: 'Erstellt von', value: 'pollCreator' },
+                { text: 'Status', value: 'pollStatusString' },
+                { text: 'Kategorienanzahl', value: 'categoryCount' },
+                { text: 'Fragenanzahl', value: 'questionCount' },
+                { text: 'Anonymitätsgrad', value: 'anonymityString' },
+                { text: 'Erstellt am', value: 'creationDate' },
+                { text: 'Aktiviert am', value: 'activatedDate' },
+                { text: 'Deaktiviert am', value: 'deactivatedDate' },
             ],
-            items: [
-                {
-                    name: 'Frozen Yogurt',
-                    pollCreator: 'tbrettmann',
-                    pollId: '159',
-                    creationDate: '1945',
-                    activatedDate: '1945',
-                    deactivatedDate: '1990',
-                    anonymityStatus: '1',
-                    status: 2,
-                    questionCount: 1,
-                },
-                {
-                    name: 'Ice cream sandwich',
-                    pollCreator: 'kony2012',
-                    pollId: '237',
-                    creationDate: '1945',
-                    activatedDate: '1945',
-                    deactivatedDate: '1990',
-                    anonymityStatus: '1',
-                    status: '2012',
-                    questioncount: '9000',
-                },
-            ],
+            footerProps: {
+                itemsPerPageText: 'Umfragen pro Seite',
+                itemsPerPageOptions: [10, 20, 50, -1],
+                itemsPerPageAllText: 'Alle',
+            },
         }
     },
     computed: {
@@ -213,73 +202,59 @@ export default {
             items: 'navigation/getPolls',
             isAuthenticated: 'login/isAuthenticated',
         }),
-        pollKeys() {
-            const keys = []
-            for (const k in this.items[0]) keys.push(k)
-            keys.push('questionCount')
-            return keys
-        },
-        filteredKeys() {
-            return this.pollKeys.filter((key) => key !== `pollName` && key !== 'pollId')
+        prepareItems() {
+            const data = Object.assign([{}], this.items)
+            for (let i = 0; i < data.length; i++) {
+                if (this.items[i].anonymityStatus === '1') {
+                    data[i].anonymityString = 'Anonym'
+                } else if (this.items[i].anonymityStatus === '2') {
+                    data[i].anonymityString = 'Teilanonym'
+                } else {
+                    data[i].anonymityString = 'Nicht anonym'
+                }
+                if (this.items[i].pollStatus === 0) {
+                    data[i].pollStatusString = 'Inaktiv'
+                    data[i].actionIcon = 'mdi-pencil'
+                    data[i].statusIcon = 'mdi-play'
+                } else {
+                    data[i].pollStatusString = 'Aktiv'
+                    data[i].actionIcon = 'mdi-magnify'
+                    data[i].statusIcon = 'mdi-stop'
+                }
+                const categories = this.items[i].categoryList
+                data[i].categoryCount = categories.length
+                data[i].questionCount = 0
+                for (let j = 0; j < categories.length; j++) {
+                    const count = data[i].questionCount
+                    data[i].questionCount = count + categories[j].questionList.length
+                }
+            }
+            return data
         },
     },
     mounted() {
+        console.log('mounted')
         console.log(this.items)
         this.initialize()
     },
 
     methods: {
         ...mapActions({ initialize: 'navigation/initialize' }),
-        getActionIcon(active) {
-            if (active) {
-                return 'mdi-magnify'
-            } else {
-                return 'mdi-pencil'
+        activatePoll(item) {
+            if (confirm('Umfrage jetzt veröffentlichen?')) {
+                console.log('Fake activate poll at ' + item.pollId)
             }
         },
-        activatePoll(id) {
-            console.log('Fake activate poll at ' + id)
-        },
-        getStatusIcon(active) {
-            if (active) {
-                return 'mdi-stop'
+        itemAction(item) {
+            if (item.pollStatus === 0) {
+                this.$router.push('/QuestionOverview')
             } else {
-                return 'mdi-play'
-            }
-        },
-        generateLink(active, id) {
-            if (active) {
-                return '/BaseEvaluationPage'
-            } else {
-                return '/QuestionOverview'
+                this.$router.push('/BaseEvaluationPage')
             }
         },
         showValue(item, key) {
             alert(item[key])
             return item[key]
-        },
-
-        translateKey(key) {
-            switch (key) {
-                case 'pollCreator':
-                    return 'Erstellt von'
-                case 'creationDate':
-                    return 'Erstellt am'
-                case 'activatedDate':
-                    return 'Aktiviert am'
-                case 'deactivatedDate':
-                    return 'Deaktiviert am'
-                case 'anonymityStatus':
-                    return 'Anonymitätsgrad'
-                case 'pollStatus':
-                    return 'Status'
-                case 'categoryList':
-                    return 'Kategorien'
-                case 'questionCount':
-                    return 'Fragen'
-                default:
-                    return key
-            }
         },
         filterOnlyCapsText(value, search, item) {
             return (

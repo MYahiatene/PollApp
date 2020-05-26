@@ -20,7 +20,9 @@ public class PollResult {
 
     private String pollTaker;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    //"fetch = FetchType.EAGER," hinzugefügt, weil giveAnswer sonst beim zweiten Aufruf abgestürzt...
+    //hoffe das macht nichts kaputt, Jan
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Answer> answerList = new ArrayList<>();
 
     public PollResult(final Long pollId, final String username) {
