@@ -31,14 +31,13 @@ public class PollController {
         this.pollService = pollService;
     }
 
-    @PostMapping(value = "/PollCreation", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Poll createPoll(final @RequestBody PollCmd pollCmd) {
+    @PostMapping(value = "/createpoll", produces = MediaType.APPLICATION_JSON_VALUE)
+    public String createPoll(final @RequestBody PollCmd pollCmd) {
         try {
-            return pollService.createPoll(pollCmd.getCmdPoll());
-            // return "Poll created!";
+            Poll poll = pollService.createPoll(pollCmd.getCmdPoll());
+            return "Poll created! with id: " + poll.getPollId().toString();
         } catch (BadRequestException e) {
-            return null;
-            // return "Poll creation failed!";
+            return "Poll creation failed!";
         }
     }
 
