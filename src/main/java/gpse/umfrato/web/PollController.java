@@ -6,6 +6,7 @@ import gpse.umfrato.domain.poll.PollService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,8 +28,9 @@ public class PollController {
     public PollController(final PollService pollService) {
         this.pollService = pollService;
     }
-    @PreAuthorize("hasAuthority(\"Admin\")")
+
     @PostMapping(value = "/createpoll", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAuthority('Admin')")
     public String createPoll(final @RequestBody PollCmd pollCmd) {
         try {
             pollService.createPoll(pollCmd.getCmdPoll());
