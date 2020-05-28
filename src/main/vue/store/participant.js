@@ -11,7 +11,7 @@ export const getters = {
         return state.visibility
     }, */
     getPoll: (state) => {
-        console.log('Hey', state.poll[1].data.pollId)
+        // console.log('Hey', state.poll[1].data.pollId)
         return state.poll
     },
 }

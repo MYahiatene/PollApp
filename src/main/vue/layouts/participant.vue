@@ -1,46 +1,53 @@
 <template>
-    <!--     In this file we define the header that will be displayed on all pages in the entire app -->
-    <v-app :dark="setTheme" :style="backgroundColor">
-        <!--        set Theme returns a boolean value depending on the theme the user wants (light=false, dark=true)-->
-        <!--        backgroundColor is a computed string that sets the background to the color defined in the nuxt.config.js depending on the chosen theme-->
-        <v-app-bar fixed app>
-            <!--            Logo and Name of the App-->
-            <nuxt-link to="/" style="text-decoration: none;">
-                <div>
-                    <h1><img src="LogoEinfach.svg" alt="Logo" width="25" /> {{ title }}</h1>
-                </div>
-            </nuxt-link>
+    <div v-if="getPoll[1] !== undefined">
+        <!--     In this file we define the header that will be displayed on all pages in the entire app -->
+        <v-app :dark="setTheme" :style="backgroundColor">
+            <!--        set Theme returns a boolean value depending on the theme the user wants (light=false, dark=true)-->
+            <!--        backgroundColor is a computed string that sets the background to the color defined in the nuxt.config.js depending on the chosen theme-->
+            <v-app-bar fixed app>
+                <!--            Logo and Name of the App-->
+                <nuxt-link to="/" style="text-decoration: none;">
+                    <div>
+                        <h1><img src="LogoEinfach.svg" alt="Logo" width="25" /> {{ title }}</h1>
+                    </div>
+                </nuxt-link>
 
-            <v-spacer></v-spacer>
-            <!--            Buttons defined in items-->
-            <v-div v-for="(item, i) in items" :key="i" router exact>
-                <v-btn class="ma-3" :to="item.to" color="primary" :disabled="isAuthenticated !== true">
-                    {{ item.title }}
+                <v-spacer></v-spacer>
+                <!--            Buttons defined in items-->
+                <v-div v-for="(item, i) in items" :key="i" router exact>
+                    <v-btn class="ma-3" :to="item.to" color="primary" :disabled="isAuthenticated !== true">
+                        {{ item.title }}
+                    </v-btn>
+                </v-div>
+                <!--            Login Button-->
+                <div v-if="isAuthenticated">
+                    <v-btn text :to="'/Login'"> <v-icon>mdi-account</v-icon> {{ getUsername }} </v-btn>
+                </div>
+                <div v-else>
+                    <v-btn text :to="'/Login'"> <v-icon>mdi-account</v-icon> Login </v-btn>
+                </div>
+                <!--            light/dark mode button-->
+                <v-btn icon>
+                    <v-icon color="primary" @click="setTheme()">{{ modeIcon }}</v-icon>
                 </v-btn>
-            </v-div>
-            <!--            Login Button-->
-            <div v-if="isAuthenticated">
-                <v-btn text :to="'/Login'"> <v-icon>mdi-account</v-icon> {{ getUsername }} </v-btn>
-            </div>
-            <div v-else>
-                <v-btn text :to="'/Login'"> <v-icon>mdi-account</v-icon> Login </v-btn>
-            </div>
-            <!--            light/dark mode button-->
-            <v-btn icon>
-                <v-icon color="primary" @click="setTheme()">{{ modeIcon }}</v-icon>
-            </v-btn>
-        </v-app-bar>
-        <!--content of the individual page-->
-        <v-content>
-            <v-container>
-                <nuxt />
-            </v-container>
-        </v-content>
-        <!--footer-->
-        <v-footer :fixed="fixed" app>
-            <span>&copy; {{ new Date().getFullYear() }}</span>
-        </v-footer>
-    </v-app>
+            </v-app-bar>
+            <!--content of the individual page-->
+            <v-content>
+                <v-container>
+                    <nuxt />
+                </v-container>
+            </v-content>
+            <!--footer-->
+            <v-footer :fixed="fixed" app>
+                <span>&copy; {{ new Date().getFullYear() }}</span>
+            </v-footer>
+        </v-app>
+    </div>
+    <div v-else>
+        <v-btn @click="logMapGetter">
+            Click
+        </v-btn>
+    </div>
 </template>
 
 <script>
@@ -78,28 +85,29 @@ export default {
             title: 'Umfrato',
         }
     },
-    created() {
-        this.getPoll()
+    mounted() {
+        this.showPoll()
     },
     computed: {
         /**
          * returns a css compatible string that sets the background to the color specified in th nuxt.config.js
          */
         backgroundColor() {
-            // getPoll(); Ich dachte wenn ich hier getPoll von unten aufrufe, holt er den Poll und der background ist nicht länger null
             if (this.goDark) {
                 return 'background:' + this.$vuetify.theme.themes.dark.background
-            } else if (this.poll.hexaBackground !== '') {
-                return 'background:' + this.poll.hexaBackground // '#c42843' // insert picked color here
+            } else if (this.getPoll[1].data.backgroundColor !== null) {
+                console.log(this.getPoll[1].data.backgroundColor)
+                return 'background:' + this.getPoll[1].data.backgroundColor // '#c42843' // insert picked color here
             } else {
                 return 'background:' + this.$vuetify.theme.themes.light.background
             }
         },
+        ...mapGetters({
+            isAuthenticated: 'login/isAuthenticated',
+            getUsername: 'login/getUsername',
+            getPoll: 'participant/getPoll',
+        }),
     },
-    ...mapGetters({
-        isAuthenticated: 'login/isAuthenticated',
-        getUsername: 'login/getUsername',
-    }),
     methods: {
         setTheme() {
             this.goDark = !this.goDark
@@ -109,9 +117,13 @@ export default {
                 return (this.$vuetify.theme.dark = false)
             }
         },
-        getPoll() {
-            this.poll = this.$store.dispatch('participant/showPoll')
+        logMapGetter() {
+            console.log(this.getPoll)
+            console.log('In LogMapGetter')
         },
+        // showPoll() {
+        //     this.poll = this.$store.dispatch('participant/showPoll')
+        // },
         ...mapActions({ showPoll: 'participant/showPoll' }),
     },
 }
