@@ -86,7 +86,7 @@ export default {
             // getPoll(); Ich dachte wenn ich hier getPoll von unten aufrufe, holt er den Poll und der background ist nicht länger null
             if (this.goDark) {
                 return 'background:' + this.$vuetify.theme.themes.dark.background
-            } else if (this.poll.hexaBackground != "") {
+            } else if (this.poll.hexaBackground !== '') {
                 return 'background:' + this.poll.hexaBackground // '#c42843' // insert picked color here
             } else {
                 return 'background:' + this.$vuetify.theme.themes.light.background
