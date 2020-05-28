@@ -78,6 +78,9 @@ export default {
             title: 'Umfrato',
         }
     },
+    created() {
+        this.getPoll()
+    },
     computed: {
         /**
          * returns a css compatible string that sets the background to the color specified in th nuxt.config.js

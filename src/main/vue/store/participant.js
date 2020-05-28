@@ -1,5 +1,6 @@
 // import axios from 'axios'
 import api from '../api/participant'
+// import poll from '../api/poll';
 export const state = () => ({
     // visibility: false,
     poll: ['Object'],
@@ -22,7 +23,10 @@ export const mutations = {
 export const actions = {
     async getPoll({ commit }) {
         // const poll = await instance.get('/participant')
+        console.log('vor dem Aufruf')
         const poll = await api.getPoll() // calls api/participant, which calls PollController, which calls PollService and gives back a poll
-        commit('setPoll', poll) // what is this?
+        console.log('nach dem Aufruf')
+        console.log(poll)
+        commit('setPoll', poll) // calls the setter int the store to save the poll in the store
     },
 }
