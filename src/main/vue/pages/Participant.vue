@@ -6,8 +6,9 @@
             <v-content>
                 <v-row>
                     <v-col cols="8">
-                        <v-list v-for="poll in getPoll" :key="poll.id">
-                            <v-list v-for="question in poll.data" :key="question.id" two-line>
+                        <!--v-list v-for="poll in getPoll.data" :key="poll.id"-->
+                        <v-list v-for="category in getPoll[1].data.categoryList" :key="category.categoryId" two-line>
+                            <v-list v-for="question in category.questionList" :key="question.questionId" two-line>
                                 <v-card class="mx-auto">
                                     <v-card-title>
                                         <!--the visibility of the number of questions depends on the poll configuration-->
@@ -22,20 +23,21 @@
                                             <v-checkbox class="ma-4" :label="answer"></v-checkbox>
                                         </v-list>
                                         <!--div v-if="question.ownAnswersAllowed">
-                                            <v-checkbox
-                                                v-model="enabled"
-                                                hide-details
-                                                class="ma-4"
-                                                label="Eigene Antwort:"
-                                            ></v-checkbox>
-                                            <v-col>
-                                                <v-text-field></v-text-field>
-                                            </v-col>
-                                        </div-->
+                                                <v-checkbox
+                                                    v-model="enabled"
+                                                    hide-details
+                                                    class="ma-4"
+                                                    label="Eigene Antwort:"
+                                                ></v-checkbox>
+                                                <v-col>
+                                                    <v-text-field></v-text-field>
+                                                </v-col>
+                                            </div-->
                                     </div>
                                 </v-card>
-                            </v-list>
-                        </v-list>
+                            </v-list></v-list
+                        >
+                        <!--/v-list-->
                     </v-col>
                 </v-row>
                 <v-row>
@@ -53,7 +55,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapGetters } from 'vuex'
 import AuthGate from '../components/AuthGate'
 
 export default {
@@ -62,7 +64,6 @@ export default {
     components: { AuthGate },
     data: () => ({
         enabled: false,
-        questions: [],
     }),
     created() {
         this.showPoll()
@@ -75,9 +76,9 @@ export default {
     },
     methods: {
         showPoll() {
-            this.$store.dispatch('participant/getPoll')
+            this.$store.dispatch('participant/showPoll')
         },
-        ...mapActions({ showPoll: 'participant/getPoll' }),
+        // ...mapActions({ showPoll: 'participant/showPoll' }),
     },
 }
 </script>

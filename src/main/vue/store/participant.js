@@ -11,6 +11,7 @@ export const getters = {
         return state.visibility
     }, */
     getPoll: (state) => {
+        console.log('Hey', state.poll[1].data.pollId)
         return state.poll
     },
 }
@@ -21,7 +22,7 @@ export const mutations = {
 }
 // What is given back here? Just the questions(over /participant) or the entire poll?
 export const actions = {
-    async getPoll({ commit }) {
+    async showPoll({ commit }) {
         // const poll = await instance.get('/participant')
         console.log('vor dem Aufruf')
         const poll = await api.getPoll() // calls api/participant, which calls PollController, which calls PollService and gives back a poll

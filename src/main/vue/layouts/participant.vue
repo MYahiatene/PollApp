@@ -110,9 +110,9 @@ export default {
             }
         },
         getPoll() {
-            this.poll = this.$store.dispatch('participant/getPoll')
+            this.poll = this.$store.dispatch('participant/showPoll')
         },
-        ...mapActions({ showPoll: 'participant/getPoll' }),
+        ...mapActions({ showPoll: 'participant/showPoll' }),
     },
 }
 </script>
