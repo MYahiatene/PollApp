@@ -57,7 +57,7 @@ export default {
             themes: {
                 dark: {
                     background: '#000000',
-                    primary: colors.teal.lighten1,
+                    primary: '#26A69A',
                     accent: '#992078',
                     secondary: '#337982',
                     info: '#114955',
@@ -71,7 +71,7 @@ export default {
                     primary: '#114955',
                     accent: '#551044',
                     secondary: '#337982',
-                    info: colors.teal.lighten1,
+                    info: '#26A69A',
                     warning: '#F5D63C',
                     error: '#F5420C',
                     success: '#8EC136',
