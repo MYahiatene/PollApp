@@ -286,6 +286,7 @@ export default {
             const reader = new FileReader()
             reader.readAsDataURL(image)
             reader.onload = (e) => {
+                console.log(e)
                 this.logo = e.target.result
             }
         },

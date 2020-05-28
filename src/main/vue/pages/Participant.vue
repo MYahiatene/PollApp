@@ -2,6 +2,9 @@
     <div>
         <AuthGate v-if="isAuthenticated !== true"></AuthGate>
         <v-container>
+            <div v-if="getPoll[1].data.logo !== undefined">
+                <img :src="getPoll[1].data.logo" alt="failedToLoadLogo" />
+            </div>
             <v-subheader class="display-1"> Umfrage 1</v-subheader>
             <v-content>
                 <v-row>
@@ -64,6 +67,8 @@ export default {
     components: { AuthGate },
     data: () => ({
         enabled: false,
+        url:
+            'https://lime-imagecache.xingassets.com/public-imagecache_production/images/s3_attachments/152/517/924/original/d722f0c1-8a92-4ba4-8dfe-4faae23c1b49.jpg?X-Amz-Expires=604800&X-Amz-Date=20200524T173544Z&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=lime-imagecache_production/20200524/xing/s3/aws4_request&X-Amz-SignedHeaders=host&X-Amz-Signature=dcf5b13f553a59d0a4b3996d892dc8474ef014ccd92c0c8c8e0aaedd360838df',
     }),
     created() {
         this.showPoll()

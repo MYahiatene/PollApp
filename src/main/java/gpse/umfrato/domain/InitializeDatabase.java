@@ -55,10 +55,12 @@ public class InitializeDatabase implements InitializingBean {
 
         final String testUsername = "tbrettmann";
         final String dummyPassword = "$2a$10$WoG5Z4YN9Z37EWyNCkltyeFr6PtrSXSLMeFWOeDUwcanht5CIJgPa";
+        final String logoUrl = "https://picsum.photos/510/300?random";
 
 
         final Poll testPoll = new Poll(testUsername, "anonym", "testPoll", Instant.now().toString(),
-            Instant.now().toString(), Instant.now().toString(), 0, "#c4fcdb", true, false);
+            Instant.now().toString(), Instant.now().toString(), 0, "#c4fcdb", "#c4faaa",
+            logoUrl, true, false);
         final User testUser = new User("testNutzer", dummyPassword, "Markus", "Mueller");
         final User testUserTbrettmann = new User(testUsername, dummyPassword, "Tobias", "Brettmann");
 

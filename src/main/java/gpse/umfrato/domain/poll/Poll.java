@@ -73,7 +73,7 @@ public class Poll {
     /**
      * This attribute represents the uploades logo.
      */
-    private Blob logo;
+    private String logo;
 
 
     /**
@@ -120,7 +120,7 @@ public class Poll {
      */
     public Poll(final String pollCreator, final String anonymityStatus, final String pollName, final String createdAt,
                 final String activatedAt, final String deactivatedAt, final int pollStatus, final String backgroundColor,
-                final boolean visibility, final boolean categoryChange) {
+                final String fontColor, final String logo, boolean visibility, final boolean categoryChange) {
         this.pollName = pollName;
         this.pollCreator = pollCreator;
         this.anonymityStatus = anonymityStatus;
@@ -129,6 +129,8 @@ public class Poll {
         this.deactivatedDate = deactivatedAt;
         this.pollStatus = pollStatus;
         this.backgroundColor = backgroundColor;
+        this.fontColor = fontColor;
+        this.logo = logo;
         this.visibility = visibility;
         this.categoryChange = categoryChange;
     }

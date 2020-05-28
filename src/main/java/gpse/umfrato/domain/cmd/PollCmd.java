@@ -23,11 +23,11 @@ public class PollCmd {
 
     private String anonymityStatus;
 
-    private String hexaBackground;
+    private String backgroundColor;
 
-    private int hexaFont;
+    private String fontColor;
 
-    private Blob logo;
+    private String logo;
 
     private String pollname;
 
@@ -39,7 +39,7 @@ public class PollCmd {
 
     public Poll getCmdPoll() {
         final Poll poll = new Poll(pollcreator, anonymityStatus, pollname, pollCreatedAt, activatedAt, deactivatedAt,
-            pollStatus, hexaBackground, visibility, categoryChange);
+            pollStatus, backgroundColor, fontColor, logo, visibility, categoryChange);
         return poll;
     }
 }
