@@ -11,7 +11,15 @@
                                 <v-expansion-panel-content :color="item.color">
                                     <div class="overline">{{ item.explanation }}</div>
                                     <div v-for="option in item.options" :key="option">
-                                        <v-chip class="ma-1" :color="item.darkColor" draggable>{{ option }}</v-chip>
+                                        <draggable
+                                            :list="item.options"
+                                            :clone="clone"
+                                            :group="{ name: 'filter', pull: 'clone' }"
+                                        >
+                                            <v-chip class="ma-1 filter" :color="item.darkColor" draggable>{{
+                                                option
+                                            }}</v-chip>
+                                        </draggable>
                                     </div>
                                 </v-expansion-panel-content>
                             </v-expansion-panel>
@@ -44,7 +52,15 @@
                                 </v-overflow-btn>
                             </div>
                             <v-divider></v-divider>
-                            <draggable class="dragArea list-group" :list="filterList" group="people"> </draggable>
+                            <v-card height="200" color="#f8faff">
+                                <draggable class="dragArea list-group" :list="filterList" group="filter">
+                                    <div v-for="filter in filterList" :key="filter">
+                                        <p>
+                                            {{ filter }}
+                                        </p>
+                                    </div>
+                                </draggable>
+                            </v-card>
                         </v-responsive>
                     </v-card>
                     <v-card-actions>
@@ -71,7 +87,7 @@ export default {
     },
     data() {
         return {
-            filterList: '',
+            filterList: [],
             kategories: [
                 {
                     name: 'Daten',
@@ -105,7 +121,7 @@ export default {
                 },
                 { name: 'Antworten', explanation: '', color: '#caeaf5', darkColor: '#2E8CAC', options: [] },
 
-                { name: 'Logik', explanation: '', color: '#cadaf5', darkColor: '#3D6CBB', options: ['Oder'] },
+                { name: 'Logik', explanation: '', color: '#cadaf5', darkColor: '#3D6CBB', options: ['Oder', 'Und'] },
             ],
 
             // mock data set
@@ -166,6 +182,10 @@ export default {
                 l.push(this.PollResult.questionList[i].title)
             }
             return l
+        },
+
+        clone({ name }) {
+            return name
         },
     },
 }
