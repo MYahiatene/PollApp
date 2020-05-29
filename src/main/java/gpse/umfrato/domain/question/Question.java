@@ -35,7 +35,9 @@ public class Question {
      */
     private String questionType;
 
-    private int numberOfPossibleAnswers;
+    private boolean userAnswers = false;
+
+    private int numberOfPossibleAnswers = 1;
     /**
      * This constructor receives a question message and saves in the question object.
      * @param question the question message

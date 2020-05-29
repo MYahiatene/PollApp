@@ -1,7 +1,7 @@
 <!--this widget enables the user to configure a general question, including all of its common features, to specify-->
 <!--the final question type and to preview (wysiwyg) the final question as it will be displayed to the participants-->
 <template>
-    <div>
+    <div v-if="questionToLoad !== 0">
         <v-card>
             <v-container>
                 <v-row no-gutters>
@@ -11,7 +11,7 @@
                 </v-row>
                 <v-row no-gutters>
                     <v-textarea
-                        v-model="questionText"
+                        v-model="questionMessage"
                         label="Fragentext"
                         hint="Was soll den Umfrageteilnehmer gefragt werden?"
                         rows="1"
@@ -20,17 +20,16 @@
                 </v-row>
                 <v-row no-gutters>
                     <v-overflow-btn
-                        v-model="questionChoice"
-                        :items="questionTypes"
+                        v-model="questionTypeChoice"
+                        :items="questionWidgets"
                         label="Fragenart"
-                        @change="changeQuestionType()"
                     ></v-overflow-btn>
                 </v-row>
                 <v-row>
-                    <component :is="currentComponent"></component>
+                    <component :is="questionTypeChoice"></component>
                 </v-row>
                 <v-row no-gutters>
-                    <v-btn color="success" class="mr-4" @click="sendData()">Erstellen</v-btn>
+                    <v-btn color="primary" class="mr-4" @click="sendQuestion()">Frage speichern</v-btn>
                 </v-row>
             </v-container>
         </v-card>
@@ -38,37 +37,66 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
-import ChoiceQuestionConfigWidget from './ChoiceQuestionConfigWidget'
+import { mapMutations, mapGetters } from 'vuex'
+import ChoiceQuestion from './ChoiceQuestion'
 import TextQuestion from './textQuestion'
 import RangeQuestion from './rangeQuestion'
 
 export default {
     name: 'QuestionBuildWidget',
-    components: { ChoiceQuestionConfigWidget, TextQuestion, RangeQuestion },
+    components: { ChoiceQuestion, TextQuestion, RangeQuestion },
     data() {
         return {
-            questionText: '',
-            currentComponent: '',
-            questionChoice: '',
-            allComponents: ['ChoiceQuestionConfigWidget', 'TextQuestion', 'RangeQuestion'],
-            questionTypes: ['Auswahlfrage', 'Freitextfrage', 'Intervallfrage'],
-            changeQuestionType() {
-                this.currentComponent = this.allComponents[this.questionTypes.indexOf(this.questionChoice)]
-            },
+            questionWidgets: [
+                {
+                    text: 'Auswahlfrage',
+                    value: 'ChoiceQuestion',
+                },
+                {
+                    text: 'Freitextfrage',
+                    value: 'TextQuestion',
+                },
+                {
+                    text: 'Intervallfrage',
+                    value: 'RangeQuestion',
+                },
+            ],
         }
     },
-    computed: {},
-    methods: {
-        ...mapActions({
-            setQuestionText: 'questionOverview/setQuestionText',
-        }),
-        sendData() {
-            // mapActions(['questionOverview/setQuestionText', { text: this.questionText }])
-            // this.$store.dispatch('questionOverview/setQuestionText', this.questionText)
-            // this.test()
-            this.setQuestionText(this.questionText)
+    computed: {
+        ...mapGetters({ question: 'pollOverview/getQuestion', questionToLoad: 'pollOverview/questionToLoad' }),
+        questionMessage: {
+            get() {
+                return this.question.questionMessage
+            },
+            set(questionMessage) {
+                this.setQuestionMessage(questionMessage)
+            },
         },
+        questionTypeChoice: {
+            get() {
+                switch (this.question.questionType) {
+                    case 'ChoiceQuestion':
+                        return 'ChoiceQuestion'
+                    case 'TextQuestion':
+                        return 'TextQuestion'
+                    case 'RangeQuestion':
+                        return 'RangeQuestion'
+                    default:
+                        return ''
+                }
+            },
+            set(questionType) {
+                this.setQuestionType(questionType)
+            },
+        },
+    },
+    methods: {
+        ...mapMutations({
+            setQuestionMessage: 'pollOverview/setQuestionMessage',
+            setQuestionType: 'pollOverview/setQuestionType',
+            sendQuestion: 'pollOverview/sendQuestion',
+        }),
     },
 }
 </script>

@@ -12,4 +12,9 @@ export default {
     async getPolls() {
         return await instance.get('/poll')
     },
+    saveQuestion(payload) {
+        console.log(payload)
+        payload.question.pollId = payload.pollId
+        instance.post('/poll/' + payload.pollId + '/addquestion', payload.question).catch()
+    },
 }

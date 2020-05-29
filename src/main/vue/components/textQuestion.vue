@@ -3,7 +3,7 @@
     <v-container>
         <v-form v-model="valid">
             <v-row no-gutters>
-                <v-switch v-model="enterSwitch" label="Enter erlauben"></v-switch>
+                <v-switch v-model="enterSwitch" label="Mehrzeilige Antworten erlauben"></v-switch>
             </v-row>
             <v-row no-gutters>
                 <v-switch v-model="minCharSwitch" label="Zeichenanzahl nach unten beschränken"></v-switch>
@@ -52,7 +52,7 @@ export default {
             minCharSwitch: false,
             maxCharSwitch: false,
             valid: false,
-            // rules that assert that the input in the textField musst be positive (there can't be a negative number of chars on an answer
+            // rules that assert that the input in the textField must be positive (there can't be a negative number of chars on an answer
             charRules: [(v) => v >= 0 || 'Die Zahl muss positiv sein!'],
         }
     },
