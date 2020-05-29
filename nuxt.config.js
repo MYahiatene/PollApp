@@ -65,6 +65,7 @@ export default {
                     error: '#F5420C',
                     success: '#5E9112',
                     myColor: '#1f5355',
+                    lightColor: '#eeffff'
                 },
                 light: {
                     background: '#eefcfa',
@@ -76,6 +77,7 @@ export default {
                     error: '#F5420C',
                     success: '#8EC136',
                     myColor: '#1f5355',
+                    lightColor: '#eeffff'
                 },
             },
         },
