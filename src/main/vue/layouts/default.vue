@@ -27,7 +27,7 @@
             </div>
             <!--            light/dark mode button-->
             <v-btn icon>
-                <v-icon color="primary" @click="setTheme()">{{ modeIcon }}</v-icon>
+                <v-icon color="primary" @click="setTheme()">mdi-brightness-4</v-icon>
             </v-btn>
         </v-app-bar>
         <!--content of the individual page-->
@@ -44,14 +44,12 @@
 </template>
 
 <script>
-import { mdiBrightness4 } from '@mdi/js'
 import { mapGetters } from 'vuex'
 export default {
     data() {
         return {
             goDark: false,
             fixed: false,
-            modeIcon: mdiBrightness4,
             items: [
                 {
                     icon: 'mdi-pencil',
