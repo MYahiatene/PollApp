@@ -1,5 +1,5 @@
 <template>
-    <v-container v-if="authenticated === true">
+    <v-container v-if="authenticated === false">
         <v-card class="mx-auto" max-width="400" outlined>
             <v-list-item three-line>
                 <v-list-item-content class="center">
@@ -90,7 +90,7 @@
                         <v-avatar v-if="item.avatar !== 'default'">
                             <v-img :src="item.avatar" :alt="item.username" height="50px" width="50px"></v-img>
                         </v-avatar>
-                        <v-avatar v-else color="indigo"></v-avatar>
+                        <v-avatar v-else color="indigo"><v-icon dark>mdi-account-circle</v-icon></v-avatar>
                     </div>
                 </template>
                 <template v-slot:expanded-item="{ headers, item }">
@@ -101,10 +101,13 @@
     </v-container>
 </template>
 <script>
+import { mapGetters } from 'vuex'
+
 export default {
     data() {
         return {
-            authenticated: true,
+            token: '',
+            authenticated: false,
             dialog: false,
             search: '',
             expanded: [],
@@ -169,11 +172,38 @@ export default {
         }
     },
     computed: {
+        ...mapGetters({
+            authenticate: 'administration/getToken',
+        }),
         formTitle() {
             return this.editedIndex === -1 ? 'Neuer Nutzer' : 'Nutzer bearbeiten'
         },
     },
+    mounted() {
+        this.createToken()
+    },
     methods: {
+        async createToken() {
+            await this.$store.dispatch('administration/setToken')
+            this.token = this.authenticate
+            const instance = this.$axios.create({
+                baseURL: 'http://127.0.0.1:8088/api',
+                timeout: 1000,
+                headers: {
+                    Authorization: 'Bearer ' + this.token,
+                },
+            })
+            instance.get('/checkToken').then(
+                (response) => {
+                    if (response.status === 200) {
+                        this.authenticated = true
+                    }
+                },
+                (error) => {
+                    console.log(error)
+                }
+            )
+        },
         editUser(item) {
             this.editedIndex = this.users.indexOf(item)
             this.editedUser = Object.assign({}, item)

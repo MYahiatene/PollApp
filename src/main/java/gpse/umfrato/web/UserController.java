@@ -76,4 +76,9 @@ public class UserController {
     public String getUser(final @RequestBody UserCmd usercmd) {
         return userService.loadUserByUsername(usercmd.getUsername()).getUsername();
     }
+    @PreAuthorize("hasAuthority('Admin')")
+    @GetMapping("/checkToken")
+        public void checkToken(){
+
+    }
 }

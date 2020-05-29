@@ -13,4 +13,5 @@ public class UserCmd {
 
     private String password;
 
+    private String email;
 }

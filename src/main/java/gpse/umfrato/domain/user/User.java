@@ -43,6 +43,10 @@ public class User implements UserDetails {
     @JsonIgnore
     private String password;
 
+    /**
+     * This attribute represents the email of the user.
+     */
+    private String email;
 
     /**
      * This attribute represents a list with the roles of this user.
