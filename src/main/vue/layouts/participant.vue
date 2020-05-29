@@ -43,11 +43,6 @@
             </v-footer>
         </v-app>
     </div>
-    <div v-else>
-        <v-btn @click="logMapGetter">
-            Click
-        </v-btn>
-    </div>
 </template>
 
 <script>

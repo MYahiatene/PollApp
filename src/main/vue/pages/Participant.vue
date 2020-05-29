@@ -13,13 +13,13 @@
                         <v-list v-for="category in getPoll[1].data.categoryList" :key="category.categoryId" two-line>
                             <v-list v-for="question in category.questionList" :key="question.questionId" two-line>
                                 <v-card class="mx-auto">
-                                    <v-card-title>
+                                    <v-card-title class="red--text">
                                         <!--the visibility of the number of questions depends on the poll configuration-->
                                         <!--div v-if="getVisibility">{{ question.id }}/{{ questions.length }}</div-->
                                         {{ question.questionMessage }}
                                     </v-card-title>
                                     <div v-if="question.questionType === 'textfield'">
-                                        <v-text-field label="Antwort"> </v-text-field>
+                                        <v-text-field label="Antwort" class="red--text"> </v-text-field>
                                     </div>
                                     <div v-else-if="question.questionType === 'choicebox'">
                                         <v-list v-for="answer in question.answerPossibilities" :key="answer.text">
