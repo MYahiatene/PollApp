@@ -5,12 +5,16 @@ import gpse.umfrato.domain.user.User;
 import gpse.umfrato.domain.user.UserRepository;
 import gpse.umfrato.domain.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
 
-@RequestMapping(value = "/api", method = RequestMethod.GET)
+@RequestMapping(value = "/api")
 @RestController
 @CrossOrigin
 public class UserController {
@@ -36,10 +40,13 @@ public class UserController {
      * @param userCmd has the user data to create an object user
      * @return a string that method was called
      */
+    @PreAuthorize("hasAuthority('Admin')")
     @PostMapping("/createuser")
     public String createUser(final @RequestBody UserCmd userCmd) {
         try {
-            userService.createUser(userCmd.getCmdUser());
+            userService.createUser(
+                userCmd.getUsername(), userCmd.getPassword(), userCmd.getFirstName(), userCmd.getLastName(),
+                Arrays.asList(new String[]{"User"}));
 
         } catch (BadRequestException e) {
             LOGGER.info("couldnt create user");
@@ -52,6 +59,7 @@ public class UserController {
      *
      * @return a list with all users
      */
+    @PreAuthorize("hasAuthority('Admin')")
     @GetMapping("/users")
     public List<User> getUsers() {
         return userRepository.findAll();
@@ -63,6 +71,7 @@ public class UserController {
      * @param usercmd has the username of the requested user
      * @return the requested user
      */
+    @PreAuthorize("hasAuthority('Admin')")
     @GetMapping("/getuser/{userId:\\d+}")
     public String getUser(final @RequestBody UserCmd usercmd) {
         return userService.loadUserByUsername(usercmd.getUsername()).getUsername();

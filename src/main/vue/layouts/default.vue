@@ -13,11 +13,11 @@
 
             <v-spacer></v-spacer>
             <!--            Buttons defined in items-->
-            <v-div v-for="(item, i) in items" :key="i" router exact>
+            <div v-for="(item, i) in items" :key="i" router exact>
                 <v-btn class="ma-3" :to="item.to" color="primary" :disabled="isAuthenticated !== true">
                     {{ item.title }}
                 </v-btn>
-            </v-div>
+            </div>
             <!--            Login Button-->
             <div v-if="isAuthenticated">
                 <v-btn text :to="'/Login'"> <v-icon>mdi-account</v-icon> {{ getUsername }} </v-btn>

@@ -130,12 +130,7 @@
 </template>
 
 <script>
-const axios = require('axios')
-const instance = axios.create({
-    baseURL: 'http://127.0.0.1:8088/api/',
-    timeout: 1000,
-    headers: { 'X-Custom-Header': 'foobar' },
-})
+// import { mapGetters } from 'vuex'
 export default {
     name: 'QuestionCreation',
     components: {},
@@ -188,14 +183,15 @@ export default {
                 deactivatedAt: this.deactivateDate,
                 pollStatus: 0,
             }
-            instance
-                .post('/createpoll', obj)
-                .then((response) => {
-                    console.log(response)
-                })
-                .catch((error) => {
-                    console.log(error)
-                })
+            const token = localStorage.getItem('user-token')
+            const instance = this.$axios.create({
+                baseURL: 'http://127.0.0.1:8088/api',
+                timeout: 1000,
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                },
+            })
+            instance.post('/createpoll', obj).catch()
         },
         formatDate(date) {
             if (!date) return null
