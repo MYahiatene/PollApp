@@ -8,7 +8,7 @@ public interface AnswerService {
      *
      * @param pollId the id of the poll
      * @param questionId the id of the given question
-     * @param username   the username of the user who gives the answer
+     * @param username   the username of the user who gives the answer // only for non-anonym
      * @param answerList the list of all possible answers
      * @return the given answer
      */

@@ -293,7 +293,7 @@ export default {
         getBackgroundColor(e) {
             this.backgroundColor = e.payload[0].hexa
         },
-        GetFontColor(e) {
+        getFontColor(e) {
             this.fontColor = e.payload[0].hexa
         },
     },
