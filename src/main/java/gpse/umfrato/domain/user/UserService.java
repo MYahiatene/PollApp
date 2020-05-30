@@ -13,11 +13,11 @@ public interface UserService extends UserDetailsService {
      * @param password  the passwor of the user
      * @param firstName first name of the user
      * @param lastName  last name of the user
-     * @param roles     the roles from user
+     * @param role     the roles from user
      * @return created user
      */
     User createUser(final String username, final String password, final String firstName,
-                    final String lastName, final List<String> roles);
+                    final String lastName, final String role, final String email);
 
     /**
      * This method returns a list with all users.
@@ -25,4 +25,5 @@ public interface UserService extends UserDetailsService {
      * @return list with all users.
      */
     List<User> getAllUsers();
+
 }

@@ -68,15 +68,15 @@ public class InitializeDatabase implements InitializingBean {
             //questionService.addQuestion(one, "testFrage", Arrays.asList("Frage1", "Frage2", "Frage3"), "freitext");
             //answerService.giveAnswer(testUsername, one, "3", Arrays.asList("Ja", "Nein"));
         } catch (UsernameNotFoundException e) {
-            userService.createUser(testUsername, dummyPassword, "Tobias", "Brettmann",
-                Arrays.asList("Admin", "User"));
+            userService.createUser(testUsername, dummyPassword, "Tobias", "Bettmann",
+                "Admin","tbettmann@reply.de");
         }
 
         try {
             userService.loadUserByUsername("testnutzer");
         } catch (UsernameNotFoundException ex) {
             userService.createUser("testNutzer", dummyPassword, "Markus", "Mueller",
-                Arrays.asList("User"));
+                "Teilnehmer","mmueller@gmx.de");
         }
 
     }

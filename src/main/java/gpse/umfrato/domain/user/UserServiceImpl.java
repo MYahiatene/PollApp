@@ -23,13 +23,13 @@ class UserServiceImpl implements UserService {
     /**
      * This method creates a user with every required data.
      *
-     * @param roles the roles from user
+     * @param role the roles from user
      * @return created user
      */
     @Override
     public User createUser(final String username, final String password, final String firstName,
-                           final String lastName, final List<String> roles) {
-        final User user = new User(username, password, firstName, lastName, roles);
+                           final String lastName, final String role, final String email) {
+        final User user = new User(username, password, firstName, lastName, role, email);
         return userRepository.save(user);
     }
 

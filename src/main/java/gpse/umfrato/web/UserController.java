@@ -46,7 +46,7 @@ public class UserController {
         try {
             userService.createUser(
                 userCmd.getUsername(), userCmd.getPassword(), userCmd.getFirstName(), userCmd.getLastName(),
-                Arrays.asList(new String[]{"User"}));
+                userCmd.getRole(),userCmd.getEmail());
 
         } catch (BadRequestException e) {
             LOGGER.info("couldnt create user");

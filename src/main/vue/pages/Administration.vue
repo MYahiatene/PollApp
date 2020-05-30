@@ -45,6 +45,12 @@
                                         <v-text-field v-model="editedUser.username" label="Username"></v-text-field>
                                     </v-col>
                                     <v-col cols="12" sm="6" md="4">
+                                        <v-text-field v-model="editedUser.firstName" label="Vorname"></v-text-field>
+                                    </v-col>
+                                    <v-col cols="12" sm="6" md="4">
+                                        <v-text-field v-model="editedUser.lastName" label="Nachname"></v-text-field>
+                                    </v-col>
+                                    <v-col cols="12" sm="6" md="4">
                                         <v-text-field v-model="editedUser.email" label="E-Mail"></v-text-field>
                                     </v-col>
                                     <v-col cols="12" sm="6" md="5">
@@ -61,9 +67,9 @@
                         </v-card-text>
 
                         <v-card-actions>
-                            <v-spacer></v-spacer>
                             <v-btn color="blue darken-1" text @click="close">Abbrechen</v-btn>
-                            <v-btn color="blue darken-1" text @click="save">Sichern</v-btn>
+                            <v-spacer></v-spacer>
+                            <v-btn color="blue darken-1" text @click="save">{{ formAction }}</v-btn>
                         </v-card-actions>
                     </v-card>
                 </v-dialog>
@@ -118,20 +124,18 @@ export default {
                 username: '',
                 role: '',
                 email: '',
+                firstName: '',
+                lastName: '',
             },
             defaultUser: {
                 avatar: '',
                 username: '',
                 role: '',
                 email: '',
+                firstName: '',
+                lastName: '',
             },
             roles: ['Admin', 'Umfrageersteller', 'Umfragebearbeiter', 'Teilnehmer'],
-            roleItems: [
-                { role: 'Admin' },
-                { role: 'Umfrageersteller' },
-                { role: 'Umfragebearbeiter' },
-                { role: 'Teilnehmer' },
-            ],
             headers: [
                 { value: 'avatar', align: 'start', sortable: false, width: '1' },
                 { text: 'Username', value: 'username' },
@@ -178,6 +182,9 @@ export default {
         formTitle() {
             return this.editedIndex === -1 ? 'Neuer Nutzer' : 'Nutzer bearbeiten'
         },
+        formAction() {
+            return this.editedIndex === -1 ? 'Nutzer anlegen' : 'Änderungen sichern'
+        },
     },
     mounted() {
         this.createToken()
@@ -220,7 +227,24 @@ export default {
                 this.editedIndex = -1
             })
         },
-
+        sendNewUserData(newUser) {
+            const userObj = {
+                username: newUser.username,
+                firstName: newUser.firstName,
+                lastName: newUser.lastName,
+                password: 'pwd',
+                email: newUser.email,
+                role: newUser.role,
+            }
+            const instance = this.$axios.create({
+                baseURL: 'http://127.0.0.1:8088/api',
+                timeout: 1000,
+                headers: {
+                    Authorization: 'Bearer ' + this.token,
+                },
+            })
+            instance.post('/createuser', userObj).catch()
+        },
         save() {
             if (this.editedIndex > -1) {
                 Object.assign(this.users[this.editedIndex], this.editedUser)
@@ -228,6 +252,7 @@ export default {
                 this.defaultUser = Object.assign({}, this.editedUser)
                 this.defaultUser.avatar = 'default'
                 this.users.push(this.defaultUser)
+                this.sendNewUserData(this.defaultUser)
             }
             this.close()
         },
