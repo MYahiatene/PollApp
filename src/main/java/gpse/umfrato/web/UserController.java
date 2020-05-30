@@ -1,5 +1,6 @@
 package gpse.umfrato.web;
 
+import gpse.umfrato.domain.cmd.EditUserCmd;
 import gpse.umfrato.domain.cmd.UserCmd;
 import gpse.umfrato.domain.user.User;
 import gpse.umfrato.domain.user.UserRepository;
@@ -41,15 +42,27 @@ public class UserController {
      * @return a string that method was called
      */
     @PreAuthorize("hasAuthority('Admin')")
-    @PostMapping("/createuser")
+    @PostMapping("/createUser")
     public String createUser(final @RequestBody UserCmd userCmd) {
         try {
             userService.createUser(
                 userCmd.getUsername(), userCmd.getPassword(), userCmd.getFirstName(), userCmd.getLastName(),
-                userCmd.getRole(),userCmd.getEmail());
+                userCmd.getRole(), userCmd.getEmail());
 
         } catch (BadRequestException e) {
-            LOGGER.info("couldnt create user");
+            LOGGER.info("Could not create user");
+        }
+        return "HTTP POST was called";
+    }
+
+    @PreAuthorize("hasAuthority('Admin')")
+    @PutMapping("editUser")
+    public String editUser(final @RequestBody EditUserCmd editUserCmd) {
+        try {
+            userService.editUser(editUserCmd.getUsername(), editUserCmd.getFirstName(), editUserCmd.getLastName(),
+                editUserCmd.getRole(), editUserCmd.getEmail());
+        } catch (BadRequestException e) {
+            LOGGER.info("Could not edit user");
         }
         return "HTTP POST was called";
     }
@@ -76,9 +89,10 @@ public class UserController {
     public String getUser(final @RequestBody UserCmd usercmd) {
         return userService.loadUserByUsername(usercmd.getUsername()).getUsername();
     }
+
     @PreAuthorize("hasAuthority('Admin')")
     @GetMapping("/checkToken")
-        public void checkToken(){
+    public void checkToken() {
 
     }
 }

@@ -19,7 +19,7 @@
     <v-container v-else>
         <v-card class="mx-auto" max-width="1000">
             <v-card-title>
-                Nutzer
+                Nutzerdatenbank
                 <v-spacer></v-spacer>
                 <v-text-field
                     v-model="search"
@@ -41,7 +41,7 @@
                         <v-card-text>
                             <v-container>
                                 <v-row>
-                                    <v-col cols="12" sm="6" md="4">
+                                    <v-col v-if="editedIndex === -1" cols="12" sm="6" md="4">
                                         <v-text-field v-model="editedUser.username" label="Username"></v-text-field>
                                     </v-col>
                                     <v-col cols="12" sm="6" md="4">
@@ -243,11 +243,29 @@ export default {
                     Authorization: 'Bearer ' + this.token,
                 },
             })
-            instance.post('/createuser', userObj).catch()
+            instance.post('/createUser', userObj).catch()
+        },
+        editUserData(editUser) {
+            const userObj = {
+                username: editUser.username,
+                firstName: editUser.firstName,
+                lastName: editUser.lastName,
+                email: editUser.email,
+                role: editUser.role,
+            }
+            const instance = this.$axios.create({
+                baseURL: 'http://127.0.0.1:8088/api',
+                timeout: 1000,
+                headers: {
+                    Authorization: 'Bearer ' + this.token,
+                },
+            })
+            instance.put('/editUser', userObj).catch()
         },
         save() {
             if (this.editedIndex > -1) {
                 Object.assign(this.users[this.editedIndex], this.editedUser)
+                this.editUserData(this.editedUser)
             } else {
                 this.defaultUser = Object.assign({}, this.editedUser)
                 this.defaultUser.avatar = 'default'

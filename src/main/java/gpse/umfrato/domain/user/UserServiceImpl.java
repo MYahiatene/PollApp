@@ -7,6 +7,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Primary
@@ -47,6 +48,18 @@ class UserServiceImpl implements UserService {
         }
 
         return users;
+    }
+
+    @Override
+    public void editUser(String username, String firstName, String lastName, String role, String email) {
+        final User user = userRepository.getOne(username);
+        user.setFirstName(firstName);
+        user.setLastName(lastName);
+        List<String> tmp = new ArrayList<>();
+        tmp.add(role);
+        user.setRoles(tmp);
+        user.setEmail(email);
+        userRepository.save(user);
     }
 
     /**

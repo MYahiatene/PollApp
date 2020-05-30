@@ -26,4 +26,7 @@ public interface UserService extends UserDetailsService {
      */
     List<User> getAllUsers();
 
+
+    void editUser(final String username, final String firstName,
+                  final String lastName, final String role, final String email);
 }
