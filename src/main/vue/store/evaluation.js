@@ -3,6 +3,7 @@ import api2 from '../api/polls'
 export const state = () => ({
     DiagramData: {},
     Polls: {},
+    FilterList: {},
 })
 export const getters = {
     getDiagramData: (state) => {
@@ -21,6 +22,10 @@ export const mutations = {
     },
     initializePolls: (state, pollData) => {
         state.Polls = pollData.data
+    },
+    saveFilter: (state, filterList) => {
+        state.FilterList = filterList
+        api.sendFilter(state.FilterList)
     },
 }
 export const actions = {

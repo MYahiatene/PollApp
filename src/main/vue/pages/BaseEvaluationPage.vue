@@ -27,9 +27,7 @@ that each display a basic evaluation of one specific question-->
 
                     <!--            This button will lead to the Page where we can filter and analyse the data-->
 
-                    <v-btn color="primary">
-                        Analyse
-                    </v-btn>
+                    <custom-evaluation :chosen-poll="this.pollName" />
 
                     <!--            here we have a sub menu, that can hold a list of different options or setings-->
                     <v-menu bottom left>
@@ -154,10 +152,11 @@ import { mapActions, mapGetters } from 'vuex'
 import AuthGate from '../components/AuthGate'
 import ChoiceQuestionEvaluationWidget from '../components/ChoiceQuestionEvaluationWidget'
 import visualEvaluationSettings from '../components/visualEvaluationSettings'
+import CustomEvaluation from './customEvaluation'
 
 export default {
     name: 'BaseEvaluationPage',
-    components: { AuthGate, ChoiceQuestionEvaluationWidget, visualEvaluationSettings },
+    components: { AuthGate, ChoiceQuestionEvaluationWidget, visualEvaluationSettings, CustomEvaluation },
     data() {
         return {
             // key that forces the diagram to update
