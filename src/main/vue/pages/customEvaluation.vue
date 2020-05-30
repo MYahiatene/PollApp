@@ -51,7 +51,7 @@
                                     </v-overflow-btn>
                                 </div>
                                 <v-divider></v-divider>
-                                <v-card height="200" color="#f8faff">
+                                <v-card height="350" color="#f8faff">
                                     <draggable class="dragArea list-group" :list="filterList" group="filter">
                                         <div v-for="filter in filterList" :key="filter">
                                             <v-chip
