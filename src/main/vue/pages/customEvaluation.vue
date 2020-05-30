@@ -7,13 +7,13 @@
                         <v-card-title>Filter</v-card-title>
                         <template>
                             <v-expansion-panels accordion multiple hover>
-                                <v-expansion-panel v-for="item in kategories" :key="item">
+                                <v-expansion-panel v-for="(item, index) in kategories" :key="index">
                                     <v-expansion-panel-header :color="item.color">
                                         {{ item.name }}
                                     </v-expansion-panel-header>
                                     <v-expansion-panel-content :color="item.color">
                                         <div class="overline">{{ item.explanation }}</div>
-                                        <div v-for="option in item.options" :key="option">
+                                        <div v-for="(option, jdex) in item.options" :key="jdex">
                                             <draggable
                                                 :list="item.options"
                                                 :clone="clone"
@@ -51,14 +51,14 @@
                                     </v-overflow-btn>
                                 </div>
                                 <v-divider></v-divider>
-                                <v-card height="350" color="#f8faff">
+                                <v-card height="5000" color="#f8faff">
                                     <draggable class="dragArea list-group" :list="filterList" group="filter">
                                         <div v-for="(filter, index) in filterList" :key="index">
                                             <v-chip
                                                 :color="kategories[2].color"
-                                                close
                                                 v-model="consistencyChip"
                                                 v-if="filter.type === 'consistency'"
+                                                close
                                                 @click:close="deleteFromFilterList(filter)"
                                             >
                                                 Es werden nur Teilnehmer angezeigt, die alle Konsistenzfragen konsistent
@@ -109,8 +109,11 @@
                                             <q-a-filter
                                                 v-if="filter.type === 'questionAnswer'"
                                                 :poll-index="pollIndex"
-                                                :filter-id="index"
-                                                v-model="filterList[index]"
+                                                :filter-id="filter.filterId"
+                                                :selected-answer="filter.selectedAnswer"
+                                                :selected-question="filter.selectedQuestion"
+                                                :selected-category="filter.selectedCategory"
+                                                @updateData="updateQAFilter"
                                             ></q-a-filter>
                                             <!--                                        <p v-else>-->
                                             <!--                                            filter.type-->
@@ -161,6 +164,7 @@ export default {
             selectedGender: '',
             consistencyChip: true,
             filterList: [],
+            globalFilterId: 0,
             selectedQuestions: [],
             kategories: [
                 {
@@ -168,14 +172,24 @@ export default {
                     explanation: 'Wähle die Basis-Daten für deine Umfrage',
                     color: '#f5f3ca',
                     darkColor: '#C0BB48',
-                    options: [{ title: 'Umfrage', type: 'surveySelection' }],
+                    options: [
+                        {
+                            title: 'Umfrage',
+                            type: 'surveySelection',
+                        },
+                    ],
                 },
                 {
                     name: 'Fragen',
                     explanation: 'Welche Fragen der Umfrage sollen betrachtet werden?',
                     color: '#e5f5ca',
                     darkColor: '#93C244',
-                    options: [{ title: 'Fragen', type: 'questionSelection' }],
+                    options: [
+                        {
+                            title: 'Fragen',
+                            type: 'questionSelection',
+                        },
+                    ],
                 },
                 {
                     name: 'Konsistenzfragen',
@@ -183,7 +197,12 @@ export default {
                         'Hier kann man einstellen, ob inkonsistente Beantwortungen herausgefiltert werden sollen',
                     color: '#caf5da',
                     darkColor: '#4CB988',
-                    options: [{ title: 'Konsistenz', type: 'consistency' }],
+                    options: [
+                        {
+                            title: 'Konsistenz',
+                            type: 'consistency',
+                        },
+                    ],
                 },
                 {
                     name: 'Teilnehmer',
@@ -193,7 +212,10 @@ export default {
                     darkColor: '#2FA399',
                     options: [
                         { title: 'Alter', type: 'age' },
-                        { title: 'Geschlecht', type: 'gender' },
+                        {
+                            title: 'Geschlecht',
+                            type: 'gender',
+                        },
                     ],
                 },
                 {
@@ -201,7 +223,12 @@ export default {
                     explanation: '',
                     color: '#caeaf5',
                     darkColor: '#2E8CAC',
-                    options: [{ title: 'Antwort', type: 'questionAnswer' }],
+                    options: [
+                        {
+                            title: 'Antwort',
+                            type: 'questionAnswer',
+                        },
+                    ],
                 },
 
                 {
@@ -209,7 +236,12 @@ export default {
                     explanation: '',
                     color: '#cadaf5',
                     darkColor: '#3D6CBB',
-                    options: [{ title: 'Oder', type: 'orOperation' }],
+                    options: [
+                        {
+                            title: 'Oder',
+                            type: 'orOperation',
+                        },
+                    ],
                 },
             ],
 
@@ -268,7 +300,6 @@ export default {
         ...mapGetters({
             items: 'evaluation/getPolls',
         }),
-
         pollTitles() {
             const pollTitles = Object.assign([{}], this.items)
             for (let i = 0; i < pollTitles.length; i++) {
@@ -277,11 +308,9 @@ export default {
 
             return pollTitles
         },
-
         pollIndex() {
             return this.pollTitles.indexOf(this.chosenPoll)
         },
-
         QuestionTitles() {
             const l = []
             for (let i = 0; i < this.PollResult.questionList.length; i++) {
@@ -289,28 +318,37 @@ export default {
             }
             return l
         },
-
-        clone({ name }) {
-            return name
-        },
     },
     mounted() {
-        console.log('mounted')
         console.log(this.items)
         this.initialize()
     },
     methods: {
         ...mapActions({ initialize: 'evaluation/initialize' }),
-
+        clone(item) {
+            return {
+                title: item.title,
+                type: item.type,
+                filterId: this.globalFilterId++,
+            }
+        },
         deleteFromFilterList(item) {
+            console.log('deleteFromFilterList')
             const index = this.filterList.indexOf(item)
             if (index > -1) {
                 this.filterList.splice(index, 1)
             }
         },
 
-        updateQAFilter(filterId, newCategory, newQuestion, newAnswer) {
-            console.log('Hallo')
+        updateQAFilter([filterId, newCategory, newQuestion, newAnswer]) {
+            console.log('updateQAFilter')
+            for (let i = 0; i < this.filterList.length; i++) {
+                if (this.filterList[i].filterId === filterId) {
+                    this.filterList[i].selectedCategory = newCategory
+                    this.filterList[i].selectedQuestion = newQuestion
+                    this.filterList[i].selectedAnswer = newAnswer
+                }
+            }
             console.log(this.filterList)
         },
     },
