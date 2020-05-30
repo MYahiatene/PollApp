@@ -1,147 +1,161 @@
 <template>
     <v-container>
-        <v-layout row justify-space-around>
-            <v-flex md6 lg3>
-                <v-card class="ma-3 pa-3">
-                    <v-card-title>Filter</v-card-title>
-                    <template>
-                        <v-expansion-panels accordion multiple hover>
-                            <v-expansion-panel v-for="item in kategories" :key="item">
-                                <v-expansion-panel-header :color="item.color">{{ item.name }}</v-expansion-panel-header>
-                                <v-expansion-panel-content :color="item.color">
-                                    <div class="overline">{{ item.explanation }}</div>
-                                    <div v-for="option in item.options" :key="option">
-                                        <draggable
-                                            :list="item.options"
-                                            :clone="clone"
-                                            :group="{ name: 'filter', pull: 'clone' }"
-                                        >
-                                            <v-chip class="ma-1 filter" :color="item.darkColor" draggable>{{
-                                                option.title
-                                            }}</v-chip>
-                                        </draggable>
-                                    </div>
-                                </v-expansion-panel-content>
-                            </v-expansion-panel>
-                        </v-expansion-panels>
-                    </template>
-                </v-card>
-            </v-flex>
-            <v-flex md6 lg9>
-                <v-card class="ma-3 pa-3">
-                    <v-card-title>Analyse {{ Questions }} fjskl</v-card-title>
-                    <v-card class="pa-2">
-                        <v-responsive :aspect-ratio="16 / 5">
-                            <v-overflow-btn prefix="Basisdaten:" :items="pollTitles" dense v-model="chosenPoll">
-                            </v-overflow-btn>
-                            <v-divider></v-divider>
-                            <div>
-                                <v-overflow-btn
-                                    prefix="Ausgewählte Fragen:"
-                                    allow-overflow
-                                    dense
-                                    multiple
-                                    flat
-                                    :items="QuestionTitles"
-                                    v-model="selectedQuestions"
-                                >
-                                </v-overflow-btn>
-                            </div>
-                            <v-divider></v-divider>
-                            <v-card height="200" color="#f8faff">
-                                <draggable class="dragArea list-group" :list="filterList" group="filter">
-                                    <div v-for="filter in filterList" :key="filter">
-                                        <v-chip
-                                            :color="kategories[2].color"
-                                            close
-                                            v-model="consistencyChip"
-                                            v-if="filter.type === 'consistency'"
-                                            @click:close="deleteFromFilterList(filter)"
-                                        >
-                                            Es werden nur Teilnehmer angezeigt, die alle Konsistenzfragen konsistent
-                                            beantwortet haben.
-                                        </v-chip>
-
-                                        <v-chip
-                                            :color="kategories[3].color"
-                                            close
-                                            v-if="filter.type === 'age'"
-                                            @click:close="deleteFromFilterList(filter)"
-                                        >
-                                            Nur Teilnehmer mit Alter {{ selectedAgeOperation }} {{ filter.type }}
-                                            <v-overflow-btn
-                                                :items="['<', '>', '=']"
-                                                v-model="selectedAgeOperation"
-                                                flat
-                                                elevation="0"
-                                                style="box-shadow: none;"
+        <v-container v-if="items.length > 0">
+            <v-layout row justify-space-around>
+                <v-flex md6 lg3>
+                    <v-card class="ma-3 pa-3">
+                        <v-card-title>Filter</v-card-title>
+                        <template>
+                            <v-expansion-panels accordion multiple hover>
+                                <v-expansion-panel v-for="item in kategories" :key="item">
+                                    <v-expansion-panel-header :color="item.color">
+                                        {{ item.name }}
+                                    </v-expansion-panel-header>
+                                    <v-expansion-panel-content :color="item.color">
+                                        <div class="overline">{{ item.explanation }}</div>
+                                        <div v-for="option in item.options" :key="option">
+                                            <draggable
+                                                :list="item.options"
+                                                :clone="clone"
+                                                :group="{ name: 'filter', pull: 'clone' }"
                                             >
-                                            </v-overflow-btn>
-                                            <v-text-field type="number" min="0" oninput="validity.valid||(value='')">
-                                            </v-text-field>
-                                        </v-chip>
-
-                                        <v-chip
-                                            :color="kategories[3].color"
-                                            close
-                                            v-if="filter.type === 'gender'"
-                                            @click:close="deleteFromFilterList(filter)"
-                                        >
-                                            Nur Teilnehmer mit dem Geschlecht: {{ selectedGender }} {{ filter.type }}
-                                            <v-overflow-btn
-                                                :items="['Männlich', 'Weiblich', 'Divers']"
-                                                v-model="selectedGender"
-                                                flat
-                                                elevation="0"
-                                                style="box-shadow: none;"
-                                            >
-                                            </v-overflow-btn>
-                                        </v-chip>
-
-                                        <v-chip
-                                            :color="kategories[4].color"
-                                            close
-                                            v-if="filter.type === 'questionAnswer'"
-                                            @click:close="deleteFromFilterList(filter)"
-                                        >
-                                            Nur Teilnehmer, die bei Frage {{ selectedQuestion }}
-                                            <v-overflow-btn
-                                                :items="['1', '2', '3']"
-                                                v-model="selectedQuestion"
-                                                elevation="0"
-                                                style="box-shadow: none;"
-                                            >
-                                            </v-overflow-btn>
-                                            die Antwort {{ selectedAnswer }}
-                                            <v-overflow-btn
-                                                :items="['1', '2', '3']"
-                                                v-model="selectedAnswer"
-                                                flat
-                                                elevation="0"
-                                                style="box-shadow: none;"
-                                            >
-                                            </v-overflow-btn>
-                                            ausgewählt haben.
-                                        </v-chip>
-                                        <!--                                        <p v-else>-->
-                                        <!--                                            filter.type-->
-                                        <!--                                        </p>-->
-                                    </div>
-                                </draggable>
-                            </v-card>
-                        </v-responsive>
+                                                <v-chip class="ma-1 filter" :color="item.darkColor" draggable>
+                                                    {{ option.title }}
+                                                </v-chip>
+                                            </draggable>
+                                        </div>
+                                    </v-expansion-panel-content>
+                                </v-expansion-panel>
+                            </v-expansion-panels>
+                        </template>
                     </v-card>
-                    <v-card-actions>
-                        <v-btn color="primary">
-                            Anwenden
-                        </v-btn>
-                        <v-btn color="secondary">
-                            Vergleichen
-                        </v-btn>
-                    </v-card-actions>
-                </v-card>
-            </v-flex>
-        </v-layout>
+                </v-flex>
+                <v-flex md6 lg9>
+                    <v-card class="ma-3 pa-3">
+                        <v-card-title>Analyse {{ Questions }}</v-card-title>
+                        <v-card class="pa-2">
+                            <v-responsive :aspect-ratio="16 / 5">
+                                <v-overflow-btn prefix="Basisdaten:" :items="pollTitles" dense v-model="chosenPoll">
+                                </v-overflow-btn>
+                                <v-divider></v-divider>
+                                <div>
+                                    <v-overflow-btn
+                                        prefix="Ausgewählte Fragen:"
+                                        allow-overflow
+                                        dense
+                                        multiple
+                                        flat
+                                        :items="QuestionTitles"
+                                        v-model="selectedQuestions"
+                                    >
+                                    </v-overflow-btn>
+                                </div>
+                                <v-divider></v-divider>
+                                <v-card height="200" color="#f8faff">
+                                    <draggable class="dragArea list-group" :list="filterList" group="filter">
+                                        <div v-for="filter in filterList" :key="filter">
+                                            <v-chip
+                                                :color="kategories[2].color"
+                                                close
+                                                v-model="consistencyChip"
+                                                v-if="filter.type === 'consistency'"
+                                                @click:close="deleteFromFilterList(filter)"
+                                            >
+                                                Es werden nur Teilnehmer angezeigt, die alle Konsistenzfragen konsistent
+                                                beantwortet haben.
+                                            </v-chip>
+
+                                            <v-chip
+                                                :color="kategories[3].color"
+                                                close
+                                                v-if="filter.type === 'age'"
+                                                @click:close="deleteFromFilterList(filter)"
+                                            >
+                                                Nur Teilnehmer mit Alter {{ selectedAgeOperation }} {{ filter.type }}
+                                                <v-overflow-btn
+                                                    :items="['<', '>', '=']"
+                                                    v-model="selectedAgeOperation"
+                                                    flat
+                                                    elevation="0"
+                                                    style="box-shadow: none;"
+                                                >
+                                                </v-overflow-btn>
+                                                <v-text-field
+                                                    type="number"
+                                                    min="0"
+                                                    oninput="validity.valid||(value='')"
+                                                >
+                                                </v-text-field>
+                                            </v-chip>
+
+                                            <v-chip
+                                                :color="kategories[3].color"
+                                                close
+                                                v-if="filter.type === 'gender'"
+                                                @click:close="deleteFromFilterList(filter)"
+                                            >
+                                                Nur Teilnehmer mit dem Geschlecht: {{ selectedGender }}
+                                                {{ filter.type }}
+                                                <v-overflow-btn
+                                                    :items="['Männlich', 'Weiblich', 'Divers']"
+                                                    v-model="selectedGender"
+                                                    flat
+                                                    elevation="0"
+                                                    style="box-shadow: none;"
+                                                >
+                                                </v-overflow-btn>
+                                            </v-chip>
+
+                                            <v-chip
+                                                :color="kategories[4].color"
+                                                close
+                                                v-if="filter.type === 'questionAnswer'"
+                                                @click:close="deleteFromFilterList(filter)"
+                                            >
+                                                Nur Teilnehmer, die bei Frage {{ selectedQuestion }}
+                                                <v-overflow-btn
+                                                    :items="['1', '2', '3']"
+                                                    v-model="selectedQuestion"
+                                                    elevation="0"
+                                                    style="box-shadow: none;"
+                                                >
+                                                </v-overflow-btn>
+                                                die Antwort {{ selectedAnswer }}
+                                                <v-overflow-btn
+                                                    :items="['1', '2', '3']"
+                                                    v-model="selectedAnswer"
+                                                    flat
+                                                    elevation="0"
+                                                    style="box-shadow: none;"
+                                                >
+                                                </v-overflow-btn>
+                                                ausgewählt haben.
+                                            </v-chip>
+                                            <!--                                        <p v-else>-->
+                                            <!--                                            filter.type-->
+                                            <!--                                        </p>-->
+                                        </div>
+                                    </draggable>
+                                </v-card>
+                            </v-responsive>
+                        </v-card>
+                        <v-card-actions>
+                            <v-btn color="primary">
+                                Anwenden
+                            </v-btn>
+                            <v-btn color="secondary">
+                                Vergleichen
+                            </v-btn>
+                        </v-card-actions>
+                    </v-card>
+                </v-flex>
+            </v-layout>
+        </v-container>
+        <v-container v-else>
+            <v-card>
+                <v-card-title>Der Server antwortet nicht</v-card-title>
+            </v-card>
+        </v-container>
     </v-container>
 </template>
 
@@ -269,7 +283,7 @@ export default {
     },
     computed: {
         ...mapGetters({
-            items: 'navigation/getPolls',
+            items: 'evaluation/getPolls',
         }),
 
         pollTitles() {
@@ -282,8 +296,10 @@ export default {
         },
 
         Questions() {
+            console.log('Questions')
             const categories = this.items[0].categoryList
-            return categories[0].questionList[0].title
+            console.log(categories)
+            return categories[0].questionList[0].questionMessage
             // const questions = this.items[this.pollTitles.indexOf(this.chosenPoll)].categoryList[0].questionList[0].title
         },
 
@@ -299,15 +315,13 @@ export default {
             return name
         },
     },
-
     mounted() {
         console.log('mounted')
         console.log(this.items)
         this.initialize()
     },
-
     methods: {
-        ...mapActions({ initialize: 'navigation/initialize' }),
+        ...mapActions({ initialize: 'evaluation/initialize' }),
 
         deleteFromFilterList(item) {
             const index = this.filterList.indexOf(item)

@@ -176,56 +176,6 @@ export default {
             // options that will be displayed in the sub menu
             menuItems: [{ title: 'Visuelle Einstellungen' }, { title: 'Exportieren' }],
 
-            // mock data set
-            PollResult: {
-                name: 'Umfrage zur IT-Messe 2021',
-                questionList: [
-                    {
-                        id: 1,
-                        title: 'Wie hat Ihnen die Veranstaltung insgesamt gefallen?',
-                        answerPossibilities: ['Sehr gut', 'Gut', 'Überwiegend gut', 'Schlecht', 'Ich weiß nicht'],
-                        data: [70, 65, 30, 5, 25],
-                    },
-
-                    {
-                        id: 2,
-                        title: 'Welches Geschlecht haben Sie?',
-                        answerPossibilities: ['Weiblich', 'Männlich', 'Divers'],
-                        data: [20, 19, 1],
-                    },
-
-                    {
-                        id: 3,
-                        title: 'Wie geht es Ihnen heute?',
-                        answerPossibilities: ['Gut', 'In Ordnung', 'Schlecht'],
-                        data: [22, 8, 7],
-                    },
-                    {
-                        id: 4,
-                        title: 'Was hat Sie am Meisten überzeugt?',
-                        answerPossibilities: [
-                            'Die Vorträge',
-                            'Die Informationsstände',
-                            'Das Catering',
-                            'Ich kann mich nicht entscheiden',
-                        ],
-                        data: [17, 8, 4, 2],
-                    },
-                    {
-                        id: 5,
-                        title: 'Werden Sie uns nächstes Jahr wieder besuchen?',
-                        answerPossibilities: ['Ja', 'Nein'],
-                        data: [50, 21],
-                    },
-                    {
-                        id: 6,
-                        title: 'Wie viel Zeit haben sie auf der Messe verbracht?',
-                        answerPossibilities: ['unter einer Stunde', '1-2 Stunden', '2-5 Stunden', 'über 5 Stunden'],
-                        data: [12, 45, 40, 20],
-                    },
-                ],
-            },
-
             // itemsPerPageArray: [1, 2, 3],
             search: '',
             filter: {},

@@ -12,9 +12,13 @@ export default {
     async getPolls() {
         return await instance.get('/poll')
     },
-    saveQuestion(payload) {
+    async addQuestion(payload) {
         console.log(payload)
         payload.question.pollId = payload.pollId
-        instance.post('/poll/' + payload.pollId + '/addquestion', payload.question).catch()
+        return await instance.post('/poll/' + payload.pollId + '/addquestion', payload.question).catch()
+    },
+    async addCategory(payload) {
+        console.log('Hallo')
+        return await instance.post('/poll/' + payload.pollId + '/addcategory', payload).catch()
     },
 }

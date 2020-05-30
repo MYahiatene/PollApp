@@ -1,4 +1,5 @@
 import api from '../api/eval'
+import api2 from '../api/polls'
 export const state = () => ({
     DiagramData: {},
     Polls: {},
@@ -18,12 +19,15 @@ export const mutations = {
     initializeData: (state, data) => {
         state.DiagramData = data.data
     },
+    initializePolls: (state, pollData) => {
+        state.Polls = pollData.data
+    },
 }
 export const actions = {
     async initialize({ commit }) {
         const data = await api.getInitialDiagrams()
         commit('initializeData', data)
-        const pollData = await api.getPolls()
-        commit('getPolls', pollData)
+        const pollData = await api2.getPolls()
+        commit('initializePolls', pollData)
     },
 }

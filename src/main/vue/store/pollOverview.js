@@ -69,6 +69,9 @@ export const mutations = {
         }
         console.log(state.IDsToLoad)
     },
+    setPollName: (state, name) => {
+        state.Polls.pollName = name
+    },
     setQuestionMessage: (state, message) => {
         const indices = getters.getIndices(state)
         if (indices !== null) {
@@ -112,16 +115,81 @@ export const mutations = {
             state.Polls[indices.p].categoryList[indices.c].questionList[indices.q].answerPossibilities.pop()
         }
     },
-    sendQuestion(state) {
-        console.log('save')
+    sendQuestion: (state) => {
         const indices = getters.getIndices(state)
-        console.log(indices)
         if (indices !== null) {
             const payload = {
                 pollId: state.IDsToLoad.pollID,
                 question: state.Polls[indices.p].categoryList[indices.c].questionList[indices.q],
             }
-            api.saveQuestion(payload)
+            api.addQuestion(payload)
+        }
+    },
+    setIntervalStart: (state, value) => {
+        const indices = getters.getIndices(state)
+        if (indices !== null) {
+            state.Polls[indices.p].categoryList[indices.c].questionList[indices.q].intervalStart = value
+        }
+    },
+    setIntervalFinish: (state, value) => {
+        const indices = getters.getIndices(state)
+        if (indices !== null) {
+            state.Polls[indices.p].categoryList[indices.c].questionList[indices.q].intervalFinish = value
+        }
+    },
+    setIntervalStep: (state, value) => {
+        const indices = getters.getIndices(state)
+        if (indices !== null) {
+            state.Polls[indices.p].categoryList[indices.c].questionList[indices.q].intervalStep = value
+        }
+    },
+    setIntervalLowerText: (state, value) => {
+        const indices = getters.getIndices(state)
+        if (indices !== null) {
+            state.Polls[indices.p].categoryList[indices.c].questionList[indices.q].intervalLowerText = value
+        }
+    },
+    setIntervalUpperText: (state, value) => {
+        const indices = getters.getIndices(state)
+        if (indices !== null) {
+            state.Polls[indices.p].categoryList[indices.c].questionList[indices.q].intervalUpperText = value
+        }
+    },
+    setIntervalNoAnswer: (state, value) => {
+        const indices = getters.getIndices(state)
+        if (indices !== null) {
+            state.Polls[indices.p].categoryList[indices.c].questionList[indices.q].intervalNoAnswer = value
+        }
+    },
+    setTextMultiline: (state, value) => {
+        const indices = getters.getIndices(state)
+        if (indices !== null) {
+            state.Polls[indices.p].categoryList[indices.c].questionList[indices.q].textMultiline = value
+        }
+    },
+    setTextMin: (state, value) => {
+        const indices = getters.getIndices(state)
+        if (indices !== null) {
+            state.Polls[indices.p].categoryList[indices.c].questionList[indices.q].textMinimum = value
+        }
+    },
+    setTextMax: (state, value) => {
+        const indices = getters.getIndices(state)
+        if (indices !== null) {
+            state.Polls[indices.p].categoryList[indices.c].questionList[indices.q].textMaximum = value
+        }
+    },
+    async createCategory(state, category) {
+        const indices = getters.getIndices(state)
+        if (indices !== null) {
+            const newId = await api.addCategory({ pollId: state.IDsToLoad.pollID, name: 'Neue Kategorie' })
+            const newCategory = {
+                categoryId: newId,
+                categoryName: 'Neue Kategorie',
+                pollId: state.IDsToLoad.pollID,
+                questionList: [],
+            }
+            state.Polls[indices.p].categoryList.push(newCategory)
         }
     },
 }

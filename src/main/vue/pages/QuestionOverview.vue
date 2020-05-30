@@ -1,8 +1,8 @@
 <template>
     <div>
         <AuthGate v-if="isAuthenticated !== true"></AuthGate>
-        <v-container v-else-if="polls[0].pollId !== undefined">
-            <v-subheader class="display-2">{{ poll.pollName }}</v-subheader>
+        <v-container v-else-if="polls.length > 0">
+            <v-text-field class="display-1" v-model="pollname" />
             <v-content>
                 <v-row>
                     <v-col cols="4">
@@ -14,8 +14,8 @@
                                     two-line
                                     class="pa-3"
                                 >
-                                    <v-subheader class="headline">{{ categorie.categoryName }}</v-subheader>
-                                    <draggable v-model="categorie.questionList">
+                                    <v-text-field class="headline" v-model="categorie.categoryName"></v-text-field>
+                                    <draggable :list="categorie.questionList">
                                         <v-list v-for="question in categorie.questionList" :key="question.questionId">
                                             <question-list-element
                                                 :poll-id="poll.pollId"
@@ -46,7 +46,7 @@
                     <v-icon>
                         mdi-sync-alert
                     </v-icon>
-                    Der Umfrato-Server antwortet nicht
+                    Der Umfrato-Server hat noch nicht geantwortet
                     <v-spacer
                 /></v-card-title>
             </v-card>
@@ -55,6 +55,9 @@
 </template>
 
 <script>
+/* TODO: Draggable fixen (auch Design), Question & Category hinzufügen, Daten updaten, Restliche Fragetypen anbinden
+    (Zum Server und zurück? oder zum Server und synchron rekonstruieren?)
+ *   */
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import draggable from 'vuedraggable'
 import QuestionBuildWidget from '../components/QuestionBuildWidget'
@@ -76,11 +79,13 @@ export default {
             polls: 'pollOverview/getPolls',
             isAuthenticated: 'login/isAuthenticated',
         }),
-        questions: {
+        pollname: {
             get() {
-                return null
+                return this.poll.pollName
             },
-            set(data) {},
+            set(data) {
+                this.setPollName(data)
+            },
         },
         poll() {
             for (let i = 0; i < this.polls.length; i++) {
@@ -96,8 +101,11 @@ export default {
     },
     methods: {
         ...mapActions({ initialize: 'pollOverview/initialize', sendData: 'pollOverview/sendData' }),
-        ...mapMutations({ saveData: 'pollOverview/sendData' }),
-        createCategory() {},
+        ...mapMutations({
+            saveData: 'pollOverview/sendData',
+            setPollName: 'pollOverview/setPollName',
+            createCategory: 'pollOverview/createCategory',
+        }),
         saveState() {
             const payload = {
                 pollId: '',
