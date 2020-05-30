@@ -17,7 +17,7 @@
                                             :group="{ name: 'filter', pull: 'clone' }"
                                         >
                                             <v-chip class="ma-1 filter" :color="item.darkColor" draggable>{{
-                                                option
+                                                option.title
                                             }}</v-chip>
                                         </draggable>
                                     </div>
@@ -32,22 +32,18 @@
                     <v-card-title>Analyse</v-card-title>
                     <v-card class="pa-2">
                         <v-responsive :aspect-ratio="16 / 5">
-                            <div>
-                                Basisdaten:
-                            </div>
+                            <v-overflow-btn prefix="Basisdaten:" :items="pollTitles" dense v-model="chosenPoll">
+                            </v-overflow-btn>
                             <v-divider></v-divider>
                             <div>
                                 <v-overflow-btn
                                     prefix="Ausgewählte Fragen:"
                                     allow-overflow
-                                    chips
-                                    deletable-chips
-                                    small-chips
                                     dense
                                     multiple
                                     flat
                                     :items="QuestionTitles"
-                                    v-model="QuestionTitles"
+                                    v-model="selectedQuestions"
                                 >
                                 </v-overflow-btn>
                             </div>
@@ -55,9 +51,81 @@
                             <v-card height="200" color="#f8faff">
                                 <draggable class="dragArea list-group" :list="filterList" group="filter">
                                     <div v-for="filter in filterList" :key="filter">
-                                        <p>
-                                            {{ filter }}
-                                        </p>
+                                        <v-chip
+                                            :color="kategories[2].color"
+                                            close
+                                            v-model="consistencyChip"
+                                            v-if="filter.type === 'consistency'"
+                                            @click:close="deleteFromFilterList(filter)"
+                                        >
+                                            Es werden nur Teilnehmer angezeigt, die alle Konsistenzfragen konsistent
+                                            beantwortet haben.
+                                        </v-chip>
+
+                                        <v-chip
+                                            :color="kategories[3].color"
+                                            close
+                                            v-if="filter.type === 'age'"
+                                            @click:close="deleteFromFilterList(filter)"
+                                        >
+                                            Nur Teilnehmer mit Alter {{ selectedAgeOperation }} {{ filter.type }}
+                                            <v-overflow-btn
+                                                :items="['<', '>', '=']"
+                                                v-model="selectedAgeOperation"
+                                                flat
+                                                elevation="0"
+                                                style="box-shadow: none;"
+                                            >
+                                            </v-overflow-btn>
+                                            <v-text-field type="number" min="0" oninput="validity.valid||(value='')">
+                                            </v-text-field>
+                                        </v-chip>
+
+                                        <v-chip
+                                            :color="kategories[3].color"
+                                            close
+                                            v-if="filter.type === 'gender'"
+                                            @click:close="deleteFromFilterList(filter)"
+                                        >
+                                            Nur Teilnehmer mit dem Geschlecht: {{ selectedGender }} {{ filter.type }}
+                                            <v-overflow-btn
+                                                :items="['Männlich', 'Weiblich', 'Divers']"
+                                                v-model="selectedGender"
+                                                flat
+                                                elevation="0"
+                                                style="box-shadow: none;"
+                                            >
+                                            </v-overflow-btn>
+                                        </v-chip>
+
+                                        <v-chip
+                                            :color="kategories[4].color"
+                                            close
+                                            v-if="filter.type === 'questionAnswer'"
+                                            @click:close="deleteFromFilterList(filter)"
+                                        >
+                                            Nur Teilnehmer, die bei Frage {{ selectedQuestion }}
+                                            <v-overflow-btn
+                                                :items="['1', '2', '3']"
+                                                v-model="selectedQuestion"
+                                                elevation="0"
+                                                style="box-shadow: none;"
+                                            >
+                                            </v-overflow-btn>
+                                            die Antwort {{ selectedAnswer }}
+                                            <v-overflow-btn
+                                                :items="['1', '2', '3']"
+                                                v-model="selectedAnswer"
+                                                flat
+                                                elevation="0"
+                                                style="box-shadow: none;"
+                                            >
+                                            </v-overflow-btn>
+                                            ausgewählt haben.
+                                        </v-chip>
+                                        <!--                                        <p v-else>-->
+                                        <!--                                            filter.type-->
+                                        <!--                                        </p>-->
                                     </div>
                                 </draggable>
                             </v-card>
@@ -79,6 +147,7 @@
 
 <script>
 import draggable from 'vuedraggable'
+import { mapActions, mapGetters } from 'vuex'
 
 export default {
     name: 'customEvaluation',
@@ -87,21 +156,29 @@ export default {
     },
     data() {
         return {
+            chosenPoll: '',
+            selectedQuestion: '',
+            selectedAnswer: '',
+            selectedAgeOperation: '=',
+            selectedAge: 50,
+            selectedGender: '',
+            consistencyChip: true,
             filterList: [],
+            selectedQuestions: [],
             kategories: [
                 {
                     name: 'Daten',
                     explanation: 'Wähle die Basis-Daten für deine Umfrage',
                     color: '#f5f3ca',
                     darkColor: '#C0BB48',
-                    options: ['Basisdaten: [Umfrage 1] v'],
+                    options: [{ title: 'Umfrage', type: 'surveySelection' }],
                 },
                 {
                     name: 'Fragen',
                     explanation: 'Welche Fragen der Umfrage sollen betrachtet werden?',
                     color: '#e5f5ca',
                     darkColor: '#93C244',
-                    options: ['Folgende Fragen werden betrachtet: [1,3,4,6        ]'],
+                    options: [{ title: 'Fragen', type: 'questionSelection' }],
                 },
                 {
                     name: 'Konsistenzfragen',
@@ -109,7 +186,7 @@ export default {
                         'Hier kann man einstellen, ob inkonsistente Beantwortungen herausgefiltert werden sollen',
                     color: '#caf5da',
                     darkColor: '#4CB988',
-                    options: ['Nur konsistent beantwortete Umfragen'],
+                    options: [{ title: 'Konsistenz', type: 'consistency' }],
                 },
                 {
                     name: 'Teilnehmer',
@@ -117,11 +194,26 @@ export default {
                         'Hier können die Teilnehmer, deren Antworten analysiert werden sollen, gefiltert werden',
                     color: '#caf5ec',
                     darkColor: '#2FA399',
-                    options: [],
+                    options: [
+                        { title: 'Alter', type: 'age' },
+                        { title: 'Geschlecht', type: 'gender' },
+                    ],
                 },
-                { name: 'Antworten', explanation: '', color: '#caeaf5', darkColor: '#2E8CAC', options: [] },
+                {
+                    name: 'Antworten',
+                    explanation: '',
+                    color: '#caeaf5',
+                    darkColor: '#2E8CAC',
+                    options: [{ title: 'Antwort', type: 'questionAnswer' }],
+                },
 
-                { name: 'Logik', explanation: '', color: '#cadaf5', darkColor: '#3D6CBB', options: ['Oder', 'Und'] },
+                {
+                    name: 'Logik',
+                    explanation: '',
+                    color: '#cadaf5',
+                    darkColor: '#3D6CBB',
+                    options: [{ title: 'Oder', type: 'orOperation' }],
+                },
             ],
 
             // mock data set
@@ -176,6 +268,25 @@ export default {
         }
     },
     computed: {
+        ...mapGetters({
+            items: 'navigation/getPolls',
+        }),
+
+        pollTitles() {
+            const pollTitles = Object.assign([{}], this.items)
+            for (let i = 0; i < pollTitles.length; i++) {
+                pollTitles[i] = this.items[i].pollName
+            }
+
+            return pollTitles
+        },
+
+        Questions() {
+            const questions = this.items[this.pollTitles.indexOf(this.chosenPoll)].categoryList[0].questionList[0].title
+
+            return questions
+        },
+
         QuestionTitles() {
             const l = []
             for (let i = 0; i < this.PollResult.questionList.length; i++) {
@@ -186,6 +297,23 @@ export default {
 
         clone({ name }) {
             return name
+        },
+    },
+
+    mounted() {
+        console.log('mounted')
+        console.log(this.items)
+        this.initialize()
+    },
+
+    methods: {
+        ...mapActions({ initialize: 'navigation/initialize' }),
+
+        deleteFromFilterList(item) {
+            const index = this.filterList.indexOf(item)
+            if (index > -1) {
+                this.filterList.splice(index, 1)
+            }
         },
     },
 }

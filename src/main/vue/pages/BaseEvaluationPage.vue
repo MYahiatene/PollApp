@@ -239,16 +239,16 @@ export default {
         this.initialize()
     },
     computed: {
-        /**
-         * creates array with all the questionId in a list, not needed right now, but might come in handy
-         * @returns an array with all the ids from questionList
-         */
         ...mapGetters({
             diagramData: 'evaluation/getDiagramData',
             pollName: 'evaluation/getPollName',
             isAuthenticated: 'login/isAuthenticated',
         }),
 
+        /**
+         * creates array with all the questionId in a list, not needed right now, but might come in handy
+         * @returns an array with all the ids from questionList
+         */
         idList() {
             const l = []
             if (this.diagramData !== undefined) {
