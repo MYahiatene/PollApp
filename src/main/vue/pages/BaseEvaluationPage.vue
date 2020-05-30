@@ -237,14 +237,15 @@ export default {
         },
     },
     methods: {
+        ...mapActions({ initialize: 'evaluation/initialize' }),
+
         /*
 
-        this method is emitted by the settings window.
-        Once its called we update the visual settings of all the choiceQuestionEvaluationWidgets
-        the widget key is added to force the widget to actually update the color
+      this method is emitted by the settings window.
+      Once its called we update the visual settings of all the choiceQuestionEvaluationWidgets
+      the widget key is added to force the widget to actually update the color
 
-         */
-        ...mapActions({ initialize: 'evaluation/initialize' }),
+       */
         updateVisuals(showDiagram, DiagramType, DiagramColor, showTable) {
             this.showDiagram = showDiagram
             this.defaultDiagramType = DiagramType

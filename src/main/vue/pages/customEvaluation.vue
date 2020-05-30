@@ -32,7 +32,7 @@
                 </v-flex>
                 <v-flex md6 lg9>
                     <v-card class="ma-3 pa-3">
-                        <v-card-title>Analyse {{ Questions[0] }}</v-card-title>
+                        <v-card-title>Analyse</v-card-title>
                         <v-card class="pa-2">
                             <v-responsive :aspect-ratio="16 / 5">
                                 <v-overflow-btn prefix="Basisdaten:" :items="pollTitles" dense v-model="chosenPoll">
@@ -53,7 +53,7 @@
                                 <v-divider></v-divider>
                                 <v-card height="350" color="#f8faff">
                                     <draggable class="dragArea list-group" :list="filterList" group="filter">
-                                        <div v-for="filter in filterList" :key="filter">
+                                        <div v-for="(filter, index) in filterList" :key="index">
                                             <v-chip
                                                 :color="kategories[2].color"
                                                 close
@@ -106,31 +106,12 @@
                                                 </v-overflow-btn>
                                             </v-chip>
 
-                                            <v-card
-                                                :color="kategories[4].color"
-                                                close
+                                            <q-a-filter
                                                 v-if="filter.type === 'questionAnswer'"
-                                                @click:close="deleteFromFilterList(filter)"
-                                            >
-                                                Nur Teilnehmer, die bei Frage {{ selectedQuestion }}
-                                                <v-overflow-btn
-                                                    :items="Questions"
-                                                    v-model="selectedQuestion"
-                                                    elevation="0"
-                                                    style="box-shadow: none;"
-                                                >
-                                                </v-overflow-btn>
-                                                die Antwort {{ selectedAnswer }}
-                                                <v-overflow-btn
-                                                    :items="Answers"
-                                                    v-model="selectedAnswer"
-                                                    flat
-                                                    elevation="0"
-                                                    style="box-shadow: none;"
-                                                >
-                                                </v-overflow-btn>
-                                                ausgewählt haben.
-                                            </v-card>
+                                                :poll-index="pollIndex"
+                                                :filter-id="index"
+                                                v-model="filterList[index]"
+                                            ></q-a-filter>
                                             <!--                                        <p v-else>-->
                                             <!--                                            filter.type-->
                                             <!--                                        </p>-->
@@ -162,10 +143,12 @@
 <script>
 import draggable from 'vuedraggable'
 import { mapActions, mapGetters } from 'vuex'
+import QAFilter from '../components/Filter/QAFilter'
 
 export default {
     name: 'customEvaluation',
     components: {
+        QAFilter,
         draggable,
     },
     data() {
@@ -295,39 +278,8 @@ export default {
             return pollTitles
         },
 
-        Questions() {
-            console.log('Questions')
-            const index = this.pollTitles.indexOf(this.chosenPoll)
-            console.log(index)
-            const categories = this.items[0].categoryList
-            console.log(categories)
-
-            const l = []
-            for (let i = 0; i < categories[0].questionList.length; i++) {
-                l[i] = categories[0].questionList[i].questionMessage
-            }
-            return l
-
-            // const questions = this.items[this.pollTitles.indexOf(this.chosenPoll)].categoryList[0].questionList[0].title
-        },
-
-        Answers() {
-            if (this.selectedQuestion === '') {
-                return []
-            } else {
-                const index = this.pollTitles.indexOf(this.chosenPoll)
-                console.log(index)
-                const categories = this.items[index].categoryList
-                console.log(categories)
-
-                const questionIndex = this.Questions.indexOf(this.selectedQuestion)
-
-                const l = []
-                for (let i = 0; i < categories[0].questionList[questionIndex].answerPossibilities.length; i++) {
-                    l[i] = categories[0].questionList[questionIndex].answerPossibilities[i]
-                }
-                return l
-            }
+        pollIndex() {
+            return this.pollTitles.indexOf(this.chosenPoll)
         },
 
         QuestionTitles() {
@@ -355,6 +307,11 @@ export default {
             if (index > -1) {
                 this.filterList.splice(index, 1)
             }
+        },
+
+        updateQAFilter(filterId, newCategory, newQuestion, newAnswer) {
+            console.log('Hallo')
+            console.log(this.filterList)
         },
     },
 }
