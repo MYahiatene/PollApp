@@ -32,7 +32,7 @@
                 </v-flex>
                 <v-flex md6 lg9>
                     <v-card class="ma-3 pa-3">
-                        <v-card-title>Analyse {{ Questions }}</v-card-title>
+                        <v-card-title>Analyse {{ Questions[0] }}</v-card-title>
                         <v-card class="pa-2">
                             <v-responsive :aspect-ratio="16 / 5">
                                 <v-overflow-btn prefix="Basisdaten:" :items="pollTitles" dense v-model="chosenPoll">
@@ -106,7 +106,7 @@
                                                 </v-overflow-btn>
                                             </v-chip>
 
-                                            <v-chip
+                                            <v-card
                                                 :color="kategories[4].color"
                                                 close
                                                 v-if="filter.type === 'questionAnswer'"
@@ -114,7 +114,7 @@
                                             >
                                                 Nur Teilnehmer, die bei Frage {{ selectedQuestion }}
                                                 <v-overflow-btn
-                                                    :items="['1', '2', '3']"
+                                                    :items="Questions"
                                                     v-model="selectedQuestion"
                                                     elevation="0"
                                                     style="box-shadow: none;"
@@ -122,7 +122,7 @@
                                                 </v-overflow-btn>
                                                 die Antwort {{ selectedAnswer }}
                                                 <v-overflow-btn
-                                                    :items="['1', '2', '3']"
+                                                    :items="Answers"
                                                     v-model="selectedAnswer"
                                                     flat
                                                     elevation="0"
@@ -130,7 +130,7 @@
                                                 >
                                                 </v-overflow-btn>
                                                 ausgewählt haben.
-                                            </v-chip>
+                                            </v-card>
                                             <!--                                        <p v-else>-->
                                             <!--                                            filter.type-->
                                             <!--                                        </p>-->
@@ -170,7 +170,7 @@ export default {
     },
     data() {
         return {
-            chosenPoll: '',
+            chosenPoll: 'Umfrage zur IT-Messe 2020',
             selectedQuestion: '',
             selectedAnswer: '',
             selectedAgeOperation: '=',
@@ -297,10 +297,37 @@ export default {
 
         Questions() {
             console.log('Questions')
+            const index = this.pollTitles.indexOf(this.chosenPoll)
+            console.log(index)
             const categories = this.items[0].categoryList
             console.log(categories)
-            return categories[0].questionList[0].questionMessage
+
+            const l = []
+            for (let i = 0; i < categories[0].questionList.length; i++) {
+                l[i] = categories[0].questionList[i].questionMessage
+            }
+            return l
+
             // const questions = this.items[this.pollTitles.indexOf(this.chosenPoll)].categoryList[0].questionList[0].title
+        },
+
+        Answers() {
+            if (this.selectedQuestion === '') {
+                return []
+            } else {
+                const index = this.pollTitles.indexOf(this.chosenPoll)
+                console.log(index)
+                const categories = this.items[index].categoryList
+                console.log(categories)
+
+                const questionIndex = this.Questions.indexOf(this.selectedQuestion)
+
+                const l = []
+                for (let i = 0; i < categories[0].questionList[questionIndex].answerPossibilities.length; i++) {
+                    l[i] = categories[0].questionList[questionIndex].answerPossibilities[i]
+                }
+                return l
+            }
         },
 
         QuestionTitles() {
