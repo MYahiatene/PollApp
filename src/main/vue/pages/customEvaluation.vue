@@ -29,7 +29,7 @@
             </v-flex>
             <v-flex md6 lg9>
                 <v-card class="ma-3 pa-3">
-                    <v-card-title>Analyse</v-card-title>
+                    <v-card-title>Analyse {{ Questions }} fjskl</v-card-title>
                     <v-card class="pa-2">
                         <v-responsive :aspect-ratio="16 / 5">
                             <v-overflow-btn prefix="Basisdaten:" :items="pollTitles" dense v-model="chosenPoll">
@@ -282,9 +282,9 @@ export default {
         },
 
         Questions() {
-            const questions = this.items[this.pollTitles.indexOf(this.chosenPoll)].categoryList[0].questionList[0].title
-
-            return questions
+            const categories = this.items[0].categoryList
+            return categories[0].questionList[0].title
+            // const questions = this.items[this.pollTitles.indexOf(this.chosenPoll)].categoryList[0].questionList[0].title
         },
 
         QuestionTitles() {

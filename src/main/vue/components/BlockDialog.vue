@@ -16,17 +16,17 @@
                         </v-btn>
                     </v-col>
                 </v-card-title>
-                <draggable-block></draggable-block>
+                <custom-evaluation></custom-evaluation>
             </v-card>
         </v-dialog>
     </div>
 </template>
 
 <script>
-import DraggableBlock from '../components/draggableBlock'
+import CustomEvaluation from '../pages/customEvaluation'
 export default {
     name: 'BlockDialog',
-    components: { DraggableBlock },
+    components: { CustomEvaluation },
     data() {
         return {
             dialog: false,
