@@ -91,16 +91,9 @@
                         mdi-delete
                     </v-icon>
                 </template>
-                <template v-slot:item.avatar="{ item }">
-                    <div class="p-2">
-                        <v-avatar v-if="item.avatar !== 'default'">
-                            <v-img :src="item.avatar" :alt="item.username" height="50px" width="50px"></v-img>
-                        </v-avatar>
-                        <v-avatar v-else color="indigo"><v-icon dark>mdi-account-circle</v-icon></v-avatar>
-                    </div>
-                </template>
                 <template v-slot:expanded-item="{ headers, item }">
-                    <td :colspan="headers.length">E-Mail: {{ item.email }}</td>
+                    <v-container>E-Mail: {{ item.email }}</v-container>
+                    <v-container>Name: {{ item.firstName }} {{ item.lastName }}</v-container>
                 </template>
             </v-data-table>
         </v-card>
@@ -128,7 +121,6 @@ export default {
                 lastName: '',
             },
             defaultUser: {
-                avatar: '',
                 username: '',
                 role: '',
                 email: '',
@@ -137,8 +129,7 @@ export default {
             },
             roles: ['Admin', 'Umfrageersteller', 'Umfragebearbeiter', 'Teilnehmer'],
             headers: [
-                { value: 'avatar', align: 'start', sortable: false, width: '1' },
-                { text: 'Username', value: 'username' },
+                { text: 'Username', value: 'username', align: 'start' },
                 {
                     text: 'Rolle',
                     value: 'role',
@@ -157,7 +148,6 @@ export default {
             ],
             users: [
                 {
-                    avatar: 'https://avatars0.githubusercontent.com/u/9064066?v=4&s=460',
                     username: 'ymokrane',
                     role: 'Admin',
                     email: 'ymokrane@gmail.com',
@@ -165,7 +155,6 @@ export default {
                     lastName: 'Yahiatene',
                 },
                 {
-                    avatar: 'default',
                     username: 'jempeerious',
                     role: 'Umfrageersteller',
                     email: 'jempeerious@gmx.de',
@@ -173,6 +162,7 @@ export default {
                     lastName: 'Empeerious',
                 },
             ],
+            users2: [],
         }
     },
     computed: {
@@ -268,7 +258,6 @@ export default {
                 this.editUserData(this.editedUser)
             } else {
                 this.defaultUser = Object.assign({}, this.editedUser)
-                this.defaultUser.avatar = 'default'
                 this.users.push(this.defaultUser)
                 this.sendNewUserData(this.defaultUser)
             }
