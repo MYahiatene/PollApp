@@ -5,7 +5,7 @@
                 <v-row no-gutters>
                     <v-col>
                         <v-toolbar color="light-blue" dark>
-                            <v-toolbar-title>DraggableBlocks</v-toolbar-title>
+                            <v-toolbar-title>TextQuestionEvaluationWidget</v-toolbar-title>
                             <v-spacer></v-spacer>
                         </v-toolbar>
                     </v-col>

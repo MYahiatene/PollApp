@@ -20,27 +20,6 @@
                                 prepend-inner-icon="mdi-pencil"
                                 label="Search"
                             ></v-text-field>
-                            <template v-if="$vuetify.breakpoint.mdAndUp">
-                                <v-spacer></v-spacer>
-                                <v-select
-                                    v-model="sortBy"
-                                    flat
-                                    solo-inverted
-                                    hide-details
-                                    :items="keys"
-                                    prepend-inner-icon="mdi-pencil"
-                                    label="Sort by"
-                                ></v-select>
-                                <v-spacer></v-spacer>
-                                <v-btn-toggle v-model="sortDesc" mandatory>
-                                    <v-btn large depressed :value="false">
-                                        <v-icon>mdi-arrow-up</v-icon>
-                                    </v-btn>
-                                    <v-btn large depressed :value="true">
-                                        <v-icon>mdi-arrow-down</v-icon>
-                                    </v-btn>
-                                </v-btn-toggle>
-                            </template>
                         </v-toolbar>
                     </template>
 
@@ -61,6 +40,8 @@
                                             <v-data-table
                                                 :headers="tableHeaders"
                                                 :items="prepareAnswers"
+                                                :search="search"
+                                                :custom-filter="filterOnlyCapsText"
                                                 class="elevation-1"
                                             >
                                             </v-data-table>
@@ -77,6 +58,8 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+
 export default {
     name: 'TextQuestionEvaluationWidget',
     data: () => ({
@@ -95,7 +78,7 @@ export default {
         },
         search: '',
         tableView: true,
-        freqView: true,
+        freqView: false,
         filter: {},
         sortDesc: false,
         sortBy: 'name',
@@ -113,7 +96,7 @@ export default {
         ],
         answers: [
             {
-                text: 'Uh, wickey wild wild Wicky wicky wild Wickey wild, wicky wicky wild wild wild west',
+                text: 'Uh, wickey wild wild Wicky wicky wild Wickey wild, wicky wicky wild wild wild west f gse',
                 answered: '2020',
                 creator: 'Idi Amin',
                 id: '0',
@@ -125,9 +108,13 @@ export default {
                 id: '1',
             },
         ],
-        contextActions: ['Beantworten', 'Hallo', 'FUCK GSE'],
+        contextActions: ['Beantworten', 'Hallo', 'FGSE'],
     }),
     computed: {
+        ...mapGetters({
+            items: 'navigation/getPolls',
+            isAuthenticated: 'login/isAuthenticated',
+        }),
         prepareAnswers() {
             const data = []
             for (let i = 0; i < this.answers.length; i++) {
@@ -152,6 +139,14 @@ export default {
             })
 
             return freqMap
+        },
+        filterOnlyCapsText(value, search, item) {
+            return (
+                value != null &&
+                search != null &&
+                typeof value === 'string' &&
+                value.toString().toLowerCase().includes(search.toLowerCase())
+            )
         },
     },
 }
