@@ -102,8 +102,9 @@ public class EvaluationController {
     }
 
     /**Returns JSON string to be interpreted, hier wird der jsonInput in ein Filterobjekt deserialisiert und dort können wir herausfinden, um welchen Filter es sich genau handelt.*/
-    @GetMapping("/generateDiagram")
-    public String populateDiagram(final @RequestBody List<FilterCmd> input) {
+    @PostMapping("/generateDiagram")
+    public void populateDiagram(final @RequestBody List<FilterCmd> input) {
+        System.out.println(input.toString());
         /*TODO:
             1. Filter parsen
             2. Filter ordnen
@@ -111,9 +112,18 @@ public class EvaluationController {
             4. Rechnen und evtl. wieder zu 3
             5. als Diagramm aufarbeiten
             6. abschicken*/
-        return null;
     }
 
-
+    @GetMapping("/getDiagram")
+    public String sendDiagram(final @RequestBody List<FilterCmd> input) {
+            /*TODO:
+                1. Filter parsen
+                2. Filter ordnen
+                3. Daten auswählen
+                4. Rechnen und evtl. wieder zu 3
+                5. als Diagramm aufarbeiten
+                6. abschicken*/
+        return "Haha";
+    }
 
 }

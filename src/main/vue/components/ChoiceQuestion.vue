@@ -50,7 +50,6 @@ export default {
             choiceType: ['Standartauswahl', 'Drop-Down', 'Sortieren'],
         }
     },
-    mounted() {},
     computed: {
         ...mapGetters({ getQuestion: 'pollOverview/getQuestion', questionToLoad: 'pollOverview/questionToLoad' }),
         nrPossibleAnswers: {

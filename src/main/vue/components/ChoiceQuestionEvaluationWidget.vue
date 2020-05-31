@@ -7,7 +7,7 @@
 
             <v-spacer></v-spacer>
             <!-- Here we have the BlockDialog that can be used to filter ans analyse this question or the entire poll-->
-            <BlockDialog></BlockDialog>
+            <custom-evaluation />
 
             <!--            this button leads to the settings page for this specific question-->
 
@@ -57,13 +57,13 @@
 </template>
 
 <script>
-import visualEvaluationSettings from './visualEvaluationSettings'
+import CustomEvaluation from '../pages/customEvaluation'
 import BarChartView from './BarChartView'
 import PieChartView from './PieChartView'
-import BlockDialog from './BlockDialog'
+import visualEvaluationSettings from './visualEvaluationSettings'
 
 export default {
-    components: { BlockDialog, BarChartView, PieChartView, visualEvaluationSettings },
+    components: { CustomEvaluation, BarChartView, PieChartView, visualEvaluationSettings },
     // these props are past in by the parent component
     props: {
         diagramType: {

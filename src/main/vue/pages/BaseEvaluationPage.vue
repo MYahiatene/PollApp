@@ -27,9 +27,7 @@ that each display a basic evaluation of one specific question-->
 
                     <!--            This button will lead to the Page where we can filter and analyse the data-->
 
-                    <v-btn color="primary">
-                        Analyse
-                    </v-btn>
+                    <custom-evaluation :chosen-poll="this.pollName" />
 
                     <!--            here we have a sub menu, that can hold a list of different options or setings-->
                     <v-menu bottom left>
@@ -154,10 +152,11 @@ import { mapActions, mapGetters } from 'vuex'
 import AuthGate from '../components/AuthGate'
 import ChoiceQuestionEvaluationWidget from '../components/ChoiceQuestionEvaluationWidget'
 import visualEvaluationSettings from '../components/visualEvaluationSettings'
+import CustomEvaluation from './customEvaluation'
 
 export default {
     name: 'BaseEvaluationPage',
-    components: { AuthGate, ChoiceQuestionEvaluationWidget, visualEvaluationSettings },
+    components: { AuthGate, ChoiceQuestionEvaluationWidget, visualEvaluationSettings, CustomEvaluation },
     data() {
         return {
             // key that forces the diagram to update
@@ -176,56 +175,6 @@ export default {
             // options that will be displayed in the sub menu
             menuItems: [{ title: 'Visuelle Einstellungen' }, { title: 'Exportieren' }],
 
-            // mock data set
-            PollResult: {
-                name: 'Umfrage zur IT-Messe 2021',
-                questionList: [
-                    {
-                        id: 1,
-                        title: 'Wie hat Ihnen die Veranstaltung insgesamt gefallen?',
-                        answerPossibilities: ['Sehr gut', 'Gut', 'Überwiegend gut', 'Schlecht', 'Ich weiß nicht'],
-                        data: [70, 65, 30, 5, 25],
-                    },
-
-                    {
-                        id: 2,
-                        title: 'Welches Geschlecht haben Sie?',
-                        answerPossibilities: ['Weiblich', 'Männlich', 'Divers'],
-                        data: [20, 19, 1],
-                    },
-
-                    {
-                        id: 3,
-                        title: 'Wie geht es Ihnen heute?',
-                        answerPossibilities: ['Gut', 'In Ordnung', 'Schlecht'],
-                        data: [22, 8, 7],
-                    },
-                    {
-                        id: 4,
-                        title: 'Was hat Sie am Meisten überzeugt?',
-                        answerPossibilities: [
-                            'Die Vorträge',
-                            'Die Informationsstände',
-                            'Das Catering',
-                            'Ich kann mich nicht entscheiden',
-                        ],
-                        data: [17, 8, 4, 2],
-                    },
-                    {
-                        id: 5,
-                        title: 'Werden Sie uns nächstes Jahr wieder besuchen?',
-                        answerPossibilities: ['Ja', 'Nein'],
-                        data: [50, 21],
-                    },
-                    {
-                        id: 6,
-                        title: 'Wie viel Zeit haben sie auf der Messe verbracht?',
-                        answerPossibilities: ['unter einer Stunde', '1-2 Stunden', '2-5 Stunden', 'über 5 Stunden'],
-                        data: [12, 45, 40, 20],
-                    },
-                ],
-            },
-
             // itemsPerPageArray: [1, 2, 3],
             search: '',
             filter: {},
@@ -239,16 +188,16 @@ export default {
         this.initialize()
     },
     computed: {
-        /**
-         * creates array with all the questionId in a list, not needed right now, but might come in handy
-         * @returns an array with all the ids from questionList
-         */
         ...mapGetters({
             diagramData: 'evaluation/getDiagramData',
             pollName: 'evaluation/getPollName',
             isAuthenticated: 'login/isAuthenticated',
         }),
 
+        /**
+         * creates array with all the questionId in a list, not needed right now, but might come in handy
+         * @returns an array with all the ids from questionList
+         */
         idList() {
             const l = []
             if (this.diagramData !== undefined) {
@@ -287,14 +236,15 @@ export default {
         },
     },
     methods: {
+        ...mapActions({ initialize: 'evaluation/initialize' }),
+
         /*
 
-        this method is emitted by the settings window.
-        Once its called we update the visual settings of all the choiceQuestionEvaluationWidgets
-        the widget key is added to force the widget to actually update the color
+      this method is emitted by the settings window.
+      Once its called we update the visual settings of all the choiceQuestionEvaluationWidgets
+      the widget key is added to force the widget to actually update the color
 
-         */
-        ...mapActions({ initialize: 'evaluation/initialize' }),
+       */
         updateVisuals(showDiagram, DiagramType, DiagramColor, showTable) {
             this.showDiagram = showDiagram
             this.defaultDiagramType = DiagramType

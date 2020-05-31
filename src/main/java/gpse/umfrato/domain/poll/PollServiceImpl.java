@@ -43,7 +43,7 @@ class PollServiceImpl implements PollService {
     public Poll createPoll(final Poll poll) {
         // final Poll newPoll = poll;
         pollRepository.save(poll);
-        categoryRepository.save(categoryService.createCategory("Keine Kategorie", poll.getPollId()));
+        categoryRepository.save(categoryService.createCategory("Standardkategorie", poll.getPollId()));
 
         return poll;
     }

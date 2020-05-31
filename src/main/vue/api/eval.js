@@ -13,4 +13,10 @@ export default {
         console.log(instance.defaults.headers)
         return await instance.get('/initialDiagrams')
     },
+    async sendFilter(filterList) {
+        console.log(filterList)
+        console.log(instance.defaults.headers)
+        await instance.post('/generateDiagram', filterList)
+        // return await instance.get('/getDiagram')
+    },
 }

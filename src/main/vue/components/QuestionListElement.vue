@@ -8,6 +8,10 @@
                 {{ translatedQuestionType }}
             </v-list-item-subtitle>
         </v-col>
+        <v-spacer />
+        <v-spacer />
+        <v-spacer />
+        <v-spacer />
         <v-col>
             <v-btn icon @click="set()">
                 <v-icon small>
