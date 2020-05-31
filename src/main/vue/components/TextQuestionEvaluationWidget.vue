@@ -46,6 +46,16 @@
                                             >
                                             </v-data-table>
                                         </template>
+                                        <template v-if="tableView">
+                                            <v-data-table
+                                                :headers="tableHeaders"
+                                                :items="polls"
+                                                :search="search"
+                                                :custom-filter="filterOnlyCapsText"
+                                                class="elevation-1"
+                                            >
+                                            </v-data-table>
+                                        </template>
                                     </v-container>
                                 </v-card>
                             </v-col>
@@ -58,7 +68,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 
 export default {
     name: 'TextQuestionEvaluationWidget',
@@ -112,7 +122,7 @@ export default {
     }),
     computed: {
         ...mapGetters({
-            items: 'navigation/getPolls',
+            polls: 'navigation/getPolls',
             isAuthenticated: 'login/isAuthenticated',
         }),
         prepareAnswers() {
@@ -127,7 +137,13 @@ export default {
             return data
         },
     },
+    mounted() {
+        console.log('mounted')
+        console.log(this.polls)
+        this.initialize()
+    },
     methods: {
+        ...mapActions({ initialize: 'navigation/initialize' }),
         wordFreq(string) {
             const words = string.toString().replace(/[.]/g, '').split(/\s/)
             const freqMap = {}
