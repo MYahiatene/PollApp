@@ -1,11 +1,13 @@
 <template>
+    <!--Only create Page, after the PollData arrived -->
     <div v-if="getPoll[1] !== undefined">
-        <!--     In this file we define the header that will be displayed on all pages in the entire app -->
+        <!--In this file we define the header that will be displayed on all pages in the entire app -->
         <v-app :dark="setTheme" :style="backgroundColor">
-            <!--        set Theme returns a boolean value depending on the theme the user wants (light=false, dark=true)-->
-            <!--        backgroundColor is a computed string that sets the background to the color defined in the nuxt.config.js depending on the chosen theme-->
+            <!--set Theme returns a boolean value depending on the theme the user wants (light=false, dark=true)-->
+            <!--backgroundColor is a computed string that sets the background to the color defined by the creator, if
+            something was choosen, else defined in the nuxt.config.js depending on the chosen theme-->
             <v-app-bar fixed app>
-                <!--            Logo and Name of the App-->
+                <!--Logo and Name of the App-->
                 <nuxt-link to="/" style="text-decoration: none;">
                     <div>
                         <h1><img src="LogoEinfach.svg" alt="Logo" width="25" /> {{ title }}</h1>
@@ -80,12 +82,16 @@ export default {
             title: 'Umfrato',
         }
     },
+    /**
+     * Calls showPoll (below mapAction) to get PollData for background color.
+     */
     mounted() {
         this.showPoll()
     },
     computed: {
         /**
-         * returns a css compatible string that sets the background to the color specified in th nuxt.config.js
+         * Returns a css compatible string that sets the background to the color specified during the creation of the
+         * poll by the user. If they haven't choosen one, the color specified in the nuxt.config.js is used.
          */
         backgroundColor() {
             if (this.goDark) {
@@ -104,6 +110,10 @@ export default {
         }),
     },
     methods: {
+        /**
+         * Returns a boolean of wheater or not the dark mode is valid.
+         * @returns {boolean} darkMode
+         */
         setTheme() {
             this.goDark = !this.goDark
             if (this.goDark === true) {
@@ -112,13 +122,9 @@ export default {
                 return (this.$vuetify.theme.dark = false)
             }
         },
-        logMapGetter() {
-            console.log(this.getPoll)
-            console.log('In LogMapGetter')
-        },
-        // showPoll() {
-        //     this.poll = this.$store.dispatch('participant/showPoll')
-        // },
+        /**
+         * Calls showPoll in store/participant to get PollData for the background color.
+         */
         ...mapActions({ showPoll: 'participant/showPoll' }),
     },
 }

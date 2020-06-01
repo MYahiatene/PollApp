@@ -8,6 +8,10 @@ const instance = axios.create({
     },
 })
 export default {
+    /**
+     * Calls getParticipant in PollController and returns a promise of the saved poll.
+     * @returns {Promise<AxiosResponse<any>>}
+     */
     async getPoll() {
         return await instance.get('/participant')
     },

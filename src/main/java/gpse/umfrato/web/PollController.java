@@ -31,6 +31,11 @@ public class PollController {
         this.pollService = pollService;
     }
 
+    /**
+     * This method creates the poll with the given settings from the PollCreation page.
+     * @param pollCmd
+     * @return String with PollID or Error
+     */
     @PostMapping(value = "/createpoll", produces = MediaType.APPLICATION_JSON_VALUE)
     public String createPoll(final @RequestBody PollCmd pollCmd) {
         try {
@@ -62,7 +67,7 @@ public class PollController {
 
 
     /**
-     * This method returns the design setting of a poll.
+     * This method returns the poll (questions, settings etc).
      *
      * @return a selected poll
      */

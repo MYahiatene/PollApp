@@ -1,7 +1,9 @@
 <template>
-    <div v-if="getPoll[1] !== undefined" @change="fontColor">
+    <!--Build page after PollData from created() method is here-->
+    <div v-if="getPoll[1] !== undefined">
         <AuthGate v-if="isAuthenticated !== true"></AuthGate>
         <v-container>
+            <!--When/After the PollData "arrived" show the logo-->
             <div v-if="getPoll[1].data.logo !== undefined">
                 <img :src="getPoll[1].data.logo" alt="failedToLoadLogo" />
             </div>
@@ -81,7 +83,7 @@ const instance = axios.create({
 })
 export default {
     name: 'Participant',
-    layout: 'participant',
+    layout: 'participant', // uses special layout/participant instead of default-layout
     components: { AuthGate },
     data: () => ({
         questionIndex: 1,
@@ -90,27 +92,45 @@ export default {
         // for checkbox this should be initialised with questionAnswers false/null at least for multiple choice options
         // but probably for all of them
     }),
+    /**
+     * Calls showPoll in methods to getPoll before/while the page is created.
+     */
     created() {
         this.showPoll()
     },
     computed: {
+        /**
+         * Calls mapGetters defined in store/participant or store/login.
+         */
         ...mapGetters({
             getPoll: 'participant/getPoll',
             isAuthenticated: 'login/isAuthenticated',
             getVisibility: 'participant/getVisibility',
             getNumberOfQuestions: 'participant/getNumberOfQuestions',
         }),
+        /**
+         * Get's the given FontColor from PollData.
+         * @returns {fontColor}
+         */
         fontColor() {
             return this.getPoll[1].data.fontColor
         },
+        /**
+         * Get's the given fontColor from PollData.
+         * @returns {color: fontColor}
+         */
         fontColorText() {
             return 'color:' + this.getPoll[1].data.fontColor
         },
     },
     methods: {
+        /**
+         * Calls showPoll in store/participant.js.
+         */
         showPoll() {
             this.$store.dispatch('participant/showPoll')
         },
+        // this doesn't involve the store, so that's bad (taken from PollCreation
         saveAnswers() {
             const answers = {
                 answerList: this.answerList,
@@ -121,9 +141,17 @@ export default {
             this.questionIndex += 1
             return this.questionIndex - 1
         },
+        /**
+         * Get's the given answer of a checkbox question.
+         * @param e (Change-Event)
+         */
         saveAnswerCheckbox(e) {
             // this.answerList.append(e.payload[0])
         },
+        /**
+         * Get's the given answer of a free text question. Saves after every symbol.
+         * @param e (Input-Event)
+         */
         saveAnswerField(e) {
             // this.answerList.append(e.payload[0])
         },
