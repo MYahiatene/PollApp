@@ -1,5 +1,6 @@
 package gpse.umfrato.web;
 
+import gpse.umfrato.domain.cmd.DeleteUserCmd;
 import gpse.umfrato.domain.cmd.EditUserCmd;
 import gpse.umfrato.domain.cmd.UserCmd;
 import gpse.umfrato.domain.user.User;
@@ -75,7 +76,7 @@ public class UserController {
     @PreAuthorize("hasAuthority('Admin')")
     @GetMapping("/users")
     public List<User> getUsers() {
-        return userRepository.findAll();
+        return userService.getAllUsers();
     }
 
     /**
@@ -85,14 +86,27 @@ public class UserController {
      * @return the requested user
      */
     @PreAuthorize("hasAuthority('Admin')")
-    @GetMapping("/getuser/{userId:\\d+}")
+    @GetMapping("/getuser")
     public String getUser(final @RequestBody UserCmd usercmd) {
         return userService.loadUserByUsername(usercmd.getUsername()).getUsername();
     }
 
+    /**
+     * Checks if the users token has the authority admin
+     */
     @PreAuthorize("hasAuthority('Admin')")
     @GetMapping("/checkToken")
     public void checkToken() {
 
+    }
+
+    /**
+     * Deletes a user in the data base
+     */
+    @PreAuthorize("hasAuthority('Admin')")
+    @PutMapping("/deleteUser")
+    public String deleteUser(final @RequestBody DeleteUserCmd deleteUserCmd) {
+        userService.deleteUser(deleteUserCmd.getUsername());
+        return "test";
     }
 }

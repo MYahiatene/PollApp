@@ -146,22 +146,6 @@ export default {
                     width: '1',
                 },
             ],
-            users2: [
-                {
-                    username: 'ymokrane',
-                    role: 'Admin',
-                    email: 'ymokrane@gmail.com',
-                    firstName: 'Mokrane',
-                    lastName: 'Yahiatene',
-                },
-                {
-                    username: 'jempeerious',
-                    role: 'Umfrageersteller',
-                    email: 'jempeerious@gmx.de',
-                    firstName: 'Jeroshan',
-                    lastName: 'Empeerious',
-                },
-            ],
         }
     },
     computed: {
@@ -176,9 +160,8 @@ export default {
         },
     },
     created() {
-        this.token = this.createToken()
-        console.log(this.token)
-        console.log(this.loadUserData())
+        this.createToken()
+        this.loadUserData()
     },
     methods: {
         async createToken() {
@@ -202,30 +185,20 @@ export default {
             )
             return this.token
         },
-        loadUserData() {
-            /* instance.get('/users').then((response) => {
-                response.data.forEach(function (element) {
-                    const loadUser = {}
-                    loadUser.username = element.username
-                    loadUser.firstName = element.firstName
-                    loadUser.lastName = element.lastName
-                    loadUser.email = element.email
-                    loadUser.role = element.authorities[0].authority
-                    this.users.push(loadUser)
-                    console.log(this.users)
-                })
-            }) */
+        async loadUserData() {
+            this.token = this.authenticate
             const instance = this.$axios.create({
                 baseURL: 'http://127.0.0.1:8088/api',
                 headers: {
                     Authorization: 'Bearer ' + this.token,
                 },
             })
-            const response = instance.get('/users').then((response) => {
-                return response
+            await instance.get('/users').then((response) => {
+                this.users = response.data
+                this.users.forEach((ele) => {
+                    ele.role = ele.authorities[0].authority
+                })
             })
-            const result = response.data
-            return result
         },
         editUser(item) {
             this.editedIndex = this.users.indexOf(item)
@@ -234,7 +207,21 @@ export default {
         },
         deleteUser(item) {
             const index = this.users.indexOf(item)
-            confirm('Sind sie sich sicher, dass sie diesen Nutzer löschen möchten?') && this.users.splice(index, 1)
+            const userObj = {
+                username: item.username,
+            }
+            const instance = this.$axios.create({
+                baseURL: 'http://127.0.0.1:8088/api',
+                timeout: 1000,
+                headers: {
+                    Authorization: 'Bearer ' + this.token,
+                },
+            })
+            confirm('Sind sie sich sicher, dass sie diesen Nutzer löschen möchten?') &&
+                this.users.splice(index, 1) &&
+                instance.put('/deleteUser', userObj).catch((error) => {
+                    console.log(error)
+                })
         },
         close() {
             this.dialog = false

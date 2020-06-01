@@ -50,6 +50,15 @@ class UserServiceImpl implements UserService {
         return users;
     }
 
+    /**
+     * This method edits the user in the repository
+     *
+     * @param username  the username of the user
+     * @param firstName the firstName of the user
+     * @param lastName  the lastName of the user
+     * @param role      the role of the user
+     * @param email     the email of the user
+     */
     @Override
     public void editUser(String username, String firstName, String lastName, String role, String email) {
         final User user = userRepository.getOne(username);
@@ -63,6 +72,16 @@ class UserServiceImpl implements UserService {
     }
 
     /**
+     * This method deletes the user in the repository based on the id username
+     *
+     * @param username the username of the user
+     */
+    @Override
+    public void deleteUser(String username) {
+        userRepository.delete(userRepository.getOne(username));
+    }
+
+    /**
      * This method search for a user with username.
      *
      * @param username the username of the requested user
@@ -73,4 +92,5 @@ class UserServiceImpl implements UserService {
         return userRepository.findById(username)
             .orElseThrow(() -> new UsernameNotFoundException("Username " + username + " not found."));
     }
+
 }

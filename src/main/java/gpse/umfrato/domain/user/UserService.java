@@ -13,7 +13,7 @@ public interface UserService extends UserDetailsService {
      * @param password  the passwor of the user
      * @param firstName first name of the user
      * @param lastName  last name of the user
-     * @param role     the roles from user
+     * @param role      the roles from user
      * @return created user
      */
     User createUser(final String username, final String password, final String firstName,
@@ -26,7 +26,22 @@ public interface UserService extends UserDetailsService {
      */
     List<User> getAllUsers();
 
-
+    /**
+     * This method edits a user
+     *
+     * @param username  the username of the user
+     * @param firstName the firstName of the user
+     * @param lastName  the lastName of the user
+     * @param role      the role of the user
+     * @param email     the email of the user
+     */
     void editUser(final String username, final String firstName,
                   final String lastName, final String role, final String email);
+
+    /**
+     * This method deletes a user
+     *
+     * @param username the username of the user
+     */
+    void deleteUser(final String username);
 }
