@@ -101,11 +101,11 @@
 </template>
 <script>
 import { mapGetters } from 'vuex'
-
 export default {
     data() {
         return {
             token: '',
+            users: [],
             authenticated: false,
             dialog: false,
             search: '',
@@ -146,7 +146,7 @@ export default {
                     width: '1',
                 },
             ],
-            users: [
+            users2: [
                 {
                     username: 'ymokrane',
                     role: 'Admin',
@@ -162,7 +162,6 @@ export default {
                     lastName: 'Empeerious',
                 },
             ],
-            users2: [],
         }
     },
     computed: {
@@ -176,8 +175,10 @@ export default {
             return this.editedIndex === -1 ? 'Nutzer anlegen' : 'Änderungen sichern'
         },
     },
-    mounted() {
-        this.createToken()
+    created() {
+        this.token = this.createToken()
+        console.log(this.token)
+        console.log(this.loadUserData())
     },
     methods: {
         async createToken() {
@@ -185,7 +186,6 @@ export default {
             this.token = this.authenticate
             const instance = this.$axios.create({
                 baseURL: 'http://127.0.0.1:8088/api',
-                timeout: 1000,
                 headers: {
                     Authorization: 'Bearer ' + this.token,
                 },
@@ -200,6 +200,32 @@ export default {
                     console.log(error)
                 }
             )
+            return this.token
+        },
+        loadUserData() {
+            /* instance.get('/users').then((response) => {
+                response.data.forEach(function (element) {
+                    const loadUser = {}
+                    loadUser.username = element.username
+                    loadUser.firstName = element.firstName
+                    loadUser.lastName = element.lastName
+                    loadUser.email = element.email
+                    loadUser.role = element.authorities[0].authority
+                    this.users.push(loadUser)
+                    console.log(this.users)
+                })
+            }) */
+            const instance = this.$axios.create({
+                baseURL: 'http://127.0.0.1:8088/api',
+                headers: {
+                    Authorization: 'Bearer ' + this.token,
+                },
+            })
+            const response = instance.get('/users').then((response) => {
+                return response
+            })
+            const result = response.data
+            return result
         },
         editUser(item) {
             this.editedIndex = this.users.indexOf(item)
