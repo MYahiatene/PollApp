@@ -1,6 +1,7 @@
 package gpse.umfrato.web;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Controller;
@@ -23,6 +24,7 @@ public class MailController {
     public String sendEmail() {
 
         try {
+
             final SimpleMailMessage message = new SimpleMailMessage();
 
             message.setTo("gpseteam5.1@gmail.com");
@@ -32,9 +34,11 @@ public class MailController {
             this.mailSender.send(message);
 
             return "Email sent.";
-        } catch (Exception e) {
-            e.printStackTrace();
+
+        } catch (MailException e) {
+
             return "Email sending failed.";
+
         }
 
     }
