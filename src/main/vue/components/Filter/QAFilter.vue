@@ -1,11 +1,17 @@
 <template>
     <v-card close @click:close="deleteFromFilterList(filter)" color="#caeaf5" class="pa-2 ma-2">
-        Nur Teilnehmer, die in Kategorie {{ filterId }}
-        <v-overflow-btn :items="categories" v-model="selectedCategory" elevation="0" style="box-shadow: none;">
-        </v-overflow-btn>
-
-        bei Frage
         <v-overflow-btn
+            prefix="Nur Teilnehmer, die in Kategorie"
+            dense
+            :items="categories"
+            v-model="selectedCategory"
+            elevation="0"
+            style="box-shadow: none;"
+        >
+        </v-overflow-btn>
+        <v-overflow-btn
+            prefix="bei Frage"
+            dense
             :items="questions"
             v-model="selectedQuestion"
             :no-data-text="'Keine Kategorie ausgewählt'"
@@ -13,9 +19,10 @@
             style="box-shadow: none;"
         >
         </v-overflow-btn>
-        die Antwort
         <v-overflow-btn
+            prefix="die Antwort"
             :items="answers"
+            dense
             v-model="selectedAnswer"
             flat
             :no-data-text="'Keine Frage ausgewählt'"

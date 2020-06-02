@@ -144,6 +144,7 @@
                                                             :selected-category="filter.selectedCategory"
                                                             @updateData="updateQAFilter"
                                                         ></q-a-filter>
+
                                                         <!--                                        <p v-else>-->
                                                         <!--                                            filter.filterType-->
                                                         <!--                                        </p>-->
