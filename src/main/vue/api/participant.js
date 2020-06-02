@@ -15,4 +15,11 @@ export default {
     async getPoll() {
         return await instance.get('/participant')
     },
+    saveAnswers(answerObj) {
+        console.log('Hi aus dem api')
+        const answerCmd = answerObj
+        console.log('answerCmd:', answerCmd)
+        // const index = answerObj.pollID
+        return instance.post('/poll/pollId:1/addanswer', answerCmd)
+    },
 }

@@ -50,4 +50,9 @@ export const actions = {
         const poll = await api.getPoll() // calls api/participant, which calls PollController, which calls PollService and gives back a poll
         commit('setPoll', poll) // calls the setter int the store to save the poll in the store
     },
+    saveAnswer(state, answerObj) {
+        console.log('Hi aus dem store.')
+        api.saveAnswers(answerObj)
+        // commit('mutation') Wozu? Es ändert sich ja nichts auf der Participant page; keine Rückgabe notwendig
+    },
 }

@@ -97,7 +97,6 @@ export default {
             if (this.goDark) {
                 return 'background:' + this.$vuetify.theme.themes.dark.background
             } else if (this.getPoll[1].data.backgroundColor !== null) {
-                console.log(this.getPoll[1].data.backgroundColor)
                 return 'background:' + this.getPoll[1].data.backgroundColor // '#c42843' // insert picked color here
             } else {
                 return 'background:' + this.$vuetify.theme.themes.light.background

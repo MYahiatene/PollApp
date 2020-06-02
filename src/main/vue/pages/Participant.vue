@@ -25,7 +25,11 @@
                                     <div class="ps-4">{{ question.questionMessage }}</div>
                                 </v-card-title>
                                 <div v-if="question.questionType === 'textfield'">
-                                    <v-text-field label="Antwort" :color="fontColor" @input="saveAnswerField">
+                                    <v-text-field
+                                        label="Antwort"
+                                        :color="fontColor"
+                                        @input="saveAnswerField($event, question)"
+                                    >
                                     </v-text-field>
                                 </div>
                                 <div v-else-if="question.questionType === 'choicebox'">
@@ -34,7 +38,7 @@
                                             class="ma-4 red--text"
                                             :label="answer"
                                             :color="fontColor"
-                                            @change="saveAnswerCheckbox"
+                                            @change="saveAnswerCheckbox($event, question, answer)"
                                         ></v-checkbox>
                                     </v-list>
                                     <!--div v-if="question.ownAnswersAllowed">
@@ -58,7 +62,7 @@
                     <v-col cols="8">
                         <v-btn class="pl-4">Vorherige Seite</v-btn>
                         <v-btn class="pl-4">Nächste Seite</v-btn>
-                        <v-btn color="primary" nuxt to="/AfterParticipated">
+                        <v-btn color="primary" @click="saveAnswer">
                             Absenden
                         </v-btn>
                     </v-col>
@@ -71,27 +75,26 @@
 <script>
 import { mapGetters } from 'vuex'
 import AuthGate from '../components/AuthGate'
-const axios = require('axios')
-const instance = axios.create({
-    baseURL: 'http://127.0.0.1:8088/api/',
-    timeout: 1000,
-    headers: {
-        Authorization:
-            'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InRicmV0dG1hbm4iLCJleHAiOjE1OTExMTAzMzQsInJvbCI6WyJST0xFX1BPTExfQ1JFQVRPUiJdfQ.Q6A2ST5I5Ix8_8jfsgxc3ZQq9GG7i88w_bJPlfEYA-QiAavpUhPbjFoUQWd9vZ93Xqzvm4oCw23bJ1NGtp2ucw',
-        'X-Custom-Header': 'foobar',
-    },
-})
 export default {
     name: 'Participant',
     layout: 'participant', // uses special layout/participant instead of default-layout
     components: { AuthGate },
-    data: () => ({
-        questionIndex: 1,
-        enabled: false,
-        answerList: [],
-        // for checkbox this should be initialised with questionAnswers false/null at least for multiple choice options
-        // but probably for all of them
-    }),
+    data() {
+        return {
+            questionIndex: 1,
+            enabled: false,
+            answerObj: {
+                username: 'Nina',
+                questionId: '1',
+                answerList: [],
+                answerId: '1', // hard coded, because I don't know what it's supposed to be
+                pollId: '1',
+            },
+            answerList: [],
+            // for checkbox this should be initialised with questionAnswers false/null at least for multiple choice options
+            // but probably for all of them
+        }
+    },
     /**
      * Calls showPoll in methods to getPoll before/while the page is created.
      */
@@ -130,13 +133,19 @@ export default {
         showPoll() {
             this.$store.dispatch('participant/showPoll')
         },
-        // this doesn't involve the store, so that's bad (taken from PollCreation
-        saveAnswers() {
-            const answers = {
-                answerList: this.answerList,
-            }
-            instance.post('/poll/addAnswer', answers)
+        /**
+         * Calls saveAnswers from the store with the answerobj (cmdAnswer with all given input)
+         */
+        saveAnswer() {
+            // this.answerObj.pollID = this.getPoll[1]
+            console.log('calling saveAnswers in Participant.vue')
+            console.log('answerobj:', this.answerObj)
+            this.$store.dispatch('participant/saveAnswer', this.answerObj)
+            // nuxt to afterparticipated
         },
+
+        // -------------------------------------------------------------------------------------------------------------
+        // Hilfsfunktionen innerhalb der .vue page
         getQuestionIndex() {
             this.questionIndex += 1
             return this.questionIndex - 1
@@ -145,19 +154,44 @@ export default {
          * Get's the given answer of a checkbox question.
          * @param e (Change-Event)
          */
-        saveAnswerCheckbox(e) {
-            // this.answerList.append(e.payload[0])
+        saveAnswerCheckbox(e, question, answer) {
+            this.answerObj.answerList = []
+            let i
+            // if checkBox was checked, not unchecked
+            if (e === true) {
+                for (i = 0; i < question.answerPossibilities.length; i++) {
+                    if (answer === question.answerPossibilities[i]) {
+                        this.answerObj.answerList.push(i) // index of true checkboxes
+                    }
+                }
+            }
+            this.answerObj.pollId = this.getPoll[1].data.pollId
+            this.answerObj.questionId = question.questionId
+
+            console.log(e)
+            console.log(question)
+            console.log('answer: ', this.answerObj.answerList)
+            console.log('pollId: ', this.answerObj.pollId)
+            console.log('questionId: ', this.answerObj.questionId)
+
+            this.saveAnswer() // alternative: Button after every TextField
         },
         /**
-         * Get's the given answer of a free text question. Saves after every symbol.
+         * Get's the given answer of a free text question and calls saveAnswer() to persist it in the database. This
+         * happens after every single character.
          * @param e (Input-Event)
          */
-        saveAnswerField(e) {
-            // this.answerList.append(e.payload[0])
+        saveAnswerField(e, question) {
+            this.answerObj.answerList = [e]
+            this.answerObj.pollId = this.getPoll[1].data.pollId
+            this.answerObj.questionId = question.questionId
+
+            console.log('answer: ', this.answerObj.answerList)
+            console.log('pollId: ', this.answerObj.pollId)
+            console.log('questionId: ', this.answerObj.questionId)
+
+            this.saveAnswer() // alternative: Button after every TextField
         },
-        // can I use giveAnswer, from AnswerService here? Does it get updated after every answer(every click or
-        // every symbol input for field texts)? Need PollID(not a problem) and questionId it's not sent with
-        // change event, but maybe give it as another parameter?
     },
 }
 </script>

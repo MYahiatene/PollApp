@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.function.Supplier;
+import java.util.logging.Logger;
 
 @RequestMapping(value = "/api", method = RequestMethod.GET)
 @RestController
@@ -14,6 +16,7 @@ import java.util.List;
 public class AnswerController {
 
     private final AnswerService answerService;
+    private static final Logger LOGGER = Logger.getLogger("PollController");
 
 
     /**
@@ -32,8 +35,10 @@ public class AnswerController {
      *
      * @param answerCmd the answerCmd which has the requested data
      */
-    @PostMapping("/poll/{pollId:\\d+}/addanswer")
+    @PostMapping("/poll/pollId:1/addanswer") // {pollId:\d+}
     public void addAnswer(final @RequestBody AnswerCmd answerCmd) {
+        LOGGER.info("Hi aus dem Backend");
+        LOGGER.info(answerCmd.getPollId());
         answerService.giveAnswer(answerCmd.getUsername(), answerCmd.getPollId(),
             answerCmd.getQuestionId(), answerCmd.getAnswerList());
     }
