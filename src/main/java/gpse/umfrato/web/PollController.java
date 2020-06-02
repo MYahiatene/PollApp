@@ -74,11 +74,7 @@ public class PollController {
     @GetMapping("/participant")
     public Poll getParticipant() {
         try {
-            LOGGER.info("1");
-            Poll poll = pollService.getPoll("1");
-            LOGGER.info(poll.toString());
-            return poll;
-            // return pollService.getPoll("2");
+            return pollService.getPoll("1");
         } catch(EntityNotFoundException e) {
             return null;
         }

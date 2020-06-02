@@ -8,9 +8,11 @@ import api from '../api/participant'
  */
 export const state = () => ({
     visibility: false,
+    changeOfCategories: false,
     numberOfQuestions: 0,
+    categoryIndex: 1,
     poll: ['Object'],
-    // questions: [],
+    category: ['Object'],
 })
 /**
  * Defines mapGetters for Usage in Participant.vue.
@@ -28,6 +30,15 @@ export const getters = {
     getPoll: (state) => {
         return state.poll
     },
+    getCategory: (state) => {
+        return state.category
+    },
+    getCategoryIndex: (state) => {
+        return state.categoryIndex
+    },
+    getChangeOfCategories: (state) => {
+        return state.changeOfCategories
+    },
 }
 /**
  * Sets the poll gotten from showPoll as the current state.
@@ -37,7 +48,23 @@ export const mutations = {
     setPoll: (state, poll) => {
         state.poll.push(poll)
         state.visibility = poll.data.visibility
+        state.changeOfCategories = poll.data.categoryChange
         state.numberOfQuestions = poll.data.categoryList[0].questionList.length // number of questions in this category
+        state.category = poll.data.categoryList[0]
+    },
+    setCategory: (state, args) => {
+        const index = state.categoryIndex
+        if (args === 1) {
+            if (index !== state.poll[1].data.categoryList.length) {
+                state.category = state.poll[1].data.categoryList[index]
+                state.categoryIndex = index + 1
+            }
+        } else if (args === -1) {
+            if (index !== 1) {
+                state.category = state.poll[1].data.categoryList[index - 2]
+                state.categoryIndex = index - 1
+            }
+        }
     },
 }
 /**

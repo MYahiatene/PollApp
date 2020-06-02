@@ -1,6 +1,15 @@
 <template>
     <!--Build page after PollData from created() method is here-->
     <div v-if="getPoll[1] !== undefined">
+        <v-btn
+            :disabled="disableMe"
+            @click="
+                () => {
+                    this.disableMe = true
+                }
+            "
+            >Klick mich
+        </v-btn>
         <AuthGate v-if="isAuthenticated !== true"></AuthGate>
         <v-container>
             <!--When/After the PollData "arrived" show the logo-->
@@ -12,11 +21,7 @@
                 <v-row>
                     <v-col cols="8">
                         <!--v-list v-for="poll in getPoll.data" :key="poll.id"-->
-                        <v-list
-                            v-for="question in getPoll[1].data.categoryList[0].questionList"
-                            :key="question.questionId"
-                            two-line
-                        >
+                        <v-list v-for="question in getCategory.questionList" :key="question.questionId" two-line>
                             <!--v-list v-for="question in category.questionList" :key="question.questionId" two-line-->
                             <v-card class="mx-auto">
                                 <v-card-title class="col" :style="fontColorText">
@@ -60,9 +65,11 @@
                 </v-row>
                 <v-row>
                     <v-col cols="8">
-                        <v-btn class="pl-4">Vorherige Seite</v-btn>
-                        <v-btn class="pl-4">Nächste Seite</v-btn>
-                        <v-btn color="primary" @click="saveAnswer">
+                        <v-btn class="pl-4" :disabled="hasNoPrevious" @click="getPreviousCategory()"
+                            >Vorherige Seite</v-btn
+                        >
+                        <v-btn class="pl-4" :disabled="hasNoNext" @click="getNextCategory()">Nächste Seite</v-btn>
+                        <v-btn color="primary" nuxt to="/AfterParticipated">
                             Absenden
                         </v-btn>
                     </v-col>
@@ -81,8 +88,13 @@ export default {
     components: { AuthGate },
     data() {
         return {
+            poll: ['Object'],
+            category: ['Object'],
             questionIndex: 1,
+            categoryIndex: 1,
+            categoryLength: 0,
             enabled: false,
+            disableMe: false,
             answerObj: {
                 username: 'Nina',
                 questionId: '1',
@@ -110,6 +122,9 @@ export default {
             isAuthenticated: 'login/isAuthenticated',
             getVisibility: 'participant/getVisibility',
             getNumberOfQuestions: 'participant/getNumberOfQuestions',
+            getCategoryIndex: 'participant/getCategoryIndex',
+            getCategory: 'participant/getCategory',
+            getChangeOfCategories: 'participant/getChangeOfCategories',
         }),
         /**
          * Get's the given FontColor from PollData.
@@ -125,6 +140,16 @@ export default {
         fontColorText() {
             return 'color:' + this.getPoll[1].data.fontColor
         },
+        hasNoNext() {
+            console.log('hasNoNext: ', this.categoryIndex)
+            console.log(this.categoryIndex === this.categoryLength)
+            return this.categoryIndex === this.categoryLength || !this.getChangeOfCategories
+        },
+        hasNoPrevious() {
+            console.log('hasNoPrevious: ', this.categoryIndex)
+            console.log(this.categoryIndex === 1)
+            return this.categoryIndex === 1 || !this.getChangeOfCategories
+        },
     },
     methods: {
         /**
@@ -132,6 +157,7 @@ export default {
          */
         showPoll() {
             this.$store.dispatch('participant/showPoll')
+            this.poll = this.getPoll
         },
         /**
          * Calls saveAnswers from the store with the answerobj (cmdAnswer with all given input)
@@ -149,6 +175,23 @@ export default {
         getQuestionIndex() {
             this.questionIndex += 1
             return this.questionIndex - 1
+        },
+        getNextCategory() {
+            this.$store.commit('participant/setCategory', 1)
+            this.categoryIndex = this.getCategoryIndex
+            this.categoryLength = this.getPoll[1].data.categoryList.length
+            console.log(this.categoryIndex)
+            this.category = this.getCategory
+            this.$forceUpdate()
+        },
+        getPreviousCategory() {
+            this.$store.commit('participant/setCategory', -1)
+            this.categoryIndex = this.getCategoryIndex
+            console.log(this.categoryIndex)
+            if (this.categoryIndex !== 0) {
+                this.category = this.getCategory
+            }
+            this.$forceUpdate()
         },
         /**
          * Get's the given answer of a checkbox question.
