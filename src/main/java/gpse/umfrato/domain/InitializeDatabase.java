@@ -60,7 +60,7 @@ public class InitializeDatabase implements InitializingBean {
         final String dummyPassword = "{bcrypt}$2a$10$WoG5Z4YN9Z37EWyNCkltyeFr6PtrSXSLMeFWOeDUwcanht5CIJgPa";
 
 
-        final Poll testPoll = new Poll(tbettmannUserName, "anonym", "testPoll", Instant.now().toString(),
+        final Poll testPoll = new Poll(tbettmannUserName, "anonym", "Umfrage IT-Messe 2020", Instant.now().toString(),
             Instant.now().toString(), Instant.now().toString(), 0);
 
         try {

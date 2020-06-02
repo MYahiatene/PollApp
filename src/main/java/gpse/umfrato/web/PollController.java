@@ -47,7 +47,9 @@ public class PollController {
      */
     @GetMapping("/poll")
     public List<Poll> getPolls() {
+        System.out.println(pollService.getAllPolls().isEmpty());
         if (pollService.getAllPolls().isEmpty()) {
+
             throw new BadRequestException();
         } else {
             return pollService.getAllPolls();

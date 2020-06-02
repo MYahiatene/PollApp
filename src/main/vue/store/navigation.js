@@ -1,4 +1,3 @@
-import api from '../api/polls'
 export const state = () => ({
     Polls: [{}],
 })
@@ -14,7 +13,7 @@ export const mutations = {
 }
 export const actions = {
     async initialize({ commit }) {
-        const data = await api.getPolls()
+        const data = await this.$axios.get('/poll')
         commit('setPolls', data)
     },
 }
