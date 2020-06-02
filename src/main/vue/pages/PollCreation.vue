@@ -130,7 +130,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+// import { mapGetters } from 'vuex'
 export default {
     name: 'PollCreation',
     components: {},
@@ -190,10 +190,13 @@ export default {
                 deactivatedAt: this.deactivateDate,
                 pollStatus: 0,
             }
+            const token = localStorage.getItem('user-token')
             const instance = this.$axios.create({
                 baseURL: 'http://127.0.0.1:8088/api',
                 timeout: 1000,
-                headers: { Authorization: 'Bearer ' + mapGetters(['getToken']) },
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                },
             })
             instance.post('/createpoll', obj).catch()
             this.$router.push('/navigation')
