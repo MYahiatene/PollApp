@@ -3,7 +3,6 @@ package gpse.umfrato.domain;
 import gpse.umfrato.domain.answer.AnswerService;
 import gpse.umfrato.domain.poll.Poll;
 import gpse.umfrato.domain.poll.PollService;
-import gpse.umfrato.domain.question.Question;
 import gpse.umfrato.domain.question.QuestionService;
 import gpse.umfrato.domain.user.UserService;
 import org.springframework.beans.factory.InitializingBean;
@@ -13,9 +12,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 @Service
 public class InitializeDatabase implements InitializingBean {
@@ -73,27 +70,29 @@ public class InitializeDatabase implements InitializingBean {
     @Transactional
     public void afterPropertiesSet() {
 
-        final String tbrettmannUserName = "tbrettmann";
-        final String testUserName = "testNutzer";
+        final String testUsername = "tbrettmann";
         final String dummyPassword = "{bcrypt}$2a$10$WoG5Z4YN9Z37EWyNCkltyeFr6PtrSXSLMeFWOeDUwcanht5CIJgPa";
 
-        final Poll testPoll = new Poll(tbrettmannUserName, "1", "Umfrage zur IT-Messe 2020", Instant.now().toString(),
+
+        final Poll testPoll = new Poll(testUsername, "anonym", "testPoll", Instant.now().toString(),
             Instant.now().toString(), Instant.now().toString(), 0);
 
         try {
-            userService.loadUserByUsername(tbrettmannUserName);
+            userService.loadUserByUsername(testUsername);
+            pollService.createPoll(testPoll);
+
             //questionService.addQuestion(one, "testFrage", Arrays.asList("Frage1", "Frage2", "Frage3"), "freitext");
             //answerService.giveAnswer(testUsername, one, "3", Arrays.asList("Ja", "Nein"));
         } catch (UsernameNotFoundException e) {
-            userService.createUser(tbrettmannUserName, dummyPassword, "Tobias", "Brettmann",
-                Arrays.asList("Admin", "User"));
+            userService.createUser(testUsername, dummyPassword, "Tobias", "Bettmann",
+                "Admin","tbettmann@reply.de");
         }
 
         try {
-            userService.loadUserByUsername("testUserName");
+            userService.loadUserByUsername("testnutzer");
         } catch (UsernameNotFoundException ex) {
-            userService.createUser("testUserName", dummyPassword, "Markus", "Mueller",
-                Arrays.asList("User"));
+            userService.createUser("testNutzer", dummyPassword, "Markus", "Mueller",
+                "Teilnehmer","mmueller@gmx.de");
         }
         generateAnswers(new int[]{1, 2, 3});
         pollService.createPoll(testPoll);

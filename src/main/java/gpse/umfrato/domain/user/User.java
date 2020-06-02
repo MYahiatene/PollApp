@@ -43,13 +43,17 @@ public class User implements UserDetails {
     @JsonIgnore
     private String password;
 
+    /**
+     * This attribute represents the email of the user.
+     */
+    private String email;
 
     /**
      * This attribute represents a list with the roles of this user.
      */
     @JsonIgnore
     @ElementCollection(fetch = FetchType.EAGER)
-    private List<String> roles;
+    private List<String> roles = new ArrayList<>();
 
     /**
      * This constructor receives the required parameter for the user object.
@@ -58,15 +62,16 @@ public class User implements UserDetails {
      * @param firstName the first name of user
      * @param lastName  the last name of user
      * @param password  the password of user
-     * @param roles     user roles
+     * @param role      user roles
      */
     public User(final String username, final String password, final String firstName,
-                final String lastName, final List<String> roles) {
+                final String lastName, final String role, final String email) {
         this.username = username;
         this.firstName = firstName;
         this.lastName = lastName;
         this.password = password;
-        this.roles = roles;
+        this.roles.add(role);
+        this.email = email;
     }
 
     /**
