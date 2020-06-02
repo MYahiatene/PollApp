@@ -3,6 +3,7 @@ package gpse.umfrato.domain;
 import gpse.umfrato.domain.answer.AnswerService;
 import gpse.umfrato.domain.poll.Poll;
 import gpse.umfrato.domain.poll.PollService;
+import gpse.umfrato.domain.question.Question;
 import gpse.umfrato.domain.question.QuestionService;
 import gpse.umfrato.domain.user.UserService;
 import org.springframework.beans.factory.InitializingBean;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.time.Instant;
 import java.util.Arrays;
+import java.util.Collections;
 
 @Service
 public class InitializeDatabase implements InitializingBean {
@@ -47,22 +49,6 @@ public class InitializeDatabase implements InitializingBean {
         this.answerService = answerService;
     }
 
-    private List<String> generateAnswers(int[] repeats)
-    {
-        List<String> answers = new ArrayList<>();
-        int i = 0;
-        for(int r:repeats)
-        {
-            while(r > 0)
-            {
-                answers.add(String.valueOf(i));
-                r--;
-            }
-            i++;
-        }
-        return answers;
-    }
-
     /**
      * This method initializes the database with an user, a poll, a question and an answer.
      */
@@ -70,21 +56,21 @@ public class InitializeDatabase implements InitializingBean {
     @Transactional
     public void afterPropertiesSet() {
 
-        final String testUsername = "tbrettmann";
+        final String tbettmannUserName = "tbettmann";
         final String dummyPassword = "{bcrypt}$2a$10$WoG5Z4YN9Z37EWyNCkltyeFr6PtrSXSLMeFWOeDUwcanht5CIJgPa";
 
 
-        final Poll testPoll = new Poll(testUsername, "anonym", "testPoll", Instant.now().toString(),
+        final Poll testPoll = new Poll(tbettmannUserName, "anonym", "testPoll", Instant.now().toString(),
             Instant.now().toString(), Instant.now().toString(), 0);
 
         try {
-            userService.loadUserByUsername(testUsername);
+            userService.loadUserByUsername(tbettmannUserName);
             pollService.createPoll(testPoll);
 
             //questionService.addQuestion(one, "testFrage", Arrays.asList("Frage1", "Frage2", "Frage3"), "freitext");
             //answerService.giveAnswer(testUsername, one, "3", Arrays.asList("Ja", "Nein"));
         } catch (UsernameNotFoundException e) {
-            userService.createUser(testUsername, dummyPassword, "Tobias", "Bettmann",
+            userService.createUser(tbettmannUserName, dummyPassword, "Tobias", "Bettmann",
                 "Admin","tbettmann@reply.de");
         }
 
@@ -94,7 +80,6 @@ public class InitializeDatabase implements InitializingBean {
             userService.createUser("testNutzer", dummyPassword, "Markus", "Mueller",
                 "Teilnehmer","mmueller@gmx.de");
         }
-        generateAnswers(new int[]{1, 2, 3});
         pollService.createPoll(testPoll);
         Question q1 = questionService.addQuestion(testPoll.getPollId().toString(),"Wie hat Ihnen die Veranstaltung insgesamt gefallen?",Arrays.asList("Sehr gut", "Gut", "Überwiegend gut", "Schlecht", "Ich weiß nicht"), "ChoiceQuestion");
         Question q2 = questionService.addQuestion(testPoll.getPollId().toString(),"Welches Geschlecht haben Sie?",Arrays.asList("Weiblich", "Männlich", "Divers"), "ChoiceQuestion");
@@ -102,11 +87,68 @@ public class InitializeDatabase implements InitializingBean {
         Question q4 = questionService.addQuestion(testPoll.getPollId().toString(),"Was hat Sie am Meisten überzeugt?",Arrays.asList("Die Vorträge", "Die Informationsstände", "Das Catering", "Ich kann mich nicht entscheiden"), "ChoiceQuestion");
         Question q5 = questionService.addQuestion(testPoll.getPollId().toString(),"Werden Sie uns nächstes Jahr wieder besuchen?",Arrays.asList("Ja", "Nein", "Vielleicht"), "ChoiceQuestion");
         Question q6 = questionService.addQuestion(testPoll.getPollId().toString(),"Wie viel Zeit haben sie auf der Messe verbracht?",Arrays.asList("unter einer Stunde", "1-2 Stunden", "2-5 Stunden", "über 5 Stunden"), "ChoiceQuestion");
-        answerService.giveAnswer(tbrettmannUserName,testPoll.getPollId().toString(),q1.getQuestionId().toString(),generateAnswers(new int[]{70,65,30,5,25}));
-        answerService.giveAnswer(tbrettmannUserName,testPoll.getPollId().toString(),q2.getQuestionId().toString(),generateAnswers(new int[]{20,19,1}));
-        answerService.giveAnswer(tbrettmannUserName,testPoll.getPollId().toString(),q3.getQuestionId().toString(),generateAnswers(new int[]{22,8,7}));
-        answerService.giveAnswer(tbrettmannUserName,testPoll.getPollId().toString(),q4.getQuestionId().toString(),generateAnswers(new int[]{17,8,4,2}));
-        answerService.giveAnswer(tbrettmannUserName,testPoll.getPollId().toString(),q5.getQuestionId().toString(),generateAnswers(new int[]{50,21}));
-        answerService.giveAnswer(tbrettmannUserName,testPoll.getPollId().toString(),q6.getQuestionId().toString(),generateAnswers(new int[]{12,45,40,20}));
+        for (int i = 0; i < 70; i++) {
+            answerService.giveAnswer(tbettmannUserName,testPoll.getPollId().toString(),q1.getQuestionId().toString(), Collections.singletonList("0"));
+        }
+        for (int i = 0; i < 65; i++) {
+            answerService.giveAnswer(tbettmannUserName,testPoll.getPollId().toString(),q1.getQuestionId().toString(), Collections.singletonList("1"));
+        }
+        for (int i = 0; i < 30; i++) {
+            answerService.giveAnswer(tbettmannUserName,testPoll.getPollId().toString(),q1.getQuestionId().toString(), Collections.singletonList("2"));
+        }
+        for (int i = 0; i < 5; i++) {
+            answerService.giveAnswer(tbettmannUserName,testPoll.getPollId().toString(),q1.getQuestionId().toString(), Collections.singletonList("3"));
+        }
+        for (int i = 0; i < 25; i++) {
+            answerService.giveAnswer(tbettmannUserName,testPoll.getPollId().toString(),q1.getQuestionId().toString(), Collections.singletonList("4"));
+        }
+        for (int i = 0; i < 20; i++) {
+            answerService.giveAnswer(tbettmannUserName,testPoll.getPollId().toString(),q2.getQuestionId().toString(), Collections.singletonList("0"));
+        }
+        for (int i = 0; i < 19; i++) {
+            answerService.giveAnswer(tbettmannUserName,testPoll.getPollId().toString(),q2.getQuestionId().toString(), Collections.singletonList("1"));
+        }
+        for (int i = 0; i < 1; i++) {
+            answerService.giveAnswer(tbettmannUserName,testPoll.getPollId().toString(),q2.getQuestionId().toString(), Collections.singletonList("2"));
+        }
+        for (int i = 0; i < 22; i++) {
+            answerService.giveAnswer(tbettmannUserName,testPoll.getPollId().toString(),q3.getQuestionId().toString(), Collections.singletonList("0"));
+        }
+        for (int i = 0; i < 8; i++) {
+            answerService.giveAnswer(tbettmannUserName,testPoll.getPollId().toString(),q3.getQuestionId().toString(), Collections.singletonList("1"));
+        }
+        for (int i = 0; i < 7; i++) {
+            answerService.giveAnswer(tbettmannUserName,testPoll.getPollId().toString(),q3.getQuestionId().toString(), Collections.singletonList("2"));
+        }
+        for (int i = 0; i < 17; i++) {
+            answerService.giveAnswer(tbettmannUserName,testPoll.getPollId().toString(),q4.getQuestionId().toString(), Collections.singletonList("0"));
+        }
+        for (int i = 0; i < 8; i++) {
+            answerService.giveAnswer(tbettmannUserName,testPoll.getPollId().toString(),q4.getQuestionId().toString(), Collections.singletonList("1"));
+        }
+        for (int i = 0; i < 4; i++) {
+            answerService.giveAnswer(tbettmannUserName,testPoll.getPollId().toString(),q4.getQuestionId().toString(), Collections.singletonList("2"));
+        }
+        for (int i = 0; i < 2; i++) {
+            answerService.giveAnswer(tbettmannUserName,testPoll.getPollId().toString(),q4.getQuestionId().toString(), Collections.singletonList("3"));
+        }
+        for (int i = 0; i < 50; i++) {
+            answerService.giveAnswer(tbettmannUserName,testPoll.getPollId().toString(),q5.getQuestionId().toString(), Collections.singletonList("0"));
+        }
+        for (int i = 0; i < 21; i++) {
+            answerService.giveAnswer(tbettmannUserName,testPoll.getPollId().toString(),q5.getQuestionId().toString(), Collections.singletonList("1"));
+        }
+        for (int i = 0; i < 12; i++) {
+            answerService.giveAnswer(tbettmannUserName,testPoll.getPollId().toString(),q6.getQuestionId().toString(), Collections.singletonList("0"));
+        }
+        for (int i = 0; i < 45; i++) {
+            answerService.giveAnswer(tbettmannUserName,testPoll.getPollId().toString(),q6.getQuestionId().toString(), Collections.singletonList("1"));
+        }
+        for (int i = 0; i < 40; i++) {
+            answerService.giveAnswer(tbettmannUserName,testPoll.getPollId().toString(),q6.getQuestionId().toString(), Collections.singletonList("2"));
+        }
+        for (int i = 0; i < 20; i++) {
+            answerService.giveAnswer(tbettmannUserName,testPoll.getPollId().toString(),q6.getQuestionId().toString(), Collections.singletonList("3"));
+        }
     }
 }

@@ -26,7 +26,6 @@ public class AnswerServiceImpl implements AnswerService {
         this.answerRepository = answerRepository;
         this.pollResultRepository = pollResultRepository;
     }
-
     /**
      * This method adds an answer to the answer list of the question.
      *
@@ -76,6 +75,5 @@ public class AnswerServiceImpl implements AnswerService {
     @Override
     public List<String> getAllAnswersFromPollByUser(final Long pollId, final String username) {
         return null;
-
     }
 }

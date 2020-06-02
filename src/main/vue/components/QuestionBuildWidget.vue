@@ -8,6 +8,13 @@
                     <v-col>
                         <h3>Frage erstellen</h3>
                     </v-col>
+                    <v-col align="right">
+                        <v-btn icon @click="deleteQuestion">
+                            <v-icon>
+                                mdi-delete
+                            </v-icon>
+                        </v-btn>
+                    </v-col>
                 </v-row>
                 <v-row no-gutters>
                     <v-textarea
@@ -28,16 +35,13 @@
                 <v-row>
                     <component :is="questionTypeChoice"></component>
                 </v-row>
-                <v-row no-gutters>
-                    <v-btn color="primary" class="mr-4" @click="sendQuestion()">Frage speichern</v-btn>
-                </v-row>
             </v-container>
         </v-card>
     </div>
 </template>
 
 <script>
-import { mapMutations, mapGetters } from 'vuex'
+import { mapMutations, mapGetters, mapActions } from 'vuex'
 import ChoiceQuestion from './ChoiceQuestion'
 import TextQuestion from './textQuestion'
 import RangeQuestion from './rangeQuestion'
@@ -64,7 +68,10 @@ export default {
         }
     },
     computed: {
-        ...mapGetters({ question: 'pollOverview/getQuestion', questionToLoad: 'pollOverview/questionToLoad' }),
+        ...mapGetters({
+            question: 'pollOverview/getQuestion',
+            questionToLoad: 'pollOverview/questionToLoad',
+        }),
         questionMessage: {
             get() {
                 return this.question.questionMessage
@@ -95,7 +102,9 @@ export default {
         ...mapMutations({
             setQuestionMessage: 'pollOverview/setQuestionMessage',
             setQuestionType: 'pollOverview/setQuestionType',
-            sendQuestion: 'pollOverview/sendQuestion',
+        }),
+        ...mapActions({
+            deleteQuestion: 'pollOverview/deleteQuestion',
         }),
     },
 }

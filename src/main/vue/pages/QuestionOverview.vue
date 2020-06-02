@@ -7,6 +7,18 @@
                 <v-row>
                     <v-col cols="4">
                         <v-container>
+                            <v-row>
+                                <v-col>
+                                    <v-btn color="primary" @click="createCategory()">
+                                        Neue Kategorie
+                                    </v-btn>
+                                    <v-btn color="primary" @click="createQuestion()">
+                                        Neue Frage
+                                    </v-btn>
+                                </v-col>
+                            </v-row>
+                        </v-container>
+                        <v-container>
                             <v-row class="ma-n4">
                                 <v-list
                                     v-for="categorie in poll.categoryList"
@@ -29,9 +41,6 @@
                                 </v-list>
                             </v-row>
                         </v-container>
-                        <div class="ma-8" @click="createCategory()">
-                            <v-btn depressed small>Neue Kategorie</v-btn>
-                        </div>
                     </v-col>
                     <v-col>
                         <QuestionBuildWidget></QuestionBuildWidget>
@@ -69,6 +78,7 @@ export default {
     data() {
         return {
             pollId: 1,
+            disableMe: false,
         }
     },
     mounted() {
@@ -100,11 +110,15 @@ export default {
         }, */
     },
     methods: {
-        ...mapActions({ initialize: 'pollOverview/initialize', sendData: 'pollOverview/sendData' }),
-        ...mapMutations({
-            saveData: 'pollOverview/sendData',
-            setPollName: 'pollOverview/setPollName',
+        ...mapActions({
+            initialize: 'pollOverview/initialize',
+            sendData: 'pollOverview/sendData',
             createCategory: 'pollOverview/createCategory',
+            createQuestion: 'pollOverview/createQuestion',
+        }),
+        ...mapMutations({
+            saveData: 'pollOverview/saveData',
+            setPollName: 'pollOverview/setPollName',
         }),
         saveState() {
             const payload = {

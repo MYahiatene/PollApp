@@ -46,7 +46,7 @@ export default {
     computed: {
         choppedTitle() {
             if (this.questionMessage.length > 35) {
-                return this.questionMessage.substr(0, 35) + '...?'
+                return this.questionMessage.substr(0, 30) + '...?'
             } else {
                 return this.questionMessage
             }

@@ -88,6 +88,11 @@
                                             {{ item.actionIcon }}
                                         </v-icon>
                                     </template>
+                                    <template v-slot:item.link="{ item }">
+                                        <v-icon @click="setLink(item)">
+                                            mdi-link-variant
+                                        </v-icon>
+                                    </template>
                                 </v-data-table>
                             </template>
                         </v-container>
@@ -171,6 +176,7 @@ export default {
             filter: {},
             sortDesc: false,
             sortBy: '',
+            textToCopy: '',
             contextActions: [
                 { title: 'Beantworten', link: '/' },
                 { title: 'Bearbeiten', link: '/QuestionOverview' },
@@ -180,6 +186,7 @@ export default {
             headers: [
                 { text: '', value: 'status', sortable: false },
                 { text: '', value: 'action', sortable: false },
+                { text: '', value: 'link', sortable: false },
                 { text: 'Umfrage', value: 'pollName' },
                 { text: 'Erstellt von', value: 'pollCreator' },
                 { text: 'Status', value: 'pollStatusString' },
@@ -263,6 +270,9 @@ export default {
                 typeof value === 'string' &&
                 value.toString().toLowerCase().includes(search.toLowerCase())
             )
+        },
+        setLink(item) {
+            console.log('hi')
         },
     },
 }

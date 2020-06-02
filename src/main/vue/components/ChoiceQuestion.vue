@@ -4,14 +4,6 @@
         <v-row no-gutters>
             <v-overflow-btn :items="choiceType" label="Antwortart"></v-overflow-btn>
         </v-row>
-        <v-row no-gutters>
-            <v-col>
-                <v-btn color="primary" @click="addAnswer()">Antwortmöglichkeit hinzufügen</v-btn>
-            </v-col>
-            <v-col>
-                <v-btn color="primary" @click="removeAnswer()">Antwortmöglichkeit entfernen</v-btn>
-            </v-col>
-        </v-row>
         <v-row v-for="(answer, index) in getQuestion.answerPossibilities" :key="index" no-gutters>
             <v-text-field
                 :value="getQuestion.answerPossibilities[index]"
@@ -22,21 +14,21 @@
         <v-row no-gutters>
             <v-text-field
                 label="Antwortmöglichkeiten"
-                hint="Maximale Anzahl gleichzeitig auswählbarer Antworten"
+                :hint="
+                    'Maximale Anzahl gleichzeitig auswählbarer Antworten (1 bis ' +
+                    (getQuestion.answerPossibilities.length - 1) +
+                    ')'
+                "
                 type="number"
                 v-model="nrPossibleAnswers"
                 min="1"
-                :max="getQuestion.answerPossibilities.length"
+                :max="getQuestion.answerPossibilities.length - 1"
                 step="1"
                 value="1"
             ></v-text-field>
         </v-row>
         <v-row no-gutters>
             <v-switch label="Teilnehmer darf eigene Antworten hinzufügen" v-model="userAnswersPossible"></v-switch>
-        </v-row>
-        <v-row no-gutters>
-            <!--maybe not necessary inside this widget? could be moved into an independent question type-->
-            <v-switch label="Teilnehmer darf eigene Dateien hochladen"></v-switch>
         </v-row>
     </v-container>
 </template>

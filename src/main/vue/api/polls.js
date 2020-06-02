@@ -14,11 +14,15 @@ export default {
     },
     async addQuestion(payload) {
         console.log(payload)
-        payload.question.pollId = payload.pollId
-        return await instance.post('/poll/' + payload.pollId + '/addquestion', payload.question).catch()
+        return await instance.post('/poll/' + payload.pollId + '/addquestion', payload).catch()
+    },
+    async deleteQuestion(payload) {
+        console.log(payload)
+        return await instance.post('/poll/' + payload.pollId + '/removequestion/' + payload.questionId).catch()
     },
     async addCategory(payload) {
-        console.log('Hallo')
+        console.log('addCategory')
+        console.log(payload)
         return await instance.post('/poll/' + payload.pollId + '/addcategory', payload).catch()
     },
 }
