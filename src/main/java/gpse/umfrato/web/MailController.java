@@ -28,7 +28,7 @@ public class MailController {
             final SimpleMailMessage message = new SimpleMailMessage();
 
             message.setTo("gpseteam5.1@gmail.com");
-            message.setSubject("This is a test mail");
+            message.setSubject("Einladung zur Umfrage - Umfrato Reply");
             message.setText("Hi, I'm a test mail!");
 
             this.mailSender.send(message);
