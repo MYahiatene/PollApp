@@ -1,5 +1,6 @@
 package gpse.umfrato.mail;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
@@ -9,12 +10,13 @@ import java.util.Properties;
 @Configuration
 public class MailConfig {
 
-        private static final String EMAIL_USERNAME = "test@gmail.com";
-        private static final String EMAIL_PASSWORD = "password";
+        private static final String EMAIL_USERNAME = "gpseteam5.1@gmail.com";
+        private static final String EMAIL_PASSWORD = "boffaf-Gadva6-saqqew";
 
         private static final int EMAIL_PORT = 587;
         private static final String TRUE = "true";
 
+        @Bean
         public JavaMailSender getJavaMailSender() {
             final JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
             mailSender.setHost("smtp.gmail.com");
