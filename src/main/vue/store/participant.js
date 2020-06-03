@@ -67,19 +67,23 @@ export const mutations = {
         }
     },
 }
-/**
- * Defines mapAction showPoll and calls getPoll in api/participant. After it got the poll, it comits the poll,
- * to save it in this store (setPoll), so the mapGetters can acces the data and give it back to the Participant.vue page.
- * @type {{showPoll({commit: *}): Promise<void>}}
- */
 export const actions = {
+    /**
+     * Defines mapAction showPoll and calls getPoll in api/participant. After it got the poll, it comits the poll,
+     * to save it in this store (setPoll), so the mapGetters can acces the data and give it back to the Participant.vue page.
+     * @type {{showPoll({commit: *}): Promise<void>}}
+     */
     async showPoll({ commit }) {
         const poll = await api.getPoll() // calls api/participant, which calls PollController, which calls PollService and gives back a poll
         commit('setPoll', poll) // calls the setter int the store to save the poll in the store
     },
+    /**
+     * Defines mapAction saveAnswer which saves  an answerObj (AnswerCmd) for a specific question from a specific poll
+     * from a specific user. It calls saveAnswer from api/participant.
+     * @param state
+     * @param answerObj object with (username, questionId, answerList, pollId)
+     */
     saveAnswer(state, answerObj) {
-        console.log('Hi aus dem store.')
         api.saveAnswers(answerObj)
-        // commit('mutation') Wozu? Es ändert sich ja nichts auf der Participant page; keine Rückgabe notwendig
     },
 }

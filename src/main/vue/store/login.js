@@ -17,6 +17,7 @@ export const getters = {
 
 export const mutations = {
     authenticate(state, token) {
+        console.log(token)
         if (token !== null) {
             state.token = token
             state.authenticated = true

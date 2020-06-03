@@ -14,7 +14,6 @@ public class AnswerServiceImpl implements AnswerService {
 
     private final AnswerRepository answerRepository;
     private final PollResultRepository pollResultRepository;
-    private static final Logger LOGGER = Logger.getLogger("PollController");
 
     /**
      * This class constructor initializes the answer- and question repository.
@@ -38,8 +37,6 @@ public class AnswerServiceImpl implements AnswerService {
     @Override
     public Answer giveAnswer(final String username, final String pollId, final String questionId,
                              final List<String> answerList) {
-        LOGGER.info("Hi aus dem AnswerServiceImpl");
-        LOGGER.info(questionId + pollId + username + answerList);
         final Answer answer = new Answer(answerList, questionId);
         PollResult pollResult = pollResultRepository.findPollResultByPollId(Long.valueOf(pollId));
         if (pollResult == null) {

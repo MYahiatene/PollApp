@@ -16,7 +16,6 @@ import java.util.logging.Logger;
 public class AnswerController {
 
     private final AnswerService answerService;
-    private static final Logger LOGGER = Logger.getLogger("PollController");
 
 
     /**
@@ -37,8 +36,6 @@ public class AnswerController {
      */
     @PostMapping("/poll/pollId:1/addanswer") // {pollId:\d+}
     public void addAnswer(final @RequestBody AnswerCmd answerCmd) {
-        LOGGER.info("Hi aus dem Backend");
-        LOGGER.info(answerCmd.getPollId());
         answerService.giveAnswer(answerCmd.getUsername(), answerCmd.getPollId(),
             answerCmd.getQuestionId(), answerCmd.getAnswerList());
     }

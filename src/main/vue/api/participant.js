@@ -4,7 +4,7 @@ const instance = axios.create({
     timeout: 1000,
     headers: {
         Authorization:
-            'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InRicmV0dG1hbm4iLCJleHAiOjE1OTExMTAzMzQsInJvbCI6WyJST0xFX1BPTExfQ1JFQVRPUiJdfQ.Q6A2ST5I5Ix8_8jfsgxc3ZQq9GG7i88w_bJPlfEYA-QiAavpUhPbjFoUQWd9vZ93Xqzvm4oCw23bJ1NGtp2ucw',
+            'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InRicmV0dG1hbm4iLCJleHAiOjE1OTIwMzMwMzQsInJvbCI6WyJST0xFX1BPTExfQ1JFQVRPUiJdfQ.If3LkXprraScICaQ5bmmef8HhOXKRG_0kWVuM42mWBZ3Sfx-SvhmuHRWkdmaOwNwAPQgl-5FOw_QJg1hH3hluQ',
     },
 })
 export default {
@@ -16,10 +16,7 @@ export default {
         return await instance.get('/participant')
     },
     saveAnswers(answerObj) {
-        console.log('Hi aus dem api')
         const answerCmd = answerObj
-        console.log('answerCmd:', answerCmd)
-        // const index = answerObj.pollID
         return instance.post('/poll/pollId:1/addanswer', answerCmd)
     },
 }

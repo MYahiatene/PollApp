@@ -1,15 +1,6 @@
 <template>
     <!--Build page after PollData from created() method is here-->
     <div v-if="getPoll[1] !== undefined">
-        <v-btn
-            :disabled="disableMe"
-            @click="
-                () => {
-                    this.disableMe = true
-                }
-            "
-            >Klick mich
-        </v-btn>
         <AuthGate v-if="isAuthenticated !== true"></AuthGate>
         <v-container>
             <!--When/After the PollData "arrived" show the logo-->
@@ -99,12 +90,9 @@ export default {
                 username: 'Nina',
                 questionId: '1',
                 answerList: [],
-                answerId: '1', // hard coded, because I don't know what it's supposed to be
+                answerId: '1',
                 pollId: '1',
             },
-            answerList: [],
-            // for checkbox this should be initialised with questionAnswers false/null at least for multiple choice options
-            // but probably for all of them
         }
     },
     /**
@@ -152,26 +140,6 @@ export default {
         },
     },
     methods: {
-        /**
-         * Calls showPoll in store/participant.js.
-         */
-        showPoll() {
-            this.$store.dispatch('participant/showPoll')
-            this.poll = this.getPoll
-        },
-        /**
-         * Calls saveAnswers from the store with the answerobj (cmdAnswer with all given input)
-         */
-        saveAnswer() {
-            // this.answerObj.pollID = this.getPoll[1]
-            console.log('calling saveAnswers in Participant.vue')
-            console.log('answerobj:', this.answerObj)
-            this.$store.dispatch('participant/saveAnswer', this.answerObj)
-            // nuxt to afterparticipated
-        },
-
-        // -------------------------------------------------------------------------------------------------------------
-        // Hilfsfunktionen innerhalb der .vue page
         getQuestionIndex() {
             this.questionIndex += 1
             return this.questionIndex - 1
@@ -194,28 +162,23 @@ export default {
             this.$forceUpdate()
         },
         /**
-         * Get's the given answer of a checkbox question.
+         * Get's the given answer of a checkbox question and calls saveAnswer() to persist it in the database. This
+         * happens after every change (check or uncheck) of a checkbox.
          * @param e (Change-Event)
          */
         saveAnswerCheckbox(e, question, answer) {
             this.answerObj.answerList = []
             let i
-            // if checkBox was checked, not unchecked
+            // checks if checkBox was checked, not unchecked
             if (e === true) {
                 for (i = 0; i < question.answerPossibilities.length; i++) {
                     if (answer === question.answerPossibilities[i]) {
-                        this.answerObj.answerList.push(i) // index of true checkboxes
+                        this.answerObj.answerList.push(i) // index of true checkbox
                     }
                 }
             }
             this.answerObj.pollId = this.getPoll[1].data.pollId
             this.answerObj.questionId = question.questionId
-
-            console.log(e)
-            console.log(question)
-            console.log('answer: ', this.answerObj.answerList)
-            console.log('pollId: ', this.answerObj.pollId)
-            console.log('questionId: ', this.answerObj.questionId)
 
             this.saveAnswer() // alternative: Button after every TextField
         },
@@ -229,11 +192,23 @@ export default {
             this.answerObj.pollId = this.getPoll[1].data.pollId
             this.answerObj.questionId = question.questionId
 
-            console.log('answer: ', this.answerObj.answerList)
-            console.log('pollId: ', this.answerObj.pollId)
-            console.log('questionId: ', this.answerObj.questionId)
-
             this.saveAnswer() // alternative: Button after every TextField
+        },
+
+        // -------------------------------------------------------------------------------------------------------------
+        // Get or save information to/from the Backend
+        /**
+         * Calls showPoll in store/participant.js.
+         */
+        showPoll() {
+            this.$store.dispatch('participant/showPoll')
+            this.poll = this.getPoll
+        },
+        /**
+         * Calls saveAnswers from the store with the answerobj (cmdAnswer with all given input)
+         */
+        saveAnswer() {
+            this.$store.dispatch('participant/saveAnswer', this.answerObj)
         },
     },
 }
