@@ -25,6 +25,12 @@ that each display a basic evaluation of one specific question-->
 
                     <v-spacer></v-spacer>
 
+                    <v-btn :to="'/filterForm'" color="primary">
+                        Filter
+                    </v-btn>
+
+                    <v-spacer></v-spacer>
+
                     <!--            This button will lead to the Page where we can filter and analyse the data-->
 
                     <custom-evaluation :chosen-poll="this.pollName" />
