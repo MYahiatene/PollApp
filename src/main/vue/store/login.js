@@ -17,7 +17,6 @@ export const getters = {
 
 export const mutations = {
     authenticate(state, token) {
-        console.log(token)
         if (token !== null) {
             state.token = token
             state.authenticated = true
@@ -57,8 +56,3 @@ export const actions = {
         })
     },
 }
-
-/* store.subscribe((mutation, state) => {
-    localStorage.setItem('store', JSON.stringify(state))
-    axios.defaults.headers.Authorization = state.token
-}) */

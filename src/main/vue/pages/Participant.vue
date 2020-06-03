@@ -129,13 +129,9 @@ export default {
             return 'color:' + this.getPoll[1].data.fontColor
         },
         hasNoNext() {
-            console.log('hasNoNext: ', this.categoryIndex)
-            console.log(this.categoryIndex === this.categoryLength)
             return this.categoryIndex === this.categoryLength || !this.getChangeOfCategories
         },
         hasNoPrevious() {
-            console.log('hasNoPrevious: ', this.categoryIndex)
-            console.log(this.categoryIndex === 1)
             return this.categoryIndex === 1 || !this.getChangeOfCategories
         },
     },
@@ -148,14 +144,12 @@ export default {
             this.$store.commit('participant/setCategory', 1)
             this.categoryIndex = this.getCategoryIndex
             this.categoryLength = this.getPoll[1].data.categoryList.length
-            console.log(this.categoryIndex)
             this.category = this.getCategory
             this.$forceUpdate()
         },
         getPreviousCategory() {
             this.$store.commit('participant/setCategory', -1)
             this.categoryIndex = this.getCategoryIndex
-            console.log(this.categoryIndex)
             if (this.categoryIndex !== 0) {
                 this.category = this.getCategory
             }
