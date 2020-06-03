@@ -1,7 +1,8 @@
 package gpse.umfrato.domain.question;
 
-import java.util.List;
+import org.springframework.security.access.prepost.PreAuthorize;
 
+import java.util.List;
 public interface QuestionService {
     /**
      * This method creates a question for a poll.

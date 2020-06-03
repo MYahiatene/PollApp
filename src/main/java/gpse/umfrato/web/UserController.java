@@ -1,16 +1,22 @@
 package gpse.umfrato.web;
 
+import gpse.umfrato.domain.cmd.DeleteUserCmd;
+import gpse.umfrato.domain.cmd.EditUserCmd;
 import gpse.umfrato.domain.cmd.UserCmd;
 import gpse.umfrato.domain.user.User;
 import gpse.umfrato.domain.user.UserRepository;
 import gpse.umfrato.domain.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
 
-@RequestMapping(value = "/api", method = RequestMethod.GET)
+@RequestMapping(value = "/api")
 @RestController
 @CrossOrigin
 public class UserController {
@@ -36,13 +42,28 @@ public class UserController {
      * @param userCmd has the user data to create an object user
      * @return a string that method was called
      */
-    @PostMapping("/createuser")
+    @PreAuthorize("hasAuthority('Admin')")
+    @PostMapping("/createUser")
     public String createUser(final @RequestBody UserCmd userCmd) {
         try {
-            userService.createUser(userCmd.getCmdUser());
+            userService.createUser(
+                userCmd.getUsername(), userCmd.getPassword(), userCmd.getFirstName(), userCmd.getLastName(),
+                userCmd.getRole(), userCmd.getEmail());
 
         } catch (BadRequestException e) {
-            LOGGER.info("couldnt create user");
+            LOGGER.info("Could not create user");
+        }
+        return "HTTP POST was called";
+    }
+
+    @PreAuthorize("hasAuthority('Admin')")
+    @PutMapping("editUser")
+    public String editUser(final @RequestBody EditUserCmd editUserCmd) {
+        try {
+            userService.editUser(editUserCmd.getUsername(), editUserCmd.getFirstName(), editUserCmd.getLastName(),
+                editUserCmd.getRole(), editUserCmd.getEmail());
+        } catch (BadRequestException e) {
+            LOGGER.info("Could not edit user");
         }
         return "HTTP POST was called";
     }
@@ -52,9 +73,10 @@ public class UserController {
      *
      * @return a list with all users
      */
+    @PreAuthorize("hasAuthority('Admin')")
     @GetMapping("/users")
     public List<User> getUsers() {
-        return userRepository.findAll();
+        return userService.getAllUsers();
     }
 
     /**
@@ -63,8 +85,28 @@ public class UserController {
      * @param usercmd has the username of the requested user
      * @return the requested user
      */
-    @GetMapping("/getuser/{userId:\\d+}")
+    @PreAuthorize("hasAuthority('Admin')")
+    @GetMapping("/getuser")
     public String getUser(final @RequestBody UserCmd usercmd) {
         return userService.loadUserByUsername(usercmd.getUsername()).getUsername();
+    }
+
+    /**
+     * Checks if the users token has the authority admin
+     */
+    @PreAuthorize("hasAuthority('Admin')")
+    @GetMapping("/checkToken")
+    public void checkToken() {
+
+    }
+
+    /**
+     * Deletes a user in the data base
+     */
+    @PreAuthorize("hasAuthority('Admin')")
+    @PutMapping("/deleteUser")
+    public String deleteUser(final @RequestBody DeleteUserCmd deleteUserCmd) {
+        userService.deleteUser(deleteUserCmd.getUsername());
+        return "test";
     }
 }

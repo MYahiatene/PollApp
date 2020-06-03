@@ -2,12 +2,15 @@ package gpse.umfrato.domain.user;
 
 import gpse.umfrato.web.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Primary;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
+@Primary
 @Service
 class UserServiceImpl implements UserService {
 
@@ -21,14 +24,13 @@ class UserServiceImpl implements UserService {
     /**
      * This method creates a user with every required data.
      *
-     * @param roles     the roles from user
+     * @param role the roles from user
      * @return created user
      */
     @Override
-    public User createUser(final User user, final String... roles) {
-        for (final String role : roles) {
-            user.addRole(role);
-        }
+    public User createUser(final String username, final String password, final String firstName,
+                           final String lastName, final String role, final String email) {
+        final User user = new User(username, password, firstName, lastName, role, email);
         return userRepository.save(user);
     }
 
@@ -49,6 +51,37 @@ class UserServiceImpl implements UserService {
     }
 
     /**
+     * This method edits the user in the repository
+     *
+     * @param username  the username of the user
+     * @param firstName the firstName of the user
+     * @param lastName  the lastName of the user
+     * @param role      the role of the user
+     * @param email     the email of the user
+     */
+    @Override
+    public void editUser(String username, String firstName, String lastName, String role, String email) {
+        final User user = userRepository.getOne(username);
+        user.setFirstName(firstName);
+        user.setLastName(lastName);
+        List<String> tmp = new ArrayList<>();
+        tmp.add(role);
+        user.setRoles(tmp);
+        user.setEmail(email);
+        userRepository.save(user);
+    }
+
+    /**
+     * This method deletes the user in the repository based on the id username
+     *
+     * @param username the username of the user
+     */
+    @Override
+    public void deleteUser(String username) {
+        userRepository.delete(userRepository.getOne(username));
+    }
+
+    /**
      * This method search for a user with username.
      *
      * @param username the username of the requested user
@@ -59,4 +92,5 @@ class UserServiceImpl implements UserService {
         return userRepository.findById(username)
             .orElseThrow(() -> new UsernameNotFoundException("Username " + username + " not found."));
     }
+
 }

@@ -1,9 +1,7 @@
 package gpse.umfrato.domain.poll;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 
-import gpse.umfrato.domain.question.Question;
-
-import java.time.LocalDateTime;
 import java.util.List;
 
 public interface PollService {

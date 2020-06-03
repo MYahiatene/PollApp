@@ -18,15 +18,18 @@ import java.util.Arrays;
 import java.util.List;
 import javax.transaction.Transactional;
 import java.time.Instant;
+import java.util.Arrays;
 
 @Service
 public class InitializeDatabase implements InitializingBean {
 
     /* default */ final QuestionService questionService;
-    /* default */ final AnswerService answerService;
-    private final UserService userService;
-    private final PollService pollService;
 
+    /* default */ final AnswerService answerService;
+
+    private final UserService userService;
+
+    private final PollService pollService;
 
     /**
      * This method initializes the database.
@@ -36,14 +39,18 @@ public class InitializeDatabase implements InitializingBean {
      * @param questionService the object question service
      * @param answerService   the object answer service
      */
+
     @Autowired
     public InitializeDatabase(final UserService userService, final PollService pollService,
                               final QuestionService questionService, final AnswerService answerService) {
-        this.userService = userService;
-        this.pollService = pollService;
-        this.questionService = questionService;
-        this.answerService = answerService;
 
+        this.userService = userService;
+
+        this.pollService = pollService;
+
+        this.questionService = questionService;
+
+        this.answerService = answerService;
     }
 
     /**
@@ -54,8 +61,8 @@ public class InitializeDatabase implements InitializingBean {
     public void afterPropertiesSet() {
 
         final String testUsername = "tbrettmann";
-        final String dummyPassword = "$2a$10$WoG5Z4YN9Z37EWyNCkltyeFr6PtrSXSLMeFWOeDUwcanht5CIJgPa";
         final String logoUrl = "https://picsum.photos/510/300?random";
+        final String dummyPassword = "{bcrypt}$2a$10$WoG5Z4YN9Z37EWyNCkltyeFr6PtrSXSLMeFWOeDUwcanht5CIJgPa";
 
 
         final Poll testPoll = new Poll(testUsername, "anonym", "testPoll", Instant.now().toString(),
@@ -79,13 +86,16 @@ public class InitializeDatabase implements InitializingBean {
             // questionService.addQuestion("1", "testFrage", Arrays.asList("Ja", "Nein", "Vielleicht"), "choicebox");
             //answerService.giveAnswer(testUsername, one, "3", Arrays.asList("Ja", "Nein"));
         } catch (UsernameNotFoundException e) {
-            userService.createUser(testUserTbrettmann, "ROLE_POLL_CREATOR");
+            userService.createUser(testUsername, dummyPassword, "Tobias", "Bettmann",
+                "Admin","tbettmann@reply.de");
         }
 
         try {
             userService.loadUserByUsername("testnutzer");
         } catch (UsernameNotFoundException ex) {
-            userService.createUser(testUser);
+            userService.createUser("testNutzer", dummyPassword, "Markus", "Mueller",
+                "Teilnehmer","mmueller@gmx.de");
         }
+
     }
 }
