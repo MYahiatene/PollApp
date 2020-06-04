@@ -1,4 +1,4 @@
-import api from '../api/participant'
+// import api from '../api/participant'
 
 /**
  * Defines current state of "things" to be called by Getters.
@@ -74,7 +74,10 @@ export const actions = {
      * @type {{showPoll({commit: *}): Promise<void>}}
      */
     async showPoll({ commit }) {
-        const poll = await api.getPoll() // calls api/participant, which calls PollController, which calls PollService and gives back a poll
+        // const poll = await api.getPoll() // calls api/participant, which calls PollController, which calls PollService and gives back a poll
+        this.$axios.defaults.baseURL = 'http://localhost:8088/api/'
+        this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('user-token')
+        const poll = await this.$axios.get('/participant')
         commit('setPoll', poll) // calls the setter int the store to save the poll in the store
     },
     /**
@@ -84,6 +87,9 @@ export const actions = {
      * @param answerObj object with (username, questionId, answerList, pollId)
      */
     saveAnswer(state, answerObj) {
-        api.saveAnswers(answerObj)
+        this.$axios.defaults.baseURL = 'http://localhost:8088/api/'
+        this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('user-token')
+        return this.$axios.post('/poll/pollId:1/addanswer', answerObj)
+        // api.saveAnswers(answerObj)
     },
 }
