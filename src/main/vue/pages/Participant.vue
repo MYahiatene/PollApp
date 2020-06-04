@@ -11,12 +11,14 @@
             <v-content>
                 <v-row>
                     <v-col cols="8">
-                        <!--v-list v-for="poll in getPoll.data" :key="poll.id"-->
+                        <!-- loads the questions from the current category in a list-->
                         <v-list v-for="question in getCategory.questionList" :key="question.questionId" two-line>
-                            <!--v-list v-for="question in category.questionList" :key="question.questionId" two-line-->
+                            <!-- every question is in a card and consists of the questionMessageand the way to answer
+                            it, and depending on the settings of the poll, the number of questions -->
                             <v-card class="mx-auto">
                                 <v-card-title class="col" :style="fontColorText">
-                                    <!--the visibility of the number of questions depends on the poll configuration-->
+                                    <!--the visibility of the index of the current questions in relation to the total
+                                    number of questions, given in the settings of the poll-->
                                     <div v-if="getVisibility">{{ getQuestionIndex() }}/{{ getNumberOfQuestions }}</div>
                                     <div class="ps-4">{{ question.questionMessage }}</div>
                                 </v-card-title>
@@ -37,28 +39,32 @@
                                             @change="saveAnswerCheckbox($event, question, answer)"
                                         ></v-checkbox>
                                     </v-list>
+                                    <!-- checks the individual response options for every question, not valid with
+                                    the backend -->
                                     <!--div v-if="question.ownAnswersAllowed">
-                                                <v-checkbox
-                                                    v-model="enabled"
-                                                    hide-details
-                                                    class="ma-4"
-                                                    label="Eigene Antwort:"
-                                                ></v-checkbox>
-                                                <v-col>
-                                                    <v-text-field></v-text-field>
-                                                </v-col>
-                                            </div-->
+                                        <v-checkbox
+                                            v-model="enabled"
+                                            hide-details
+                                            class="ma-4"
+                                            label="Eigene Antwort:"
+                                        ></v-checkbox>
+                                        <v-col>
+                                            <v-text-field></v-text-field>
+                                        </v-col>
+                                    </div-->
                                 </div>
                             </v-card> </v-list
-                        ><!--/v-list-->
-                        <!--/v-list-->
+                        >
                     </v-col>
                 </v-row>
                 <v-row>
                     <v-col cols="8">
+                        <!-- button to get to the previous category, if there is no previous one, the button is disabled,
+                         else, the previous category is loaded by getPreviousCategory() if clicked -->
                         <v-btn class="pl-4" :disabled="hasNoPrevious" @click="getPreviousCategory()"
                             >Vorherige Seite</v-btn
                         >
+                        <!-- button to get to the next category, same principle as the one above -->
                         <v-btn class="pl-4" :disabled="hasNoNext" @click="getNextCategory()">Nächste Seite</v-btn>
                         <v-btn color="primary" nuxt to="/AfterParticipated">
                             Absenden
@@ -128,18 +134,37 @@ export default {
         fontColorText() {
             return 'color:' + this.getPoll[1].data.fontColor
         },
+        /**
+         * Returns true if there is no next category in the poll or if the ChangeOfCategories is not allowed in the poll
+         * @returns {boolean}
+         */
         hasNoNext() {
             return this.categoryIndex === this.categoryLength || !this.getChangeOfCategories
         },
+        /**
+         * Returns true if there is no previous category in the poll or if the ChangeOfCategories is not allowed in
+         * the poll
+         * @returns {boolean}
+         */
         hasNoPrevious() {
             return this.categoryIndex === 1 || !this.getChangeOfCategories
         },
     },
     methods: {
+        /**
+         * Increases the questionIndex at the page and gives back the current questionIndex. Is called when the
+         * visibility is true and gives the index of the question inside the category.
+         * @returns (questionIndex: number)
+         */
         getQuestionIndex() {
             this.questionIndex += 1
             return this.questionIndex - 1
         },
+        /**
+         * Calls setCategory in the store to get the next category in the poll and save it at the page, if there is one
+         * and sets the categoryIndex from the getter getCategoryIndex from the store, the total amount of questions as
+         * the categoryLength and force updates the page to load the questions from th new category.
+         */
         getNextCategory() {
             this.$store.commit('participant/setCategory', 1)
             this.categoryIndex = this.getCategoryIndex
@@ -147,12 +172,15 @@ export default {
             this.category = this.getCategory
             this.$forceUpdate()
         },
+        /**
+         * Calls setCategory in the store to get the previous category in the poll and loads the category etc. like
+         * in getNextcategory().
+         */
         getPreviousCategory() {
             this.$store.commit('participant/setCategory', -1)
             this.categoryIndex = this.getCategoryIndex
-            if (this.categoryIndex !== 0) {
-                this.category = this.getCategory
-            }
+            this.categoryLength = this.getPoll[1].data.categoryList.length
+            this.category = this.getCategory
             this.$forceUpdate()
         },
         /**

@@ -1,10 +1,11 @@
-// import api from '../api/participant'
-
 /**
  * Defines current state of "things" to be called by Getters.
  * @returns {{visibility: boolean,
+ *            changeOfCategories: boolean,
  *            numberOfQuestions: number,
- *            poll: [string]}}
+ *            categoryIndex: number
+ *            poll: [string]
+ *            category: [string]}}
  */
 export const state = () => ({
     visibility: false,
@@ -18,7 +19,10 @@ export const state = () => ({
  * Defines mapGetters for Usage in Participant.vue.
  * @type {{getPoll: (function(*): [string]|null),
  *         getNumberOfQuestions: (function(*): number),
- *         getVisibility: (function(*): *)}}
+ *         getVisibility: (function(*): boolean),
+ *         getCategory: (function(*): [string]|null),
+ *         getCategoryIndex: (function(*): number),
+ *         getChangeOfCategory: (function(*): boolean)}}
  */
 export const getters = {
     getVisibility: (state) => {
@@ -40,11 +44,12 @@ export const getters = {
         return state.changeOfCategories
     },
 }
-/**
- * Sets the poll gotten from showPoll as the current state.
- * @type {{setPoll: mutations.setPoll}}
- */
+
 export const mutations = {
+    /**
+     * Sets the poll gotten from showPoll as the current state.
+     * @type {{setPoll: mutations.setPoll}}
+     */
     setPoll: (state, poll) => {
         state.poll.push(poll)
         state.visibility = poll.data.visibility
@@ -52,6 +57,11 @@ export const mutations = {
         state.numberOfQuestions = poll.data.categoryList[0].questionList.length // number of questions in this category
         state.category = poll.data.categoryList[0]
     },
+    /**
+     * Sets the next or previous category of the poll as the current one, if there is one, depending on the argument
+     * -1 or 1, meaning previous or next category wanted
+     * @type {{setCategory: mutations.setCategory}}
+     */
     setCategory: (state, args) => {
         const index = state.categoryIndex
         if (args === 1) {
@@ -69,12 +79,12 @@ export const mutations = {
 }
 export const actions = {
     /**
-     * Defines mapAction showPoll and calls getPoll in api/participant. After it got the poll, it comits the poll,
-     * to save it in this store (setPoll), so the mapGetters can acces the data and give it back to the Participant.vue page.
+     * Defines mapAction showPoll and sets the global axios with the token saved in localstorage and the baseURL to get
+     * the poll from the PollController in the backend. After it got the poll,it commits the poll,to save it in this
+     * store (setPoll), so the mapGetters can access the data and give it back to the Participant.vue page.
      * @type {{showPoll({commit: *}): Promise<void>}}
      */
     async showPoll({ commit }) {
-        // const poll = await api.getPoll() // calls api/participant, which calls PollController, which calls PollService and gives back a poll
         this.$axios.defaults.baseURL = 'http://localhost:8088/api/'
         this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('user-token')
         const poll = await this.$axios.get('/participant')
@@ -82,7 +92,8 @@ export const actions = {
     },
     /**
      * Defines mapAction saveAnswer which saves  an answerObj (AnswerCmd) for a specific question from a specific poll
-     * from a specific user. It calls saveAnswer from api/participant.
+     * from a specific user. It sets the global axios baseURL and the header with the token from the localstorage and
+     * calls the PollController to add an answer.
      * @param state
      * @param answerObj object with (username, questionId, answerList, pollId)
      */
