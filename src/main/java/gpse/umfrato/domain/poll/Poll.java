@@ -68,6 +68,10 @@ public class Poll {
      */
     private int pollStatus;
 
+    /**
+     * This attribute represents the link to reach the poll if it is activated.
+     */
+    private String participationLink;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Category> categoryList = new ArrayList<>();

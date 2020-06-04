@@ -316,7 +316,7 @@ export default {
     },
     methods: {
         ...mapActions({ initialize: 'evaluation/initialize' }),
-        ...mapMutations({ saveFilter: 'evaluation/saveFilter' }),
+        ...mapMutations({ sendFilter: 'evaluation/sendFilter' }),
         saveToStore() {
             const filterData = []
             for (let f = 0; f < this.filterList.length; f++) {
@@ -354,7 +354,7 @@ export default {
                     targetAnswerPossibilities: tAnswerPossibilities,
                 })
             }
-            this.saveFilter(filterData)
+            this.sendFilter(filterData)
             this.dialog = false
         },
         clone(item) {

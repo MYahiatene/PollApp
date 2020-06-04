@@ -176,7 +176,6 @@ export default {
             filter: {},
             sortDesc: false,
             sortBy: '',
-            textToCopy: '',
             contextActions: [
                 { title: 'Beantworten', link: '/' },
                 { title: 'Bearbeiten', link: '/QuestionOverview' },
@@ -272,7 +271,8 @@ export default {
             )
         },
         setLink(item) {
-            console.log('hi')
+            navigator.clipboard.writeText(item.participationLink)
+            alert('Link kopiert: "' + item.participationLink + '"')
         },
     },
 }

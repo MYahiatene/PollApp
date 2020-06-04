@@ -1,5 +1,3 @@
-import api from '../api/eval'
-import api2 from '../api/polls'
 export const state = () => ({
     DiagramData: {},
     Polls: {},
@@ -25,14 +23,19 @@ export const mutations = {
     },
     saveFilter: (state, filterList) => {
         state.FilterList = filterList
-        api.sendFilter(state.FilterList)
     },
 }
+
 export const actions = {
     async initialize({ commit }) {
-        const data = await api.getInitialDiagrams()
+        console.log(this.$axios.defaults.headers)
+        const data = await this.$axios.get('/evaluation/initialDiagrams')
         commit('initializeData', data)
-        const pollData = await api2.getPolls()
+        const pollData = await this.$axios.get('/poll')
         commit('initializePolls', pollData)
+    },
+    async sendFilter({ state, commit }, filterList) {
+        commit('saveFilter', filterList)
+        await this.$axios.post('/evaluation/generateDiagram', filterList)
     },
 }

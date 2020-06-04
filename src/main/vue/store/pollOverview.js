@@ -1,4 +1,3 @@
-import api from '../api/polls'
 export const state = () => ({
     Polls: {},
     IDsToLoad: {
@@ -155,7 +154,8 @@ export const mutations = {
                 pollId: state.IDsToLoad.pollID,
                 question: state.Polls[indices.p].categoryList[indices.c].questionList[indices.q],
             }
-            api.addQuestion(payload)
+            // weiß nicht ob das hier geht, aber solange es kein await braucht...
+            this.$axios.post('/poll/' + payload.pollId + '/addquestion', payload).catch()
         }
     },
     setIntervalStart: (state, value) => {
@@ -224,7 +224,7 @@ export const mutations = {
 }
 export const actions = {
     async initialize({ commit }) {
-        const data = await api.getPolls()
+        const data = await this.$axios.get('/poll')
         commit('resetToLoad')
         commit('initializeData', data)
     },
@@ -234,7 +234,10 @@ export const actions = {
         console.log(indices)
         if (indices !== null) {
             console.log('requesting Category')
-            const newId = await api.addCategory({ pollId: state.IDsToLoad.pollID, name: 'Neue Kategorie' })
+            const newId = await this.$axios.post('/poll/' + state.IDsToLoad.pollID + '/addcategory', {
+                pollId: state.IDsToLoad.pollID,
+                name: 'Neue Kategorie',
+            })
             const newCategory = {
                 categoryId: newId,
                 categoryName: 'Neue Kategorie',
@@ -247,12 +250,13 @@ export const actions = {
     },
     async createQuestion({ commit, state }) {
         console.log('requesting Question')
-        const response = await api.addQuestion({
+        const payload = {
             pollId: 1,
             questionMessage: '',
             answerPossibilities: [''],
             questionType: '',
-        })
+        }
+        const response = await this.$axios.post('/poll/' + payload.pollId + '/addquestion', payload).catch()
         console.log(response)
         const newId = response.data
         console.log('Create Question')
@@ -270,7 +274,9 @@ export const actions = {
                 questionId: state.IDsToLoad.questionID,
             }
             console.log(payload)
-            const result = await api.deleteQuestion(payload)
+            const result = await this.$axios
+                .post('/poll/' + payload.pollId + '/removequestion/' + payload.questionId)
+                .catch()
             commit('resetToLoad')
             console.log(result)
         }
