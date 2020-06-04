@@ -13,7 +13,7 @@
         <v-spacer />
         <v-spacer />
         <v-col>
-            <v-btn icon @click="set()">
+            <v-btn icon @click="setIDs()">
                 <v-icon small>
                     mdi-pencil
                 </v-icon>
@@ -66,7 +66,7 @@ export default {
     },
     methods: {
         ...mapMutations({ setToLoad: 'pollOverview/setToLoad' }),
-        set() {
+        setIDs() {
             const IDs = {
                 pollID: this.pollId,
                 categoryID: this.categoryId,

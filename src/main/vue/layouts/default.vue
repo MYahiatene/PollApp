@@ -54,7 +54,7 @@ export default {
                 {
                     icon: 'mdi-pencil',
                     title: 'Umfragen',
-                    to: '/navigation',
+                    to: '/polls',
                 },
                 {
                     icon: 'mdi-chart-line',

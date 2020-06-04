@@ -178,7 +178,7 @@
 <script>
 import draggable from 'vuedraggable'
 import { mapActions, mapGetters, mapMutations } from 'vuex'
-import QAFilter from '../components/Filter/QAFilter'
+import QAFilter from './Filter/QAFilter'
 
 export default {
     name: 'customEvaluation',

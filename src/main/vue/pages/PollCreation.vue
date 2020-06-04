@@ -199,7 +199,7 @@ export default {
                 },
             })
             instance.post('/createpoll', obj).catch()
-            this.$router.push('/navigation')
+            this.$router.push('/polls')
         },
         formatDate(date) {
             if (!date) return null

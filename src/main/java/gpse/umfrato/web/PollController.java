@@ -63,10 +63,8 @@ public class PollController {
      * @return a selected poll
      */
     @GetMapping("/poll/{id:\\d+}")
-    public Poll getPoll(final @RequestBody PollCmd pollCmd) {
-
-        return pollService.getPoll(pollCmd.getId());
-
+    public Poll getPoll(@PathVariable("id") final String pollId) {
+        return pollService.getPoll(pollId);
     }
 
 

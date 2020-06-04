@@ -57,7 +57,7 @@
 </template>
 
 <script>
-import CustomEvaluation from '../pages/customEvaluation'
+import CustomEvaluation from './customEvaluation'
 import BarChartView from './BarChartView'
 import PieChartView from './PieChartView'
 import visualEvaluationSettings from './visualEvaluationSettings'
