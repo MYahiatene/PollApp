@@ -84,6 +84,7 @@ export default {
             tableView: true,
             freqView: false,
             caseSensitive: false,
+            enableFillWords: true,
             filter: {},
             sortDesc: false,
             sortBy: 'name',
@@ -231,7 +232,7 @@ export default {
             let listIndex = 0
             const outputArray = []
             for (const key in stringArray) {
-                if (!this.fillers.includes(key)) {
+                if (!this.fillers.includes(key) || this.enableFillWords) {
                     const item = { value: stringArray[key], text: key }
                     outputArray[listIndex] = item
                     // console.log(listIndex, outputArray[listIndex])
