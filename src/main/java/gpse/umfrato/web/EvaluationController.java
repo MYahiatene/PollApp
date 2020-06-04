@@ -11,14 +11,15 @@ import gpse.umfrato.domain.cmd.FilterCmd;
 import gpse.umfrato.domain.cmd.PollCmd;
 import gpse.umfrato.domain.poll.Poll;
 import gpse.umfrato.domain.poll.PollService;
+import gpse.umfrato.domain.pollresult.PollResultServiceImpl;
 import gpse.umfrato.domain.question.Question;
 import gpse.umfrato.domain.question.QuestionService;
+import gpse.umfrato.domain.user.User;
 import gpse.umfrato.domain.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Filter;
 import java.util.logging.Logger;
 
@@ -48,6 +49,7 @@ public class EvaluationController {
 
     @GetMapping("/initialDiagrams")
     public String initialDiagrams() {
+        testAnswers();
 /*        LOGGER.info("PollId");
         LOGGER.info(pollCmd.getId());
         try {
@@ -125,5 +127,44 @@ public class EvaluationController {
                 6. abschicken*/
         return "Haha";
     }
+
+    public <T> List<Answer> filterByAnswer(List<Answer> input, List<T> wantedAnswers){
+        ListIterator<Answer> iter = input.listIterator();
+        List<Answer> output = new ArrayList<>();
+        while(iter.hasNext()){
+            Answer index = iter.next();
+            if(!Collections.disjoint(Arrays.asList(index.getGivenAnswerList()), wantedAnswers))
+                output.add(index);
+        }
+        return output;
+    }
+
+    public boolean testAnswers(){
+        List<Answer> antworten = answerService.getAnswerFromOneQuestion(1L);
+        List<String> wantedAnswers = new ArrayList<>();
+        wantedAnswers.add("10");
+        System.out.println(filterByAnswer(antworten, wantedAnswers));
+        return false;
+    }
+
+    public <T> List<Answer> filterByUser(String pollID, String username){ /**TODO: PollResultServiceImpl NEEDS POLLRESULTS ELSE FILTERING BY USER WONT WORK*/
+        PollResultServiceImpl pollResultService = new PollResultServiceImpl();
+        List<Question> questionList = questionService.getAllQuestions(Long.parseLong(pollID));
+        ListIterator<Question> iter = questionList.listIterator();
+        List<Answer> output = new ArrayList<>();
+
+        while(iter.hasNext()){
+            Question index = iter.next();
+            List<Answer> answerListForQuestion = answerService.getAnswerFromOneQuestion(index.getQuestionId());
+            ListIterator<Answer> answerIter = answerListForQuestion.listIterator();
+            while(answerIter.hasNext()){
+                Answer answerIndex = answerIter.next();
+                //if(answerIndex.)
+            }
+        }
+
+        return null;
+    }
+
 
 }
