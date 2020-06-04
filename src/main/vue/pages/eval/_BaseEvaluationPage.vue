@@ -155,10 +155,10 @@ that each display a basic evaluation of one specific question-->
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
-import AuthGate from '../components/AuthGate'
-import ChoiceQuestionEvaluationWidget from '../components/ChoiceQuestionEvaluationWidget'
-import visualEvaluationSettings from '../components/visualEvaluationSettings'
-import CustomEvaluation from './customEvaluation'
+import AuthGate from '../../components/AuthGate'
+import ChoiceQuestionEvaluationWidget from '../../components/ChoiceQuestionEvaluationWidget'
+import visualEvaluationSettings from '../../components/visualEvaluationSettings'
+import CustomEvaluation from '../../components/customEvaluation'
 
 export default {
     name: 'BaseEvaluationPage',

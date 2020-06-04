@@ -89,7 +89,7 @@
                                         </v-icon>
                                     </template>
                                     <template v-slot:item.link="{ item }">
-                                        <v-icon @click="setLink(item)">
+                                        <v-icon v-if="item.pollStatus === 1" @click="setLink(item)">
                                             mdi-link-variant
                                         </v-icon>
                                     </template>
@@ -164,8 +164,8 @@
     </div>
 </template>
 <script>
-import { mapActions, mapGetters } from 'vuex'
-import AuthGate from '../components/AuthGate'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
+import AuthGate from '../../components/AuthGate'
 export default {
     name: 'Navigation',
     components: { AuthGate },
@@ -178,7 +178,7 @@ export default {
             sortBy: '',
             contextActions: [
                 { title: 'Beantworten', link: '/' },
-                { title: 'Bearbeiten', link: '/QuestionOverview' },
+                { title: 'Bearbeiten', link: '/polls/' },
                 { title: 'Aktivieren', link: '/' },
                 { title: 'Löschen', link: '/' },
             ],
@@ -222,10 +222,14 @@ export default {
                     data[i].pollStatusString = 'Inaktiv'
                     data[i].actionIcon = 'mdi-pencil'
                     data[i].statusIcon = 'mdi-play'
-                } else {
+                } else if (this.items[i].pollStatus === 1) {
                     data[i].pollStatusString = 'Aktiv'
                     data[i].actionIcon = 'mdi-magnify'
                     data[i].statusIcon = 'mdi-stop'
+                } else if (this.items[i].pollStatus === 2) {
+                    data[i].pollStatusString = 'Beendet'
+                    data[i].actionIcon = 'mdi-magnify'
+                    data[i].statusIcon = 'mdi-content-duplicate'
                 }
                 const categories = this.items[i].categoryList
                 data[i].categoryCount = categories.length
@@ -239,23 +243,30 @@ export default {
         },
     },
     mounted() {
-        console.log('mounted')
-        console.log(this.items)
         this.initialize()
     },
 
     methods: {
         ...mapActions({ initialize: 'navigation/initialize' }),
+        ...mapMutations({ setPollActive: 'navigation/setPollActive', setPollFinished: 'navigation/setPollFinished' }),
         activatePoll(item) {
-            if (confirm('Umfrage jetzt veröffentlichen?')) {
-                console.log('Fake activate poll at ' + item.pollId)
+            if (item.pollStatus === 0) {
+                if (confirm('Umfrage jetzt veröffentlichen?')) {
+                    this.setPollActive(item.pollId)
+                }
+            } else if (item.pollStatus === 1) {
+                if (confirm('Umfrage jetzt beenden?')) {
+                    this.setPollFinished(item.pollId)
+                }
+            } else if (confirm('Umfrage kopieren?')) {
+                alert('Tja, das geht noch nicht...')
             }
         },
         itemAction(item) {
             if (item.pollStatus === 0) {
-                this.$router.push('/QuestionOverview')
+                this.$router.push('/polls/' + item.pollId)
             } else {
-                this.$router.push('/BaseEvaluationPage')
+                this.$router.push('/eval/' + item.pollId)
             }
         },
         showValue(item, key) {

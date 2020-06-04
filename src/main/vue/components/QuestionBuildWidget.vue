@@ -6,13 +6,14 @@
             <v-container>
                 <v-row no-gutters>
                     <v-col>
-                        <h3>Frage erstellen</h3>
+                        <h3>Frage bearbeiten</h3>
                     </v-col>
                     <v-col align="right">
-                        <v-btn icon @click="deleteQuestion">
-                            <v-icon>
+                        <v-btn @click="deleteQuestion">
+                            <v-icon color="primary" left>
                                 mdi-delete
                             </v-icon>
+                            Löschen
                         </v-btn>
                     </v-col>
                 </v-row>

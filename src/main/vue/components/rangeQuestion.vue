@@ -66,7 +66,6 @@ export default {
         }
     },
     mounted() {
-        // TODO: funktioniert nicht
         this.openLower = this.getQuestion.intervalUpperText
         this.openUpper = this.getQuestion.intervalLowerText
     },
@@ -80,15 +79,11 @@ export default {
             setNA: 'pollOverview/setIntervalNoAnswer',
         }),
         clearLower() {
-            console.log('lowerClear')
-            console.log(this.openLower)
             if (!this.openLower) {
                 this.setLower(null)
             }
         },
         clearUpper() {
-            console.log('upperClear')
-            console.log(this.openUpper)
             if (!this.openUpper) {
                 this.setUpper(null)
             }

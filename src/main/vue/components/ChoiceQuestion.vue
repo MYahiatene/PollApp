@@ -57,7 +57,6 @@ export default {
                 return this.getQuestion.userAnswers
             },
             set(active) {
-                console.log('setter')
                 this.setUserAnswers(active)
             },
         },

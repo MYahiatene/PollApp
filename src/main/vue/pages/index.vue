@@ -6,7 +6,7 @@
 
                 <v-row>
                     <v-col cols="12" lg="12">
-                        <v-card hover align="center">
+                        <v-card align="center">
                             <v-card-title class="headline">
                                 Willkommen bei Umfrato!
                             </v-card-title>
@@ -95,7 +95,7 @@ export default {
                     id: '418',
                     subtitle: 'Fragen: 3 Bearbeiter: 1 Zuletzt: NHILLE (14.05.2020)',
                     iconAction: 'mdi-pencil',
-                    actionLink: '/QuestionOverview',
+                    actionLink: '/polls/1',
                     iconStatus: 'mdi-play',
                 },
                 {
@@ -103,7 +103,7 @@ export default {
                     id: '215',
                     subtitle: 'Teilgenommen: 52% (18/34) Tage übrig: 5 (26.05.2020)',
                     iconAction: 'mdi-magnify',
-                    actionLink: '/BaseEvaluationPage',
+                    actionLink: '/eval/1',
                     iconStatus: 'mdi-pause',
                 },
                 {
@@ -111,7 +111,7 @@ export default {
                     id: '183',
                     subtitle: 'Automatisch geschlossen seit 01.02.2020',
                     iconAction: 'mdi-magnify',
-                    actionLink: '/BaseEvaluationPage',
+                    actionLink: '/eval/1',
                     iconStatus: 'mdi-content-duplicate',
                 },
             ],
