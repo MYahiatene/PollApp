@@ -68,8 +68,8 @@ public class InitializeDatabase implements InitializingBean {
         final Poll testPoll = new Poll(testUsername, "anonym", "testPoll", Instant.now().toString(),
             Instant.now().toString(), Instant.now().toString(), 0, "#c4fcdb", "#c42843",
             logoUrl, true, true);
-        final User testUser = new User("testNutzer", dummyPassword, "Markus", "Mueller");
-        final User testUserTbrettmann = new User(testUsername, dummyPassword, "Tobias", "Brettmann");
+        final User testUser = new User("testNutzer", dummyPassword, "Markus", "Mueller","Admin","testuser@testmail.de");
+        final User testUserTbrettmann = new User(testUsername, dummyPassword, "Tobias", "Brettmann", "Admin", "tobias.bettmann@mail.com");
 
         try {
             pollService.createPoll(testPoll);
