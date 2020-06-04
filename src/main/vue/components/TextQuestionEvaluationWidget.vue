@@ -15,11 +15,12 @@
                                 v-model="search"
                                 clearable
                                 flat
-                                solo-inverted
+                                solo
                                 hide-details
                                 prepend-inner-icon="mdi-pencil"
                                 label="Search"
                             ></v-text-field>
+                            <!--<v-checkbox :v-model="caseSensitive" @change="rerender"></v-checkbox>-->
                         </v-toolbar>
                     </template>
 
@@ -28,18 +29,20 @@
                             <v-col>
                                 <v-card>
                                     <v-container>
-                                        <template v-if="freqView">
+                                        <template v-if="tableView">
                                             <v-data-table
-                                                :headers="headers"
+                                                :headers="tableHeaders"
                                                 :items="prepareAnswers"
+                                                :search="search"
+                                                :custom-filter="filterOnlyCapsText"
                                                 class="elevation-1"
                                             >
                                             </v-data-table>
                                         </template>
                                         <template v-if="tableView">
                                             <v-data-table
-                                                :headers="tableHeaders"
-                                                :items="prepareAnswers"
+                                                :headers="freqHeaders"
+                                                :items="prepareWordFrequencies"
                                                 :search="search"
                                                 :custom-filter="filterOnlyCapsText"
                                                 class="elevation-1"
@@ -80,24 +83,22 @@ export default {
             search: '',
             tableView: true,
             freqView: false,
+            caseSensitive: false,
             filter: {},
             sortDesc: false,
             sortBy: 'name',
             keys: ['text'],
-            headers: [
-                { text: 'Wort', value: 'text', sortable: false },
-                { text: 'Frequenz', value: 'wordFrequency', sortable: true },
-                { text: 'Beantwortet', value: 'answered', sortable: true },
-                { text: 'Benutzer', value: 'creator', sortable: true },
-            ],
+            wordFrequenz: {},
             tableHeaders: [
                 { text: 'Antwort', value: 'text', sortable: false },
+                { text: 'Länge', value: 'wordLength', sortable: true },
                 { text: 'Beantwortet', value: 'answered', sortable: true },
                 { text: 'Benutzer', value: 'creator', sortable: true },
             ],
             freqHeaders: [
-                { text: 'Wort', value: 'value', sortable: false },
-                { text: 'Frequenz', value: 'text', sortable: true },
+                { text: 'Wort', value: 'text', sortable: false },
+                { text: 'Frequenz', value: 'value', sortable: true },
+                { text: 'Tendenzindex', value: 'tendency', sortable: true },
             ],
             answers: [
                 {
@@ -112,8 +113,51 @@ export default {
                     creator: 'Kony',
                     id: '1',
                 },
+                {
+                    text: 'Fu GSE',
+                    answered: '2020',
+                    creator: 'Da Vinci',
+                    id: '2',
+                },
+                {
+                    text: 'Fck GSE der die das im die die die die die das nacho',
+                    answered: '2010',
+                    creator: 'TBrettmann',
+                    id: '3',
+                },
             ],
-            contextActions: ['Beantworten', 'Hallo', 'FGSE'],
+            fillers: [
+                'die',
+                'der',
+                'und',
+                'in',
+                'zu',
+                'den',
+                'das',
+                'nicht',
+                'von',
+                'sie',
+                'ist',
+                'des',
+                'sich',
+                'mit',
+                'dem',
+                'dass',
+                'er',
+                'es',
+                'ein',
+                'ich',
+                'auf',
+                'so',
+                'eine',
+                'auch',
+                'als',
+                'an',
+                'nach',
+                'wie',
+                'im',
+                'für',
+            ],
         }
     },
     computed: {
@@ -123,61 +167,80 @@ export default {
         }),
         prepareAnswers() {
             const data = []
+            const freqMap = {}
             for (let i = 0; i < this.answers.length; i++) {
                 data[i] = this.answers[i]
                 // data[i].setAttribute('wordFreq')
-                data[i].wordFrequency = this.wordFreq(this.answers[i].text)
+                data[i].wordFrequency = this.wordFreq(this.answers[i].text, freqMap)
+                // data[i].setAttribute('wordLength')
+                data[i].wordLength = this.countWords(this.answers[i].text)
                 delete data[i].id
             }
-            console.log(data)
+            // this.wordFrequenz = this.data[0].wordFrequency
+            // console.log(data)
             return data
         },
         prepareWordFrequencies() {
             const data = []
+            const freqMap = {}
             for (let i = 0; i < this.answers.length; i++) {
+                data[i] = this.answers[i]
                 // data[i].setAttribute('wordFreq')
-                data[i] = this.returnWordListWithFreq(this.wordFreq(this.answers[i].text))
+                if (this.caseSensitive) {
+                    data[i].wordFrequency = this.wordFreq(this.answers[i].text.toLowerCase(), freqMap)
+                } else {
+                    data[i].wordFrequency = this.wordFreq(this.answers[i].text.toLowerCase(), freqMap)
+                }
             }
-            console.log(data)
-            return data
+            delete freqMap.id
+            delete freqMap.creator
+            delete freqMap.answer
+            console.log(this.returnWordListWithFreq(freqMap))
+            return this.returnWordListWithFreq(freqMap)
+            // return data
         },
     },
     mounted() {
-        console.log('mounted')
-        console.log(this.polls)
+        // console.log('mounted')
+        // console.log(this.polls)
         this.initialize()
     },
     methods: {
         ...mapActions({ initialize: 'navigation/initialize' }),
-        wordFreq(string) {
+        wordFreq(string, freqMap) {
             const words = string.toString().replace(/[.]/g, '').split(/\s/)
-            const freqMap = {}
             words.forEach(function (w) {
                 if (!freqMap[w]) {
                     freqMap[w] = 0
                 }
                 freqMap[w] += 1
             })
-            console.log('polls:')
-            console.log(this.polls)
+            // console.log('polls:')
+            // console.log(this.polls)
             // console.log('wordListWithFreq:')
             // console.log(this.returnWordListWithFreq(freqMap))
-            console.log(freqMap)
+            // console.log(freqMap)
             return freqMap
+        },
+
+        countWords(string) {
+            return string.split(' ').length
         },
 
         returnWordListWithFreq(stringArray) {
             let listIndex = 0
             const outputArray = []
             for (const key in stringArray) {
-                const item = { value: stringArray[key], text: key }
+                if (!this.fillers.includes(key)) {
+                    const item = { value: stringArray[key], text: key }
+                    outputArray[listIndex] = item
+                    // console.log(listIndex, outputArray[listIndex])
+                    listIndex++
+                }
                 // outputArray += item
-                outputArray[listIndex] = item
-                // console.log(listIndex, outputArray[listIndex])
-                listIndex++
             }
-            console.log('outputArray: ')
-            console.log(outputArray)
+            // console.log('outputArray: ')
+            // console.log(outputArray)
             return outputArray
         },
 
