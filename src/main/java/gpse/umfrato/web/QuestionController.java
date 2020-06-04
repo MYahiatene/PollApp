@@ -44,12 +44,11 @@ public class QuestionController {
      * @param questionCmd has the poll id
      */
     @PostMapping("/poll/{pollId:\\d+}/removequestion/{questionId:\\d+}")
-    public void deleteQuestion(
-        /*@PathVariable("pollId") final String pollId,
-        @PathVariable("questionId") final String questionId*/
-        final @RequestBody QuestionCmd questionCmd) {
-        final String pollId = questionCmd.getPollId();
-        questionService.removeQuestion(pollId, questionCmd.getPollId());
+    public void deleteQuestion(@PathVariable("pollId") final String pollId, @PathVariable("questionId")
+    final String questionId) {
+        System.out.println(pollId);
+        System.out.println(questionId);
+        questionService.removeQuestion(pollId, questionId);
     }
 
     /**

@@ -5,16 +5,16 @@ export const state = () => ({
 })
 
 export const getters = {
-    getToken: (state) => {
+    getToken(state) {
         if (state !== undefined) {
             return state.token
         }
         return null
     },
-    isAuthenticated: (state) => {
+    isAuthenticated(state) {
         return state.authenticated
     },
-    getUsername: (state) => {
+    getUsername(state) {
         return state.username
     },
 }

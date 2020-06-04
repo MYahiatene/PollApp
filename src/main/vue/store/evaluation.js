@@ -4,24 +4,24 @@ export const state = () => ({
     FilterList: {},
 })
 export const getters = {
-    getDiagramData: (state) => {
+    getDiagramData(state) {
         return state.DiagramData.questionList
     },
-    getPollName: (state) => {
+    getPollName(state) {
         return state.DiagramData.name
     },
-    getPolls: (state) => {
+    getPolls(state) {
         return state.Polls
     },
 }
 export const mutations = {
-    initializeData: (state, data) => {
+    initializeData(state, data) {
         state.DiagramData = data.data
     },
-    initializePolls: (state, pollData) => {
+    initializePolls(state, pollData) {
         state.Polls = pollData.data
     },
-    saveFilter: (state, filterList) => {
+    saveFilter(state, filterList) {
         state.FilterList = filterList
     },
 }
