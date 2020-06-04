@@ -82,6 +82,13 @@ export default {
             },
         },
     },
+// added to allow devtools
+    vue: {
+        config: {
+            productionTip: false,
+            devtools: true
+        }
+    },
     /*
      ** Build configuration
      */

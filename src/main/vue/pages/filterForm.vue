@@ -51,59 +51,31 @@
                                 <v-checkbox v-model="qafilter" label="Weitere Filter..."> </v-checkbox>
                             </v-col>
                             <v-col v-if="qafilter" align="left">
-                                <v-btn @click="addQAFilter"> + </v-btn>
+                                <v-btn @click="addQAFilter"> <v-icon> mdi-plus</v-icon> </v-btn>
                             </v-col>
                         </v-row>
 
                         <div v-if="qafilter">
-                            <div v-for="(filter, index) in filterList" :key="index">
-                                <v-card class="pa-2 ma-2">
+                            <div v-for="(filter, index) in qafilterList" :key="index">
+                                <v-card class="pa-3 ma-2">
+                                    <v-row align="right">
+                                        <v-spacer></v-spacer>
+                                        <v-btn icon @click="addQAFilter(index)">
+                                            <v-icon> mdi-plus </v-icon>
+                                        </v-btn>
+                                        <v-btn icon @click="deleteQAFilter(index)">
+                                            <v-icon> mdi-delete </v-icon>
+                                        </v-btn>
+                                    </v-row>
                                     <v-row>
-                                        <v-col align="right" colls="12" lg="10">
-                                            <v-overflow-btn
-                                                prefix="Nur Teilnehmer, die in Kategorie"
-                                                dense
-                                                :items="categories"
-                                                v-model="selectedCategory"
-                                                elevation="0"
-                                                style="box-shadow: none;"
-                                            >
-                                            </v-overflow-btn>
-                                        </v-col>
-
-                                        <v-col>
-                                            <v-btn icon @click="deleteQAFilter(index)">
-                                                <v-icon> mdi-delete </v-icon>
-                                            </v-btn>
-                                            <v-btn icon @click="addQAFilter(index)">
-                                                <v-icon> + </v-icon>
-                                            </v-btn>
+                                        <v-col align="right" colls="12" lg="11">
+                                            <base-q-a-filter
+                                                :poll-index="pollIndex"
+                                                :filter-id="index"
+                                                :selected-category="qafilterList[index].categoryId"
+                                            ></base-q-a-filter>
                                         </v-col>
                                     </v-row>
-
-                                    <v-overflow-btn
-                                        prefix="bei Frage"
-                                        dense
-                                        :items="questions"
-                                        v-model="selectedQuestion"
-                                        :no-data-text="'Keine Kategorie ausgewählt'"
-                                        elevation="0"
-                                        style="box-shadow: none;"
-                                    >
-                                    </v-overflow-btn>
-                                    <v-overflow-btn
-                                        prefix="die Antwort"
-                                        :items="answers"
-                                        dense
-                                        v-model="selectedAnswer"
-                                        flat
-                                        :no-data-text="'Keine Frage ausgewählt'"
-                                        elevation="0"
-                                        style="box-shadow: none;"
-                                        @input="updateData"
-                                    >
-                                    </v-overflow-btn>
-                                    ausgewählt haben.
                                 </v-card>
                             </div>
                         </div>
@@ -121,22 +93,27 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
+import baseQAFilter from '../components/Filter/baseQAFilter'
 
 export default {
     name: 'filterForm',
+    components: {
+        baseQAFilter,
+    },
     data() {
         return {
             applyConsistency: false,
             qafilter: false,
             qafilterList: [{ filterType: 'qaFilter', categoryId: '', questionId: '', answerIds: [] }],
-            chosenPoll: 'Umfrage IT-Messe 2020',
+            initialPollIndex: 0,
+            chosenPoll: '',
         }
     },
 
     methods: {
         ...mapActions({ initialize: 'evaluation/initialize' }),
         addQAFilter() {
-            this.qafilterList.push({ filterType: 'qaFilter', categoryId: '', questionId: '', answerIds: [] })
+            this.qafilterList.push({ filterType: 'qaFilter', categoryId: '-1', questionId: '-1', answerIds: [] })
         },
 
         deleteQAFilter(index) {
@@ -146,6 +123,7 @@ export default {
 
     mounted() {
         this.initialize()
+        this.chosenPoll = this.pollTitles[this.initialPollIndex]
     },
 
     computed: {
@@ -153,13 +131,14 @@ export default {
             polls: 'evaluation/getPolls',
         }),
 
-        categoryIndex() {
-            console.log(this.selectedCategory)
-            return this.categories.indexOf(this.selectedCategory)
-        },
-        questionIndex() {
-            return this.questions.indexOf(this.selectedQuestion)
-        },
+        // categoryIndex() {
+        //     console.log(this.selectedCategory)
+        //     return this.categories.indexOf(this.selectedCategory)
+        // },
+        // questionIndex() {
+        //     return this.questions.indexOf(this.selectedQuestion)
+        // },
+
         pollTitles() {
             const pollTitles = Object.assign([{}], this.polls)
             for (let i = 0; i < pollTitles.length; i++) {
@@ -167,40 +146,44 @@ export default {
             }
             return pollTitles
         },
-        categories() {
-            console.log('categories')
-            const l = []
-            for (let i = 0; i < this.polls[this.pollIndex].categoryList.length; i++) {
-                l[i] = this.polls[this.pollIndex].categoryList[i].categoryName
-            }
-            return l
+
+        pollIndex() {
+            return this.pollTitles.indexOf(this.pollTitles[0])
         },
-        questions() {
-            console.log('questions')
-            if (this.selectedCategory === '') {
-                return []
-            } else {
-                const categories = this.polls[this.pollIndex].categoryList
-                const l = []
-                for (let i = 0; i < categories[this.categoryIndex].questionList.length; i++) {
-                    l[i] = categories[this.categoryIndex].questionList[i].questionMessage
-                }
-                return l
-            }
-        },
-        answers() {
-            console.log('Answers')
-            if (this.selectedQuestion === '') {
-                return []
-            } else {
-                const questions = this.polls[this.pollIndex].categoryList[this.categoryIndex].questionList
-                const l = []
-                for (let i = 0; i < questions[this.questionIndex].answerPossibilities.length; i++) {
-                    l[i] = questions[this.questionIndex].answerPossibilities[i]
-                }
-                return l
-            }
-        },
+
+        // categories() {
+        //     const l = []
+        //     for (let i = 0; i < this.polls[this.pollIndex].categoryList.length; i++) {
+        //         l[i] = this.polls[this.pollIndex].categoryList[i].categoryName
+        //     }
+        //     return l
+        // },
+        // questions() {
+        //     console.log('questions')
+        //     if (this.selectedCategory === '') {
+        //         return []
+        //     } else {
+        //         const categories = this.polls[this.pollIndex].categoryList
+        //         const l = []
+        //         for (let i = 0; i < categories[this.categoryIndex].questionList.length; i++) {
+        //             l[i] = categories[this.categoryIndex].questionList[i].questionMessage
+        //         }
+        //         return l
+        //     }
+        // },
+        // answers() {
+        //     console.log('Answers')
+        //     if (this.selectedQuestion === '') {
+        //         return []
+        //     } else {
+        //         const questions = this.polls[this.pollIndex].categoryList[this.categoryIndex].questionList
+        //         const l = []
+        //         for (let i = 0; i < questions[this.questionIndex].answerPossibilities.length; i++) {
+        //             l[i] = questions[this.questionIndex].answerPossibilities[i]
+        //         }
+        //         return l
+        //     }
+        // },
     },
 }
 </script>
