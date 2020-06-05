@@ -2,13 +2,13 @@
 <!--the final question type and to preview (wysiwyg) the final question as it will be displayed to the participants-->
 <template>
     <div v-if="questionToLoad !== 0">
-        <v-card>
+        <v-card flat class="ma-0">
             <v-container>
                 <v-row no-gutters>
                     <v-col>
                         <h3>Frage bearbeiten</h3>
                     </v-col>
-                    <v-col align="right">
+                    <v-col>
                         <v-btn @click="deleteQuestion">
                             <v-icon color="primary" left>
                                 mdi-delete

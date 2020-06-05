@@ -1,4 +1,4 @@
-import colors from 'vuetify/es5/util/colors'
+
 
 export default {
     mode: 'universal',
@@ -77,7 +77,10 @@ export default {
                     error: '#F5420C',
                     success: '#8EC136',
                     myColor: '#1f5355',
-                    lightColor: '#eeffff'
+                    lightColor: '#eeffff',
+                    // these colors work for darkMode as well as for lightMode
+                    neutralHighlightColor: '#88cccc',
+                    neutralGray: '#888888',
                 },
             },
         },

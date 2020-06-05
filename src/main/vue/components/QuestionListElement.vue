@@ -1,31 +1,31 @@
 <template>
-    <v-row no-gutters>
-        <v-col>
-            <v-list-item-title>
-                {{ choppedTitle }}
-            </v-list-item-title>
-            <v-list-item-subtitle>
-                {{ translatedQuestionType }}
-            </v-list-item-subtitle>
-        </v-col>
-        <v-spacer />
-        <v-spacer />
-        <v-spacer />
-        <v-spacer />
-        <v-col>
-            <v-btn icon @click="setIDs()">
-                <v-icon small>
-                    mdi-pencil
-                </v-icon>
-            </v-btn>
-        </v-col>
-    </v-row>
+    <!--    Here we need the negative margin in order to cancel out the margin applied by the v-cards-->
+    <v-card outlined hover flat :color="color" class="my-n2">
+        <v-row no-gutters class="ma-n2 pa-4">
+            <v-col cols="12" lg="10" md="10" sm="10">
+                <v-list-item-title>
+                    {{ choppedTitle }}
+                </v-list-item-title>
+                <v-list-item-subtitle>
+                    {{ translatedQuestionType }}
+                </v-list-item-subtitle>
+            </v-col>
+            <v-col cols="12" lg="2" md="2" sm="2">
+                <v-btn icon @click="setIDs()" color="primary">
+                    <v-icon small>
+                        mdi-pencil
+                    </v-icon>
+                </v-btn>
+            </v-col>
+        </v-row>
+    </v-card>
 </template>
 
 <script>
-import { mapMutations } from 'vuex'
+import { mapGetters, mapMutations } from 'vuex'
 export default {
     name: 'QuestionListElement',
+
     props: {
         pollId: {
             type: Number,
@@ -44,9 +44,12 @@ export default {
         },
     },
     computed: {
+        ...mapGetters({
+            currentQuestion: 'pollOverview/getQuestion',
+        }),
         choppedTitle() {
-            if (this.questionMessage.length > 35) {
-                return this.questionMessage.substr(0, 30) + '...?'
+            if (this.questionMessage.length > 30) {
+                return this.questionMessage.substr(0, 25) + '...?'
             } else {
                 return this.questionMessage
             }
@@ -62,6 +65,24 @@ export default {
                 default:
                     return ''
             }
+        },
+
+        // the color is applied to the question when its the one being edited, so the user can see it more easily
+
+        color() {
+            if (this.currentQuestion !== null) {
+                if (
+                    this.currentQuestion.questionMessage === this.questionMessage &&
+                    this.currentQuestion.categoryId === this.categoryId &&
+                    this.currentQuestion.questionId === this.questionId
+                ) {
+                    return this.$vuetify.theme.themes.light.neutralHighlightColor
+                } else {
+                    return ''
+                }
+            }
+
+            return ''
         },
     },
     methods: {

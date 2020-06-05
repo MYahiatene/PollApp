@@ -2,34 +2,61 @@
     <div>
         <AuthGate v-if="isAuthenticated !== true"></AuthGate>
         <v-container v-else-if="storeValid">
-            <v-text-field class="display-1" v-model="pollname" />
+            <v-card class="pa-2 ma-0"
+                ><v-text-field clearable placeholder="Titel der Umfrage" class="display-1" v-model="pollname"
+            /></v-card>
+
             <v-container>
                 <v-row>
-                    <v-col cols="4">
+                    <v-col cols="12" lg="4" md="4" sm="4">
                         <v-row>
-                            <v-spacer />
-                            <v-btn @click="createCategory()">
-                                <v-icon color="primary">
-                                    mdi-plus
-                                </v-icon>
-                                Kategorie
-                            </v-btn>
-                            <v-spacer />
-                            <v-expansion-panels class="mt-4" :disabled="disableDrag" accordion multiple>
-                                <draggable v-model="categorys" :disabled="disableDrag">
-                                    <v-list v-for="category in categorys" :key="category.categoryId" two-line>
-                                        <CategoryListElement
-                                            :categoryID="category.categoryId"
-                                            :pollID="pollId"
-                                            @text-input="disableDraggable"
-                                        />
-                                    </v-list>
-                                </draggable>
-                            </v-expansion-panels>
+                            <v-card class="ma-0">
+                                <v-card-title>
+                                    <h2 style="font-weight: normal;" class="ma-0">Kategorien</h2>
+
+                                    <v-spacer></v-spacer>
+
+                                    <v-btn depressed @click="createCategory()" class="ml-11">
+                                        <v-icon color="primary">
+                                            mdi-plus
+                                        </v-icon>
+                                        <v-spacer></v-spacer>
+                                        Hinzufügen
+                                    </v-btn>
+                                </v-card-title>
+                                <v-divider></v-divider>
+                                <v-card-text>
+                                    <v-row>
+                                        <!--                                        negative margin in order to cancel out the prior waste of space-->
+                                        <v-col cols="12" lg="12" md="12" sm="12">
+                                            <v-expansion-panels tile multiple :disabled="disableDrag" class="mt-n6">
+                                                <draggable v-model="categorys" :disabled="disableDrag">
+                                                    <v-list
+                                                        v-for="category in categorys"
+                                                        :key="category.categoryId"
+                                                        two-line
+                                                    >
+                                                        <CategoryListElement
+                                                            :categoryID="category.categoryId"
+                                                            :pollID="pollId"
+                                                            @text-input="disableDraggable"
+                                                        />
+                                                    </v-list>
+                                                </draggable>
+                                            </v-expansion-panels>
+                                        </v-col>
+                                    </v-row>
+                                </v-card-text>
+                            </v-card>
                         </v-row>
                     </v-col>
-                    <v-col>
-                        <QuestionBuildWidget></QuestionBuildWidget>
+                    <v-col cols="12" lg="8" md="8" sm="8">
+                        <v-card class="pa-1" style="background-color: #88cccc;">
+                            <QuestionBuildWidget></QuestionBuildWidget>
+                            <v-card flat class="mt-1 pa-1">
+                                <p class="ma-2">(Wähle eine Frage aus einer Kategorie, um sie zu bearbeiten.)</p>
+                            </v-card>
+                        </v-card>
                     </v-col>
                 </v-row>
             </v-container>

@@ -1,23 +1,33 @@
 <template>
-    <v-expansion-panel>
-        <v-expansion-panel-header>
-            <v-text-field
-                v-model="categoryName"
-                class="headline"
-                @focusin="$emit('text-input', true)"
-                @focusout="$emit('text-input', false)"
-            />
+    <v-expansion-panel :style="backgroundColor">
+        <v-expansion-panel-header class="my-0">
+            <template v-slot:default="{ open }">
+                <div v-if="open">
+                    <!--                    In class we apply negative margin, so that the header is dense-->
+                    <v-text-field
+                        v-model="categoryName"
+                        class="headline my-n4"
+                        placeholder="Name der Kategorie"
+                        @focusin="$emit('text-input', true)"
+                        @focusout="$emit('text-input', false)"
+                    />
+                </div>
+                <div v-else>
+                    <h2 style="font-weight: normal;">{{ categoryName }}</h2>
+                    <v-spacer></v-spacer>
+                </div>
+            </template>
         </v-expansion-panel-header>
         <v-expansion-panel-content>
             <v-row>
                 <v-col>
-                    <v-btn @click="removeCategory(categoryID)">
+                    <v-btn depressed @click="removeCategory(categoryID)">
                         <v-icon color="primary" left>mdi-delete</v-icon>
                         Kategorie
                     </v-btn>
                 </v-col>
                 <v-col>
-                    <v-btn @click="createQuestion(categoryID)">
+                    <v-btn depressed @click="createQuestion(categoryID)">
                         <v-icon color="primary" left>mdi-plus</v-icon>
                         Frage
                     </v-btn>
@@ -32,7 +42,10 @@
                         :question-message="question.questionMessage"
                         :question-type="question.questionType"
                     ></QuestionListElement>
+                    <v-spacer></v-spacer>
+                    <v-spacer></v-spacer>
                 </v-list>
+                <p v-if="questions.length === 0">Es wurden noch keine Fragen in dieser Kategorie erstellt.</p>
             </draggable>
         </v-expansion-panel-content>
     </v-expansion-panel>
@@ -78,6 +91,12 @@ export default {
                 }
                 this.setQuestions(payload)
             },
+        },
+
+        // this needs to be computed, so we can get it from the store
+
+        backgroundColor() {
+            return 'background-color:' + this.$vuetify.theme.themes.light.neutralGray + ';'
         },
     },
     methods: {
