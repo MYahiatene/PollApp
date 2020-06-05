@@ -1,3 +1,4 @@
+import Vue from 'vue'
 export const state = () => ({
     Poll: {},
     IDsToLoad: {
@@ -189,13 +190,23 @@ export const mutations = {
     setIntervalStart(state, value) {
         const indices = getters.getIndices(state)
         if (indices !== null) {
-            state.Poll.categoryList[indices.c].questionList[indices.q].intervalStart = value
+            const question = state.Poll.categoryList[indices.c].questionList[indices.q]
+            if (question.intervalStart === undefined) {
+                Vue.set(question, 'intervalStart', value)
+            } else {
+                question.intervalStart = value
+            }
         }
     },
     setIntervalFinish(state, value) {
         const indices = getters.getIndices(state)
         if (indices !== null) {
-            state.Poll.categoryList[indices.c].questionList[indices.q].intervalFinish = value
+            const question = state.Poll.categoryList[indices.c].questionList[indices.q]
+            if (question.intervalFinish === undefined) {
+                Vue.set(question, 'intervalFinish', value)
+            } else {
+                question.intervalFinish = value
+            }
         }
     },
     setIntervalStep(state, value) {
@@ -230,14 +241,20 @@ export const mutations = {
     },
     setTextMin(state, value) {
         const indices = getters.getIndices(state)
-        if (indices !== null) {
-            state.Poll.categoryList[indices.c].questionList[indices.q].textMinimum = value
+        const question = state.Poll.categoryList[indices.c].questionList[indices.q]
+        if (question.textMinimum === undefined) {
+            Vue.set(question, 'textMinimum', value)
+        } else {
+            question.textMinimum = value
         }
     },
     setTextMax(state, value) {
         const indices = getters.getIndices(state)
-        if (indices !== null) {
-            state.Poll.categoryList[indices.c].questionList[indices.q].textMaximum = value
+        const question = state.Poll.categoryList[indices.c].questionList[indices.q]
+        if (question.textMaximum === undefined) {
+            Vue.set(question, 'textMaximum', value)
+        } else {
+            question.textMaximum = value
         }
     },
 }
@@ -249,7 +266,7 @@ export const actions = {
     },
     async createCategory({ state, commit }) {
         let error = ''
-        const newId = await this.$axios
+        let newId = await this.$axios
             .post('/poll/' + state.IDsToLoad.pollID + '/addcategory', {
                 pollId: state.IDsToLoad.pollID,
                 name: 'Neue Kategorie',
@@ -257,7 +274,8 @@ export const actions = {
             .catch((reason) => {
                 error = reason
             })
-        if (error.length === 0) {
+        newId = 600
+        if (error.length !== 0) {
             const newCategory = {
                 categoryId: newId,
                 categoryName: 'Neue Kategorie',

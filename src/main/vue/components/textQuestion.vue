@@ -22,7 +22,7 @@
                         min="0"
                         prefix="mindestens"
                         suffix=" Zeichen gefordert"
-                        :rules="charRules"
+                        :rules="minRules"
                     ></v-text-field>
                 </v-col>
             </v-row>
@@ -44,7 +44,7 @@
                         value="100"
                         prefix="maximal"
                         suffix=" Zeichen erlaubt"
-                        :rules="charRules"
+                        :rules="maxRules"
                     ></v-text-field>
                 </v-col>
             </v-row>
@@ -53,6 +53,7 @@
 </template>
 
 <script>
+// TODO: Forms vollenden
 import { mapGetters, mapMutations } from 'vuex'
 
 export default {
@@ -63,7 +64,14 @@ export default {
             maxCharSwitch: false,
             valid: false,
             // rules that assert that the input in the textField must be positive (there can't be a negative number of chars on an answer
-            charRules: [(v) => v >= 0 || 'Die Zahl muss positiv sein!'],
+            minRules: [
+                (v) => v >= 0 || 'Die Zahl muss positiv sein!',
+                (v) => v <= this.maximum || 'Die Zahl muss kleiner als das Maximum sein!',
+            ],
+            maxRules: [
+                (v) => v >= 0 || 'Die Zahl muss positiv sein!',
+                (v) => v >= this.minimum || 'Die Zahl muss größer als das Minimum sein!',
+            ],
         }
     },
     mounted() {
@@ -78,12 +86,12 @@ export default {
         }),
         clearMin() {
             if (!this.minCharSwitch) {
-                this.setMin(null)
+                this.setMin(0)
             }
         },
         clearMax() {
             if (!this.maxCharSwitch) {
-                this.setMax(null)
+                this.setMax(10000)
             }
         },
     },

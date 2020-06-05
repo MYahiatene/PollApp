@@ -47,6 +47,7 @@
 </template>
 
 <script>
+// TODO: Forms vollenden
 import { mapGetters, mapMutations } from 'vuex'
 export default {
     name: 'RangeQuestion',
@@ -56,11 +57,11 @@ export default {
             openUpper: false,
             valid: false,
             // rules that assert that the endValue entered in the textField must be higher than the starValue
-            endValueRules: [(v) => parseFloat(v, 10) > this.startValue || 'Die Zahl muss größer als der Endwert sein!'],
+            endValueRules: [(v) => parseFloat(v) > this.startValue || 'Die Zahl muss größer als der Endwert sein!'],
             // rules that assert that the stepsize entered in the textField must be lower than the difference between starValue and endValue
             stepSizeRules: [
                 (v) =>
-                    parseFloat(v, 10) < this.endValue - this.startValue ||
+                    parseFloat(v) < this.endValue - this.startValue ||
                     'Die Schrittweite muss kleiner als die Reichweite sein!',
             ],
         }
