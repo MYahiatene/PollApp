@@ -109,14 +109,14 @@
         </template>
         <v-card-actions>
             <v-col align="right">
-                <v-btn color="primary"> Anwenden </v-btn>
+                <v-btn color="primary" @click="saveToStore()"> Anwenden </v-btn>
             </v-col>
         </v-card-actions>
     </v-card>
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
 import baseQAFilter from '../components/Filter/baseQAFilter'
 
 export default {
@@ -141,6 +141,25 @@ export default {
 
     methods: {
         ...mapActions({ initialize: 'evaluation/initialize' }),
+        ...mapMutations({ sendFilter: 'evaluation/sendFilter' }),
+
+        saveToStore() {
+            const filterData = []
+            for (let f = 0; f < this.qafilterList.length; f++) {
+                if (this.qafilterList[f].active) {
+                    filterData.push({
+                        filterType: 'qaFilter',
+                        invertFilter: false,
+                        targetPollId: this.pollIndex,
+                        targetCategoryId: this.qafilterList[f].categoryId,
+                        targetQuestionId: this.qafilterList[f].questionId,
+                        targetAnswerPossibilities: this.qafilterList[f].answerIds,
+                    })
+                }
+            }
+            this.sendFilter(filterData)
+        },
+
         addQAFilter() {
             this.qafilterList.push({
                 active: true,

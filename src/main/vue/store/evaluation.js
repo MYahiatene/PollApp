@@ -35,6 +35,7 @@ export const actions = {
         commit('initializePolls', pollData)
     },
     async sendFilter({ state, commit }, filterList) {
+        console.log('in store!')
         commit('saveFilter', filterList)
         await this.$axios.post('/evaluation/generateDiagram', filterList)
     },
