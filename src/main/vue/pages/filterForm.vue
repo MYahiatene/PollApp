@@ -10,6 +10,25 @@
                     </v-expansion-panel-header>
                     <v-expansion-panel-content>
                         Hier können Sie die Fragen auswählen, die in der Analyse betrachtet werden sollen.
+
+                        <v-container fluid>
+                            <v-select v-model="selectedQuestions" :items="questionTitles" multiple>
+                                <template v-slot:selection="{ item, index }">
+                                    <v-chip
+                                        close
+                                        @click:close="selectedQuestions.splice(index, 1)"
+                                        v-if="index < questionTitlesDisplayedInSelect"
+                                    >
+                                        <span>{{ item }}</span>
+                                    </v-chip>
+                                    <span v-if="index === questionTitlesDisplayedInSelect" class="grey--text caption"
+                                        >(und
+                                        {{ selectedQuestions.length - questionTitlesDisplayedInSelect }}
+                                        weitere)</span
+                                    >
+                                </template>
+                            </v-select>
+                        </v-container>
                     </v-expansion-panel-content>
                 </v-expansion-panel>
 
@@ -37,9 +56,9 @@
                                 >
                                 </v-checkbox>
                             </v-col>
-                            <v-col align="left">
+                            <v-col>
                                 <v-btn>
-                                    Bearbeiten
+                                    Konsistenzfragen bearbeiten
                                 </v-btn>
                             </v-col>
                         </v-row>
@@ -50,33 +69,38 @@
                             <v-col colls="12" lg="10">
                                 <v-checkbox v-model="qafilter" label="Weitere Filter..."> </v-checkbox>
                             </v-col>
-                            <v-col v-if="qafilter" align="left">
+                            <v-col v-if="qafilter">
                                 <v-btn @click="addQAFilter"> <v-icon> mdi-plus</v-icon> </v-btn>
                             </v-col>
                         </v-row>
 
                         <div v-if="qafilter">
-                            <div v-for="(filter, index) in qafilterList" :key="index">
-                                <v-card class="pa-3 ma-2">
-                                    <v-row align="right">
-                                        <v-spacer></v-spacer>
-                                        <v-btn icon @click="addQAFilter(index)">
-                                            <v-icon> mdi-plus </v-icon>
-                                        </v-btn>
-                                        <v-btn icon @click="deleteQAFilter(index)">
-                                            <v-icon> mdi-delete </v-icon>
-                                        </v-btn>
-                                    </v-row>
-                                    <v-row>
-                                        <v-col align="right" colls="12" lg="11">
-                                            <base-q-a-filter
-                                                :poll-index="pollIndex"
-                                                :filter-id="index"
-                                                :selected-category="qafilterList[index].categoryId"
-                                            ></base-q-a-filter>
-                                        </v-col>
-                                    </v-row>
-                                </v-card>
+                            <div v-for="filter in qafilterList" :key="filter.filterId">
+                                <div v-if="filter.active">
+                                    <v-card class="pa-3 ma-2">
+                                        <v-row align="right">
+                                            <v-spacer></v-spacer>
+                                            <v-btn icon @click="addQAFilter()">
+                                                <v-icon> mdi-plus </v-icon>
+                                            </v-btn>
+                                            <v-btn icon @click="deleteQAFilter(filter.filterId)">
+                                                <v-icon> mdi-delete </v-icon>
+                                            </v-btn>
+                                        </v-row>
+                                        <v-row>
+                                            <v-col align="right" colls="12" lg="11">
+                                                <base-q-a-filter
+                                                    :poll-index="pollIndex"
+                                                    :filter-id="filter.filterId"
+                                                    :initial-category-index="qafilterList[filter.filterId].categoryId"
+                                                    :initial-question-index="qafilterList[filter.filterId].questionId"
+                                                    :initial-answer-indices="qafilterList[filter.filterId].answerIds"
+                                                    @updateData="updateQaFilter"
+                                                ></base-q-a-filter>
+                                            </v-col>
+                                        </v-row>
+                                    </v-card>
+                                </div>
                             </div>
                         </div>
                     </v-expansion-panel-content>
@@ -102,42 +126,57 @@ export default {
     },
     data() {
         return {
+            globalFilterId: 1,
             applyConsistency: false,
             qafilter: false,
-            qafilterList: [{ filterType: 'qaFilter', categoryId: '', questionId: '', answerIds: [] }],
+            qafilterList: [
+                { active: true, filterId: 0, filterType: 'qaFilter', categoryId: -1, questionId: -1, answerIds: [] },
+            ],
             initialPollIndex: 0,
             chosenPoll: '',
+            selectedQuestions: [],
+            questionTitlesDisplayedInSelect: 3,
         }
     },
 
     methods: {
         ...mapActions({ initialize: 'evaluation/initialize' }),
         addQAFilter() {
-            this.qafilterList.push({ filterType: 'qaFilter', categoryId: '-1', questionId: '-1', answerIds: [] })
+            this.qafilterList.push({
+                active: true,
+                filterId: this.globalFilterId++,
+                filterType: 'qaFilter',
+                categoryId: -1,
+                questionId: -1,
+                answerIds: [],
+            })
         },
 
         deleteQAFilter(index) {
-            this.qafilterList.splice(index, 1)
+            this.qafilterList[index].active = false
+        },
+
+        updateQaFilter([filterId, categoryIndex, questionIndex, answerIndices]) {
+            console.log('updateQAFilter')
+            this.qafilterList[filterId].categoryId = categoryIndex
+            this.qafilterList[filterId].questionId = questionIndex
+            for (let i = 0; i < answerIndices.length; i++) {
+                this.qafilterList[filterId].answerIds[i] = answerIndices[i]
+            }
+            console.log(this.qafilterList)
         },
     },
 
     mounted() {
         this.initialize()
         this.chosenPoll = this.pollTitles[this.initialPollIndex]
+        this.selectedQuestions = this.questionTitles
     },
 
     computed: {
         ...mapGetters({
             polls: 'evaluation/getPolls',
         }),
-
-        // categoryIndex() {
-        //     console.log(this.selectedCategory)
-        //     return this.categories.indexOf(this.selectedCategory)
-        // },
-        // questionIndex() {
-        //     return this.questions.indexOf(this.selectedQuestion)
-        // },
 
         pollTitles() {
             const pollTitles = Object.assign([{}], this.polls)
@@ -151,39 +190,17 @@ export default {
             return this.pollTitles.indexOf(this.pollTitles[0])
         },
 
-        // categories() {
-        //     const l = []
-        //     for (let i = 0; i < this.polls[this.pollIndex].categoryList.length; i++) {
-        //         l[i] = this.polls[this.pollIndex].categoryList[i].categoryName
-        //     }
-        //     return l
-        // },
-        // questions() {
-        //     console.log('questions')
-        //     if (this.selectedCategory === '') {
-        //         return []
-        //     } else {
-        //         const categories = this.polls[this.pollIndex].categoryList
-        //         const l = []
-        //         for (let i = 0; i < categories[this.categoryIndex].questionList.length; i++) {
-        //             l[i] = categories[this.categoryIndex].questionList[i].questionMessage
-        //         }
-        //         return l
-        //     }
-        // },
-        // answers() {
-        //     console.log('Answers')
-        //     if (this.selectedQuestion === '') {
-        //         return []
-        //     } else {
-        //         const questions = this.polls[this.pollIndex].categoryList[this.categoryIndex].questionList
-        //         const l = []
-        //         for (let i = 0; i < questions[this.questionIndex].answerPossibilities.length; i++) {
-        //             l[i] = questions[this.questionIndex].answerPossibilities[i]
-        //         }
-        //         return l
-        //     }
-        // },
+        questionTitles() {
+            const questionTitles = []
+            for (let i = 0; i < this.polls[this.pollIndex].categoryList.length; i++) {
+                for (let j = 0; j < this.polls[this.pollIndex].categoryList[i].questionList.length; j++) {
+                    questionTitles.push(this.polls[this.pollIndex].categoryList[i].questionList[j].questionMessage)
+                }
+            }
+            console.log('questionTitles: ')
+            console.log(questionTitles)
+            return questionTitles
+        },
     },
 }
 </script>
