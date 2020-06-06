@@ -70,43 +70,37 @@ public class EvaluationController {
             "n sie auf der Messe verbracht?\",\"answerPossibilities\": [\"unter einer Stunde\",\"1-2 Stunden\",\"2-5 " +
             "Stunden\",\"über 5 Stunden\"],\"data\": [12,45,40,20]}";
         String data = "{\"name\":\"" + pollService.getPoll("1").getPollName() + "\",\"questionList\": [$]}";
-        cheetSheet = data.replace("$",cheetSheet);
+        cheetSheet = data.replace("$", cheetSheet);
         List<Question> questions = questionService.getAllQuestions(1L);
-        while(questions.size() > 6)
-        {
+        while (questions.size() > 6) {
             questions.remove(6);
         }
-        for(Question q:questions)
-        {
-            if(q.getQuestionType().equals("ChoiceQuestion"))
-            {
+        for (Question q : questions) {
+            if (q.getQuestionType().equals("ChoiceQuestion")) {
                 List<Answer> answers = answerService.getAnswerFromOneQuestion(q.getQuestionId());
                 List<Integer> answerData = new ArrayList<>();
                 for (int i = 0; i < q.getAnswerPossibilities().size(); i++) {
                     answerData.add(0);
                 }
-                for (Answer a: answers) {
-                    for (String s: a.getGivenAnswerList()) {
+                for (Answer a : answers) {
+                    for (String s : a.getGivenAnswerList()) {
                         Integer index = Integer.valueOf(s);
-                        answerData.set(index,answerData.get(index) + 1);
+                        answerData.set(index, answerData.get(index) + 1);
                     }
                 }
                 DiagramData dd = new DiagramData(q.getQuestionId(), q.getQuestionMessage(), q.getAnswerPossibilities(), answerData);
                 data = data.replace("$", dd.toJSON() + ",$");
             }
         }
-        data = data.replace(",$","");
-        System.out.println("vorlage");
-        System.out.println(cheetSheet);
-        System.out.println("sende");
-        System.out.println(data);
+        data = data.replace(",$", "");
         return data;
     }
 
-    /**Returns JSON string to be interpreted, hier wird der jsonInput in ein Filterobjekt deserialisiert und dort können wir herausfinden, um welchen Filter es sich genau handelt.*/
+    /**
+     * Returns JSON string to be interpreted, hier wird der jsonInput in ein Filterobjekt deserialisiert und dort können wir herausfinden, um welchen Filter es sich genau handelt.
+     */
     @PostMapping("/generateDiagram")
     public void populateDiagram(final @RequestBody List<FilterCmd> input) {
-        System.out.println(input.toString());
         /*TODO:
             1. Filter parsen
             2. Filter ordnen
@@ -128,36 +122,36 @@ public class EvaluationController {
         return "Haha";
     }
 
-    public <T> List<Answer> filterByAnswer(List<Answer> input, List<T> wantedAnswers){
+    public <T> List<Answer> filterByAnswer(List<Answer> input, List<T> wantedAnswers) {
         ListIterator<Answer> iter = input.listIterator();
         List<Answer> output = new ArrayList<>();
-        while(iter.hasNext()){
+        while (iter.hasNext()) {
             Answer index = iter.next();
-            if(!Collections.disjoint(Arrays.asList(index.getGivenAnswerList()), wantedAnswers))
+            if (!Collections.disjoint(Arrays.asList(index.getGivenAnswerList()), wantedAnswers)) {
                 output.add(index);
+            }
         }
         return output;
     }
 
-    public boolean testAnswers(){
-        List<Answer> antworten = answerService.getAnswerFromOneQuestion(1L);
+    public boolean testAnswers() {
+        // List<Answer> antworten = answerService.getAnswerFromOneQuestion(1L);
         List<String> wantedAnswers = new ArrayList<>();
         wantedAnswers.add("10");
-        System.out.println(filterByAnswer(antworten, wantedAnswers));
         return false;
     }
 
-    public <T> List<Answer> filterByUser(String pollID, String username){ /**TODO: PollResultServiceImpl NEEDS POLLRESULTS ELSE FILTERING BY USER WONT WORK*/
-        PollResultServiceImpl pollResultService = new PollResultServiceImpl();
+    public <T> List<Answer> filterByUser(String pollID, String username) { /**TODO: PollResultServiceImpl NEEDS POLLRESULTS ELSE FILTERING BY USER WONT WORK*/
+        // PollResultServiceImpl pollResultService = new PollResultServiceImpl();
         List<Question> questionList = questionService.getAllQuestions(Long.parseLong(pollID));
         ListIterator<Question> iter = questionList.listIterator();
-        List<Answer> output = new ArrayList<>();
+        //    List<Answer> output = new ArrayList<>();
 
-        while(iter.hasNext()){
+        while (iter.hasNext()) {
             Question index = iter.next();
             List<Answer> answerListForQuestion = answerService.getAnswerFromOneQuestion(index.getQuestionId());
             ListIterator<Answer> answerIter = answerListForQuestion.listIterator();
-            while(answerIter.hasNext()){
+            while (answerIter.hasNext()) {
                 Answer answerIndex = answerIter.next();
                 //if(answerIndex.)
             }
