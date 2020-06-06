@@ -16,7 +16,7 @@
 
                                     <v-spacer></v-spacer>
 
-                                    <v-btn depressed @click="createCategory(pollID)" class="ml-11">
+                                    <v-btn depressed @click="createCategory(this.pollId)" class="ml-11">
                                         <v-icon color="primary">
                                             mdi-plus
                                         </v-icon>
@@ -30,9 +30,9 @@
                                         <!--                                        negative margin in order to cancel out the prior waste of space-->
                                         <v-col cols="12" lg="12" md="12" sm="12">
                                             <v-expansion-panels tile multiple :disabled="disableDrag" class="mt-n6">
-                                                <draggable v-model="categorys" :disabled="disableDrag">
+                                                <draggable v-model="categories" :disabled="disableDrag">
                                                     <v-list
-                                                        v-for="category in categorys"
+                                                        v-for="category in categories"
                                                         :key="category.categoryId"
                                                         two-line
                                                     >
@@ -88,11 +88,11 @@ export default {
     data() {
         return {
             disableDrag: false,
+            categories: [],
         }
     },
-    mounted() {
-        this.setPollID(this.pollId)
-        this.initialize()
+    created() {
+        this.loadCategories()
     },
     computed: {
         ...mapGetters({
@@ -110,16 +110,8 @@ export default {
                 this.setPollName(data)
             },
         },
-        categorys: {
-            get() {
-                return this.poll.categoryList
-            },
-            set(list) {
-                this.updateCategorys(list)
-            },
-        },
         storeValid() {
-            return this.poll.pollId !== undefined
+            return this.pollId !== undefined
         },
         /** updateQuestionList() {
             return this.$store.state.questionOverview.questionText
@@ -132,16 +124,25 @@ export default {
         },
     },
     methods: {
+        async loadCategories() {
+            await this.$axios
+                .get('/categories', null, { pollId: '1' })
+                .then((response) => {
+                    console.log(response)
+                    console.log(response.data)
+                    this.categories = response.data
+                })
+                .catch((error) => {
+                    console.log(error)
+                })
+        },
         ...mapActions({
-            initialize: 'pollOverview/initialize',
             sendData: 'pollOverview/sendData',
             createCategory: 'pollOverview/createCategory',
         }),
         ...mapMutations({
             saveData: 'pollOverview/saveData',
             setPollName: 'pollOverview/setPollName',
-            setPollID: 'pollOverview/setPollID',
-            updateCategorys: 'pollOverview/updateCategoryOrder',
         }),
         saveState() {
             const payload = {

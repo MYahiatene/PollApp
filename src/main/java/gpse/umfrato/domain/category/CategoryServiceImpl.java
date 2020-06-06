@@ -2,6 +2,8 @@ package gpse.umfrato.domain.category;
 
 import gpse.umfrato.domain.poll.Poll;
 import gpse.umfrato.domain.poll.PollRepository;
+import gpse.umfrato.domain.user.User;
+import gpse.umfrato.web.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import javax.persistence.EntityNotFoundException;
@@ -50,6 +52,19 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public void deleteCategoryAndQuestions(long categoryId) {
         categoryRepository.deleteById(categoryId);
+    }
+
+    @Override
+    public List<Category> getAllCategories(long pollId) {
+        final List<Category> categories = categoryRepository.findCategoriesByPollId(pollId);
+        for(Category c:categories){
+            System.out.println(c.getCategoryId());
+        }
+        /* if (categories.isEmpty()) {
+            throw new BadRequestException();
+        } */
+
+        return categories;
     }
 
 }

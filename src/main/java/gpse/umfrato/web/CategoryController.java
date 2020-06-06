@@ -1,13 +1,17 @@
 package gpse.umfrato.web;
 
+import gpse.umfrato.domain.category.Category;
 import gpse.umfrato.domain.category.CategoryService;
 import gpse.umfrato.domain.cmd.CategoryCmd;
 import gpse.umfrato.domain.cmd.DeleteUserCmd;
+import gpse.umfrato.domain.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-@RequestMapping(value = "/api")
+import java.util.List;
+
+@RequestMapping(value = "/api", method = RequestMethod.GET)
 @RestController
 @CrossOrigin
 public class CategoryController {
@@ -21,6 +25,11 @@ public class CategoryController {
     @PostMapping("/poll/{pollId:\\d+}/addcategory")
     public Long addCategory(final @RequestBody CategoryCmd categoryCmd) {
         return categoryService.createCategory(categoryCmd.getName(), Long.parseLong(categoryCmd.getPollId())).getCategoryId();
+    }
+
+    @GetMapping("/categories")
+    public List<Category> getCategories(final @RequestBody CategoryCmd categoryCmd) {
+        return categoryService.getAllCategories(Long.parseLong(categoryCmd.getPollId()));
     }
 
     /**
