@@ -8,6 +8,8 @@
                     <v-col>
                         <h3>Frage bearbeiten</h3>
                     </v-col>
+                    <v-spacer></v-spacer>
+                    <v-spacer></v-spacer>
                     <v-col>
                         <v-btn @click="deleteQuestion">
                             <v-icon color="primary" left>

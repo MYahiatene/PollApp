@@ -65,7 +65,10 @@ export default {
                     error: '#F5420C',
                     success: '#5E9112',
                     myColor: '#1f5355',
-                    lightColor: '#eeffff'
+                    lightColor: '#eeffff',
+                    background2: '#101214',
+                    softAccent: '#072d38',
+                    header: '#151b24',
                 },
                 light: {
                     background: '#eefcfa',
@@ -81,6 +84,10 @@ export default {
                     // these colors work for darkMode as well as for lightMode
                     neutralHighlightColor: '#88cccc',
                     neutralGray: '#888888',
+                    //
+                    background2: '#a0b4b8',
+                    softAccent: '#8dc4c3',
+                    header: '#698f96'
                 },
             },
         },

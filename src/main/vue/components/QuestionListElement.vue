@@ -1,7 +1,7 @@
 <template>
     <!--    Here we need the negative margin in order to cancel out the margin applied by the v-cards-->
-    <v-card outlined hover flat :color="color" class="my-n2">
-        <v-row no-gutters class="ma-n2 pa-4">
+    <v-card outlined hover flat :color="color" class="my-n1">
+        <v-row no-gutters class="ma-n2 my-n4 pa-4">
             <v-col cols="12" lg="10" md="10" sm="10">
                 <v-list-item-title>
                     {{ choppedTitle }}
@@ -76,7 +76,7 @@ export default {
                     this.currentQuestion.categoryId === this.categoryId &&
                     this.currentQuestion.questionId === this.questionId
                 ) {
-                    return this.$vuetify.theme.themes.light.neutralHighlightColor
+                    return this.$vuetify.theme.currentTheme.softAccent
                 } else {
                     return ''
                 }

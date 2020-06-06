@@ -34,6 +34,13 @@
 
                 <v-spacer />
             </v-card>
+            <v-card class="ma-1 pa-1">
+                <div v-for="(color, index) in colors" :key="index">
+                    <v-card :style="color.color" class="pa-10 ma-1">
+                        {{ color.name }}
+                    </v-card>
+                </div>
+            </v-card>
         </v-flex>
     </v-layout>
 </template>
@@ -41,6 +48,16 @@
 <script>
 export default {
     name: 'ColorScheme',
+
+    computed: {
+        colors() {
+            return [
+                { name: 'softAccent', color: 'backgroundColor:' + this.$vuetify.theme.currentTheme.softAccent + ';' },
+                { name: 'background2', color: 'backgroundColor:' + this.$vuetify.theme.currentTheme.background2 + ';' },
+                { name: 'header', color: 'backgroundColor:' + this.$vuetify.theme.currentTheme.header + ';' },
+            ]
+        },
+    },
 }
 </script>
 

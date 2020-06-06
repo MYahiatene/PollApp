@@ -1,6 +1,6 @@
 <template>
-    <v-expansion-panel :style="backgroundColor">
-        <v-expansion-panel-header class="my-0">
+    <v-expansion-panel>
+        <v-expansion-panel-header class="my-0" :style="headerColor">
             <template v-slot:default="{ open }">
                 <div v-if="open">
                     <!--                    In class we apply negative margin, so that the header is dense-->
@@ -18,7 +18,7 @@
                 </div>
             </template>
         </v-expansion-panel-header>
-        <v-expansion-panel-content>
+        <v-expansion-panel-content :style="backgroundColor">
             <v-row>
                 <v-col>
                     <v-btn depressed @click="removeCategory(categoryID)">
@@ -34,7 +34,7 @@
                 </v-col>
             </v-row>
             <draggable v-model="questions">
-                <v-list v-for="question in questions" :key="question.questionId">
+                <v-list v-for="question in questions" :key="question.questionId" :style="backgroundColor">
                     <QuestionListElement
                         :poll-id="pollID"
                         :category-id="category.categoryId"
@@ -42,8 +42,6 @@
                         :question-message="question.questionMessage"
                         :question-type="question.questionType"
                     ></QuestionListElement>
-                    <v-spacer></v-spacer>
-                    <v-spacer></v-spacer>
                 </v-list>
                 <p v-if="questions.length === 0">Es wurden noch keine Fragen in dieser Kategorie erstellt.</p>
             </draggable>
@@ -93,10 +91,14 @@ export default {
             },
         },
 
-        // this needs to be computed, so we can get it from the store
+        // this needs to be computed, so we can get it from the nuxt Config
 
         backgroundColor() {
-            return 'background-color:' + this.$vuetify.theme.themes.light.neutralGray + ';'
+            return 'background-color:' + this.$vuetify.theme.currentTheme.background2 + ';'
+        },
+
+        headerColor() {
+            return 'background-color:' + this.$vuetify.theme.currentTheme.header + ';'
         },
     },
     methods: {
