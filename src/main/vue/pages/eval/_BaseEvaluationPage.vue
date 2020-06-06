@@ -54,7 +54,7 @@ that each display a basic evaluation of one specific question-->
             <v-row>
                 <v-col cols="12" lg="12">
                     <v-data-iterator
-                        :items="items"
+                        :items="items2"
                         :items-per-page.sync="itemsPerPage"
                         :page="page"
                         :search="search"
@@ -70,7 +70,7 @@ that each display a basic evaluation of one specific question-->
                                     flat
                                     hide-details
                                     prepend-inner-icon="mdi-magnify"
-                                    label="Search"
+                                    label="Suche"
                                 ></v-text-field>
                                 <template v-if="$vuetify.breakpoint.mdAndUp">
                                     <v-spacer></v-spacer>
@@ -120,11 +120,15 @@ that each display a basic evaluation of one specific question-->
                         </template>
 
                         <template v-slot:default="props">
-                            <!--            <template>-->
                             <v-row>
-                                <v-col v-for="question in props.items" :key="question.id" fluid>
-                                    <!--                    <v-col v-for="question in props.PollResult.questionList" :key="question.id">-->
-                                    <a :id="'Frage' + question.id"> <v-spacer></v-spacer></a>
+                                <v-col
+                                    v-for="question in props.items"
+                                    :key="question.id"
+                                    cols="12"
+                                    lg="12"
+                                    md="12"
+                                    sm="12"
+                                >
                                     <ChoiceQuestionEvaluationWidget
                                         :key="widgetKey"
                                         :show-table="showTable"
@@ -137,7 +141,6 @@ that each display a basic evaluation of one specific question-->
                                         :diagram-type="defaultDiagramType"
                                     ></ChoiceQuestionEvaluationWidget>
                                     <v-spacer></v-spacer>
-                                    <!--                    </v-col>-->
                                 </v-col>
                             </v-row>
                         </template>
@@ -168,9 +171,6 @@ export default {
             // key that forces the diagram to update
             // (value is set on the color of the diagram and update whenever updateVisuals is called)
             widgetKey: '',
-            // by default we will jump to question 1
-            questionToJumpTo: '',
-            linkToQuestion: '#Frage1',
             // the dialog (setting window) is closed by default
             dialog: false,
             // default settings for the visual settings, they are passed as props into the choiceQuestionEvaluationWidgets
@@ -234,7 +234,22 @@ export default {
             return this.keys.filter((key) => key !== `id`)
         },
         items() {
+            console.log('diagramData ')
+            console.log(this.diagramData)
             return this.diagramData
+        },
+
+        items2() {
+            const i2 = []
+            for (let i = 0; i < this.items.length; i++) {
+                i2[i] = {
+                    answerPossibilities: this.items[i].answerPossibilities,
+                    data: this.items[i].data,
+                    id: this.items[i].id,
+                    title: 'Frage ' + this.items[i].id + ': ' + this.items[i].title,
+                }
+            }
+            return i2
         },
 
         itemsPerPageArray() {
@@ -258,16 +273,6 @@ export default {
             this.showTable = showTable
             this.dialog = false
             this.widgetKey = DiagramColor
-        },
-
-        /*
-        this method creates a unique href link for a question by concatenating the String "#Frage" with its id
-        and saves it in linkToQuestion. It also resets questionToJumpTo to 1.
-         */
-
-        changeLinkToQuestion() {
-            this.linkToQuestion = '#Frage' + this.questionToJumpTo
-            this.questionToJumpTo = 1
         },
 
         nextPage() {

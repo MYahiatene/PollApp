@@ -3,7 +3,7 @@
     <v-card class="ma-2">
         <v-app-bar dense flat>
             <!--            the title includes the Question and its id-->
-            <v-toolbar-title> Frage {{ questionId }}: {{ questionTitle }} </v-toolbar-title>
+            <v-toolbar-title> {{ questionTitle }} </v-toolbar-title>
 
             <v-spacer></v-spacer>
             <!-- Here we have the BlockDialog that can be used to filter ans analyse this question or the entire poll-->
