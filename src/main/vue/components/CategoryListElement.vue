@@ -21,7 +21,7 @@
         <v-expansion-panel-content :style="backgroundColor">
             <v-row>
                 <v-col>
-                    <v-btn depressed @click="removeCategory(categoryID)">
+                    <v-btn depressed @click="checkCategoryList()">
                         <v-icon color="primary" left>mdi-delete</v-icon>
                         Kategorie
                     </v-btn>
@@ -66,7 +66,7 @@ export default {
         },
     },
     computed: {
-        ...mapGetters({ getCategory: 'pollOverview/getCategory' }),
+        ...mapGetters({ getCategory: 'pollOverview/getCategory', getPolls: 'navigation/getPolls' }),
         category() {
             return this.getCategory(this.categoryID)
         },
@@ -102,6 +102,19 @@ export default {
         },
     },
     methods: {
+        checkCategoryList() {
+            const polls = this.getPolls
+            polls.forEach((poll) => {
+                if (poll.pollId === this.pollID) {
+                    console.log(poll.categoryList)
+                    if (poll.categoryList.length <= 1) {
+                        alert('Löschen nicht möglich')
+                    } else {
+                        this.removeCategory(this.categoryID)
+                    }
+                }
+            })
+        },
         ...mapMutations({ setName: 'pollOverview/setCategoryName', setQuestions: 'pollOverview/updateQuestionOrder' }),
         ...mapActions({
             createQuestion: 'pollOverview/createQuestion',

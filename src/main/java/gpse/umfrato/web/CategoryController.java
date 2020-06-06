@@ -2,10 +2,12 @@ package gpse.umfrato.web;
 
 import gpse.umfrato.domain.category.CategoryService;
 import gpse.umfrato.domain.cmd.CategoryCmd;
+import gpse.umfrato.domain.cmd.DeleteUserCmd;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-@RequestMapping(value = "/api", method = RequestMethod.GET)
+@RequestMapping(value = "/api")
 @RestController
 @CrossOrigin
 public class CategoryController {
@@ -19,5 +21,24 @@ public class CategoryController {
     @PostMapping("/poll/{pollId:\\d+}/addcategory")
     public Long addCategory(final @RequestBody CategoryCmd categoryCmd) {
         return categoryService.createCategory(categoryCmd.getName(), Long.parseLong(categoryCmd.getPollId())).getCategoryId();
+    }
+
+    /**
+     * Deletes a category in the data base
+     */
+    @PreAuthorize("hasAuthority('Admin')")
+    @PutMapping("/deletecategory")
+    public String deleteCategory(final @RequestBody CategoryCmd categoryCmd) {
+        categoryService.deleteCategory(Long.valueOf(categoryCmd.getCategoryId()));
+        return "Test";
+    }
+    /**
+     * Deletes a category in the data base
+     */
+    @PreAuthorize("hasAuthority('Admin')")
+    @PutMapping("/deletecategoryandquestions")
+    public String deleteCategoryAndQuestions(final @RequestBody CategoryCmd categoryCmd) {
+        categoryService.deleteCategoryAndQuestions(Long.valueOf(categoryCmd.getCategoryId()));
+        return "Test";
     }
 }

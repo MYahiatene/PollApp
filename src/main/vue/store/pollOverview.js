@@ -266,6 +266,11 @@ export const actions = {
     },
     async createCategory({ state, commit }) {
         let error = ''
+        state.poll.forEach((poll) => {
+            if (poll.pollId === 1) {
+                poll.categoryList.push({ test: 'test' })
+            }
+        })
         let newId = await this.$axios
             .post('/poll/' + state.IDsToLoad.pollID + '/addcategory', {
                 pollId: state.IDsToLoad.pollID,
@@ -291,11 +296,9 @@ export const actions = {
         if (confirm('Soll diese Kategorie wirklich gelöscht werden?')) {
             commit('removeCategory')
             let error = ''
-            await this.$axios
-                .post('/poll/' + state.IDsToLoad.pollId + '/removecategory/' + categoryID)
-                .catch((reason) => {
-                    error = reason
-                })
+            await this.$axios.put('/deletecategory/', { categoryId: categoryID }).catch((reason) => {
+                error = reason
+            })
             if (error.length === 0) {
                 commit('removeCategory', categoryID)
             } else {

@@ -16,7 +16,7 @@
 
                                     <v-spacer></v-spacer>
 
-                                    <v-btn depressed @click="createCategory()" class="ml-11">
+                                    <v-btn depressed @click="createCategory(pollID)" class="ml-11">
                                         <v-icon color="primary">
                                             mdi-plus
                                         </v-icon>
