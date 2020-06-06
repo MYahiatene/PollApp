@@ -57,7 +57,7 @@
                                 </v-checkbox>
                             </v-col>
                             <v-col>
-                                <v-btn>
+                                <v-btn :to="'/ControlQuestions'">
                                     Konsistenzfragen bearbeiten
                                 </v-btn>
                             </v-col>

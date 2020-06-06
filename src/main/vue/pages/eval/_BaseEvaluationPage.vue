@@ -239,6 +239,8 @@ export default {
             return this.diagramData
         },
 
+        // these are used to have the Frage + id ad on in the title, so you can filter and search vor it
+
         items2() {
             const i2 = []
             for (let i = 0; i < this.items.length; i++) {
