@@ -74,9 +74,10 @@ public class InitializeDatabase implements InitializingBean {
         try {
             pollService.createPoll(testPoll);
 
-            questionService.addQuestion("1", "testFrage", Arrays.asList("Ja", "Nein", "Vielleicht"), "choicebox");
-            questionService.addQuestion("1", "testFrage2", Arrays.asList("Jein", "Fein", "Vielschwer"), "choicebox");
-            questionService.addQuestion("1", "testFrage3", new ArrayList<>(), "textfield");
+            questionService.addQuestion("1", "testFrage", Arrays.asList("Ja", "Nein", "Vielleicht"), "ChoiceQuestion");
+            questionService.addQuestion("1", "testFrage2", Arrays.asList("Jein", "Fein", "Vielschwer"), "ChoiceQuestion");
+            questionService.addQuestion("1", "testFrage3", new ArrayList<>(), "TextQuestion");
+            questionService.addQuestion("1", "TestFrage 4", new ArrayList<>(), "RangeQuestion");
 
             userService.loadUserByUsername(testUsername);
 //            final List<Question> questions = new ArrayList<>(); // später import Arraylist löschen

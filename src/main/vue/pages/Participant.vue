@@ -22,18 +22,20 @@
                                     <div v-if="getVisibility">{{ getQuestionIndex() }}/{{ getNumberOfQuestions }}</div>
                                     <div class="ps-4">{{ question.questionMessage }}</div>
                                 </v-card-title>
-                                <div v-if="question.questionType === 'textfield'">
-                                    <v-text-field
-                                        label="Antwort"
-                                        :color="fontColor"
-                                        @input="saveAnswerField($event, question)"
-                                    >
-                                    </v-text-field>
+                                <div v-if="question.questionType === 'TextQuestion'">
+                                    <v-card-text>
+                                        <v-text-field
+                                            label="Antwort"
+                                            :color="fontColor"
+                                            @input="saveAnswerField($event, question)"
+                                        >
+                                        </v-text-field>
+                                    </v-card-text>
                                 </div>
-                                <div v-else-if="question.questionType === 'choicebox'">
+                                <div v-else-if="question.questionType === 'ChoiceQuestion'">
                                     <v-list v-for="answer in question.answerPossibilities" :key="answer.text">
                                         <v-checkbox
-                                            class="ma-4 red--text"
+                                            class="ma-4"
                                             :label="answer"
                                             :color="fontColor"
                                             @change="saveAnswerCheckbox($event, question, answer)"
@@ -53,8 +55,32 @@
                                         </v-col>
                                     </div-->
                                 </div>
-                            </v-card> </v-list
-                        >
+                                <div v-else-if="question.questionType === 'RangeQuestion'">
+                                    <v-card-text>
+                                        <!--might have to check if attributes aren't empty, depending on data bank-->
+                                        <!--min="question.startValue"-->
+                                        <!--max="question.endValue"-->
+                                        <!--step="question.stepSize-->
+                                        <v-slider
+                                            v-model="value"
+                                            min="0"
+                                            max="10"
+                                            ticks
+                                            tick-size="4"
+                                            thumb-label="always"
+                                            append-icon="mdi-plus"
+                                            prepend-icon="mdi-minus"
+                                            @click:append="addValue"
+                                            @click:prepend="subValue"
+                                            @change="saveAnswerRangeQuestion($event, question)"
+                                            :color="fontColor"
+                                            :track-color="backgroundColor"
+                                        >
+                                        </v-slider>
+                                    </v-card-text>
+                                </div>
+                            </v-card>
+                        </v-list>
                     </v-col>
                 </v-row>
                 <v-row>
@@ -66,7 +92,7 @@
                         >
                         <!-- button to get to the next category, same principle as the one above -->
                         <v-btn class="pl-4" :disabled="hasNoNext" @click="getNextCategory()">Nächste Seite</v-btn>
-                        <v-btn color="primary" nuxt to="/AfterParticipated">
+                        <v-btn :color="fontColor" nuxt to="/AfterParticipated">
                             Absenden
                         </v-btn>
                     </v-col>
@@ -92,6 +118,7 @@ export default {
             categoryLength: 0,
             enabled: false,
             disableMe: false,
+            value: 0,
             answerObj: {
                 username: 'Nina',
                 questionId: '1',
@@ -127,6 +154,9 @@ export default {
         fontColor() {
             return this.getPoll[1].data.fontColor
         },
+        backgroundColor() {
+            return this.getPoll[1].data.backgroundColor
+        },
         /**
          * Get's the given fontColor from PollData.
          * @returns {color: fontColor}
@@ -157,8 +187,8 @@ export default {
          * @returns (questionIndex: number)
          */
         getQuestionIndex() {
-            this.questionIndex += 1
-            return this.questionIndex - 1
+            // this.questionIndex += 1
+            return this.questionIndex // - 1
         },
         /**
          * Calls setCategory in the store to get the next category in the poll and save it at the page, if there is one
@@ -215,6 +245,15 @@ export default {
             this.answerObj.questionId = question.questionId
 
             this.saveAnswer() // alternative: Button after every TextField
+        },
+        saveAnswerRangeQuestion(e, question) {},
+        subValue() {
+            this.value = this.value - 1
+            console.log('In here!')
+        },
+        addValue() {
+            this.value = this.value + 1
+            console.log('In here!2')
         },
 
         // -------------------------------------------------------------------------------------------------------------
