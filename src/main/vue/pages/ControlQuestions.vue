@@ -189,19 +189,23 @@
             </v-card>
         </v-dialog>
 
-        <v-card class="ma-1 pa-1">
+        <v-card class="ma-1 pa-4">
             <h3>
                 Bereits erstellte Konsistenzfragen:
             </h3>
 
             <div v-for="(cq, index) in listOfControlQuestions" :key="index">
-                <v-chip @click="openCq(index)" class="ma-1" :outlined="index === currentId">
-                    {{ index }}: Frage {{ cq.q1 }} : {{ cq.a1.length }} Antwort(en) mit Frage {{ cq.q2 }} :
-                    {{ cq.a2.length }} Antwort(en)
+                <v-row>
+                    <v-chip @click="openCq(index)" class="ma-1" :outlined="index === currentId">
+                        {{ index }}: Frage {{ cq.q1 }} : {{ cq.a1.length }} Antwort(en) mit Frage {{ cq.q2 }} :
+                        {{ cq.a2.length }} Antwort(en)
 
-                    <v-icon class="ml-1" @click="copyQcQuestion(index)"> mdi-content-duplicate</v-icon>
-                    <v-icon right @click="deleteDialog = true"> mdi-minus-circle-outline</v-icon>
-                </v-chip>
+                        <v-icon class="ml-1" @click="copyQcQuestion(index)"> mdi-content-duplicate</v-icon>
+                        <v-icon right @click="deleteDialog = true"> mdi-minus-circle-outline</v-icon>
+                    </v-chip>
+
+                    <div v-if="index === currentId" style="font-style: italic;">(geöffnet)</div>
+                </v-row>
             </div>
         </v-card>
     </v-card>
