@@ -8,6 +8,8 @@
                             <h3>Umfrage erstellen</h3>
                         </v-col>
                     </v-row>
+
+                    <!--TextField for name of survey, is required and has to obey titleRules(see data)-->
                     <v-row>
                         <v-col cols="12" md="4">
                             <v-text-field
@@ -19,6 +21,8 @@
                             ></v-text-field>
                         </v-col>
                     </v-row>
+
+                    <!--Pick anonimityType from anonymityTypes and has to be choosen(anonymityRules)-->
                     <v-row no-gutters>
                         <v-col cols="12" md="4">
                             <v-overflow-btn
@@ -29,10 +33,10 @@
                             ></v-overflow-btn>
                         </v-col>
                     </v-row>
+
                     <v-row no-gutters>
                         <v-switch v-model="switch1" label="lege Aktivierungsdatum fest"></v-switch>
                     </v-row>
-
                     <v-row v-if="switch1" no-gutters>
                         <v-col cols="12" lg="2">
                             <v-menu
@@ -119,10 +123,45 @@
                             ></v-text-field
                         ></v-col>
                     </v-row>
+
+                    <!--Decide if participants can go back and forth between categories-->
+                    <v-row no-gutters>
+                        <v-switch
+                            v-model="categoryChange"
+                            label="Vor- und Zurückspringen zwischen Kategorien erlaubt"
+                        ></v-switch>
+                    </v-row>
+
+                    <!--Decide, if number of questions should be visible-->
+                    <v-row no-gutters>
+                        <v-switch v-model="visibility" label="Sichtbarkeit der Gesamtanzahl der Fragen"></v-switch>
+                    </v-row>
+
+                    <!--Pick own design for poll-->
+                    <v-row no-gutters>
+                        <v-switch v-model="switch3" label="eigenes Design für die Umfrage"></v-switch>
+                    </v-row>
+                    <v-row v-if="switch3" no-gutters>
+                        <!--Pick own backgroundColor and save it-->
+                        <v-col cols="12" md="4">
+                            Hintergrundfarbe
+                            <v-color-picker @change="getBackgroundColor" />
+                        </v-col>
+                        <!--Pick own backgroundColor and save it-->
+                        <v-col cols="12" md="4">
+                            Schriftfarbe
+                            <v-color-picker @change="getFontColor" />
+                        </v-col>
+                        <!--Pick a file for upload and logo is shown for verification-->
+                        <v-col cols="12" md="4">
+                            Logo hochladen
+                            <input type="file" @change="showImage" />
+                            <img :src="logo" alt="Image" width="500" />
+                        </v-col>
+                    </v-row>
                 </v-container>
 
                 <br />
-
                 <v-btn :disabled="!valid" color="success" class="mr-4" @click="sendData()">Erstellen</v-btn>
             </v-form>
         </v-container>
@@ -138,8 +177,14 @@ export default {
         return {
             switch1: false,
             switch2: false,
+            switch3: false,
+            categoryChange: false,
+            visibility: false,
             valid: false,
             title: '',
+            backgroundColor: null,
+            fontColor: null,
+            logo: null,
             activateDate: this.formatDate(new Date().toISOString().substr(0, 10)),
             deactivateDate: this.formatDate(new Date().toISOString().substr(0, 10)),
             creationDate: this.formatDate(new Date().toISOString().substr(0, 10)),
@@ -159,7 +204,7 @@ export default {
                     value: 3,
                 },
             ],
-            titleRules: [(v) => !!v || 'Titel fehlt', (v) => v.length <= 10 || 'Name must be less than 10 characters'],
+            titleRules: [(v) => !!v || 'Titel fehlt', (v) => v.length <= 20 || 'Name must be less than 20 characters'],
             anonymityRules: [(v) => !!v || 'Anonymitätsgrad fehlt.'],
         }
     },
@@ -173,6 +218,10 @@ export default {
         validate() {
             this.$refs.form.validate()
         },
+        /**
+         * Puts all information in an object and directly acces axios over above declared instance at PostMapping
+         * createPoll in PollController.
+         */
         sendData() {
             const obj = {
                 pollcreator: 'Richie',
@@ -182,6 +231,11 @@ export default {
                 activatedAt: this.activateDate,
                 deactivatedAt: this.deactivateDate,
                 pollStatus: 0,
+                categoryChange: this.categoryChange,
+                visibility: this.visibility,
+                backgroundColor: this.backgroundColor,
+                fontColor: this.fontColor,
+                logo: this.logo,
             }
             const token = localStorage.getItem('user-token')
             const instance = this.$axios.create({
@@ -230,6 +284,33 @@ export default {
         closeMenuAndUpdateD() {
             this.menu = false
             this.reformatDeactivateDate()
+        },
+        /**
+         * Reads the given file and saves image as this.logo.
+         * @param e Change-Event
+         * */
+        showImage(e) {
+            const image = e.target.files[0]
+            const reader = new FileReader()
+            reader.readAsDataURL(image)
+            reader.onload = (e) => {
+                console.log(e)
+                this.logo = e.target.result
+            }
+        },
+        /**
+         * Get's picked background color and saves it as this.backgroundColor.
+         * @param e Change-Event
+         */
+        getBackgroundColor(e) {
+            this.backgroundColor = e.payload[0].hexa
+        },
+        /**
+         * Get's picked font color and saves it as this.fontColor.
+         * @param e Change-Event
+         */
+        getFontColor(e) {
+            this.fontColor = e.payload[0].hexa
         },
     },
 }

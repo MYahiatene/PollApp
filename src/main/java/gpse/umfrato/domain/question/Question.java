@@ -1,5 +1,7 @@
 package gpse.umfrato.domain.question;
 
+import gpse.umfrato.domain.answer.Answer;
+import gpse.umfrato.domain.poll.Poll;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import javax.persistence.*;
@@ -47,7 +49,5 @@ public class Question {
         this.answerPossibilities = answerPossibilities;
         this.questionType = questionType;
     }
-
-
 }
 

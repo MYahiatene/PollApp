@@ -16,5 +16,4 @@ public class AnswerCmd {
     private String answerId;
 
     private String pollId;
-
 }

@@ -1,5 +1,6 @@
 package gpse.umfrato.domain.cmd;
 
+import gpse.umfrato.domain.user.User;
 import lombok.Data;
 
 @Data

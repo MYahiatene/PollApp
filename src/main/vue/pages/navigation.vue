@@ -32,6 +32,9 @@
                                     label="Sort by"
                                 ></v-select>
                                 <v-spacer></v-spacer>
+                                <v-btn class="ma-3" nuxt to="/PollCreation" color="primary">
+                                    neu
+                                </v-btn>
                                 <v-btn-toggle v-model="sortDesc" mandatory>
                                     <v-btn large depressed :value="false">
                                         <v-icon>mdi-arrow-up</v-icon>

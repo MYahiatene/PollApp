@@ -5,7 +5,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import java.util.List;
 
 public interface PollService {
-
     /**
      * This method creates a poll with all required parameters.
      *

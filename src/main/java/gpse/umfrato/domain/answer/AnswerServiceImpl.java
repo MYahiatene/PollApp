@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
+import java.util.logging.Logger;
 
 @Service
 public class AnswerServiceImpl implements AnswerService {
