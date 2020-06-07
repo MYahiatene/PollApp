@@ -29,7 +29,7 @@ public class MailController {
 
             message.setTo("gpseteam5.1@gmail.com");
             message.setSubject("Einladung zur Umfrage - Umfrato Reply");
-            message.setText("Hi, I'm a test mail!");
+            message.setText("Hi, I'm a test mail! \nYour link is \n\n" + "test" + "\n\nThank you!");
 
             this.mailSender.send(message);
 

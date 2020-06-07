@@ -53,8 +53,8 @@
                                         </v-col>
                                     </div-->
                                 </div>
-                            </v-card> </v-list
-                        >
+                            </v-card>
+                        </v-list>
                     </v-col>
                 </v-row>
                 <v-row>
