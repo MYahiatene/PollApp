@@ -45,7 +45,7 @@ export const getters = {
         return state.changeOfCategories
     },
     getUsername: (state) => {
-        console.log('getUsername: ', state.username)
+        // console.log('getUsername: ', state.username)
         return state.username
     },
 }

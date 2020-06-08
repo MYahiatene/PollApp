@@ -156,6 +156,10 @@ export default {
         fontColor() {
             return this.getPoll[1].data.fontColor
         },
+        /**
+         * Get's the given BackgroundColor from PollData.
+         * @returns {backgroundColor}
+         */
         backgroundColor() {
             return this.getPoll[1].data.backgroundColor
         },
@@ -219,6 +223,8 @@ export default {
          * Get's the given answer of a checkbox question and calls saveAnswer() to persist it in the database. This
          * happens after every change (check or uncheck) of a checkbox.
          * @param e (Change-Event)
+         * @param question The question object, so it can get the QuestionID
+         * @param answer The answer object, so it can get the answer possibilities.
          */
         saveAnswerCheckbox(e, question, answer) {
             this.answerObj.answerList = []
@@ -240,6 +246,7 @@ export default {
          * Get's the given answer of a free text question and calls saveAnswer() to persist it in the database. This
          * happens after every single character.
          * @param e (Input-Event)
+         * @param question The question object, so it can get the QuestionID
          */
         saveAnswerField(e, question) {
             this.answerObj.answerList = [e]
@@ -248,14 +255,32 @@ export default {
 
             this.saveAnswer() // alternative: Button after every TextField
         },
-        saveAnswerRangeQuestion(e, question) {},
+        /**
+         * Get's the given answer of a Range Question and calls saveAnswer() to persist it in the database.
+         * This happens after every change to the slider.
+         * @param e (Change-Event)
+         * @param question The question object, so it can get the QuestionID
+         */
+        saveAnswerRangeQuestion(e, question) {
+            this.answerObj.answerList = [e]
+            this.answerObj.pollId = this.getPoll[1].data.pollId
+            this.answerObj.questionId = question.questionId
+
+            this.saveAnswer()
+        },
+        /**
+         * Moves the slider one step to the left, if possible.
+         * It's called by click on + Icon at a Range Question.
+         */
         subValue() {
             this.value = this.value - 1
-            console.log('In here!')
         },
+        /**
+         * Moves the slider one step to the right, if possible.
+         * It's called by click on + Icon at a Range Question.
+         */
         addValue() {
             this.value = this.value + 1
-            console.log('In here!2')
         },
 
         // -------------------------------------------------------------------------------------------------------------
@@ -273,6 +298,7 @@ export default {
         saveAnswer() {
             this.answerObj.username = this.getUsername
             this.$store.dispatch('participant/saveAnswer', this.answerObj)
+            console.log(this.answerObj)
         },
     },
 }
