@@ -28,5 +28,6 @@ public interface PollService {
      */
     Poll getPoll(String id);
 
+    String createAnonymUsername();
 
 }

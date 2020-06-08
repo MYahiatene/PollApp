@@ -85,4 +85,20 @@ public class PollController {
 
     }
 
+    /**
+     * This method returns the username or creates an anonym one if the poll is anonym.
+     *
+     * @return a username
+     */
+    // @GetMapping("/getUsername")
+    @RequestMapping(value="/getUsername", method=RequestMethod.POST)
+    public String getUsername(final @RequestBody PollCmd pollCmd) {
+        if (pollCmd.getAnonymityStatus().equals("anonym")) {
+            return pollService.createAnonymUsername();
+        } else {
+            return "Nina";
+        }
+
+    }
+
 }

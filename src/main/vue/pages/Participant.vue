@@ -121,6 +121,7 @@ export default {
             value: 0,
             answerObj: {
                 username: 'Nina',
+                anonymityStatus: 'anonym',
                 questionId: '1',
                 answerList: [],
                 answerId: '1',
@@ -146,6 +147,7 @@ export default {
             getCategoryIndex: 'participant/getCategoryIndex',
             getCategory: 'participant/getCategory',
             getChangeOfCategories: 'participant/getChangeOfCategories',
+            getUsername: 'participant/getUsername',
         }),
         /**
          * Get's the given FontColor from PollData.
@@ -269,6 +271,7 @@ export default {
          * Calls saveAnswers from the store with the answerobj (cmdAnswer with all given input)
          */
         saveAnswer() {
+            this.answerObj.username = this.getUsername
             this.$store.dispatch('participant/saveAnswer', this.answerObj)
         },
     },
