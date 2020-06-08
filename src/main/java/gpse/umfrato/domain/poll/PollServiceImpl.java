@@ -25,6 +25,8 @@ class PollServiceImpl implements PollService {
 
     private static final Logger LOGGER = Logger.getLogger("PollService");
 
+    private int anonymUsername = 0;
+
     /**
      * This class constructor initializes the poll repository.
      *
@@ -81,5 +83,13 @@ class PollServiceImpl implements PollService {
     public Poll getPoll(final String id) {
         final Long pollId = Long.valueOf(id);
         return pollRepository.findById(pollId).orElseThrow(EntityNotFoundException::new);
+    }
+
+    @Override
+    public String createAnonymUsername() {
+        this.anonymUsername ++;
+        LOGGER.info("anonymUsername = ");
+        LOGGER.info(String.valueOf(this.anonymUsername));
+        return String.valueOf(this.anonymUsername);
     }
 }

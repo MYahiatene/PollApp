@@ -14,6 +14,7 @@ export const state = () => ({
     categoryIndex: 1,
     poll: ['Object'],
     category: ['Object'],
+    username: '',
 })
 /**
  * Defines mapGetters for Usage in Participant.vue.
@@ -43,6 +44,10 @@ export const getters = {
     getChangeOfCategories: (state) => {
         return state.changeOfCategories
     },
+    getUsername: (state) => {
+        console.log('getUsername: ', state.username)
+        return state.username
+    },
 }
 
 export const mutations = {
@@ -56,6 +61,9 @@ export const mutations = {
         state.changeOfCategories = poll.data.categoryChange
         state.numberOfQuestions = poll.data.categoryList[0].questionList.length // number of questions in this category
         state.category = poll.data.categoryList[0]
+    },
+    setUsername: (state, username) => {
+        state.username = username
     },
     /**
      * Sets the next or previous category of the poll as the current one, if there is one, depending on the argument
@@ -88,6 +96,8 @@ export const actions = {
         this.$axios.defaults.baseURL = 'http://localhost:8088/api/'
         this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('user-token')
         const poll = await this.$axios.get('/participant')
+        const username = await this.$axios.post('/getUsername', { anonymityStatus: poll.data.anonymityStatus })
+        commit('setUsername', username.data)
         commit('setPoll', poll) // calls the setter int the store to save the poll in the store
     },
     /**
