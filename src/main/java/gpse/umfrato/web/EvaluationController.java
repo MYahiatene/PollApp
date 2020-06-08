@@ -3,6 +3,7 @@ package gpse.umfrato.web;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gpse.umfrato.domain.Evaluation.DiagramData;
+import gpse.umfrato.domain.Evaluation.Statistics;
 import gpse.umfrato.domain.answer.Answer;
 import gpse.umfrato.domain.answer.AnswerService;
 import gpse.umfrato.domain.category.CategoryService;
@@ -28,6 +29,10 @@ import java.util.logging.Logger;
 @CrossOrigin
 public class EvaluationController {
 
+    enum Filter {
+        AnswerFilter,
+        UserFilter
+    }
     private static final Logger LOGGER = Logger.getLogger("EvaluationController");
     private final AnswerService answerService;
     private final UserService userService;
@@ -49,7 +54,7 @@ public class EvaluationController {
 
     @GetMapping("/initialDiagrams")
     public String initialDiagrams() {
-        testAnswers();
+        // testAnswers();
 /*        LOGGER.info("PollId");
         LOGGER.info(pollCmd.getId());
         try {
@@ -128,41 +133,19 @@ public class EvaluationController {
         return "Haha";
     }
 
-    public <T> List<Answer> filterByAnswer(List<Answer> input, List<T> wantedAnswers){
-        ListIterator<Answer> iter = input.listIterator();
-        List<Answer> output = new ArrayList<>();
-        while(iter.hasNext()){
-            Answer index = iter.next();
-            if(!Collections.disjoint(Arrays.asList(index.getGivenAnswerList()), wantedAnswers))
-                output.add(index);
-        }
-        return output;
-    }
-
-    public boolean testAnswers(){
+    /*public boolean testAnswers(){
         List<Answer> antworten = answerService.getAnswerFromOneQuestion(1L);
         List<String> wantedAnswers = new ArrayList<>();
         wantedAnswers.add("10");
         System.out.println(filterByAnswer(antworten, wantedAnswers));
         return false;
-    }
+    }*/
 
-    public <T> List<Answer> filterByUser(String pollID, String username){ /**TODO: PollResultServiceImpl NEEDS POLLRESULTS ELSE FILTERING BY USER WONT WORK*/
-        PollResultServiceImpl pollResultService = new PollResultServiceImpl();
-        List<Question> questionList = questionService.getAllQuestions(Long.parseLong(pollID));
-        ListIterator<Question> iter = questionList.listIterator();
-        List<Answer> output = new ArrayList<>();
-
-        while(iter.hasNext()){
-            Question index = iter.next();
-            List<Answer> answerListForQuestion = answerService.getAnswerFromOneQuestion(index.getQuestionId());
-            ListIterator<Answer> answerIter = answerListForQuestion.listIterator();
-            while(answerIter.hasNext()){
-                Answer answerIndex = answerIter.next();
-                //if(answerIndex.)
-            }
+    public<T, U> List<Answer> filterByStuff(Filter filterType, T inputA, U inputB){ /**TODO: needs to be improved, generics can only do so much*/
+        switch(filterType){
+            case AnswerFilter: return Statistics.filterByAnswer((List<Answer>) inputA /**Input*/, (List<U>) inputB) /**Desired Answers*/;
+            case UserFilter: return Statistics.filterByUser((String) inputA /**PollID*/, (String) inputB) /**Username*/;
         }
-
         return null;
     }
 

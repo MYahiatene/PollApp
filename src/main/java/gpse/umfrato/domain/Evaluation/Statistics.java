@@ -1,9 +1,12 @@
 package gpse.umfrato.domain.Evaluation;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Iterator;
+import gpse.umfrato.domain.answer.Answer;
+import gpse.umfrato.domain.pollresult.PollResult;
+import gpse.umfrato.domain.pollresult.PollResultServiceImpl;
+import gpse.umfrato.domain.question.Question;
+import gpse.umfrato.domain.question.QuestionServiceImpl;
+
+import java.util.*;
 
 public class Statistics {
 
@@ -176,5 +179,24 @@ public class Statistics {
             if(listIterator.next().doubleValue() < threshold.doubleValue()) { cumulated++; }
         }
         return cumulated;
+    }
+
+    public static <T> List<Answer> filterByAnswer(List<Answer> input, List<T> wantedAnswers){
+        ListIterator<Answer> iter = input.listIterator();
+        List<Answer> output = new ArrayList<>();
+        while(iter.hasNext()){
+            Answer index = iter.next();
+            if(!Collections.disjoint(Arrays.asList(index.getGivenAnswerList()), wantedAnswers))
+                output.add(index);
+        }
+        return output;
+    }
+
+    public static <T> List<Answer> filterByUser(String pollID, String username){
+        PollResultServiceImpl pollResultService = new PollResultServiceImpl();
+        /**TODO: PollResultServiceImpl NEEDS POLLRESULTS ELSE FILTERING BY USER WONT WORK*/
+        List<PollResult> unfilteredResults = pollResultService.getAllPollResults();
+        List<Answer> filteredResults = pollResultService.getUserAnswers(unfilteredResults, username);
+        return filteredResults;
     }
 }

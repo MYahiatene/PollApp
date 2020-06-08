@@ -8,4 +8,5 @@ import java.util.List;
 public interface PollResultService {
     PollResult createPollResult(Long pollID, String username);
     List<Answer> getUserAnswers(List<PollResult> input, String pollTaker);
+    List<PollResult> getAllPollResults();
 }

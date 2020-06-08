@@ -24,4 +24,8 @@ public class PollResultServiceImpl {
         return null;
     }
 
+    public List<PollResult> getAllPollResults(){ /**TODO!*/
+        return null;
+    }
+
 }
