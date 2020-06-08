@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 public class PollCmd {
 
-    private String id;
+    private String pollId;
 
     private String pollcreator;
 

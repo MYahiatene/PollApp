@@ -29,9 +29,8 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public Category createCategory(final String name, final long pollId) {
         final Category category = new Category(name, pollId);
-        category.setPollId(pollId);
-        pollRepository.findById(pollId).orElseThrow(EntityNotFoundException::new).getCategoryList().add(category);
         categoryRepository.save(category);
+        pollRepository.findById(pollId).orElseThrow(EntityNotFoundException::new).getCategoryList().add(category);
         return category;
     }
 
@@ -57,9 +56,6 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public List<Category> getAllCategories(long pollId) {
         final List<Category> categories = categoryRepository.findCategoriesByPollId(pollId);
-        for(Category c:categories){
-            System.out.println(c.getCategoryId());
-        }
         /* if (categories.isEmpty()) {
             throw new BadRequestException();
         } */

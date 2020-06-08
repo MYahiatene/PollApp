@@ -1,6 +1,7 @@
 import Vue from 'vue'
 export const state = () => ({
     Poll: {},
+    category: {},
     IDsToLoad: {
         pollID: 0,
         categoryID: 0,
@@ -49,13 +50,7 @@ export const getters = {
         return null
     },
     getCategory(state) {
-        return (categoryID) => {
-            for (let i = 0; i < state.Poll.categoryList.length; i++) {
-                if (state.Poll.categoryList[i].categoryId === categoryID) {
-                    return state.Poll.categoryList[i]
-                }
-            }
-        }
+        return state.category
     },
 }
 
@@ -263,6 +258,9 @@ export const actions = {
         const data = await this.$axios.get('/poll/' + state.IDsToLoad.pollID)
         commit('resetToLoad')
         commit('initializeData', data)
+    },
+    setCategory({ commit }, data) {
+        state.category = data
     },
     async createCategory({ state, commit }) {
         let error = ''

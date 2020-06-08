@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RequestMapping(value = "/api", method = RequestMethod.GET)
+@RequestMapping(value = "/api")
 @RestController
 @CrossOrigin
 public class CategoryController {
@@ -22,12 +22,12 @@ public class CategoryController {
         this.categoryService = categoryService;
     }
 
-    @PostMapping("/poll/{pollId:\\d+}/addcategory")
-    public Long addCategory(final @RequestBody CategoryCmd categoryCmd) {
-        return categoryService.createCategory(categoryCmd.getName(), Long.parseLong(categoryCmd.getPollId())).getCategoryId();
+    @PostMapping("/addcategory")
+    public Category addCategory(final @RequestBody CategoryCmd categoryCmd) {
+        return categoryService.createCategory(categoryCmd.getName(), Long.parseLong(categoryCmd.getPollId()));
     }
 
-    @GetMapping("/categories")
+    @PostMapping("/categories")
     public List<Category> getCategories(final @RequestBody CategoryCmd categoryCmd) {
         return categoryService.getAllCategories(Long.parseLong(categoryCmd.getPollId()));
     }

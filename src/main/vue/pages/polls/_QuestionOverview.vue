@@ -2,51 +2,27 @@
     <div>
         <AuthGate v-if="isAuthenticated !== true"></AuthGate>
         <v-container v-else-if="storeValid">
-            <v-card class="pa-2 ma-0"
-                ><v-text-field clearable placeholder="Titel der Umfrage" class="display-1" v-model="pollname"
-            /></v-card>
+            <v-card class="pa-2 ma-0"><v-text-field v-model="poll.pollName" clearable class="display-1" /></v-card>
 
             <v-container>
                 <v-row>
                     <v-col cols="12" lg="4" md="4" sm="4">
                         <v-row>
-                            <v-card class="ma-0">
-                                <v-card-title>
-                                    <h2 style="font-weight: normal;" class="ma-0">Kategorien</h2>
+                            <v-card v-for="(p, i) in poll.categoryList" :key="i" class="mt-1" width="110rem" outlined>
+                                <draggable>
+                                    <v-list-item three-line>
+                                        <v-list-item-content>
+                                            <v-list-item-title class="headline mb-1">{{
+                                                p.categoryName
+                                            }}</v-list-item-title>
+                                        </v-list-item-content>
+                                    </v-list-item>
+                                    <v-list-item v-for="(l, j) in poll.categoryList" :key="j">{{
+                                        l.questionList[j].questionMessage
+                                    }}</v-list-item>
 
-                                    <v-spacer></v-spacer>
-
-                                    <v-btn depressed @click="createCategory(this.pollId)" class="ml-11">
-                                        <v-icon color="primary">
-                                            mdi-plus
-                                        </v-icon>
-                                        <v-spacer></v-spacer>
-                                        Hinzufügen
-                                    </v-btn>
-                                </v-card-title>
-                                <v-divider></v-divider>
-                                <v-card-text>
-                                    <v-row>
-                                        <!--                                        negative margin in order to cancel out the prior waste of space-->
-                                        <v-col cols="12" lg="12" md="12" sm="12">
-                                            <v-expansion-panels tile multiple :disabled="disableDrag" class="mt-n6">
-                                                <draggable v-model="categories" :disabled="disableDrag">
-                                                    <v-list
-                                                        v-for="category in categories"
-                                                        :key="category.categoryId"
-                                                        two-line
-                                                    >
-                                                        <CategoryListElement
-                                                            :categoryID="category.categoryId"
-                                                            :pollID="pollId"
-                                                            @text-input="disableDraggable"
-                                                        />
-                                                    </v-list>
-                                                </draggable>
-                                            </v-expansion-panels>
-                                        </v-col>
-                                    </v-row>
-                                </v-card-text>
+                                    <v-card-actions> </v-card-actions>
+                                </draggable>
                             </v-card>
                         </v-row>
                     </v-col>
@@ -80,15 +56,15 @@
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import draggable from 'vuedraggable'
 import QuestionBuildWidget from '../../components/QuestionBuildWidget'
-import CategoryListElement from '../../components/CategoryListElement'
+// import CategoryListElement from '../../components/CategoryListElement'
 
 export default {
     name: 'QuestionOverview',
-    components: { CategoryListElement, QuestionBuildWidget, draggable },
+    components: { /* CategoryListElement, */ QuestionBuildWidget, draggable },
     data() {
         return {
             disableDrag: false,
-            categories: [],
+            poll: [],
         }
     },
     created() {
@@ -96,8 +72,8 @@ export default {
     },
     computed: {
         ...mapGetters({
-            poll: 'pollOverview/getPoll',
             isAuthenticated: 'login/isAuthenticated',
+            getCategories: 'pollOverview/getCategory',
         }),
         pollId() {
             return parseInt(this.$route.params.QuestionOverview)
@@ -124,21 +100,24 @@ export default {
         },
     },
     methods: {
+        pollName() {
+            return this.poll.pollName
+        },
         async loadCategories() {
             await this.$axios
-                .get('/categories', null, { pollId: '1' })
+                .post('/onepoll', { pollId: this.$route.params.QuestionOverview })
                 .then((response) => {
-                    console.log(response)
-                    console.log(response.data)
-                    this.categories = response.data
+                    this.poll = response.data
                 })
                 .catch((error) => {
                     console.log(error)
                 })
+            console.log(this.poll)
         },
         ...mapActions({
             sendData: 'pollOverview/sendData',
             createCategory: 'pollOverview/createCategory',
+            setCategory: 'pollOverview/setCategory',
         }),
         ...mapMutations({
             saveData: 'pollOverview/saveData',

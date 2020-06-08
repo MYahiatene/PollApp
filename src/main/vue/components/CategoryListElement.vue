@@ -80,7 +80,7 @@ export default {
         },
         questions: {
             get() {
-                return this.getCategory(this.categoryID).questionList
+                return this.getCategory
             },
             set(newList) {
                 const payload = {
