@@ -33,6 +33,15 @@
                 </v-btn>
 
                 <v-spacer />
+                <v-card-text>
+                    <v-slider
+                        v-model="value"
+                        append-icon="mdi-plus"
+                        prepend-icon="mdi-minus"
+                        @click:append="zoomIn"
+                        @click:prepend="zoomOut"
+                    ></v-slider>
+                </v-card-text>
             </v-card>
         </v-flex>
     </v-layout>
@@ -41,6 +50,19 @@
 <script>
 export default {
     name: 'ColorScheme',
+    data() {
+        return {
+            value: 0,
+        }
+    },
+    methods: {
+        zoomOut() {
+            this.value = this.value - 10 || 0
+        },
+        zoomIn() {
+            this.value = this.value + 10 || 100
+        },
+    },
 }
 </script>
 
