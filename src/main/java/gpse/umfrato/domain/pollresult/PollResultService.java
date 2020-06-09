@@ -9,4 +9,6 @@ public interface PollResultService {
     PollResult createPollResult(Long pollID, String username);
     List<Answer> getUserAnswers(List<PollResult> input, String pollTaker);
     List<PollResult> getAllPollResults();
+    List<PollResult> getPollResults(final Long pollId);
+    PollResult getPollResult(final Long pollId, final String pollTaker);
 }

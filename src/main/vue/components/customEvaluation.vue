@@ -31,6 +31,7 @@
                                                                 class="ma-1 filter"
                                                                 :color="item.darkColor"
                                                                 draggable
+                                                                @click="addFilter(option)"
                                                             >
                                                                 {{ option.title }}
                                                             </v-chip>
@@ -90,7 +91,7 @@
                                                             @click:close="deleteFromFilterList(filter)"
                                                         >
                                                             Es werden nur Teilnehmer angezeigt, die alle
-                                                            Konsistenzfragen konsistent beantwortet haben.
+                                                            Konsistenzfragen bestanden haben.
                                                         </v-chip>
 
                                                         <v-chip
@@ -99,16 +100,17 @@
                                                             v-if="filter.filterType === 'age'"
                                                             @click:close="deleteFromFilterList(filter)"
                                                         >
-                                                            Nur Teilnehmer mit Alter {{ selectedAgeOperation }}
-                                                            {{ filter.filterType }}
-                                                            <v-overflow-btn
+                                                            Nur Teilnehmer mit Alter
+                                                            <filter-chip-menu
+                                                                :color="kategories[3].color"
                                                                 :items="['<', '>', '=']"
-                                                                v-model="selectedAgeOperation"
-                                                                flat
-                                                                elevation="0"
-                                                                style="box-shadow: none;"
+                                                                @choice-updated="
+                                                                    (update) => {
+                                                                        selectedAgeOperation = update
+                                                                    }
+                                                                "
                                                             >
-                                                            </v-overflow-btn>
+                                                            </filter-chip-menu>
                                                             <v-text-field
                                                                 type="number"
                                                                 min="0"
@@ -123,16 +125,17 @@
                                                             v-if="filter.filterType === 'gender'"
                                                             @click:close="deleteFromFilterList(filter)"
                                                         >
-                                                            Nur Teilnehmer mit dem Geschlecht: {{ selectedGender }}
-                                                            {{ filter.filterType }}
-                                                            <v-overflow-btn
+                                                            Nur Teilnehmer mit dem Geschlecht
+                                                            <filter-chip-menu
+                                                                :color="kategories[3].color"
                                                                 :items="['Männlich', 'Weiblich', 'Divers']"
-                                                                v-model="selectedGender"
-                                                                flat
-                                                                elevation="0"
-                                                                style="box-shadow: none;"
+                                                                @choice-updated="
+                                                                    (update) => {
+                                                                        selectedGender = update
+                                                                    }
+                                                                "
                                                             >
-                                                            </v-overflow-btn>
+                                                            </filter-chip-menu>
                                                         </v-chip>
 
                                                         <q-a-filter
@@ -178,12 +181,14 @@
 
 <script>
 import draggable from 'vuedraggable'
-import { mapActions, mapGetters, mapMutations } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import QAFilter from './Filter/QAFilter'
+import FilterChipMenu from './Filter/FilterChipMenu'
 
 export default {
     name: 'customEvaluation',
     components: {
+        FilterChipMenu,
         QAFilter,
         draggable,
     },
@@ -316,10 +321,14 @@ export default {
         this.initialize()
     },
     methods: {
-        ...mapActions({ initialize: 'evaluation/initialize' }),
-        ...mapMutations({ sendFilter: 'evaluation/sendFilter' }),
+        ...mapActions({ initialize: 'evaluation/initialize', sendFilter: 'evaluation/sendFilter' }),
         saveToStore() {
             const filterData = []
+            filterData.push({
+                filterType: 'DataFilter',
+                basePollId: 1,
+                baseQuestionIds: [3, 4, 5, 6, 7, 8],
+            })
             for (let f = 0; f < this.filterList.length; f++) {
                 const filter = this.filterList[f]
                 const poll = this.polls[this.pollIndex]
@@ -372,7 +381,9 @@ export default {
                 this.filterList.splice(index, 1)
             }
         },
-
+        addFilter(filter) {
+            this.filterList.push(filter)
+        },
         updateQAFilter([filterId, newCategory, newQuestion, newAnswer]) {
             console.log('updateQAFilter')
             for (let i = 0; i < this.filterList.length; i++) {

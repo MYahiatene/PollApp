@@ -266,7 +266,7 @@ export const actions = {
     },
     async createCategory({ state, commit }) {
         let error = ''
-        let newId = await this.$axios
+        const newId = await this.$axios
             .post('/poll/' + state.IDsToLoad.pollID + '/addcategory', {
                 pollId: state.IDsToLoad.pollID,
                 name: 'Neue Kategorie',
@@ -274,8 +274,7 @@ export const actions = {
             .catch((reason) => {
                 error = reason
             })
-        newId = 600
-        if (error.length !== 0) {
+        if (error.length === 0) {
             const newCategory = {
                 categoryId: newId,
                 categoryName: 'Neue Kategorie',

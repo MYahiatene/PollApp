@@ -180,7 +180,6 @@ export default {
             showTable: true,
             // options that will be displayed in the sub menu
             menuItems: [{ title: 'Visuelle Einstellungen' }, { title: 'Exportieren' }],
-
             // itemsPerPageArray: [1, 2, 3],
             search: '',
             filter: {},

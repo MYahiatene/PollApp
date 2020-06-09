@@ -1,21 +1,16 @@
 package gpse.umfrato.web;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gpse.umfrato.domain.Evaluation.DiagramData;
 import gpse.umfrato.domain.Evaluation.Statistics;
 import gpse.umfrato.domain.answer.Answer;
 import gpse.umfrato.domain.answer.AnswerService;
 import gpse.umfrato.domain.category.CategoryService;
-import gpse.umfrato.domain.cmd.AnswerCmd;
 import gpse.umfrato.domain.cmd.FilterCmd;
-import gpse.umfrato.domain.cmd.PollCmd;
-import gpse.umfrato.domain.poll.Poll;
 import gpse.umfrato.domain.poll.PollService;
-import gpse.umfrato.domain.pollresult.PollResultServiceImpl;
+import gpse.umfrato.domain.pollresult.PollResultService;
 import gpse.umfrato.domain.question.Question;
 import gpse.umfrato.domain.question.QuestionService;
-import gpse.umfrato.domain.user.User;
 import gpse.umfrato.domain.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -29,26 +24,27 @@ import java.util.logging.Logger;
 @CrossOrigin
 public class EvaluationController {
 
-    enum Filter {
-        AnswerFilter,
-        UserFilter
-    }
     private static final Logger LOGGER = Logger.getLogger("EvaluationController");
     private final AnswerService answerService;
     private final UserService userService;
     private final QuestionService questionService;
     private final PollService pollService;
+    private final PollResultService pollResultService;
     private final CategoryService categoryService;
-
+    enum Filter {
+        AnswerFilter,
+        UserFilter
+    }
     @Autowired
     private ObjectMapper objectMapper;
 
     @Autowired
-    public EvaluationController(final AnswerService answerService, final UserService userService, final QuestionService questionService, final PollService pollService, final CategoryService categoryService) {
+    public EvaluationController(final AnswerService answerService, final UserService userService, final QuestionService questionService, final PollService pollService, final PollResultService pollResultService,  final CategoryService categoryService) {
         this.answerService = answerService;
         this.userService = userService;
         this.questionService = questionService;
         this.pollService = pollService;
+        this.pollResultService = pollResultService;
         this.categoryService = categoryService;
     }
 
@@ -101,17 +97,21 @@ public class EvaluationController {
             }
         }
         data = data.replace(",$","");
-        System.out.println("vorlage");
-        System.out.println(cheetSheet);
-        System.out.println("sende");
-        System.out.println(data);
+        LOGGER.info("vorlage");
+        LOGGER.info(cheetSheet);
+        LOGGER.info("sende");
+        LOGGER.info(data);
         return data;
     }
 
-    /**Returns JSON string to be interpreted, hier wird der jsonInput in ein Filterobjekt deserialisiert und dort können wir herausfinden, um welchen Filter es sich genau handelt.*/
+    /**Returns JSON string to be interpreted, hier wird der jsonInput in ein Filterobjekt deserialisiert und dort können wir herausfinden, um welchen Filter es sich genau handelt.
+     * @return*/
     @PostMapping("/generateDiagram")
-    public void populateDiagram(final @RequestBody List<FilterCmd> input) {
-        System.out.println(input.toString());
+    public String populateDiagram(final @RequestBody List<FilterCmd> input) {
+        LOGGER.info(input.toString());
+        Statistics calculation = new Statistics(answerService,userService,questionService,pollService,pollResultService,categoryService,input.get(0));
+        calculation.loadFilter(input);
+        return calculation.generateDiagram().toJSON();
         /*TODO:
             1. Filter parsen
             2. Filter ordnen
@@ -119,18 +119,6 @@ public class EvaluationController {
             4. Rechnen und evtl. wieder zu 3
             5. als Diagramm aufarbeiten
             6. abschicken*/
-    }
-
-    @GetMapping("/getDiagram")
-    public String sendDiagram(final @RequestBody List<FilterCmd> input) {
-            /*TODO:
-                1. Filter parsen
-                2. Filter ordnen
-                3. Daten auswählen
-                4. Rechnen und evtl. wieder zu 3
-                5. als Diagramm aufarbeiten
-                6. abschicken*/
-        return "Haha";
     }
 
     /*public boolean testAnswers(){

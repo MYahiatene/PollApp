@@ -1,5 +1,6 @@
 package gpse.umfrato.domain.answer;
 
+import gpse.umfrato.domain.poll.Poll;
 import gpse.umfrato.domain.pollresult.PollResult;
 import gpse.umfrato.domain.pollresult.PollResultRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,13 +38,12 @@ public class AnswerServiceImpl implements AnswerService {
     public Answer giveAnswer(final String username, final String pollId, final String questionId,
                              final List<String> answerList) {
         final Answer answer = new Answer(answerList, questionId);
-        PollResult pollResult = pollResultRepository.findPollResultByPollId(Long.valueOf(pollId));
+        PollResult pollResult = pollResultRepository.findPollResultByPollIdAndPollTaker(Long.valueOf(pollId),username);
         if (pollResult == null) {
             pollResult = new PollResult(Long.valueOf(pollId), username);
         }
         pollResult.getAnswerList().add(answer);
         pollResultRepository.save(pollResult);
-        //answerRepository.save(answer); // Unnötig? Fügt jedenfalls doppelte Antworten ein - Jan
         return answer;
     }
 

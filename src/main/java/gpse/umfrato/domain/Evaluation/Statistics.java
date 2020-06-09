@@ -1,24 +1,75 @@
 package gpse.umfrato.domain.Evaluation;
 
+import gpse.umfrato.domain.Evaluation.FilterBlocks.FilterImpl.DataFilter;
+import gpse.umfrato.domain.Evaluation.FilterBlocks.FilterImpl.Filter;
+import gpse.umfrato.domain.Evaluation.FilterBlocks.FilterImpl.QuestionFilter;
 import gpse.umfrato.domain.answer.Answer;
+import gpse.umfrato.domain.answer.AnswerService;
+import gpse.umfrato.domain.category.CategoryService;
+import gpse.umfrato.domain.cmd.FilterCmd;
+import gpse.umfrato.domain.poll.PollService;
 import gpse.umfrato.domain.pollresult.PollResult;
+import gpse.umfrato.domain.pollresult.PollResultService;
 import gpse.umfrato.domain.pollresult.PollResultServiceImpl;
-import gpse.umfrato.domain.question.Question;
-import gpse.umfrato.domain.question.QuestionServiceImpl;
+import gpse.umfrato.domain.question.QuestionService;
+import gpse.umfrato.domain.user.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
+import java.util.logging.Logger;
 
 public class Statistics {
 
-/*    public static DiagramData generateDiagram(List<StatisticsBlock> blocks)
-    {
-        StatisticsData sd = new StatisticsData();//Datenbank
-        for(StatisticsBlock sb:blocks)
+    private static final Logger LOGGER = Logger.getLogger("EvaluationController");
+    private final AnswerService answerService;
+    private final UserService userService;
+    private final QuestionService questionService;
+    private final PollService pollService;
+    private final PollResultService pollResultService;
+    private final CategoryService categoryService;
+    private List<Filter> filters;
+    private Long pollId;
+    private final List<Long> questionIds = new ArrayList<>();
+
+    public Statistics(final AnswerService answerService, final UserService userService, final QuestionService questionService, final PollService pollService, final PollResultService pollResultService, final CategoryService categoryService, FilterCmd data) {
+        this.answerService = answerService;
+        this.userService = userService;
+        this.questionService = questionService;
+        this.pollService = pollService;
+        this.pollResultService = pollResultService;
+        this.categoryService = categoryService;
+        pollId = Long.valueOf(data.getBasePollId());
+        for(String qid:data.getBaseQuestionIds())
         {
-            sb.work(sd);
+            questionIds.add(Long.valueOf(qid));
         }
-        return sd.toDiagramData();
-    }*/
+    }
+
+public void loadFilter(List<FilterCmd> input)
+    {
+        for(FilterCmd cmd:input)
+        {
+            Filter f = null;
+            if(cmd.getFilterType().equals("QuestionFilter"))
+            {
+                f = new QuestionFilter(Long.valueOf(cmd.getTargetPollId()),Long.valueOf(cmd.getTargetQuestionId()),cmd.getTargetAnswerPossibilities(),true);
+            }
+            if(f != null)
+            {
+                filters.add(f);
+            }
+        }
+    }
+
+    public DiagramData generateDiagram()
+    {
+        List<PollResult> prs = pollResultService.getPollResults(pollId);
+        for(Filter f:filters) {
+            prs = f.filter(prs);
+        }
+        //return new DiagramData();
+        return null;
+    }
 
     /**
      * This method takes a absolute value and converts it to a relative value.
@@ -193,7 +244,6 @@ public class Statistics {
     }
 
     public static <T> List<Answer> filterByUser(String pollID, String username){
-        PollResultServiceImpl pollResultService = new PollResultServiceImpl();
         /**TODO: PollResultServiceImpl NEEDS POLLRESULTS ELSE FILTERING BY USER WONT WORK*/
         List<PollResult> unfilteredResults = pollResultService.getAllPollResults();
         List<Answer> filteredResults = pollResultService.getUserAnswers(unfilteredResults, username);

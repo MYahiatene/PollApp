@@ -12,6 +12,12 @@ public class FilterCmd {
 
     private boolean invertFilter;
 
+    //DataFilter
+
+    private String basePollId;
+
+    private List<String> baseQuestionIds;
+
     //QuestionFilter
     private String targetPollId;
 
