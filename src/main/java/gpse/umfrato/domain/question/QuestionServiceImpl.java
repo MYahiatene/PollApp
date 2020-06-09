@@ -64,11 +64,13 @@ public class QuestionServiceImpl implements QuestionService {
                                 final List<String> answerPossibilities,
                                 final String questionType) {
         final Question question = new Question(questionMessage, answerPossibilities, questionType);
-        final Category category = categoryRepository.findCategoryByPollId(Long.valueOf(pollId));
-        category.getQuestionList().add(question);
-        question.setCategoryId(category.getCategoryId());
+        Long categoryId = pollRepository.findById(Long.valueOf(pollId)).orElseThrow(EntityNotFoundException::new)
+            .getCategoryList().get(0).getCategoryId();
+        question.setCategoryId(categoryId);
+        categoryRepository.findById(categoryId).orElseThrow(EntityNotFoundException::new)
+            .getQuestionList().add(question);
+        categoryRepository.save(categoryRepository.findById(categoryId).orElseThrow(EntityNotFoundException::new));
         questionRepository.save(question);
-        categoryRepository.save(category);
         return question;
     }
 

@@ -30,6 +30,7 @@ public class CategoryServiceImpl implements CategoryService {
     public Category createCategory(final String name, final long pollId) {
         final Category category = new Category(name, pollId);
         categoryRepository.save(category);
+        category.setPollId(pollId);
         pollRepository.findById(pollId).orElseThrow(EntityNotFoundException::new).getCategoryList().add(category);
         return category;
     }

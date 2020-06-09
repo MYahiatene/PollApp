@@ -9,18 +9,17 @@
                     <v-col cols="12" lg="4" md="4" sm="4">
                         <v-row>
                             <v-card v-for="(p, i) in poll.categoryList" :key="i" class="mt-1" width="110rem" outlined>
+                                <v-list-item three-line>
+                                    <v-list-item-content>
+                                        <v-list-item-title class="headline mb-1">{{
+                                            p.categoryName
+                                        }}</v-list-item-title>
+                                    </v-list-item-content>
+                                </v-list-item>
                                 <draggable>
-                                    <v-list-item three-line>
-                                        <v-list-item-content>
-                                            <v-list-item-title class="headline mb-1">{{
-                                                p.categoryName
-                                            }}</v-list-item-title>
-                                        </v-list-item-content>
-                                    </v-list-item>
                                     <v-list-item v-for="(l, j) in poll.categoryList" :key="j">{{
                                         l.questionList[j].questionMessage
                                     }}</v-list-item>
-
                                     <v-card-actions> </v-card-actions>
                                 </draggable>
                             </v-card>
@@ -113,6 +112,7 @@ export default {
                     console.log(error)
                 })
             console.log(this.poll)
+            console.log(this.poll.categoryList.length)
         },
         ...mapActions({
             sendData: 'pollOverview/sendData',

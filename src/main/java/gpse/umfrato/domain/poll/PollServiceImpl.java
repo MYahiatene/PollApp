@@ -1,5 +1,6 @@
 package gpse.umfrato.domain.poll;
 
+import gpse.umfrato.domain.category.Category;
 import gpse.umfrato.domain.category.CategoryRepository;
 import gpse.umfrato.domain.category.CategoryService;
 import gpse.umfrato.web.BadRequestException;
@@ -43,9 +44,8 @@ class PollServiceImpl implements PollService {
     @Override
     @Transactional
     public Poll createPoll(final Poll poll) {
-        // final Poll newPoll = poll;
         pollRepository.save(poll);
-        categoryRepository.save(categoryService.createCategory("Standardkategorie", poll.getPollId()));
+        categoryService.createCategory("Standardkategorie", poll.getPollId());
 
         return poll;
     }
