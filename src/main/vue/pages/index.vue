@@ -6,7 +6,7 @@
 
                 <v-row>
                     <v-col cols="12" lg="12">
-                        <row>
+                        <v-row>
                             <v-card hover align="center">
                                 <v-card-title class="headline">
                                     Willkommen bei Umfrato!
@@ -69,7 +69,7 @@
                                     </v-container>
                                 </v-card-text>
                             </v-card>
-                        </row>
+                        </v-row>
                     </v-col>
                     <br />
                     <v-col cols="12" lg="3"></v-col>

@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.function.Supplier;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @RequestMapping(value = "/api", method = RequestMethod.GET)
@@ -16,6 +17,7 @@ import java.util.logging.Logger;
 public class AnswerController {
 
     private final AnswerService answerService;
+    private static final Logger LOGGER = Logger.getLogger("AnswerController");
 
 
     /**
@@ -64,6 +66,7 @@ public class AnswerController {
     //todo: fix this function in controller and service impl
     @GetMapping("/poll/getAnswerFromUser")
     public List<String> getAnswersFromPollByUser(final @RequestBody AnswerCmd answerCmd) {
+        // LOGGER.info("Hi from the Answer Controller"); //doesn't show
         return answerService.getAllAnswersFromPollByUser(Long.valueOf(answerCmd.getPollId()), answerCmd.getUsername());
     }
 }

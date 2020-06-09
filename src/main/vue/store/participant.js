@@ -5,7 +5,9 @@
  *            numberOfQuestions: number,
  *            categoryIndex: number
  *            poll: [string]
+ *            answer: [string]
  *            category: [string]}}
+ *            username: string
  */
 export const state = () => ({
     visibility: false,
@@ -13,6 +15,7 @@ export const state = () => ({
     numberOfQuestions: 0,
     categoryIndex: 1,
     poll: ['Object'],
+    answer: ['Object'],
     category: ['Object'],
     username: '',
 })
@@ -23,7 +26,9 @@ export const state = () => ({
  *         getVisibility: (function(*): boolean),
  *         getCategory: (function(*): [string]|null),
  *         getCategoryIndex: (function(*): number),
- *         getChangeOfCategory: (function(*): boolean)}}
+ *         getChangeOfCategory: (function(*): boolean),
+ *         getUsername: (function(*): string),
+ *         getAnswer:(function(*): [string]|null)}}
  */
 export const getters = {
     getVisibility: (state) => {
@@ -48,6 +53,9 @@ export const getters = {
         // console.log('getUsername: ', state.username)
         return state.username
     },
+    getAnswer: (state) => {
+        return state.answer
+    },
 }
 
 export const mutations = {
@@ -62,8 +70,23 @@ export const mutations = {
         state.numberOfQuestions = poll.data.categoryList[0].questionList.length // number of questions in this category
         state.category = poll.data.categoryList[0]
     },
+    /**
+     * Set's the username gotten from showPoll as the current state.
+     * @param state
+     * @param username
+     */
     setUsername: (state, username) => {
         state.username = username
+    },
+    /**
+     * Set's the answer object gotten from showAnswer as the current state.
+     * @param state
+     * @param answer
+     */
+    setAnswer: (state, answer) => {
+        console.log('Hi from store setter!')
+        state.answer = answer
+        console.log('Hi from store setter after being set')
     },
     /**
      * Sets the next or previous category of the poll as the current one, if there is one, depending on the argument
@@ -89,8 +112,10 @@ export const actions = {
     /**
      * Defines mapAction showPoll and sets the global axios with the token saved in localstorage and the baseURL to get
      * the poll from the PollController in the backend. After it got the poll,it commits the poll,to save it in this
-     * store (setPoll), so the mapGetters can access the data and give it back to the Participant.vue page.
-     * @type {{showPoll({commit: *}): Promise<void>}}
+     * store (setPoll), so the mapGetters can access the data and give it back to the Participant.vue page. It also
+     * get's the username and updates it the same way.
+     * @param commit
+     * @returns {Promise<void>}
      */
     async showPoll({ commit }) {
         this.$axios.defaults.baseURL = 'http://localhost:8088/api/'
@@ -98,8 +123,37 @@ export const actions = {
         const poll = await this.$axios.get('/participant')
         const username = await this.$axios.post('/getUsername', { anonymityStatus: poll.data.anonymityStatus })
         commit('setUsername', username.data)
-        commit('setPoll', poll) // calls the setter int the store to save the poll in the store
+        commit('setPoll', poll)
     },
+    /**
+     * Defines mapAction showAnswer and sets the global axios with the token saved in localstorage and the baseURL to get
+     * all the answers from one user from the AnswerController in the backend. After it got the answers,it commits
+     * the answers,to save it in this store (setAnswer), so the mapGetters can access the data and give it back
+     * to the Participant.vue page.
+     * @param state
+     * @param answerObj
+     * @returns {Promise<void>}
+     */
+    async showAnswer(state, answerObj) {
+        // console.log('Hi, from participant store pre axios.post')
+        this.$axios.defaults.baseURL = 'http://localhost:8088/api/'
+        this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('user-token')
+        console.log('Hi, from participant store pre axios.post')
+        const answer = await this.$axios.post('/getPollResult', {
+            pollId: answerObj.pollId,
+            username: answerObj.username,
+        })
+        // console.log('Hi, from participant store post axios.post')
+        state.answer = answer
+        // console.log('Hi, from participant store post store.commit')
+        // console.log(answer)
+    },
+    /* Eventuell einen Header mitsenden, statt data?, aber eigentlich ja das gleiche...
+     *  const options = {
+     *  headers: {'X-Custom-Header': 'value'}
+     *  };
+     *  axios.post('/save', { a: 10 }, options);
+     * */
     /**
      * Defines mapAction saveAnswer which saves  an answerObj (AnswerCmd) for a specific question from a specific poll
      * from a specific user. It sets the global axios baseURL and the header with the token from the localstorage and

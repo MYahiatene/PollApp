@@ -112,6 +112,7 @@ export default {
     data() {
         return {
             poll: ['Object'],
+            answer: ['Object'],
             category: ['Object'],
             questionIndex: 1,
             categoryIndex: 1,
@@ -141,6 +142,7 @@ export default {
          */
         ...mapGetters({
             getPoll: 'participant/getPoll',
+            getAnswer: 'participant/getAnswer',
             isAuthenticated: 'login/isAuthenticated',
             getVisibility: 'participant/getVisibility',
             getNumberOfQuestions: 'participant/getNumberOfQuestions',
@@ -240,7 +242,9 @@ export default {
             this.answerObj.pollId = this.getPoll[1].data.pollId
             this.answerObj.questionId = question.questionId
 
-            this.saveAnswer() // alternative: Button after every TextField
+            this.showAnswer() // TODO: Fails with 405???
+
+            // this.saveAnswer() // alternative: Button after every TextField
         },
         /**
          * Get's the given answer of a free text question and calls saveAnswer() to persist it in the database. This
@@ -298,7 +302,23 @@ export default {
         saveAnswer() {
             this.answerObj.username = this.getUsername
             this.$store.dispatch('participant/saveAnswer', this.answerObj)
-            console.log(this.answerObj)
+        },
+        /**
+         * Calls showAnswer in store/participant. (Needed to get already given answers for multiple choice checkbox.)
+         * Right now only used to get already checked boxes for multiple choice, but since alll answers from one
+         * user are given back it can also be used for loading the page with already given answers, for non-anonym
+         * and partialy anonym users, after they saved it.
+         */
+        showAnswer() {
+            this.answerObj.username = this.getUsername
+            this.answerObj.pollId = this.getPoll[1].data.pollId
+            // console.log('Hi, from Participant page pre store.dispatch')
+            this.$store.dispatch('participant/showAnswer', this.answerObj)
+            // console.log('Hi, from Participant page post store.dispatch')
+            this.answer = this.getAnswer
+            console.log('This is the answer object:')
+
+            console.log(this.answer) // never ending object, something is wrong: Start here to debug...
         },
     },
 }
