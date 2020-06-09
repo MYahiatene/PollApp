@@ -4,16 +4,12 @@ package gpse.umfrato.web;
 import gpse.umfrato.domain.cmd.PollCmd;
 import gpse.umfrato.domain.poll.Poll;
 import gpse.umfrato.domain.poll.PollService;
-import gpse.umfrato.domain.question.Question;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -21,7 +17,7 @@ import java.util.logging.Logger;
 @RestController
 @CrossOrigin
 public class PollController {
-    private static final Logger LOGGER = Logger.getLogger("PollController");
+    static final Logger LOGGER = Logger.getLogger("PollController");
     private final PollService pollService;
 
     /**
@@ -43,7 +39,7 @@ public class PollController {
     @PreAuthorize("hasAuthority('Admin')")
     public String createPoll(final @RequestBody PollCmd pollCmd) {
         try {
-            Poll poll = pollService.createPoll(pollCmd.getCmdPoll());
+            final Poll poll = pollService.createPoll(pollCmd.getCmdPoll());
             return "Poll created! with id: " + poll.getPollId().toString();
         } catch (BadRequestException e) {
             return "Poll creation failed!";
@@ -79,7 +75,7 @@ public class PollController {
     public Poll getParticipant() {
         try {
             return pollService.getPoll("1");
-        } catch(EntityNotFoundException e) {
+        } catch (EntityNotFoundException e) {
             return null;
         }
 

@@ -15,13 +15,10 @@ import java.util.UUID;
 @Controller
 public class MailController {
 
-    @Autowired
-    private JavaMailSender mailSender;
+    static final int DEFAULT_PORT = 8080;
 
     @Autowired
-    public MailController() {
-        this.mailSender = mailSender;
-    }
+    private JavaMailSender mailSender;
 
     @ResponseBody
     @RequestMapping("/sendEmail")
@@ -31,10 +28,11 @@ public class MailController {
 
             final SimpleMailMessage message = new SimpleMailMessage();
 
-            UUID uuid = UUID.randomUUID();
-            String urlUuid = "/" + uuid.toString();
-            URL invitationLink = new URL("http", "localhost", 8080, urlUuid);
+            final UUID uuid = UUID.randomUUID();
+            final String urlUuid = "/" + uuid.toString();
+            final URL invitationLink = new URL("http", "localhost", DEFAULT_PORT, urlUuid);
 
+            //message.setFrom("gpseteam5.1@gmail.com");
             message.setTo("gpseteam5.1@gmail.com");
             message.setSubject("Einladung zur Umfrage - Umfrato Reply");
             message.setText("Hi, I'm a test mail! \nYour link is \n\n" + invitationLink + "\n\nThank you!");

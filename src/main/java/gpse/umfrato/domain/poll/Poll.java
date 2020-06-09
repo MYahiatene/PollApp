@@ -7,8 +7,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.sql.Blob;
-// import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -87,12 +85,12 @@ public class Poll {
     private int pollStatus;
 
     /**
-     * This attribute represents the ability to see the number of questions for the participant
+     * This attribute represents the ability to see the number of questions for the participant.
      */
     private boolean visibility;
 
     /**
-     * This attribute represents the ability of the participant to change between the categories/pages of the poll
+     * This attribute represents the ability of the participant to change between the categories/pages of the poll.
      */
     private boolean categoryChange;
 
@@ -117,10 +115,16 @@ public class Poll {
      * @param createdAt       the date when the poll is created
      * @param activatedAt     the date when the poll activated
      * @param deactivatedAt   the date when the poll deactivates
+     * @param backgroundColor the background color
+     * @param categoryChange  the category change
+     * @param fontColor       the font color
+     * @param logo            the logo
+     * @param visibility      the visibility
      */
     public Poll(final String pollCreator, final String anonymityStatus, final String pollName, final String createdAt,
-                final String activatedAt, final String deactivatedAt, final int pollStatus, final String backgroundColor,
-                final String fontColor, final String logo, boolean visibility, final boolean categoryChange) {
+                final String activatedAt, final String deactivatedAt, final int pollStatus,
+                final String backgroundColor, final String fontColor, final String logo, final boolean visibility,
+                final boolean categoryChange) {
         this.pollName = pollName;
         this.pollCreator = pollCreator;
         this.anonymityStatus = anonymityStatus;

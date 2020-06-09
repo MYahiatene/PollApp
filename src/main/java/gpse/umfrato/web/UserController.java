@@ -7,12 +7,9 @@ import gpse.umfrato.domain.user.User;
 import gpse.umfrato.domain.user.UserRepository;
 import gpse.umfrato.domain.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -20,9 +17,12 @@ import java.util.logging.Logger;
 @RestController
 @CrossOrigin
 public class UserController {
+
+    static final String CALLED_HTTP_POST = "HTTP POST was called";
     private static final Logger LOGGER = Logger.getLogger("UserController");
+
+    final UserRepository userRepository;
     private final UserService userService;
-    private final UserRepository userRepository;
 
     /**
      * This class constructor initializes the user service and user repository.
@@ -53,7 +53,7 @@ public class UserController {
         } catch (BadRequestException e) {
             LOGGER.info("Could not create user");
         }
-        return "HTTP POST was called";
+        return CALLED_HTTP_POST;
     }
 
     @PreAuthorize("hasAuthority('Admin')")
@@ -65,7 +65,7 @@ public class UserController {
         } catch (BadRequestException e) {
             LOGGER.info("Could not edit user");
         }
-        return "HTTP POST was called";
+        return CALLED_HTTP_POST;
     }
 
     /**
@@ -92,7 +92,7 @@ public class UserController {
     }
 
     /**
-     * Checks if the users token has the authority admin
+     * Checks if the users token has the authority admin.
      */
     @PreAuthorize("hasAuthority('Admin')")
     @GetMapping("/checkToken")
@@ -101,7 +101,9 @@ public class UserController {
     }
 
     /**
-     * Deletes a user in the data base
+     * Deletes a user in the data base.
+     *
+     * @param deleteUserCmd the User who has to be deleted
      */
     @PreAuthorize("hasAuthority('Admin')")
     @PutMapping("/deleteUser")

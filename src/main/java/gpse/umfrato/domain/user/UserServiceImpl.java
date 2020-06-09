@@ -51,7 +51,7 @@ class UserServiceImpl implements UserService {
     }
 
     /**
-     * This method edits the user in the repository
+     * This method edits the user in the repository.
      *
      * @param username  the username of the user
      * @param firstName the firstName of the user
@@ -60,11 +60,12 @@ class UserServiceImpl implements UserService {
      * @param email     the email of the user
      */
     @Override
-    public void editUser(String username, String firstName, String lastName, String role, String email) {
+    public void editUser(final String username, final String firstName, final String lastName, final String role,
+                         final String email) {
         final User user = userRepository.getOne(username);
         user.setFirstName(firstName);
         user.setLastName(lastName);
-        List<String> tmp = new ArrayList<>();
+        final List<String> tmp = new ArrayList<>();
         tmp.add(role);
         user.setRoles(tmp);
         user.setEmail(email);
@@ -72,12 +73,12 @@ class UserServiceImpl implements UserService {
     }
 
     /**
-     * This method deletes the user in the repository based on the id username
+     * This method deletes the user in the repository based on the id username.
      *
      * @param username the username of the user
      */
     @Override
-    public void deleteUser(String username) {
+    public void deleteUser(final String username) {
         userRepository.delete(userRepository.getOne(username));
     }
 

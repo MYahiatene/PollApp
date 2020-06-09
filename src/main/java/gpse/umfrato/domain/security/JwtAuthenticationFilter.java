@@ -4,14 +4,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.FilterChain;
 import javax.servlet.http.HttpServletRequest;
@@ -22,6 +20,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
+
+    static final int EIGHT_HUNDRED_SIXTY_FOUR_MILLION = 864_000_000;
 
     private final AuthenticationManager authenticationManager;
 
@@ -63,7 +63,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             .setIssuer(securityConstants.getTokenIssuer())
             .setAudience(securityConstants.getTokenAudience())
             .setSubject(user.getUsername())
-            .setExpiration(new Date(System.currentTimeMillis() + 864_000_000))
+            .setExpiration(new Date(System.currentTimeMillis() + EIGHT_HUNDRED_SIXTY_FOUR_MILLION))
             .claim("rol", roles)
             .compact();
         final ObjectMapper mapper = new ObjectMapper();
