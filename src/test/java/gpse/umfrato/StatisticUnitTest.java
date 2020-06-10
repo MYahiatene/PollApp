@@ -1,5 +1,6 @@
 package gpse.umfrato;
 
+import gpse.umfrato.domain.Evaluation.DiagramData;
 import gpse.umfrato.domain.Evaluation.Statistics;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -24,7 +25,7 @@ public class StatisticUnitTest {
         double expected = 0.2;
         double actual;
         try {
-            actual = Statistics.getRelativeFrequencyOfOneValue(2,10);
+            actual = DiagramData.getRelativeFrequencyOfOneValue(2,10);
         }
         catch (Exception e){
             actual = 0;
@@ -47,7 +48,7 @@ public class StatisticUnitTest {
 
 
 
-        List<Double> actual = Statistics.getRelativeFrequencyOfDoubleValues(absoluteValues);
+        List<Double> actual = DiagramData.getRelativeFrequencyOfDoubleValues(absoluteValues);
 
         assertEquals(expected, actual);
     }
@@ -68,7 +69,7 @@ public class StatisticUnitTest {
 
 
 
-        List<Double> actual = Statistics.getRelativeFrequencyOfAllIntegerValues(absoluteValues);
+        List<Double> actual = DiagramData.getRelativeFrequencyOfAllIntegerValues(absoluteValues);
 
         assertEquals(expected, actual);
     }
@@ -80,7 +81,7 @@ public class StatisticUnitTest {
 
         List<Double> doubles = Arrays.asList(4.0,3.2,9.9,8.0);
 
-        double actual = Statistics.modus(doubles);
+        double actual = DiagramData.modus(doubles);
 
         assertEquals(expected, actual);
 

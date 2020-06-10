@@ -52,11 +52,10 @@ public void loadFilter(List<FilterCmd> input)
             Filter f = null;
             if(cmd.getFilterType().equals("questionAnswer"))
             {
-                f = new QuestionFilter(Long.valueOf(cmd.getTargetPollId()),Long.valueOf(cmd.getTargetQuestionId()),cmd.getTargetAnswerPossibilities(),true);
+                f = new QuestionFilter(Long.valueOf(cmd.getTargetPollId()),Long.valueOf(cmd.getTargetQuestionId()),cmd.getTargetAnswerPossibilities(),false);
             }
             if(f != null)
             {
-                System.out.println("addFilter");
                 filters.add(f);
             }
         }
@@ -65,159 +64,12 @@ public void loadFilter(List<FilterCmd> input)
     public String generateDiagram()
     {
         List<PollResult> prs = pollResultService.getPollResults(pollId);
-        System.out.println(prs.size());
-        System.out.println(filters.size());
         for(Filter f:filters) {
             prs = f.filter(prs);
         }
-        System.out.println(prs.size());
+        System.out.println("Gefiltert " + prs.size());
         DiagramData dd = new DiagramData(pollService.getPoll(prs.get(0).getPollId().toString()),prs,questionService);
         return "{\"name\":\"" + pollService.getPoll(pollId.toString()).getPollName() + "\",\"questionList\": " + dd.toJSON() + "}";
-    }
-
-    /**
-     * This method takes a absolute value and converts it to a relative value.
-     * @param value absolute value.
-     * @param totalNumber total number of values.
-     * @return relative value.
-     */
-    public static double getRelativeFrequencyOfOneValue(double value, double totalNumber) throws ArithmeticException {
-        if(totalNumber<value){
-            throw new ArithmeticException("totalNumber must be larger than value!");
-        }
-        return value / totalNumber;
-    }
-
-    /**
-     * This method takes a List of double values that represent an absolute number
-     * and converts each of them into the corresponding relative value.
-     * @param values all absolute values that were given in a poll.
-     * @return a list of relative values.
-     */
-    public static List<Double> getRelativeFrequencyOfDoubleValues(List< Double> values){
-        double totalNumber = 0;
-        for (int i = 0; i < values.size(); i++) {
-            totalNumber += values.get(i);
-        }
-
-        List<Double> listOfValues = new ArrayList<>();
-
-        for (int i = 0; i < values.size() ; i++) {
-            try {
-                listOfValues.add(getRelativeFrequencyOfOneValue(values.get(i), totalNumber));
-            }
-            catch (Exception e)
-            {
-                return null;
-            }
-        }
-
-        return listOfValues;
-    }
-
-    /**
-     * This method uses normalizeAllDoubleValues to convert absolute numbers into relative numbers.
-     * It casts the Integer values into double values first in order to use the method.
-     * @param values a list of absolute integer values.
-     * @return a list of corresponding relative double values.
-     */
-    public static List<Double> getRelativeFrequencyOfAllIntegerValues(List<Integer> values){
-
-        List<Double> listOfDoubleValues = new ArrayList<>();
-
-        for (int i = 0; i < values.size() ; i++) {
-            listOfDoubleValues.add((double) values.get(i));
-        }
-
-        return getRelativeFrequencyOfDoubleValues(listOfDoubleValues);
-    }
-
-    /**
-     * This function returns the modus of a list of absolute values.
-     * @param allValues absolute values.
-     * @return the highest value.
-     */
-    public static double modus(List<Double> allValues){
-
-        double currentHighest = allValues.get(0);
-
-        for (int i = 0; i < allValues.size(); i++) {
-            if(allValues.get(i)>currentHighest){
-                currentHighest = allValues.get(i);
-            }
-        }
-
-        return currentHighest;
-
-    }
-
-    /**
-     * This function casts the provided value to an integer and limits it to a range of zero to max minus one
-     * to avoid out of range exceptions while accessing arrays or lists.
-     * @param val the value to limit or the possibly out of bounds index to access.
-     * @param max one above the biggest value val can be or the size of the array to access.
-     * @return the constricted integer.
-     */
-    private static <T extends Number> int constrict(T val, int max)
-    {
-        max -= 1;
-        int casted = val.intValue();
-        if(casted < 0)
-        {
-            return 0;
-        }
-        if(casted > max)
-        {
-            return max;
-        }
-        return casted;
-    }
-
-    /**
-     * This function returns the p-Quantile of the provided values.
-     * If the list is empty the function returns null.
-     * If p is below zero or above one it will be set to zero or one respectively.
-     * @param values list of values to pick the quantile from. The values will be sorted inside the function.
-     * @param p the parameter to calculate the quantile for example p=0.5 equals the median and p=1 equals the maximum.
-     * @return the value corresponding to the p.
-     **/
-    private static Double pQuantile(List<Double> values, double p)
-    {
-        if(values.isEmpty())
-        {
-            return null;
-        }
-        if(p < 0.0)
-        {
-            p = 0.0;
-        }
-        else if(p > 1.0)
-        {
-            p = 1.0;
-        }
-        Collections.sort(values);
-        int n = values.size();
-        double xnp = 0.0;
-        double xnp1 = values.get(constrict(n * p, values.size()));
-        if(n * p % 1.0 == 0.0)
-        {
-            xnp = values.get(constrict((n * p) - 1,values.size()));
-            return (xnp + xnp1) / 2;
-        }
-        else
-        {
-            return xnp1;
-        }
-    }
-
-    /**
-    * This function returns the median of a given list of values, if the list is not empty.
-    * @param values list of values to calculate the median from.
-    * @return will return null for empty lists, otherwise will return the median of given list of values.
-    */
-    private static Double median(List<Double> values)
-    {
-        return pQuantile(values, 0.5);
     }
 
     /**
