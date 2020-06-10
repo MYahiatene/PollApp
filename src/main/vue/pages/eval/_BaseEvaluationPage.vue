@@ -137,7 +137,7 @@ that each display a basic evaluation of one specific question-->
                                         :question-title="question.title"
                                         :answer-possibilities="question.answerPossibilities"
                                         :data="question.data"
-                                        :background-color="defaultColor"
+                                        :background-colors="defaultColors"
                                         :diagram-type="defaultDiagramType"
                                     ></ChoiceQuestionEvaluationWidget>
                                     <v-spacer></v-spacer>
@@ -174,7 +174,7 @@ export default {
             // the dialog (setting window) is closed by default
             dialog: false,
             // default settings for the visual settings, they are passed as props into the choiceQuestionEvaluationWidgets
-            defaultColor: '#aaaaaa',
+            defaultColors: ['#aaaaaa', '#aaaaaa', '#aaaaaa', '#aaaaaa', '#aaaaaa', '#aaaaaa'],
             defaultDiagramType: 'bar',
             showDiagram: true,
             showTable: true,
@@ -248,7 +248,7 @@ export default {
                     answerPossibilities: this.items[i].answerPossibilities,
                     data: this.items[i].data,
                     id: this.items[i].id,
-                    title: 'Frage ' + this.items[i].id + ': ' + this.items[i].title,
+                    title: 'Frage ' + (i + 1) + ': ' + this.items[i].title,
                 }
             }
             return i2

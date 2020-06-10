@@ -23,7 +23,7 @@
                         <visual-evaluation-settings
                             @input="onShow()"
                             :chosen-diagram="diagramType"
-                            :chosen-diagram-color="backgroundColor"
+                            :chosen-diagram-colors="backgroundColors"
                             :show-diagram="showDiagram"
                             :show-table="showTable"
                             v-on:update-Visuals="updateVisuals"
@@ -37,10 +37,11 @@
                 <v-col cols="12" lg="12">
                     <!--                    we check in diagramType which one the user wants-->
                     <div v-if="diagramType === 'bar'" :key="diagramKey">
-                        <BarChartView :chartdata="chartdataSet" :options="options"></BarChartView>
+                        <BarChartView :chartdata="chartdataSet" :options="barChartOptions"></BarChartView>
                     </div>
-                    <div v-if="diagramType === 'pie'" :key="diagramKey">
-                        <PieChartView :chartdata="chartdataSet" :options="options"></PieChartView>
+                    <!--                     the height is set to 60% of the screen-->
+                    <div v-if="diagramType === 'pie'" :key="diagramKey" style="height: 60vh;">
+                        <PieChartView :chartdata="chartdataSet" :options="pieChartOptions"></PieChartView>
                     </div>
                 </v-col>
             </v-row>
@@ -82,8 +83,8 @@ export default {
             type: Array,
         },
 
-        backgroundColor: {
-            type: String,
+        backgroundColors: {
+            type: Array,
         },
 
         showTable: {
@@ -101,7 +102,7 @@ export default {
         // (value is set on the color of the diagram and update whenever updateVisuals is called)
         diagramKey: '',
         // these options are needed to display a visual diagram, they are passed as props into that component
-        options: {
+        barChartOptions: {
             responsive: true,
             maintainAspectRatio: false,
             scales: {
@@ -114,6 +115,15 @@ export default {
                 ],
             },
         },
+
+        pieChartOptions: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                yAxes: [{ display: false }],
+            },
+        },
+
         // these aren't needed right now, might come in handy to keep the options that the widgets overrides the general design settings
         privateDiagramColor: '',
         privateDiagramType: '',
@@ -145,7 +155,7 @@ export default {
                 datasets: [
                     {
                         label: this.questionTitle,
-                        backgroundColor: this.backgroundColor,
+                        backgroundColor: this.backgroundColors,
                         data: this.data,
                     },
                 ],
@@ -160,13 +170,13 @@ export default {
       the diagram key is added to force the widget to actually update the color
 
        */
-        updateVisuals(showDiagram, DiagramType, DiagramColor, showTable) {
+        updateVisuals(showDiagram, DiagramType, DiagramColors, showTable) {
             this.showDiagram = showDiagram
             this.diagramType = DiagramType
-            this.backgroundColor = DiagramColor
+            this.backgroundColors = DiagramColors
             this.showTable = showTable
             this.visualSettings = false
-            this.diagramKey = DiagramColor
+            this.diagramKey = DiagramColors[0]
         },
     },
 }

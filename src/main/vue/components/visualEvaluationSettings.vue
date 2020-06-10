@@ -31,9 +31,39 @@ it passes the attributes:
                 ></v-overflow-btn>
             </v-col>
         </v-row>
-        <!--        this part is only shown and enabled when a diagram is wanted and the diagram type has been updated -->
+        <!--        this part is only shown and enabled when a diagram is wanted -->
 
-        <v-row v-show="showDiagram">
+        <v-row no-gutters>
+            <v-switch v-model="multipleColors" label="Verschiedene Farben pro Antwort"> </v-switch>
+        </v-row>
+
+        <v-row v-show="showDiagram && multipleColors">
+            <v-col>
+                <draggable :list="colorList">
+                    <div v-for="(color, index) in colorList" :key="index">
+                        <v-chip
+                            class="ma-1"
+                            :color="color"
+                            close
+                            close-icon="mdi-minus-circle-outline"
+                            @click:close="deleteColor(index)"
+                            @click="currentChipIndex = index"
+                        >
+                            Farbe {{ index + 1 }}</v-chip
+                        >
+                    </div>
+                </draggable>
+                <v-btn icon @click="newColor">
+                    <v-icon> mdi-plus</v-icon>
+                </v-btn>
+            </v-col>
+
+            <v-col>
+                <v-color-picker v-model="currentChipColor" @input="colorChip"> </v-color-picker>
+            </v-col>
+        </v-row>
+
+        <v-row v-show="showDiagram && !multipleColors">
             <!--            <v-row v-show="!forbidColorSwitch && showDiagram">-->
             <v-col cols="12" lg="5">
                 <!--                overflowbutton for diagramColor-->
@@ -48,9 +78,10 @@ it passes the attributes:
                 ></v-overflow-btn>
             </v-col>
             <v-col>
-                <v-color-picker v-model="setChosenDiagramColor"> </v-color-picker>
+                <v-color-picker v-model="setChosenDiagramColor" @input="resetChosenDiagramColor"> </v-color-picker>
             </v-col>
         </v-row>
+
         <!--switch for "ShowTable"-->
         <v-row no-gutters>
             <v-switch v-model="showTable" label="Zeige eine Tabelle an"> </v-switch>
@@ -59,7 +90,7 @@ it passes the attributes:
         <v-row no-gutters>
             <v-btn
                 color="success"
-                @click="$emit('update-Visuals', showDiagram, chosenDiagram, setChosenDiagramColor, showTable)"
+                @click="$emit('update-Visuals', showDiagram, chosenDiagram, chosenColorArray, showTable)"
             >
                 Anwenden
             </v-btn>
@@ -68,7 +99,13 @@ it passes the attributes:
 </template>
 
 <script>
+import draggable from 'vuedraggable'
+
 export default {
+    name: 'visualEvaluationSettings',
+    components: {
+        draggable,
+    },
     // these props can be passed by the parent component
     props: {
         showDiagram: {
@@ -78,21 +115,22 @@ export default {
             type: String,
             default: 'bar',
         },
-        chosenDiagramColor: {
-            type: String,
-            default: '#aaaaaa',
+        chosenDiagramColors: {
+            type: Array,
+            default: () => ['#aaaaaa'],
         },
         showTable: {
             type: Boolean,
         },
     },
     mounted() {
-        this.forbidColorSwitch = this.chosenDiagram === ''
         this.chosenDiagramAsWord = this.diagramTypesInWords[this.diagramTypes.indexOf(this.chosenDiagram)]
         this.chosenDiagramColorAsWord = this.diagramColorsInWords[this.diagramColors.indexOf(this.chosenDiagramColor)]
         this.setChosenDiagramColor = this.chosenDiagramColor
+        this.colorList = this.chosenDiagramColors
+        console.log('ben here')
     },
-    name: 'visualEvaluationSettings',
+
     data() {
         return {
             chosenDiagramAsWord: '',
@@ -105,9 +143,15 @@ export default {
             diagramColorsInWords: ['Grau', 'Petrol', 'Grün', 'Violet', 'Türkis'],
             diagramColors: ['#aaaaaa', '#114955', '#8EC136', '#551044', '#26A599'],
 
-            forbidColorSwitch: true,
-
             setChosenDiagramColor: '',
+
+            multipleColors: true,
+
+            colorList: ['#123456', '#444444', '#789005'],
+            // index of the chip that can be altered by colorPicker
+            currentChipIndex: 0,
+
+            currentChipColor: '',
         }
     },
 
@@ -119,19 +163,54 @@ export default {
             this.setChosenDiagramColor = this.diagramColors[
                 this.diagramColorsInWords.indexOf(this.chosenDiagramColorAsWord)
             ]
-            this.disableColorSwitch()
+            // this.disableColorSwitch()
         },
         changeDiagramType() {
             this.chosenDiagram = this.diagramTypes[this.diagramTypesInWords.indexOf(this.chosenDiagramAsWord)]
-            this.forbidColorSwitch = false
+            // this.forbidColorSwitch = false
         },
 
-        disableColorSwitch() {
-            this.forbidColorSwitch = true
-        },
+        // disableColorSwitch() {
+        //     this.forbidColorSwitch = true
+        // },
 
         computeDiagram() {
             this.chosenDiagramAsWord = this.diagramTypesInWords[this.diagramTypes.indexOf(this.chosenDiagram)]
+        },
+
+        resetChosenDiagramColor() {
+            this.chosenDiagramColorAsWord = ''
+        },
+
+        newColor() {
+            this.colorList.push('#aaaaaa')
+            this.currentChipIndex = this.colorList.length - 1
+        },
+
+        deleteColor(index) {
+            if (index > -1) {
+                this.colorList.splice(index, 1)
+            }
+        },
+
+        colorChip() {
+            this.colorList[this.currentChipIndex] = this.currentChipColor
+        },
+    },
+
+    computed: {
+        chosenColorArray() {
+            if (this.multipleColors) {
+                return this.colorList
+            } else {
+                const c = []
+                c.push(this.setChosenDiagramColor)
+                return c
+            }
+        },
+
+        chosenDiagramColor() {
+            return this.chosenDiagramColors[0]
         },
     },
 }
