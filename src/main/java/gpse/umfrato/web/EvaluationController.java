@@ -1,20 +1,16 @@
 package gpse.umfrato.web;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gpse.umfrato.domain.Evaluation.DiagramData;
+import gpse.umfrato.domain.Evaluation.Statistics;
 import gpse.umfrato.domain.answer.Answer;
 import gpse.umfrato.domain.answer.AnswerService;
 import gpse.umfrato.domain.category.CategoryService;
-import gpse.umfrato.domain.cmd.AnswerCmd;
 import gpse.umfrato.domain.cmd.FilterCmd;
-import gpse.umfrato.domain.cmd.PollCmd;
-import gpse.umfrato.domain.poll.Poll;
 import gpse.umfrato.domain.poll.PollService;
-import gpse.umfrato.domain.pollresult.PollResultServiceImpl;
+import gpse.umfrato.domain.pollresult.PollResultService;
 import gpse.umfrato.domain.question.Question;
 import gpse.umfrato.domain.question.QuestionService;
-import gpse.umfrato.domain.user.User;
 import gpse.umfrato.domain.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -33,23 +29,28 @@ public class EvaluationController {
     private final UserService userService;
     private final QuestionService questionService;
     private final PollService pollService;
+    private final PollResultService pollResultService;
     private final CategoryService categoryService;
-
+    enum Filter {
+        AnswerFilter,
+        UserFilter
+    }
     @Autowired
     private ObjectMapper objectMapper;
 
     @Autowired
-    public EvaluationController(final AnswerService answerService, final UserService userService, final QuestionService questionService, final PollService pollService, final CategoryService categoryService) {
+    public EvaluationController(final AnswerService answerService, final UserService userService, final QuestionService questionService, final PollService pollService, final PollResultService pollResultService,  final CategoryService categoryService) {
         this.answerService = answerService;
         this.userService = userService;
         this.questionService = questionService;
         this.pollService = pollService;
+        this.pollResultService = pollResultService;
         this.categoryService = categoryService;
     }
 
     @GetMapping("/initialDiagrams")
     public String initialDiagrams() {
-        testAnswers();
+        // testAnswers();
 /*        LOGGER.info("PollId");
         LOGGER.info(pollCmd.getId());
         try {
@@ -91,22 +92,26 @@ public class EvaluationController {
                         answerData.set(index,answerData.get(index) + 1);
                     }
                 }
-                DiagramData dd = new DiagramData(q.getQuestionId(), q.getQuestionMessage(), q.getAnswerPossibilities(), answerData);
-                data = data.replace("$", dd.toJSON() + ",$");
+//                DiagramData dd = new DiagramData(q.getQuestionId(), q.getQuestionMessage(), q.getAnswerPossibilities(), answerData);
+//                data = data.replace("$", dd.toJSON() + ",$");
             }
         }
         data = data.replace(",$","");
-        System.out.println("vorlage");
-        System.out.println(cheetSheet);
-        System.out.println("sende");
-        System.out.println(data);
-        return data;
+        LOGGER.info("vorlage");
+        LOGGER.info(cheetSheet);
+        LOGGER.info("sende");
+        LOGGER.info(data);
+        return cheetSheet;
     }
 
-    /**Returns JSON string to be interpreted, hier wird der jsonInput in ein Filterobjekt deserialisiert und dort können wir herausfinden, um welchen Filter es sich genau handelt.*/
+    /**Returns JSON string to be interpreted, hier wird der jsonInput in ein Filterobjekt deserialisiert und dort können wir herausfinden, um welchen Filter es sich genau handelt.
+     * @return*/
     @PostMapping("/generateDiagram")
-    public void populateDiagram(final @RequestBody List<FilterCmd> input) {
-        System.out.println(input.toString());
+    public String populateDiagram(final @RequestBody List<FilterCmd> input) {
+        LOGGER.info(input.toString());
+        Statistics calculation = new Statistics(answerService,userService,questionService,pollService,pollResultService,categoryService,input.get(0));
+        calculation.loadFilter(input);
+        return calculation.generateDiagram();
         /*TODO:
             1. Filter parsen
             2. Filter ordnen
@@ -116,53 +121,19 @@ public class EvaluationController {
             6. abschicken*/
     }
 
-    @GetMapping("/getDiagram")
-    public String sendDiagram(final @RequestBody List<FilterCmd> input) {
-            /*TODO:
-                1. Filter parsen
-                2. Filter ordnen
-                3. Daten auswählen
-                4. Rechnen und evtl. wieder zu 3
-                5. als Diagramm aufarbeiten
-                6. abschicken*/
-        return "Haha";
-    }
-
-    public <T> List<Answer> filterByAnswer(List<Answer> input, List<T> wantedAnswers){
-        ListIterator<Answer> iter = input.listIterator();
-        List<Answer> output = new ArrayList<>();
-        while(iter.hasNext()){
-            Answer index = iter.next();
-            if(!Collections.disjoint(Arrays.asList(index.getGivenAnswerList()), wantedAnswers))
-                output.add(index);
-        }
-        return output;
-    }
-
-    public boolean testAnswers(){
+    /*public boolean testAnswers(){
         List<Answer> antworten = answerService.getAnswerFromOneQuestion(1L);
         List<String> wantedAnswers = new ArrayList<>();
         wantedAnswers.add("10");
         System.out.println(filterByAnswer(antworten, wantedAnswers));
         return false;
-    }
+    }*/
 
-    public <T> List<Answer> filterByUser(String pollID, String username){ /**TODO: PollResultServiceImpl NEEDS POLLRESULTS ELSE FILTERING BY USER WONT WORK*/
-        PollResultServiceImpl pollResultService = new PollResultServiceImpl();
-        List<Question> questionList = questionService.getAllQuestions(Long.parseLong(pollID));
-        ListIterator<Question> iter = questionList.listIterator();
-        List<Answer> output = new ArrayList<>();
-
-        while(iter.hasNext()){
-            Question index = iter.next();
-            List<Answer> answerListForQuestion = answerService.getAnswerFromOneQuestion(index.getQuestionId());
-            ListIterator<Answer> answerIter = answerListForQuestion.listIterator();
-            while(answerIter.hasNext()){
-                Answer answerIndex = answerIter.next();
-                //if(answerIndex.)
-            }
-        }
-
+    public<T, U> List<Answer> filterByStuff(Filter filterType, T inputA, U inputB){ /**TODO: needs to be improved, generics can only do so much*/
+//        switch(filterType){
+//            case AnswerFilter: return Statistics.filterByAnswer((List<Answer>) inputA /**Input*/, (List<U>) inputB) /**Desired Answers*/;
+//            case UserFilter: return Statistics.filterByUser((String) inputA /**PollID*/, (String) inputB) /**Username*/;
+//        }
         return null;
     }
 

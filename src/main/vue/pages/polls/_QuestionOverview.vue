@@ -53,9 +53,6 @@
                     <v-col cols="12" lg="8" md="8" sm="8">
                         <v-card class="pa-1" :style="frameColor">
                             <QuestionBuildWidget></QuestionBuildWidget>
-                            <v-card flat class="mt-1 pa-1">
-                                <p class="ma-2">(Wähle eine Frage aus einer Kategorie, um sie zu bearbeiten.)</p>
-                            </v-card>
                         </v-card>
                     </v-col>
                 </v-row>
@@ -124,8 +121,6 @@ export default {
         /** updateQuestionList() {
             return this.$store.state.questionOverview.questionText
         }, */
-
-        // this needs to be computed, so we can get it from the nuxt Config
 
         frameColor() {
             return 'background-color:' + this.$vuetify.theme.currentTheme.softAccent + ';'

@@ -95,11 +95,11 @@ export default {
                 { text: 'Länge', value: 'wordLength', sortable: true },
                 { text: 'Beantwortet', value: 'answered', sortable: true },
                 { text: 'Benutzer', value: 'creator', sortable: true },
+                { text: 'Tendenzindex', value: 'tendency', sortable: true },
             ],
             freqHeaders: [
                 { text: 'Wort', value: 'text', sortable: false },
                 { text: 'Frequenz', value: 'value', sortable: true },
-                { text: 'Tendenzindex', value: 'tendency', sortable: true },
             ],
             answers: [
                 {
@@ -115,13 +115,13 @@ export default {
                     id: '1',
                 },
                 {
-                    text: 'Fu GSE',
+                    text: 'telefone sind schon sehr fesch',
                     answered: '2020',
                     creator: 'Da Vinci',
                     id: '2',
                 },
                 {
-                    text: 'Fck GSE der die das im die die die die die das nacho',
+                    text: 'Fck GSE der die das im die die die die die das nacho fuck afd',
                     answered: '2010',
                     creator: 'TBrettmann',
                     id: '3',
@@ -159,6 +159,8 @@ export default {
                 'im',
                 'für',
             ],
+            positiveWords: ['gut', 'fesch', 'schnafte', 'töfte', 'flott'],
+            negativeWords: ['doof', 'schlecht', 'gse', 'fuck', 'lahm', 'afd'],
         }
     },
     computed: {
@@ -173,6 +175,7 @@ export default {
                 data[i] = this.answers[i]
                 // data[i].setAttribute('wordFreq')
                 data[i].wordFrequency = this.wordFreq(this.answers[i].text, freqMap)
+                data[i].tendency = this.findTendency(this.wordFreq(this.answers[i].text, {}))
                 // data[i].setAttribute('wordLength')
                 data[i].wordLength = this.countWords(this.answers[i].text)
                 delete data[i].id
@@ -233,7 +236,7 @@ export default {
             const outputArray = []
             for (const key in stringArray) {
                 if (!this.fillers.includes(key) || this.enableFillWords) {
-                    const item = { value: stringArray[key], text: key }
+                    const item = { value: stringArray[key], text: key, tendency: key.tendency }
                     outputArray[listIndex] = item
                     // console.log(listIndex, outputArray[listIndex])
                     listIndex++
@@ -243,6 +246,20 @@ export default {
             // console.log('outputArray: ')
             // console.log(outputArray)
             return outputArray
+        },
+
+        findTendency(stringArray) {
+            let tendency = 0
+            for (const key in stringArray) {
+                if (this.positiveWords.includes(key.toLowerCase())) {
+                    tendency += stringArray[key]
+                }
+                if (this.negativeWords.includes(key.toLowerCase())) {
+                    tendency -= stringArray[key]
+                }
+            }
+            console.log(tendency)
+            return tendency
         },
 
         filterOnlyCapsText(value, search, item) {

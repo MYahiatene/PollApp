@@ -47,7 +47,7 @@
 </template>
 
 <script>
-// TODO: Forms vollenden
+// TODO: Forms vollenden (keine Priorität)
 import { mapGetters, mapMutations } from 'vuex'
 export default {
     name: 'RangeQuestion',

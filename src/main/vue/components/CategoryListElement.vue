@@ -42,6 +42,8 @@
                         :question-message="question.questionMessage"
                         :question-type="question.questionType"
                     ></QuestionListElement>
+                    <v-spacer></v-spacer>
+                    <v-spacer></v-spacer>
                 </v-list>
                 <p v-if="questions.length === 0">Es wurden noch keine Fragen in dieser Kategorie erstellt.</p>
             </draggable>
@@ -75,7 +77,11 @@ export default {
                 return this.getCategory(this.categoryID).categoryName
             },
             set(data) {
-                this.setName(data)
+                const category = {
+                    categoryID: this.categoryID,
+                    name: data,
+                }
+                this.setName(category)
             },
         },
         questions: {
