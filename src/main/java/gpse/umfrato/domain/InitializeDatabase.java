@@ -15,6 +15,7 @@ import javax.transaction.Transactional;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Service
 public class InitializeDatabase implements InitializingBean {
@@ -87,68 +88,15 @@ public class InitializeDatabase implements InitializingBean {
         Question q4 = questionService.addQuestion(testPoll.getPollId().toString(),"Was hat Sie am Meisten überzeugt?",Arrays.asList("Die Vorträge", "Die Informationsstände", "Das Catering", "Ich kann mich nicht entscheiden"), "ChoiceQuestion");
         Question q5 = questionService.addQuestion(testPoll.getPollId().toString(),"Werden Sie uns nächstes Jahr wieder besuchen?",Arrays.asList("Ja", "Nein", "Vielleicht"), "ChoiceQuestion");
         Question q6 = questionService.addQuestion(testPoll.getPollId().toString(),"Wie viel Zeit haben sie auf der Messe verbracht?",Arrays.asList("unter einer Stunde", "1-2 Stunden", "2-5 Stunden", "über 5 Stunden"), "ChoiceQuestion");
-        for (int i = 0; i < 70; i++) {
-            answerService.giveAnswer(tbettmannUserName,testPoll.getPollId().toString(),q1.getQuestionId().toString(), Collections.singletonList("0"));
-        }
-        for (int i = 0; i < 65; i++) {
-            answerService.giveAnswer(tbettmannUserName,testPoll.getPollId().toString(),q1.getQuestionId().toString(), Collections.singletonList("1"));
-        }
-        for (int i = 0; i < 30; i++) {
-            answerService.giveAnswer(tbettmannUserName,testPoll.getPollId().toString(),q1.getQuestionId().toString(), Collections.singletonList("2"));
-        }
-        for (int i = 0; i < 5; i++) {
-            answerService.giveAnswer(tbettmannUserName,testPoll.getPollId().toString(),q1.getQuestionId().toString(), Collections.singletonList("3"));
-        }
-        for (int i = 0; i < 25; i++) {
-            answerService.giveAnswer(tbettmannUserName,testPoll.getPollId().toString(),q1.getQuestionId().toString(), Collections.singletonList("4"));
-        }
-        for (int i = 0; i < 20; i++) {
-            answerService.giveAnswer(tbettmannUserName,testPoll.getPollId().toString(),q2.getQuestionId().toString(), Collections.singletonList("0"));
-        }
-        for (int i = 0; i < 19; i++) {
-            answerService.giveAnswer(tbettmannUserName,testPoll.getPollId().toString(),q2.getQuestionId().toString(), Collections.singletonList("1"));
-        }
-        for (int i = 0; i < 1; i++) {
-            answerService.giveAnswer(tbettmannUserName,testPoll.getPollId().toString(),q2.getQuestionId().toString(), Collections.singletonList("2"));
-        }
-        for (int i = 0; i < 22; i++) {
-            answerService.giveAnswer(tbettmannUserName,testPoll.getPollId().toString(),q3.getQuestionId().toString(), Collections.singletonList("0"));
-        }
-        for (int i = 0; i < 8; i++) {
-            answerService.giveAnswer(tbettmannUserName,testPoll.getPollId().toString(),q3.getQuestionId().toString(), Collections.singletonList("1"));
-        }
-        for (int i = 0; i < 7; i++) {
-            answerService.giveAnswer(tbettmannUserName,testPoll.getPollId().toString(),q3.getQuestionId().toString(), Collections.singletonList("2"));
-        }
-        for (int i = 0; i < 17; i++) {
-            answerService.giveAnswer(tbettmannUserName,testPoll.getPollId().toString(),q4.getQuestionId().toString(), Collections.singletonList("0"));
-        }
-        for (int i = 0; i < 8; i++) {
-            answerService.giveAnswer(tbettmannUserName,testPoll.getPollId().toString(),q4.getQuestionId().toString(), Collections.singletonList("1"));
-        }
-        for (int i = 0; i < 4; i++) {
-            answerService.giveAnswer(tbettmannUserName,testPoll.getPollId().toString(),q4.getQuestionId().toString(), Collections.singletonList("2"));
-        }
-        for (int i = 0; i < 2; i++) {
-            answerService.giveAnswer(tbettmannUserName,testPoll.getPollId().toString(),q4.getQuestionId().toString(), Collections.singletonList("3"));
-        }
-        for (int i = 0; i < 50; i++) {
-            answerService.giveAnswer(tbettmannUserName,testPoll.getPollId().toString(),q5.getQuestionId().toString(), Collections.singletonList("0"));
-        }
-        for (int i = 0; i < 21; i++) {
-            answerService.giveAnswer(tbettmannUserName,testPoll.getPollId().toString(),q5.getQuestionId().toString(), Collections.singletonList("1"));
-        }
-        for (int i = 0; i < 12; i++) {
-            answerService.giveAnswer(tbettmannUserName,testPoll.getPollId().toString(),q6.getQuestionId().toString(), Collections.singletonList("0"));
-        }
-        for (int i = 0; i < 45; i++) {
-            answerService.giveAnswer(tbettmannUserName,testPoll.getPollId().toString(),q6.getQuestionId().toString(), Collections.singletonList("1"));
-        }
-        for (int i = 0; i < 40; i++) {
-            answerService.giveAnswer(tbettmannUserName,testPoll.getPollId().toString(),q6.getQuestionId().toString(), Collections.singletonList("2"));
-        }
-        for (int i = 0; i < 20; i++) {
-            answerService.giveAnswer(tbettmannUserName,testPoll.getPollId().toString(),q6.getQuestionId().toString(), Collections.singletonList("3"));
+
+        for(int i = 0; i < 150; i++)
+        {
+            answerService.giveAnswer(String.valueOf(i),testPoll.getPollId().toString(),q1.getQuestionId().toString(), Collections.singletonList(String.valueOf(ThreadLocalRandom.current().nextInt(0,5))));
+            answerService.giveAnswer(String.valueOf(i),testPoll.getPollId().toString(),q2.getQuestionId().toString(), Collections.singletonList(String.valueOf(ThreadLocalRandom.current().nextInt(0,3))));
+            answerService.giveAnswer(String.valueOf(i),testPoll.getPollId().toString(),q3.getQuestionId().toString(), Collections.singletonList(String.valueOf(ThreadLocalRandom.current().nextInt(0,3))));
+            answerService.giveAnswer(String.valueOf(i),testPoll.getPollId().toString(),q4.getQuestionId().toString(), Collections.singletonList(String.valueOf(ThreadLocalRandom.current().nextInt(0,4))));
+            answerService.giveAnswer(String.valueOf(i),testPoll.getPollId().toString(),q5.getQuestionId().toString(), Collections.singletonList(String.valueOf(ThreadLocalRandom.current().nextInt(0,3))));
+            answerService.giveAnswer(String.valueOf(i),testPoll.getPollId().toString(),q6.getQuestionId().toString(), Collections.singletonList(String.valueOf(ThreadLocalRandom.current().nextInt(0,4))));
         }
     }
 }

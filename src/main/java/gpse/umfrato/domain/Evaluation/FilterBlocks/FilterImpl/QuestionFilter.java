@@ -3,6 +3,7 @@ package gpse.umfrato.domain.Evaluation.FilterBlocks.FilterImpl;
 import gpse.umfrato.domain.answer.Answer;
 import gpse.umfrato.domain.pollresult.PollResult;
 import lombok.AllArgsConstructor;
+import net.bytebuddy.description.method.ParameterList;
 
 import java.util.*;
 
@@ -19,6 +20,7 @@ private final boolean absoluteMatch;
 
 @Override public List<PollResult> filter(List<PollResult> input) {
     int index = 0;
+    List<PollResult> filteredList = new ArrayList<>();
     for(PollResult pr: input)
     {
         boolean match = false;
@@ -44,13 +46,13 @@ private final boolean absoluteMatch;
                 }
             }
         }
-        if(!match)
+        if(match)
         {
-            input.remove(index);
+            filteredList.add(pr);
         }
         index++;
     }
-    return input;
+    return filteredList;
 }
 
 @Override public List<Double> compute(List<PollResult> input) {
