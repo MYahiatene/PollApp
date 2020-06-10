@@ -92,8 +92,8 @@ public class EvaluationController {
                         answerData.set(index,answerData.get(index) + 1);
                     }
                 }
-                DiagramData dd = new DiagramData(q.getQuestionId(), q.getQuestionMessage(), q.getAnswerPossibilities(), answerData);
-                data = data.replace("$", dd.toJSON() + ",$");
+//                DiagramData dd = new DiagramData(q.getQuestionId(), q.getQuestionMessage(), q.getAnswerPossibilities(), answerData);
+//                data = data.replace("$", dd.toJSON() + ",$");
             }
         }
         data = data.replace(",$","");
@@ -101,7 +101,7 @@ public class EvaluationController {
         LOGGER.info(cheetSheet);
         LOGGER.info("sende");
         LOGGER.info(data);
-        return data;
+        return cheetSheet;
     }
 
     /**Returns JSON string to be interpreted, hier wird der jsonInput in ein Filterobjekt deserialisiert und dort können wir herausfinden, um welchen Filter es sich genau handelt.
@@ -111,7 +111,7 @@ public class EvaluationController {
         LOGGER.info(input.toString());
         Statistics calculation = new Statistics(answerService,userService,questionService,pollService,pollResultService,categoryService,input.get(0));
         calculation.loadFilter(input);
-        return calculation.generateDiagram().toJSON();
+        return calculation.generateDiagram();
         /*TODO:
             1. Filter parsen
             2. Filter ordnen
@@ -130,10 +130,10 @@ public class EvaluationController {
     }*/
 
     public<T, U> List<Answer> filterByStuff(Filter filterType, T inputA, U inputB){ /**TODO: needs to be improved, generics can only do so much*/
-        switch(filterType){
-            case AnswerFilter: return Statistics.filterByAnswer((List<Answer>) inputA /**Input*/, (List<U>) inputB) /**Desired Answers*/;
-            case UserFilter: return Statistics.filterByUser((String) inputA /**PollID*/, (String) inputB) /**Username*/;
-        }
+//        switch(filterType){
+//            case AnswerFilter: return Statistics.filterByAnswer((List<Answer>) inputA /**Input*/, (List<U>) inputB) /**Desired Answers*/;
+//            case UserFilter: return Statistics.filterByUser((String) inputA /**PollID*/, (String) inputB) /**Username*/;
+//        }
         return null;
     }
 

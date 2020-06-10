@@ -27,7 +27,7 @@ public class Statistics {
     private final PollService pollService;
     private final PollResultService pollResultService;
     private final CategoryService categoryService;
-    private List<Filter> filters;
+    private List<Filter> filters = new ArrayList<>();
     private Long pollId;
     private final List<Long> questionIds = new ArrayList<>();
 
@@ -50,25 +50,29 @@ public void loadFilter(List<FilterCmd> input)
         for(FilterCmd cmd:input)
         {
             Filter f = null;
-            if(cmd.getFilterType().equals("QuestionFilter"))
+            if(cmd.getFilterType().equals("questionAnswer"))
             {
                 f = new QuestionFilter(Long.valueOf(cmd.getTargetPollId()),Long.valueOf(cmd.getTargetQuestionId()),cmd.getTargetAnswerPossibilities(),true);
             }
             if(f != null)
             {
+                System.out.println("addFilter");
                 filters.add(f);
             }
         }
     }
 
-    public DiagramData generateDiagram()
+    public String generateDiagram()
     {
         List<PollResult> prs = pollResultService.getPollResults(pollId);
+        System.out.println(prs.size());
+        System.out.println(filters.size());
         for(Filter f:filters) {
             prs = f.filter(prs);
         }
-        //return new DiagramData();
-        return null;
+        System.out.println(prs.size());
+        DiagramData dd = new DiagramData(pollService.getPoll(prs.get(0).getPollId().toString()),prs,questionService);
+        return "{\"name\":\"" + pollService.getPoll(pollId.toString()).getPollName() + "\",\"questionList\": " + dd.toJSON() + "}";
     }
 
     /**
