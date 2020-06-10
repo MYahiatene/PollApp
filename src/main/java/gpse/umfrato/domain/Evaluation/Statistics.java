@@ -84,6 +84,13 @@ public void loadFilter(List<FilterCmd> input)
         return value / totalNumber;
     }
 
+    public static double getRelativeFrequencyOfOneValue(String value, double totalNumber) throws ArithmeticException { /** Maybe list<pollresult>, depends */
+        if(totalNumber<Integer.parseInt(value)){
+            throw new ArithmeticException("totalNumber must be larger than value!");
+        }
+        return Integer.parseInt(value) / totalNumber;
+    }
+
     /**
      * This method takes a List of double values that represent an absolute number
      * and converts each of them into the corresponding relative value.
@@ -101,6 +108,27 @@ public void loadFilter(List<FilterCmd> input)
         for (int i = 0; i < values.size() ; i++) {
             try {
                 listOfValues.add(getRelativeFrequencyOfOneValue(values.get(i), totalNumber));
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
+        }
+
+        return listOfValues;
+    }
+
+    public static List<Double> getRelativeFrequencyOfDoubleValues(Answer values){ /**Needs to be answer because PollResult contains list of answers*/
+        double totalNumber = 0;
+        for (int i = 0; i < values.getGivenAnswerList().size(); i++) {
+            totalNumber += Integer.parseInt(values.getGivenAnswerList().get(i));
+        }
+
+        List<Double> listOfValues = new ArrayList<>();
+
+        for (int i = 0; i < values.getGivenAnswerList().size() ; i++) {
+            try {
+                listOfValues.add(getRelativeFrequencyOfOneValue(values.getGivenAnswerList().get(i), totalNumber));
             }
             catch (Exception e)
             {
@@ -147,6 +175,20 @@ public void loadFilter(List<FilterCmd> input)
 
     }
 
+    public static double modus(Answer allValues){
+
+        double currentHighest = Double.parseDouble(allValues.getGivenAnswerList().get(0));
+
+        for (int i = 0; i < allValues.getGivenAnswerList().size(); i++) {
+            if(Double.parseDouble(allValues.getGivenAnswerList().get(i))>currentHighest){
+                currentHighest = Double.parseDouble(allValues.getGivenAnswerList().get(i));
+            }
+        }
+
+        return currentHighest;
+
+    }
+
     /**
      * This function casts the provided value to an integer and limits it to a range of zero to max minus one
      * to avoid out of range exceptions while accessing arrays or lists.
@@ -154,10 +196,10 @@ public void loadFilter(List<FilterCmd> input)
      * @param max one above the biggest value val can be or the size of the array to access.
      * @return the constricted integer.
      */
-    private static <T extends Number> int constrict(T val, int max)
+    private static <T> int constrict(T val, int max)
     {
         max -= 1;
-        int casted = val.intValue();
+        int casted = Integer.parseInt(val.toString()); /**Ugly but effective*/
         if(casted < 0)
         {
             return 0;
@@ -206,12 +248,46 @@ public void loadFilter(List<FilterCmd> input)
         }
     }
 
+    private static Double pQuantile(Answer values, double p)
+    {
+        if(values.getGivenAnswerList().isEmpty())
+        {
+            return null;
+        }
+        if(p < 0.0)
+        {
+            p = 0.0;
+        }
+        else if(p > 1.0)
+        {
+            p = 1.0;
+        }
+        Collections.sort(values.getGivenAnswerList());
+        int n = values.getGivenAnswerList().size();
+        double xnp = 0.0;
+        double xnp1 = Double.parseDouble(values.getGivenAnswerList().get(constrict(n * p, values.getGivenAnswerList().size())));
+        if(n * p % 1.0 == 0.0)
+        {
+            xnp = Double.parseDouble(values.getGivenAnswerList().get(constrict((n * p) - 1,values.getGivenAnswerList().size())));
+            return (xnp + xnp1) / 2;
+        }
+        else
+        {
+            return xnp1;
+        }
+    }
+
     /**
     * This function returns the median of a given list of values, if the list is not empty.
     * @param values list of values to calculate the median from.
     * @return will return null for empty lists, otherwise will return the median of given list of values.
     */
     private static Double median(List<Double> values)
+    {
+        return pQuantile(values, 0.5);
+    }
+
+    private static Double median(Answer values)
     {
         return pQuantile(values, 0.5);
     }
@@ -232,6 +308,15 @@ public void loadFilter(List<FilterCmd> input)
         return cumulated;
     }
 
+    private double cumulate(Answer values, Double threshold){ //Kumulierte Häufigkeit
+        double cumulated = 0;
+        Iterator<String> listIterator = values.getGivenAnswerList().listIterator();
+        while(listIterator.hasNext()){
+            if(Double.parseDouble(listIterator.next()) < threshold.doubleValue()) { cumulated++; }
+        }
+        return cumulated;
+    }
+
     public static <T> List<Answer> filterByAnswer(List<Answer> input, List<T> wantedAnswers){
         ListIterator<Answer> iter = input.listIterator();
         List<Answer> output = new ArrayList<>();
@@ -245,8 +330,9 @@ public void loadFilter(List<FilterCmd> input)
 
     public static <T> List<Answer> filterByUser(String pollID, String username){
         /**TODO: PollResultServiceImpl NEEDS POLLRESULTS ELSE FILTERING BY USER WONT WORK*/
-        List<PollResult> unfilteredResults = pollResultService.getAllPollResults();
-        List<Answer> filteredResults = pollResultService.getUserAnswers(unfilteredResults, username);
-        return filteredResults;
+        //List<PollResult> unfilteredResults = pollResultService.getAllPollResults();
+        //List<Answer> filteredResults = pollResultService.getUserAnswers(unfilteredResults, username);
+        //return filteredResults;
+        return null;
     }
 }
