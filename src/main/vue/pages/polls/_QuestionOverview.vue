@@ -2,13 +2,13 @@
     <div>
         <AuthGate v-if="isAuthenticated !== true"></AuthGate>
         <v-container v-else-if="storeValid">
-            <v-card class="pa-2 ma-0"><v-text-field v-model="poll.pollName" clearable class="display-1" /></v-card>
+            <v-card class="pa-2 ma-0"><v-text-field v-model="pollData.pollName" clearable class="display-1" /></v-card>
 
             <v-container>
                 <v-row>
                     <v-col cols="12" lg="4" md="4" sm="4">
                         <v-row>
-                            <v-card v-for="(p, i) in poll.categoryList" :key="i" class="mt-1" width="110rem" outlined>
+                            <v-card v-for="(p, i) in categoryData" :key="i" class="mt-1" width="110rem" outlined>
                                 <v-list-item three-line>
                                     <v-list-item-content>
                                         <v-list-item-title class="headline mb-1">{{
@@ -17,8 +17,8 @@
                                     </v-list-item-content>
                                 </v-list-item>
                                 <draggable>
-                                    <v-list-item v-for="(l, j) in poll.categoryList" :key="j">{{
-                                        l.questionList[j].questionMessage
+                                    <v-list-item v-for="(l, j) in questionListData" :key="j">{{
+                                        l.questionMessage
                                     }}</v-list-item>
                                     <v-card-actions> </v-card-actions>
                                 </draggable>
@@ -63,11 +63,15 @@ export default {
     data() {
         return {
             disableDrag: false,
-            poll: [],
+            pollData: [],
+            categoryData: [],
+            questionListData: [],
         }
     },
     created() {
+        this.loadPoll()
         this.loadCategories()
+        this.loadQuestions()
     },
     computed: {
         ...mapGetters({
@@ -79,7 +83,7 @@ export default {
         },
         pollname: {
             get() {
-                return this.poll.pollName
+                return this.pollData.pollName
             },
             set(data) {
                 this.setPollName(data)
@@ -100,7 +104,22 @@ export default {
     },
     methods: {
         pollName() {
-            return this.poll.pollName
+            return this.pollData.pollName
+        },
+        async loadPoll() {
+            await this.$axios
+                .get('/getonepoll', {
+                    params: {
+                        pollId: this.$route.params.QuestionOverview,
+                    },
+                })
+                .then((response) => {
+                    this.pollData = response.data
+                    console.log(this.pollData)
+                })
+                .catch((error) => {
+                    console.log(error)
+                })
         },
         async loadCategories() {
             await this.$axios
@@ -110,13 +129,36 @@ export default {
                     },
                 })
                 .then((response) => {
-                    this.poll = response.data
+                    this.categoryData = response.data
+                    this.categoryData.forEach((ele) => {
+                        this.questionListData.push(ele.questionList)
+                    })
+                    console.log('CategoryData')
+                    console.log(this.categoryData)
+                    console.log('QuestionListData')
+                    console.log(this.questionListData)
                 })
                 .catch((error) => {
                     console.log(error)
                 })
-            console.log(this.poll)
-            console.log(this.poll.categoryList.length)
+        },
+        async loadQuestions() {
+            await this.categoryData.forEach((ele) => {
+                this.$axios
+                    .get('/getallquestions', {
+                        params: {
+                            categoryId: ele.categoryId,
+                        },
+                    })
+                    .then((response) => {
+                        this.questionListData.push(response.data)
+                        console.log('QuestionListData')
+                        console.log(this.questionListData)
+                    })
+                    .catch((error) => {
+                        console.log(error)
+                    })
+            })
         },
         ...mapActions({
             sendData: 'pollOverview/sendData',

@@ -61,8 +61,8 @@ public class QuestionController {
     }
 
     @GetMapping("/getallquestions")
-    public List<Question> getAllQuestions(final @RequestBody CategoryCmd categoryCmd) {
+    public List<Question> getAllQuestions(final @RequestParam long categoryId) {
 
-        return questionService.getAllQuestions(Long.parseLong(categoryCmd.getCategoryId()));
+        return questionService.getAllQuestions(categoryId);
     }
 }

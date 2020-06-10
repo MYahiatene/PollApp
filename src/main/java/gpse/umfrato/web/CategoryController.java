@@ -28,8 +28,8 @@ public class CategoryController {
     }
 
     @GetMapping("/getallcategories")
-    public List<Category> getCategories(final @RequestBody CategoryCmd categoryCmd) {
-        return categoryService.getAllCategories(Long.parseLong(categoryCmd.getPollId()));
+    public List<Category> getCategories(@RequestParam long pollId) {
+        return categoryService.getAllCategories(pollId);
     }
 
     /**

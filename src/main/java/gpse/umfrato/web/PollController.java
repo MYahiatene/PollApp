@@ -58,12 +58,12 @@ public class PollController {
     /**
      * This method returns a selected poll.
      *
-     * @param pollCmd has the id of the poll
+     * @param pollId has the id of the poll
      * @return a selected poll
      */
     @GetMapping("/getonepoll")
-    public Poll getPoll(@RequestBody final PollCmd pollCmd) {
-        return pollService.getPoll(pollCmd.getPollId());
+    public Poll getPoll(@RequestParam long pollId) {
+        return pollService.getPoll(String.valueOf(pollId));
     }
 
 
