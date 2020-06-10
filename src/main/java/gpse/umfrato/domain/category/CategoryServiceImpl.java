@@ -2,10 +2,12 @@ package gpse.umfrato.domain.category;
 
 import gpse.umfrato.domain.poll.Poll;
 import gpse.umfrato.domain.poll.PollRepository;
+import gpse.umfrato.domain.question.Question;
 import gpse.umfrato.domain.user.User;
 import gpse.umfrato.web.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,11 +28,12 @@ public class CategoryServiceImpl implements CategoryService {
         this.categoryRepository = categoryRepository;
         this.pollRepository = pollRepository;
     }
+
     @Override
     public Category createCategory(final String name, final long pollId) {
         final Category category = new Category(name, pollId);
-        categoryRepository.save(category);
         category.setPollId(pollId);
+        categoryRepository.save(category);
         pollRepository.findById(pollId).orElseThrow(EntityNotFoundException::new).getCategoryList().add(category);
         return category;
     }
@@ -40,10 +43,10 @@ public class CategoryServiceImpl implements CategoryService {
         final long pollId = categoryRepository.findById(categoryId).
             orElseThrow(EntityNotFoundException::new).getPollId();
 
-        final long standardCategoryId= pollRepository.findById(pollId).orElseThrow(EntityNotFoundException::new)
+        final long standardCategoryId = pollRepository.findById(pollId).orElseThrow(EntityNotFoundException::new)
             .getCategoryList().get(0).getCategoryId();
 
-        categoryRepository.findById(categoryId).orElseThrow(EntityNotFoundException::new).getQuestionList().stream()
+        categoryRepository.findById(categoryId).orElseThrow(EntityNotFoundException::new).getQuestionList()
             .forEach(question -> question.setCategoryId(standardCategoryId));
 
         categoryRepository.deleteById(categoryId);
@@ -56,12 +59,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public List<Category> getAllCategories(long pollId) {
-        final List<Category> categories = categoryRepository.findCategoriesByPollId(pollId);
-        /* if (categories.isEmpty()) {
-            throw new BadRequestException();
-        } */
-
-        return categories;
+        return categoryRepository.findCategoriesByPollId(pollId);
     }
 
 }

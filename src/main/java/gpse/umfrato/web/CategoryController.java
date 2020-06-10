@@ -27,7 +27,7 @@ public class CategoryController {
         return categoryService.createCategory(categoryCmd.getName(), Long.parseLong(categoryCmd.getPollId()));
     }
 
-    @PostMapping("/categories")
+    @GetMapping("/getallcategories")
     public List<Category> getCategories(final @RequestBody CategoryCmd categoryCmd) {
         return categoryService.getAllCategories(Long.parseLong(categoryCmd.getPollId()));
     }
@@ -38,9 +38,10 @@ public class CategoryController {
     @PreAuthorize("hasAuthority('Admin')")
     @PutMapping("/deletecategory")
     public String deleteCategory(final @RequestBody CategoryCmd categoryCmd) {
-        categoryService.deleteCategory(Long.valueOf(categoryCmd.getCategoryId()));
+        categoryService.deleteCategory(Long.parseLong(categoryCmd.getCategoryId()));
         return "Test";
     }
+
     /**
      * Deletes a category in the data base
      */

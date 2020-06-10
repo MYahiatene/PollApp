@@ -61,11 +61,9 @@ public class PollController {
      * @param pollCmd has the id of the poll
      * @return a selected poll
      */
-    @PostMapping("/onepoll")
+    @GetMapping("/getonepoll")
     public Poll getPoll(@RequestBody final PollCmd pollCmd) {
-        return pollService.getPoll(pollCmd
-            .getPollId()
-        );
+        return pollService.getPoll(pollCmd.getPollId());
     }
 
 

@@ -104,7 +104,11 @@ export default {
         },
         async loadCategories() {
             await this.$axios
-                .post('/onepoll', { pollId: this.$route.params.QuestionOverview })
+                .get('/getallcategories', {
+                    params: {
+                        pollId: this.$route.params.QuestionOverview,
+                    },
+                })
                 .then((response) => {
                     this.poll = response.data
                 })

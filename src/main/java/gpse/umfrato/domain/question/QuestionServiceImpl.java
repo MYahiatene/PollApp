@@ -2,6 +2,7 @@ package gpse.umfrato.domain.question;
 
 import gpse.umfrato.domain.category.Category;
 import gpse.umfrato.domain.category.CategoryRepository;
+import gpse.umfrato.domain.category.CategoryService;
 import gpse.umfrato.domain.poll.Poll;
 import gpse.umfrato.domain.poll.PollRepository;
 import gpse.umfrato.domain.poll.PollService;
@@ -21,6 +22,8 @@ public class QuestionServiceImpl implements QuestionService {
      * Initializes the poll service.
      */
     /*default*/ final PollService pollService;
+
+    private final CategoryService categoryService;
 
     /*default*/ final CategoryRepository categoryRepository;
 
@@ -44,11 +47,13 @@ public class QuestionServiceImpl implements QuestionService {
      */
     @Autowired
     public QuestionServiceImpl(final PollRepository pollRepository, final QuestionRepository questionRepository,
-                               final PollService pollService, final CategoryRepository categoryRepository) {
+                               final PollService pollService, final CategoryRepository categoryRepository,
+                               final CategoryService categoryService) {
         this.pollRepository = pollRepository;
         this.questionRepository = questionRepository;
         this.pollService = pollService;
         this.categoryRepository = categoryRepository;
+        this.categoryService = categoryService;
     }
 
 
@@ -63,14 +68,13 @@ public class QuestionServiceImpl implements QuestionService {
                                 final String questionMessage,
                                 final List<String> answerPossibilities,
                                 final String questionType) {
-        final Question question = new Question(questionMessage, answerPossibilities, questionType);
-        Long categoryId = pollRepository.findById(Long.valueOf(pollId)).orElseThrow(EntityNotFoundException::new)
-            .getCategoryList().get(0).getCategoryId();
-        question.setCategoryId(categoryId);
-        categoryRepository.findById(categoryId).orElseThrow(EntityNotFoundException::new)
-            .getQuestionList().add(question);
-        categoryRepository.save(categoryRepository.findById(categoryId).orElseThrow(EntityNotFoundException::new));
+        Question question = new Question(questionMessage, answerPossibilities, questionType);
+        question.setCategoryId(pollRepository.findById(Long.valueOf(pollId)).orElseThrow(EntityNotFoundException::new)
+            .getCategoryList().get(0).getCategoryId());
+        pollRepository.findById(Long.valueOf(pollId)).orElseThrow(EntityNotFoundException::new)
+            .getCategoryList().get(0).getQuestionList().add(question);
         questionRepository.save(question);
+
         return question;
     }
 
@@ -103,29 +107,14 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     /**
-     * This method returns all questions from a poll.
+     * This method returns all questions with the categoryId
      *
-     * @return all questions from a poll
+     * @param categoryId the id of the category
+     * @return All the questions
      */
     @Override
-    public List<Question> getAllQuestions(final long pollId) {
-        final Poll poll = pollRepository.findById(pollId).orElseThrow(EntityNotFoundException::new);
-        final List<Category> categories = poll.getCategoryList();
-        final List<Question> allQuestions = new ArrayList<>();
-
-        for (final Category g : categories) {
-            allQuestions.addAll(g.getQuestionList());
-        }
-        if (allQuestions.isEmpty()) {
-            throw new BadRequestException();
-        }
-
-        return allQuestions;
-    }
-
-    @Override
-    public List<Question> getQuestionsFromCategory(final long categoryId) {
-        return questionRepository.findQuestionByCategoryId(categoryId);
+    public List<Question> getAllQuestions(final long categoryId) {
+        return questionRepository.findQuestionsByCategoryId(categoryId);
     }
 
 

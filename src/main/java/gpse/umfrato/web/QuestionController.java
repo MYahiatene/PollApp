@@ -1,10 +1,14 @@
 package gpse.umfrato.web;
 
+import gpse.umfrato.domain.category.Category;
+import gpse.umfrato.domain.cmd.CategoryCmd;
 import gpse.umfrato.domain.cmd.QuestionCmd;
 import gpse.umfrato.domain.question.Question;
 import gpse.umfrato.domain.question.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RequestMapping(value = "/api", method = RequestMethod.GET)
 @RestController
@@ -28,8 +32,8 @@ public class QuestionController {
      *
      * @param questionCmd has the question and the poll id
      */
-    @PostMapping("/poll/{id:\\d+}/addquestion")
-    public Long addQuestion(/*@PathVariable("id") final String id*/ final @RequestBody QuestionCmd questionCmd) {
+    @PostMapping("/addquestion")
+    public Long addQuestion(final @RequestBody QuestionCmd questionCmd) {
         return questionService.addQuestion(questionCmd.getPollId(), questionCmd.getQuestionMessage(),
             questionCmd.getAnswerPossibilities(), questionCmd.getQuestionType()).getQuestionId();
     }
@@ -39,10 +43,9 @@ public class QuestionController {
      *
      * @param questionCmd has the poll id
      */
-    @PostMapping("/poll/{pollId:\\d+}/removequestion/{questionId:\\d+}")
-    public void deleteQuestion(@PathVariable("pollId") final String pollId, @PathVariable("questionId")
-    final String questionId) {
-        questionService.removeQuestion(pollId, questionId);
+    @PostMapping("/removeQuestion")
+    public void deleteQuestion(final @RequestBody QuestionCmd questionCmd) {
+        questionService.removeQuestion(questionCmd.getPollId(), questionCmd.getQuestionId());
     }
 
     /**
@@ -51,9 +54,15 @@ public class QuestionController {
      * @param questionCmd has the poll id of the question
      * @return returns the requested question
      */
-    @GetMapping("/poll/{pollId:\\d+}/getquestion/{questionId:\\d+}")
+    @GetMapping("/getOneQuestion")
     public Question getQuestion(final @RequestBody QuestionCmd questionCmd) {
 
         return questionService.getQuestion(Long.valueOf(questionCmd.getPollId()));
+    }
+
+    @GetMapping("/getallquestions")
+    public List<Question> getAllQuestions(final @RequestBody CategoryCmd categoryCmd) {
+
+        return questionService.getAllQuestions(Long.parseLong(categoryCmd.getCategoryId()));
     }
 }
