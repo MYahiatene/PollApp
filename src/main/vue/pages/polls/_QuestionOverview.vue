@@ -22,8 +22,23 @@
                     </v-btn>
 
                     <v-card v-for="category in categoryData" :key="category.categoryId" class="ma-5" width="600">
-                        <v-card-title>
-                            <h2 style="font-weight: normal;" class="ma-0">{{ category.categoryName }}</h2>
+                        <!-- <v-dialog v-model="categoryDialog" max-width="700">
+                            <v-card-title>
+                                <span class="headline">Kategorie umbennen</span>
+                            </v-card-title>
+                            <v-row cols="12" sm="6" md="4">
+                                <v-text-field v-model="editCategory.categoryName"></v-text-field>
+                            </v-row>
+                            <v-card-actions>
+                                <v-btn color="blue darken-1" text @click="this.categoryDialog = false">Abbrechen</v-btn>
+                                <v-spacer></v-spacer>
+                                <v-btn color="blue darken-1" text @click="saveCategoryName">Sichern</v-btn>
+                            </v-card-actions>
+                        </v-dialog> -->
+                        <v-card-title @click="categoryDialog = true">
+                            <h2 style="font-weight: normal;" class="ma-0">
+                                {{ category.categoryName }}
+                            </h2>
                             <v-spacer></v-spacer>
                         </v-card-title>
 
@@ -88,6 +103,19 @@ export default {
             pollData: [],
             categoryData: [],
             questionListData: [],
+            defaultCategory: {
+                categoryId: null,
+                categoryName: '',
+                pollId: null,
+                questionList: [],
+            },
+            editCategory: {
+                categoryId: null,
+                categoryName: 'Neue Kategorie',
+                pollId: this.$route.params.QuestionOverview,
+                questionList: [],
+            },
+            categoryDialog: false,
         }
     },
     created() {
@@ -136,7 +164,6 @@ export default {
                 })
                 .then((response) => {
                     this.pollData = response.data
-                    console.log(this.pollData)
                 })
                 .catch((error) => {
                     console.log(error)
@@ -154,18 +181,34 @@ export default {
                     this.categoryData.forEach((ele) => {
                         this.questionListData.push(ele.questionList)
                     })
-                    console.log('CategoryData')
-                    console.log(this.categoryData)
-                    console.log('QuestionListData')
-                    console.log(this.questionListData)
                 })
                 .catch((error) => {
                     console.log(error)
                 })
         },
+        createCategory() {
+            this.$axios
+                .post('/addcategory', {
+                    pollId: this.$route.params.QuestionOverview,
+                    name: this.editCategory.categoryName,
+                })
+                .then((response) => {
+                    this.editCategory = response.data
+                    console.log(this.editCategory)
+                    this.defaultCategory = Object.assign({}, this.editCategory)
+                    this.categoryData.push(this.defaultCategory)
+                    console.log(this.categoryData)
+                })
+        },
+        saveCategoryName() {
+            this.categoryDialog = false
+            this.$axios.put('/editCategory', {
+                pollId: this.$route.params.QuestionOverview,
+                name: this.editCategory.categoryName,
+            })
+        },
         ...mapActions({
             sendData: 'pollOverview/sendData',
-            createCategory: 'pollOverview/createCategory',
             setCategory: 'pollOverview/setCategory',
         }),
         ...mapMutations({
