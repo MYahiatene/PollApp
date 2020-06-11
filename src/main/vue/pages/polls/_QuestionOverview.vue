@@ -4,92 +4,110 @@
         <v-card class="pa-2 ma-0">
             <v-text-field v-model="pollData.pollName" clearable class="display-1" />
         </v-card>
-        <v-row>
-            <v-col cols="12" lg="4" md="4" sm="4">
-                <v-row>
-                    <v-btn depressed @click="createCategory()" class="ma-5">
-                        <v-icon color="primary">
-                            mdi-plus
-                        </v-icon>
-                        Kategorie hinzufügen
-                    </v-btn>
-                    <v-spacer></v-spacer>
-                    <v-btn depressed @click="createQuestion()" class="ma-5">
-                        <v-icon color="primary">
-                            mdi-plus
-                        </v-icon>
-                        Frage hinzufügen
-                    </v-btn>
-
-                    <v-expansion-panels multiple>
-                        <v-expansion-panel v-for="category in categoryData" :key="category.categoryId">
-                            <draggable :options="{ group: 'test' }">
-                                <v-icon @click="editCat(category)">mdi-pencil</v-icon>
-                                <v-icon @click="deleteCategory(category)">mdi-delete</v-icon>
-                                <v-expansion-panel-header class="justify-self-start" disable-icon-rotate>
-                                    <h2>{{ category.categoryName }}</h2></v-expansion-panel-header
-                                >
-                                <draggable :options="{ group: 'test' }">
-                                    <v-expansion-panel-content
-                                        v-for="question in category.questionList"
-                                        :key="question.questionId"
-                                    >
-                                        <v-list>
-                                            <v-list-item @click="selectQuestion(question, question.questionType)"
-                                                >{{ question.questionMessage }}
-                                            </v-list-item>
-                                        </v-list>
-                                    </v-expansion-panel-content>
-                                </draggable>
-                            </draggable>
-                        </v-expansion-panel>
-                    </v-expansion-panels>
-                </v-row>
+        <v-row
+            ><v-col cols="2"
+                ><v-btn depressed @click="createCategory()" class="ma-5">
+                    <v-icon color="primary">
+                        mdi-plus
+                    </v-icon>
+                    Kategorie hinzufügen
+                </v-btn>
             </v-col>
+            <v-col cols="2">
+                <v-btn depressed @click="createQuestion()" class="ma-5">
+                    <v-icon color="primary">
+                        mdi-plus
+                    </v-icon>
+                    Frage hinzufügen
+                </v-btn></v-col
+            ></v-row
+        >
 
-            <v-col cols="12" lg="8" md="8" sm="8">
-                <v-card class="pa-1" :style="frameColor">
-                    <div v-if="questionIndex !== 0">
-                        <v-card flat class="ma-0">
-                            <v-container>
-                                <v-row no-gutters>
-                                    <v-col>
-                                        <h3>Frage bearbeiten</h3>
-                                    </v-col>
-                                    <v-spacer></v-spacer>
-                                    <v-spacer></v-spacer>
-                                    <v-col>
-                                        <v-btn @click="deleteQuestion">
-                                            <v-icon color="primary" left>
-                                                mdi-delete
-                                            </v-icon>
-                                            Löschen
-                                        </v-btn>
-                                    </v-col>
-                                </v-row>
-                                <v-row no-gutters>
-                                    <v-textarea
-                                        v-model="questionMessage"
-                                        label="Fragentext"
-                                        hint="Was soll den Umfrageteilnehmer gefragt werden?"
-                                        rows="1"
-                                    >
-                                    </v-textarea>
-                                </v-row>
-                                <v-row no-gutters>
-                                    <v-overflow-btn
-                                        v-model="questionTypeChoice"
-                                        :items="questionWidgets"
-                                        label="Fragenart"
-                                    ></v-overflow-btn>
-                                </v-row>
-                                <v-row></v-row>
-                            </v-container>
-                        </v-card>
-                    </div>
-                </v-card>
+        <v-row>
+            <v-col cols="4">
+                <v-expansion-panels multiple>
+                    <v-expansion-panel v-for="category in categoryData" :key="category.categoryId">
+                        <draggable :options="{ group: 'test' }">
+                            <v-icon @click="editCat(category)">mdi-pencil</v-icon>
+                            <v-icon @click="deleteCategory(category)">mdi-delete</v-icon>
+                            <v-expansion-panel-header class="justify-self-start" disable-icon-rotate>
+                                <h2>{{ category.categoryName }}</h2></v-expansion-panel-header
+                            >
+                            <draggable :options="{ group: 'test' }">
+                                <v-expansion-panel-content
+                                    v-for="question in category.questionList"
+                                    :key="question.questionId"
+                                >
+                                    <v-list>
+                                        <v-list-item @click="selectQuestion(question, question.questionType)"
+                                            >{{ question.questionMessage }}
+                                        </v-list-item>
+                                    </v-list>
+                                </v-expansion-panel-content>
+                            </draggable>
+                        </draggable>
+                    </v-expansion-panel>
+                </v-expansion-panels>
+            </v-col>
+            <v-col align="center" v-show="categoryIndex">
+                <v-card max-width="500">
+                    <v-card-title> Kategorie umbenennen</v-card-title>
+                    <v-col>
+                        <v-text-field v-model="tmpcategory.categoryName"> </v-text-field>
+                    </v-col>
+                    <v-card-actions>
+                        <v-btn color="primary" dark class="mb-2" @click="this.categoryIndex = false">Abbrechen</v-btn>
+                        <v-spacer></v-spacer
+                        ><v-btn color="primary" dark class="mb-2" @click="save(tmpcategory)"
+                            >Sichern</v-btn
+                        ></v-card-actions
+                    ></v-card
+                >
             </v-col>
         </v-row>
+
+        <v-col v-if="questionIndex !== 0" cols="12" lg="8" md="8" sm="8">
+            <v-card class="pa-1" :style="frameColor">
+                <div>
+                    <v-card flat class="ma-0">
+                        <v-container>
+                            <v-row no-gutters>
+                                <v-col>
+                                    <h3>Frage bearbeiten</h3>
+                                </v-col>
+                                <v-spacer></v-spacer>
+                                <v-spacer></v-spacer>
+                                <v-col>
+                                    <v-btn @click="deleteQuestion">
+                                        <v-icon color="primary" left>
+                                            mdi-delete
+                                        </v-icon>
+                                        Löschen
+                                    </v-btn>
+                                </v-col>
+                            </v-row>
+                            <v-row no-gutters>
+                                <v-textarea
+                                    v-model="questionMessage"
+                                    label="Fragentext"
+                                    hint="Was soll den Umfrageteilnehmer gefragt werden?"
+                                    rows="1"
+                                >
+                                </v-textarea>
+                            </v-row>
+                            <v-row no-gutters>
+                                <v-overflow-btn
+                                    v-model="questionTypeChoice"
+                                    :items="questionWidgets"
+                                    label="Fragenart"
+                                ></v-overflow-btn>
+                            </v-row>
+                            <v-row></v-row>
+                        </v-container>
+                    </v-card>
+                </div>
+            </v-card>
+        </v-col>
     </v-container>
     <v-container v-else>
         <v-card>
@@ -120,7 +138,6 @@ export default {
     },
     data() {
         return {
-            editedIndex: -1,
             disableDrag: false,
             pollData: [],
             categoryData: [],
@@ -142,7 +159,8 @@ export default {
             ],
             questionMessage: '',
             questionIndex: 0,
-            categoryIndex: 0,
+            tmpcategory: {},
+            categoryIndex: false,
             questionTitle: '',
             categoryTitle: '',
             questionType: '',
@@ -150,13 +168,11 @@ export default {
                 categoryId: null,
                 categoryName: '',
                 pollId: null,
-                questionList: [],
             },
             editCategory: {
                 categoryId: null,
                 categoryName: 'Neue Kategorie',
                 pollId: this.$route.params.QuestionOverview,
-                questionList: [],
             },
             categoryDialog: false,
         }
@@ -249,27 +265,15 @@ export default {
                 })
         },
         editCat(category) {
-            this.editedIndex = this.categoryData.indexOf(category)
-            this.editCategory = Object.assign({}, category)
-            this.categoryDialog = true
+            this.categoryIndex = true
+            this.tmpcategory = category
         },
-        editCategoryData(categoryID, categoryName) {
+        save(category) {
             this.$axios.put('/editcategory', {
-                categoryId: categoryID,
-                name: categoryName,
+                categoryId: category.categoryId,
+                name: category.categoryName,
             })
-        },
-        save() {
-            Object.assign(this.categoryData[this.editedIndex], this.editCategory)
-            this.editCategoryData(this.editCategory.categoryId, this.editCategory.categoryName)
-            this.close()
-        },
-        close() {
-            this.categoryDialog = false
-            this.$nextTick(() => {
-                this.editCategory = Object.assign({}, this.defaultCategory)
-                this.editedIndex = -1
-            })
+            this.categoryIndex = false
         },
         deleteCategory(category) {
             const index = this.categoryData.indexOf(category)
