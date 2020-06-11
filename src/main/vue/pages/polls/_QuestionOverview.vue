@@ -24,7 +24,11 @@
                     <v-expansion-panels multiple>
                         <v-expansion-panel v-for="category in categoryData" :key="category.categoryId">
                             <draggable :options="{ group: 'test' }">
-                                <v-expansion-panel-header>{{ category.categoryName }}</v-expansion-panel-header>
+                                <v-icon @click="editCat(category)">mdi-pencil</v-icon>
+                                <v-icon @click="deleteCategory(category)">mdi-delete</v-icon>
+                                <v-expansion-panel-header class="justify-self-start" disable-icon-rotate>
+                                    <h2>{{ category.categoryName }}</h2></v-expansion-panel-header
+                                >
                                 <draggable :options="{ group: 'test' }">
                                     <v-expansion-panel-content
                                         v-for="question in category.questionList"
