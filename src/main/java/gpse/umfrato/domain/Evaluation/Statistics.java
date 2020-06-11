@@ -7,6 +7,7 @@ import gpse.umfrato.domain.answer.Answer;
 import gpse.umfrato.domain.answer.AnswerService;
 import gpse.umfrato.domain.category.CategoryService;
 import gpse.umfrato.domain.cmd.FilterCmd;
+import gpse.umfrato.domain.poll.Poll;
 import gpse.umfrato.domain.poll.PollService;
 import gpse.umfrato.domain.pollresult.PollResult;
 import gpse.umfrato.domain.pollresult.PollResultService;
@@ -101,7 +102,7 @@ public void loadFilter(List<FilterCmd> input)
      * @param values all absolute values that were given in a poll.
      * @return a list of relative values.
      */
-    public static List<Double> getRelativeFrequencyOfDoubleValues(List< Double> values){
+    /*public static List<Double> getRelativeFrequencyOfDoubleValues(List< Double> values){
         double totalNumber = 0;
         for (int i = 0; i < values.size(); i++) {
             totalNumber += values.get(i);
@@ -120,36 +121,54 @@ public void loadFilter(List<FilterCmd> input)
         }
 
         return listOfValues;
-    }
+    }*/
 
-    public static List<Double> getRelativeFrequencyOfDoubleValues(Answer values){ /**Needs to be answer because PollResult contains list of answers*/
-        double totalNumber = 0;
-        for (int i = 0; i < values.getGivenAnswerList().size(); i++) {
-            totalNumber += Integer.parseInt(values.getGivenAnswerList().get(i));
+    public static List<List<Double>> getRelativeFrequencyOfDoubleValues(List<PollResult> values){
+
+        List<Double> totalNumbers = new ArrayList<>();
+        ListIterator<PollResult> answerIterator = values.listIterator();
+        while(answerIterator.hasNext()){
+            PollResult next = answerIterator.next();
+            ListIterator<Answer> answersForOneUser = next.getAnswerList().listIterator();
+            while(answersForOneUser.hasNext()) {
+                double totalNumber = 0;
+                Answer nextAnswer = answersForOneUser.next();
+                totalNumber += Double.parseDouble(nextAnswer.getGivenAnswerList().get(0));
+                totalNumbers.add(totalNumber);
+            }
         }
+        //We've got a list of totalNumbers for each of the PollResults --> Each PollResult has one totalNumber
 
-        List<Double> listOfValues = new ArrayList<>();
+        List<List<Double>> listOfValues = new ArrayList<>();
 
-        for (int i = 0; i < values.getGivenAnswerList().size() ; i++) {
-            try {
-                listOfValues.add(getRelativeFrequencyOfOneValue(values.getGivenAnswerList().get(i), totalNumber));
+
+        answerIterator = values.listIterator();
+        while(answerIterator.hasNext()){
+            PollResult next = answerIterator.next();
+            ListIterator<Answer> answersForOneUser = next.getAnswerList().listIterator();
+            while(answersForOneUser.hasNext()) {
+                List<Double> innerValues = new ArrayList<>();
+                double totalNumber = 0;
+                Answer nextAnswer = answersForOneUser.next();
+                for (int i = 0; i < nextAnswer.getGivenAnswerList().size() ; i++) {
+                    innerValues.add(getRelativeFrequencyOfOneValue(nextAnswer.getGivenAnswerList().get(i), totalNumber));
+                }
+                listOfValues.add(innerValues);
             }
-            catch (Exception e)
-            {
-                return null;
-            }
+
+
         }
 
         return listOfValues;
     }
 
-    /**
+    /** DONT NEED THAT SINCE WE'RE USING POLLRESULTS
      * This method uses normalizeAllDoubleValues to convert absolute numbers into relative numbers.
      * It casts the Integer values into double values first in order to use the method.
      * @param values a list of absolute integer values.
      * @return a list of corresponding relative double values.
      */
-    public static List<Double> getRelativeFrequencyOfAllIntegerValues(List<Integer> values){
+    /*public static List<Double> getRelativeFrequencyOfAllIntegerValues(List<Integer> values){
 
         List<Double> listOfDoubleValues = new ArrayList<>();
 
@@ -158,14 +177,15 @@ public void loadFilter(List<FilterCmd> input)
         }
 
         return getRelativeFrequencyOfDoubleValues(listOfDoubleValues);
-    }
+    }*/
+
 
     /**
      * This function returns the modus of a list of absolute values.
      * @param allValues absolute values.
      * @return the highest value.
      */
-    public static double modus(List<Double> allValues){
+    /*public static double modus(List<Double> allValues){
 
         double currentHighest = allValues.get(0);
 
@@ -177,19 +197,19 @@ public void loadFilter(List<FilterCmd> input)
 
         return currentHighest;
 
-    }
+    }*/
 
-    public static double modus(Answer allValues){
+    public static List<Double> modus(List<PollResult> allValues){
 
-        double currentHighest = Double.parseDouble(allValues.getGivenAnswerList().get(0));
-
-        for (int i = 0; i < allValues.getGivenAnswerList().size(); i++) {
-            if(Double.parseDouble(allValues.getGivenAnswerList().get(i))>currentHighest){
-                currentHighest = Double.parseDouble(allValues.getGivenAnswerList().get(i));
+        List<Double> modi = new ArrayList<>();
+        for(int i = 0; i<allValues.size(); i++){ /**Iterate over answers*/
+            for(int j = 0; j<allValues.get(i).getAnswerList().size(); i++){ /**Iterate over questions for answer i*/
+                if(Double.parseDouble(allValues.get(i).getAnswerList().get(j).getGivenAnswerList().get(0)) > modi.get(j)) /**If Question j from answer i is higher than the current highest set that element*/
+                    modi.set(j, Double.parseDouble(allValues.get(i).getAnswerList().get(j).getGivenAnswerList().get(0)));
             }
         }
 
-        return currentHighest;
+        return modi;
 
     }
 
@@ -203,7 +223,7 @@ public void loadFilter(List<FilterCmd> input)
     private static <T> int constrict(T val, int max)
     {
         max -= 1;
-        int casted = Integer.parseInt(val.toString()); /**Ugly but effective*/
+        int casted = Integer.parseInt((String) val); /**Ugly but effective since it's already a string*/
         if(casted < 0)
         {
             return 0;
@@ -215,15 +235,51 @@ public void loadFilter(List<FilterCmd> input)
         return casted;
     }
 
+
+    private List<List<Answer>> toNormalList(List<PollResult> input){
+        List<List<Answer>> outputList = new ArrayList<>();
+        Answer[][] output = new Answer[input.size()][input.get(0).getAnswerList().size()];
+
+        for(int i = 0; i<input.size(); i++){ //Iterate over singular pollResults
+            for(int j = 0; j<input.get(i).getAnswerList().size(); j++){ //Iterate over singular Answers
+                output[i][j] = input.get(i).getAnswerList().get(j);
+            }
+        }
+
+        Answer[][] intermediateList = new Answer[input.get(0).getAnswerList().size()][input.size()];
+
+        for(int i = 0; i<input.size(); i++){
+            for(int j = 0; j<input.get(i).getAnswerList().size(); j++){
+                intermediateList[j][i] = input.get(i).getAnswerList().get(j); //Transpose array so that columns are Arrays of answers for one question
+            }
+        }
+
+        for(int i = 0; i<input.size(); i++){
+            List<Answer> intermediate = new ArrayList<>();
+            intermediate = Arrays.asList(intermediateList[i]);
+            outputList.add(intermediate);
+        }
+        return outputList;
+    }
+
+    private List<Double> toFirstValuesList(List<Answer> input){
+        List<Double> allFirstValues = new ArrayList<>();
+        for(int i = 0; i<input.size(); i++){
+            Double next = Double.parseDouble(input.get(i).getGivenAnswerList().get(0));
+            allFirstValues.add(next);
+        }
+        return allFirstValues;
+    }
+
     /**
      * This function returns the p-Quantile of the provided values.
      * If the list is empty the function returns null.
      * If p is below zero or above one it will be set to zero or one respectively.
-     * @param values list of values to pick the quantile from. The values will be sorted inside the function.
+     * list of values to pick the quantile from. The values will be sorted inside the function.
      * @param p the parameter to calculate the quantile for example p=0.5 equals the median and p=1 equals the maximum.
      * @return the value corresponding to the p.
      **/
-    private static Double pQuantile(List<Double> values, double p)
+    /*private static Double pQuantile(List<Double> values, double p)
     {
         if(values.isEmpty())
         {
@@ -250,11 +306,11 @@ public void loadFilter(List<FilterCmd> input)
         {
             return xnp1;
         }
-    }
+    }*/
 
-    private static Double pQuantile(Answer values, double p)
+    private List<Double> pQuantile(List<PollResult> allValues, double p)
     {
-        if(values.getGivenAnswerList().isEmpty())
+        if(allValues.isEmpty())
         {
             return null;
         }
@@ -266,19 +322,33 @@ public void loadFilter(List<FilterCmd> input)
         {
             p = 1.0;
         }
-        Collections.sort(values.getGivenAnswerList());
-        int n = values.getGivenAnswerList().size();
-        double xnp = 0.0;
-        double xnp1 = Double.parseDouble(values.getGivenAnswerList().get(constrict(n * p, values.getGivenAnswerList().size())));
-        if(n * p % 1.0 == 0.0)
-        {
-            xnp = Double.parseDouble(values.getGivenAnswerList().get(constrict((n * p) - 1,values.getGivenAnswerList().size())));
-            return (xnp + xnp1) / 2;
+
+        List<List<Answer>> answers = toNormalList(allValues);
+        List<Double> quantiles = new ArrayList<>();
+        ListIterator<List<Answer>> answerIterator = answers.listIterator();
+        while(answerIterator.hasNext()){
+            List<Answer> questions = answerIterator.next();
+            /**Now we can operate on a list of answers for one singular question at a goddamn time*/
+            ListIterator<Answer> questionIterator = questions.listIterator();
+            /**Build up a thing that makes a sortable list of all the first elements of this list*/
+            List<Double> allFirstValues = toFirstValuesList(questions);
+            Collections.sort(allFirstValues);
+            int n = allFirstValues.size();
+            double xnp = 0.0;
+            double xnp1 = allFirstValues.get(constrict(n * p, allFirstValues.size()));
+            if(n * p % 1.0 == 0.0)
+            {
+                xnp = allFirstValues.get(constrict((n * p) - 1,allFirstValues.size()));
+                quantiles.add((xnp + xnp1) / 2);
+            }
+            else
+            {
+                quantiles.add(xnp1);
+            }
+
         }
-        else
-        {
-            return xnp1;
-        }
+        return quantiles;
+
     }
 
     /**
@@ -286,12 +356,12 @@ public void loadFilter(List<FilterCmd> input)
     * @param values list of values to calculate the median from.
     * @return will return null for empty lists, otherwise will return the median of given list of values.
     */
-    private static Double median(List<Double> values)
+    /*private static Double median(List<Double> values)
     {
         return pQuantile(values, 0.5);
-    }
+    }*/
 
-    private static Double median(Answer values)
+    private List<Double> median(List<PollResult> values)
     {
         return pQuantile(values, 0.5);
     }
@@ -312,13 +382,19 @@ public void loadFilter(List<FilterCmd> input)
         return cumulated;
     }
 
-    private double cumulate(Answer values, Double threshold){ //Kumulierte Häufigkeit
-        double cumulated = 0;
-        Iterator<String> listIterator = values.getGivenAnswerList().listIterator();
+    private List<Double> cumulate(List<PollResult> pollAnswers, Double threshold){ //Kumulierte Häufigkeit
+        List<Double> outputList = new ArrayList<>();
+        Iterator<PollResult> listIterator = pollAnswers.listIterator();
         while(listIterator.hasNext()){
-            if(Double.parseDouble(listIterator.next()) < threshold.doubleValue()) { cumulated++; }
+            double cumulated = 0;
+            PollResult next = listIterator.next();
+            Iterator<Answer> answerIterator = next.getAnswerList().listIterator();
+            while(answerIterator.hasNext()){
+                if(Double.parseDouble(answerIterator.next().getGivenAnswerList().get(0)) < threshold.doubleValue()) { cumulated++; } //Only take first element, won't work with anything else anyway
+            }
+            outputList.add(cumulated);
         }
-        return cumulated;
+        return outputList;
     }
 
     public static <T> List<Answer> filterByAnswer(List<Answer> input, List<T> wantedAnswers){
