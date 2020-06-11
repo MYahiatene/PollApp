@@ -22,31 +22,38 @@
                     </v-btn>
 
                     <v-card v-for="category in categoryData" :key="category.categoryId" class="ma-5" width="600">
-                        <!-- <v-dialog v-model="categoryDialog" max-width="700">
-                            <v-card-title>
-                                <span class="headline">Kategorie umbennen</span>
-                            </v-card-title>
-                            <v-row cols="12" sm="6" md="4">
-                                <v-text-field v-model="editCategory.categoryName"></v-text-field>
-                            </v-row>
-                            <v-card-actions>
-                                <v-btn color="blue darken-1" text @click="this.categoryDialog = false">Abbrechen</v-btn>
-                                <v-spacer></v-spacer>
-                                <v-btn color="blue darken-1" text @click="saveCategoryName">Sichern</v-btn>
-                            </v-card-actions>
-                        </v-dialog> -->
                         <v-card-title>
                             <h2 style="font-weight: normal;" class="ma-0">
                                 {{ category.categoryName }}
                             </h2>
                             <v-spacer></v-spacer>
-                            <v-icon medium class="mr-2" @click="editCat(category)">
-                                mdi-pencil
-                            </v-icon>
+                            <template>
+                                <div class="text-center">
+                                    <v-dialog v-model="categoryDialog" max-width="500">
+                                        <template v-slot:activator="{ on }">
+                                            <v-icon medium class="mr-2" v-on="on" @click="editCat(category)">
+                                                mdi-pencil
+                                            </v-icon>
+                                        </template>
+                                        <v-card-title>
+                                            <span class="headline">Kategorie umbennen</span>
+                                        </v-card-title>
+                                        <v-row cols="12" sm="6" md="4">
+                                            <v-text-field v-model="editCategory.categoryName"></v-text-field>
+                                        </v-row>
+                                        <v-card-actions>
+                                            <v-btn color="blue darken-1" text @click="close">Abbrechen</v-btn>
+                                            <v-spacer></v-spacer>
+                                            <v-btn color="blue darken-1" text @click="save">Sichern</v-btn>
+                                        </v-card-actions>
+                                    </v-dialog>
+                                </div>
+                            </template>
                             <v-icon medium @click="deleteCategory(category)">
                                 mdi-delete
                             </v-icon>
                         </v-card-title>
+
                         <v-divider></v-divider>
 
                         <v-list>
@@ -104,6 +111,7 @@ export default {
     components: { /* CategoryListElement, */ QuestionBuildWidget /* draggable */ },
     data() {
         return {
+            editedIndex: -1,
             disableDrag: false,
             pollData: [],
             categoryData: [],
@@ -206,10 +214,26 @@ export default {
                 })
         },
         editCat(category) {
+            this.editedIndex = this.categoryData.indexOf(category)
+            this.editCategory = Object.assign({}, category)
+            this.categoryDialog = true
+        },
+        editCategoryData(categoryID, categoryName) {
+            this.$axios.put('/editcategory', {
+                categoryId: categoryID,
+                name: categoryName,
+            })
+        },
+        save() {
+            Object.assign(this.categoryData[this.editedIndex], this.editCategory)
+            this.editCategoryData(this.editCategory.categoryId, this.editCategory.categoryName)
+            this.close()
+        },
+        close() {
             this.categoryDialog = false
-            this.$axios.put('/editCategory', {
-                pollId: this.$route.params.QuestionOverview,
-                name: this.editCategory.categoryName,
+            this.$nextTick(() => {
+                this.editCategory = Object.assign({}, this.defaultCategory)
+                this.editedIndex = -1
             })
         },
         deleteCategory(category) {
