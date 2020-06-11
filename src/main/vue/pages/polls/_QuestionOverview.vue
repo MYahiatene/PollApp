@@ -116,6 +116,7 @@ export default {
     },
     data() {
         return {
+            editedIndex: -1,
             disableDrag: false,
             pollData: [],
             categoryData: [],
@@ -141,6 +142,19 @@ export default {
             questionTitle: '',
             categoryTitle: '',
             questionType: '',
+            defaultCategory: {
+                categoryId: null,
+                categoryName: '',
+                pollId: null,
+                questionList: [],
+            },
+            editCategory: {
+                categoryId: null,
+                categoryName: 'Neue Kategorie',
+                pollId: this.$route.params.QuestionOverview,
+                questionList: [],
+            },
+            categoryDialog: false,
         }
     },
     created() {
@@ -211,18 +225,62 @@ export default {
                         obj.questionList = ele.questionList
                         this.categoryData.push(obj)
                     })
-                    console.log('CategoryData')
-                    console.log(this.categoryData)
-                    console.log('Complete data')
-                    console.log(this.test)
                 })
                 .catch((error) => {
                     console.log(error)
                 })
         },
+        createCategory() {
+            this.$axios
+                .post('/addcategory', {
+                    pollId: this.$route.params.QuestionOverview,
+                    name: this.editCategory.categoryName,
+                })
+                .then((response) => {
+                    this.editCategory = response.data
+                    console.log(this.editCategory)
+                    this.defaultCategory = Object.assign({}, this.editCategory)
+                    this.categoryData.push(this.defaultCategory)
+                    console.log(this.categoryData)
+                })
+        },
+        editCat(category) {
+            this.editedIndex = this.categoryData.indexOf(category)
+            this.editCategory = Object.assign({}, category)
+            this.categoryDialog = true
+        },
+        editCategoryData(categoryID, categoryName) {
+            this.$axios.put('/editcategory', {
+                categoryId: categoryID,
+                name: categoryName,
+            })
+        },
+        save() {
+            Object.assign(this.categoryData[this.editedIndex], this.editCategory)
+            this.editCategoryData(this.editCategory.categoryId, this.editCategory.categoryName)
+            this.close()
+        },
+        close() {
+            this.categoryDialog = false
+            this.$nextTick(() => {
+                this.editCategory = Object.assign({}, this.defaultCategory)
+                this.editedIndex = -1
+            })
+        },
+        deleteCategory(category) {
+            const index = this.categoryData.indexOf(category)
+            confirm('Sind sie sich sicher, dass sie diese Kategorie löschen möchten?') &&
+                this.categoryData.splice(index, 1) &&
+                this.$axios
+                    .put('/deletecategory', {
+                        categoryId: category.categoryId,
+                    })
+                    .catch((error) => {
+                        console.log(error)
+                    })
+        },
         ...mapActions({
             sendData: 'pollOverview/sendData',
-            createCategory: 'pollOverview/createCategory',
             setCategory: 'pollOverview/setCategory',
         }),
         ...mapMutations({

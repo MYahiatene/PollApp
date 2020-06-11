@@ -43,6 +43,11 @@ public class CategoryController {
         return "Test";
     }
 
+    @PutMapping("/editcategory")
+    public void editCategory(final @RequestBody CategoryCmd categoryCmd) {
+        categoryService.editCategory(Long.valueOf(categoryCmd.getCategoryId()), categoryCmd.getName());
+    }
+
     /**
      * Deletes a category in the data base
      */

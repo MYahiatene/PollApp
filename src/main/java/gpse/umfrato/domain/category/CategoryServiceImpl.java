@@ -62,4 +62,12 @@ public class CategoryServiceImpl implements CategoryService {
         return categoryRepository.findCategoriesByPollId(pollId);
     }
 
+    @Override
+    public void editCategory(long categoryId, String name) {
+        final Category category = categoryRepository.getOne(categoryId);
+        category.setCategoryName(name);
+        categoryRepository.save(category);
+
+    }
+
 }

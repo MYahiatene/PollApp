@@ -9,4 +9,5 @@ public interface CategoryService {
     void deleteCategory(final long categoryId);
     void deleteCategoryAndQuestions(final long categoryId);
     List<Category> getAllCategories(final long pollId);
+    void editCategory(final long categoryId, final String name);
 }
