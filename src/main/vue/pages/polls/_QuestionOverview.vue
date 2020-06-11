@@ -21,40 +21,68 @@
                         Frage hinzufügen
                     </v-btn>
 
-                    <v-card v-for="category in categoryData" :key="category.categoryId" class="ma-5" width="600">
-                        <v-card-title>
-                            <h2 style="font-weight: normal;" class="ma-0">{{ category.categoryName }}</h2>
-                            <v-spacer></v-spacer>
-                        </v-card-title>
-
-                        <v-divider></v-divider>
-
-                        <v-list>
-                            <v-list-item v-for="question in category.questionList" :key="question.questionId">
-                                <v-list-item-title>{{ question.questionMessage }}</v-list-item-title>
-                            </v-list-item>
-                        </v-list>
-
-                        <!--
-                        <v-card-text>
-                            <v-row>
-                                <v-col cols="12" lg="12" md="12" sm="12">
-                                    <v-expansion-panels tile multiple :disabled="disableDrag" class="mt-n6">
-                                        <v-list two-line>
-
+                    <v-expansion-panels multiple>
+                        <v-expansion-panel v-for="category in categoryData" :key="category.categoryId">
+                            <draggable :options="{ group: 'test' }">
+                                <v-expansion-panel-header>{{ category.categoryName }}</v-expansion-panel-header>
+                                <draggable :options="{ group: 'test' }">
+                                    <v-expansion-panel-content
+                                        v-for="question in category.questionList"
+                                        :key="question.questionId"
+                                    >
+                                        <v-list>
+                                            <v-list-item @click="selectQuestion(question, question.questionType)">{{
+                                                question.questionMessage
+                                            }}</v-list-item>
                                         </v-list>
-                                    </v-expansion-panels>
-                                </v-col>
-                            </v-row>
-                        </v-card-text>
-                -->
-                    </v-card>
+                                    </v-expansion-panel-content>
+                                </draggable>
+                            </draggable>
+                        </v-expansion-panel>
+                    </v-expansion-panels>
                 </v-row>
             </v-col>
 
             <v-col cols="12" lg="8" md="8" sm="8">
                 <v-card class="pa-1" :style="frameColor">
-                    <QuestionBuildWidget></QuestionBuildWidget>
+                    <div v-if="questionIndex !== 0">
+                        <v-card flat class="ma-0">
+                            <v-container>
+                                <v-row no-gutters>
+                                    <v-col>
+                                        <h3>Frage bearbeiten</h3>
+                                    </v-col>
+                                    <v-spacer></v-spacer>
+                                    <v-spacer></v-spacer>
+                                    <v-col>
+                                        <v-btn @click="deleteQuestion">
+                                            <v-icon color="primary" left>
+                                                mdi-delete
+                                            </v-icon>
+                                            Löschen
+                                        </v-btn>
+                                    </v-col>
+                                </v-row>
+                                <v-row no-gutters>
+                                    <v-textarea
+                                        v-model="questionMessage"
+                                        label="Fragentext"
+                                        hint="Was soll den Umfrageteilnehmer gefragt werden?"
+                                        rows="1"
+                                    >
+                                    </v-textarea>
+                                </v-row>
+                                <v-row no-gutters>
+                                    <v-overflow-btn
+                                        v-model="questionTypeChoice"
+                                        :items="questionWidgets"
+                                        label="Fragenart"
+                                    ></v-overflow-btn>
+                                </v-row>
+                                <v-row> </v-row>
+                            </v-container>
+                        </v-card>
+                    </div>
                 </v-card>
             </v-col>
         </v-row>
@@ -75,19 +103,44 @@
 
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
-// import draggable from 'vuedraggable'
-import QuestionBuildWidget from '../../components/QuestionBuildWidget'
+import draggable from 'vuedraggable'
+// import QuestionBuildWidget from '../../components/QuestionBuildWidget'
 // import CategoryListElement from '../../components/CategoryListElement'
 
 export default {
     name: 'QuestionOverview',
-    components: { /* CategoryListElement, */ QuestionBuildWidget /* draggable */ },
+    components: {
+        /* CategoryListElement, */
+        /* QuestionBuildWidget */
+        draggable,
+    },
     data() {
         return {
             disableDrag: false,
             pollData: [],
             categoryData: [],
             questionListData: [],
+            test: [],
+            questionWidgets: [
+                {
+                    text: 'Auswahlfrage',
+                    value: 'ChoiceQuestion',
+                },
+                {
+                    text: 'Freitextfrage',
+                    value: 'TextQuestion',
+                },
+                {
+                    text: 'Intervallfrage',
+                    value: 'RangeQuestion',
+                },
+            ],
+            questionMessage: '',
+            questionIndex: 0,
+            categoryIndex: 0,
+            questionTitle: '',
+            categoryTitle: '',
+            questionType: '',
         }
     },
     created() {
@@ -150,14 +203,18 @@ export default {
                     },
                 })
                 .then((response) => {
-                    this.categoryData = response.data
-                    this.categoryData.forEach((ele) => {
-                        this.questionListData.push(ele.questionList)
+                    response.data.forEach((ele) => {
+                        const obj = {}
+                        this.test = response.data
+                        obj.categoryId = ele.categoryId
+                        obj.categoryName = ele.categoryName
+                        obj.questionList = ele.questionList
+                        this.categoryData.push(obj)
                     })
                     console.log('CategoryData')
                     console.log(this.categoryData)
-                    console.log('QuestionListData')
-                    console.log(this.questionListData)
+                    console.log('Complete data')
+                    console.log(this.test)
                 })
                 .catch((error) => {
                     console.log(error)
@@ -186,6 +243,21 @@ export default {
         },
         disableDraggable(disable) {
             this.disableDrag = disable
+        },
+        selectQuestion(question, questionType) {
+            this.questionIndex = 1
+            this.questionMessage = question.questionMessage
+
+            switch (questionType) {
+                case 'ChoiceQuestion':
+                    return 'ChoiceQuestion'
+                case 'TextQuestion':
+                    return 'TextQuestion'
+                case 'RangeQuestion':
+                    return 'RangeQuestion'
+                default:
+                    return ''
+            }
         },
     },
 }
