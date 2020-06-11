@@ -35,13 +35,18 @@
                                 <v-btn color="blue darken-1" text @click="saveCategoryName">Sichern</v-btn>
                             </v-card-actions>
                         </v-dialog> -->
-                        <v-card-title @click="categoryDialog = true">
+                        <v-card-title>
                             <h2 style="font-weight: normal;" class="ma-0">
                                 {{ category.categoryName }}
                             </h2>
                             <v-spacer></v-spacer>
+                            <v-icon medium class="mr-2" @click="editCat(category)">
+                                mdi-pencil
+                            </v-icon>
+                            <v-icon medium @click="deleteCategory(category)">
+                                mdi-delete
+                            </v-icon>
                         </v-card-title>
-
                         <v-divider></v-divider>
 
                         <v-list>
@@ -200,12 +205,24 @@ export default {
                     console.log(this.categoryData)
                 })
         },
-        saveCategoryName() {
+        editCat(category) {
             this.categoryDialog = false
             this.$axios.put('/editCategory', {
                 pollId: this.$route.params.QuestionOverview,
                 name: this.editCategory.categoryName,
             })
+        },
+        deleteCategory(category) {
+            const index = this.categoryData.indexOf(category)
+            confirm('Sind sie sich sicher, dass sie diese Kategorie löschen möchten?') &&
+                this.categoryData.splice(index, 1) &&
+                this.$axios
+                    .put('/deletecategory', {
+                        categoryId: category.categoryId,
+                    })
+                    .catch((error) => {
+                        console.log(error)
+                    })
         },
         ...mapActions({
             sendData: 'pollOverview/sendData',
