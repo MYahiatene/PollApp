@@ -31,9 +31,9 @@
                                         :key="question.questionId"
                                     >
                                         <v-list>
-                                            <v-list-item @click="selectQuestion(question, question.questionType)">{{
-                                                question.questionMessage
-                                            }}</v-list-item>
+                                            <v-list-item @click="selectQuestion(question, question.questionType)"
+                                                >{{ question.questionMessage }}
+                                            </v-list-item>
                                         </v-list>
                                     </v-expansion-panel-content>
                                 </draggable>
@@ -79,7 +79,7 @@
                                         label="Fragenart"
                                     ></v-overflow-btn>
                                 </v-row>
-                                <v-row> </v-row>
+                                <v-row></v-row>
                             </v-container>
                         </v-card>
                     </div>
