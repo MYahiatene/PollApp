@@ -3,34 +3,59 @@
         <AuthGate v-if="isAuthenticated !== true"></AuthGate>
         <v-container v-else-if="storeValid">
             <v-card class="pa-2 ma-0"><v-text-field v-model="pollData.pollName" clearable class="display-1" /></v-card>
-
             <v-container>
                 <v-row>
                     <v-col cols="12" lg="4" md="4" sm="4">
                         <v-row>
-                            <v-card v-for="(p, i) in categoryData" :key="i" class="mt-1" width="110rem" outlined>
-                                <v-list-item three-line>
-                                    <v-list-item-content>
-                                        <v-list-item-title class="headline mb-1">{{
-                                            p.categoryName
-                                        }}</v-list-item-title>
-                                    </v-list-item-content>
-                                </v-list-item>
-                                <draggable>
-                                    <v-list-item v-for="(l, j) in questionListData" :key="j">{{
-                                        l.questionMessage
-                                    }}</v-list-item>
-                                    <v-card-actions> </v-card-actions>
-                                </draggable>
+                            <v-card class="ma-0">
+                                <v-card-title>
+                                    <h2 style="font-weight: normal;" class="ma-0">Kategorien</h2>
+
+                                    <v-spacer></v-spacer>
+
+                                    <v-btn depressed @click="createCategory()" class="ml-11">
+                                        <v-icon color="primary">
+                                            mdi-plus
+                                        </v-icon>
+
+                                        <v-spacer></v-spacer>
+
+                                        Hinzufügen
+                                    </v-btn>
+                                </v-card-title>
+
+                                <v-divider></v-divider>
+
+                                <v-card-text>
+                                    <v-row>
+                                        <!--                                        negative margin in order to cancel out the prior waste of space-->
+
+                                        <v-col cols="12" lg="12" md="12" sm="12">
+                                            <v-expansion-panels tile multiple :disabled="disableDrag" class="mt-n6">
+                                                <draggable v-model="categorys" :disabled="disableDrag">
+                                                    <v-list
+                                                        v-for="category in categoryData"
+                                                        :key="category.categoryId"
+                                                        two-line
+                                                    >
+                                                        <!--<CategoryListElement
+                                                            :categoryID="category.categoryId"
+                                                            :pollID="pollId"
+                                                            @text-input="disableDraggable"
+                                                        />-->
+                                                    </v-list>
+                                                </draggable>
+                                            </v-expansion-panels>
+                                        </v-col>
+                                    </v-row>
+                                </v-card-text>
                             </v-card>
                         </v-row>
                     </v-col>
+
                     <v-col cols="12" lg="8" md="8" sm="8">
                         <v-card class="pa-1" :style="frameColor">
                             <QuestionBuildWidget></QuestionBuildWidget>
-                            <v-card flat class="mt-1 pa-1">
-                                <p class="ma-2">(Wähle eine Frage aus einer Kategorie, um sie zu bearbeiten.)</p>
-                            </v-card>
                         </v-card>
                     </v-col>
                 </v-row>
@@ -71,7 +96,6 @@ export default {
     created() {
         this.loadPoll()
         this.loadCategories()
-        this.loadQuestions()
     },
     computed: {
         ...mapGetters({
@@ -141,24 +165,6 @@ export default {
                 .catch((error) => {
                     console.log(error)
                 })
-        },
-        async loadQuestions() {
-            await this.categoryData.forEach((ele) => {
-                this.$axios
-                    .get('/getallquestions', {
-                        params: {
-                            categoryId: ele.categoryId,
-                        },
-                    })
-                    .then((response) => {
-                        this.questionListData.push(response.data)
-                        console.log('QuestionListData')
-                        console.log(this.questionListData)
-                    })
-                    .catch((error) => {
-                        console.log(error)
-                    })
-            })
         },
         ...mapActions({
             sendData: 'pollOverview/sendData',

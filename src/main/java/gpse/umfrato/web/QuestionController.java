@@ -8,6 +8,7 @@ import gpse.umfrato.domain.question.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 @RequestMapping(value = "/api", method = RequestMethod.GET)

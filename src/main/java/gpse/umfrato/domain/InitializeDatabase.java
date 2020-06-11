@@ -59,7 +59,6 @@ public class InitializeDatabase implements InitializingBean {
      * This method initializes the database with an user, a poll, a question and an answer.
      */
     @Override
-    @Transactional
     public void afterPropertiesSet() {
 
         final String tbettmannUserName = "tbettmann";
@@ -78,7 +77,7 @@ public class InitializeDatabase implements InitializingBean {
         final Poll poll = pollService.createPoll(testPoll);
         categoryService.createCategory("Testkategorie aus InitDB", poll.getPollId());
         questionService.addQuestion(String.valueOf(poll.getPollId()), "Testfrage aus InitDB", Arrays.asList("Testantwort aus InitDB","Andere Antwort aus InitDB"), "TestType aus InitDB");
-        /* Question q1 = questionService.addQuestion(poll.getPollId().toString(), "Wie hat Ihnen die Veranstaltung insgesamt gefallen?", Arrays.asList("Sehr gut", "Gut", "Überwiegend gut", "Schlecht", "Ich weiß nicht"), "ChoiceQuestion");
+        Question q1 = questionService.addQuestion(poll.getPollId().toString(), "Wie hat Ihnen die Veranstaltung insgesamt gefallen?", Arrays.asList("Sehr gut", "Gut", "Überwiegend gut", "Schlecht", "Ich weiß nicht"), "ChoiceQuestion");
         Question q2 = questionService.addQuestion(testPoll.getPollId().toString(), "Welches Geschlecht haben Sie?", Arrays.asList("Weiblich", "Männlich", "Divers"), "ChoiceQuestion");
         Question q3 = questionService.addQuestion(testPoll.getPollId().toString(), "Wie geht es Ihnen heute?", Arrays.asList("Gut", "In Ordnung", "Schlecht"), "ChoiceQuestion");
         Question q4 = questionService.addQuestion(testPoll.getPollId().toString(), "Was hat Sie am Meisten überzeugt?", Arrays.asList("Die Vorträge", "Die Informationsstände", "Das Catering", "Ich kann mich nicht entscheiden"), "ChoiceQuestion");
@@ -86,6 +85,6 @@ public class InitializeDatabase implements InitializingBean {
         Question q6 = questionService.addQuestion(testPoll.getPollId().toString(), "Wie viel Zeit haben sie auf der Messe verbracht?", Arrays.asList("unter einer Stunde", "1-2 Stunden", "2-5 Stunden", "über 5 Stunden"), "ChoiceQuestion");
         for (int i = 0; i < 10; i++) {
             answerService.giveAnswer(tbettmannUserName, testPoll.getPollId().toString(), q1.getQuestionId().toString(), Collections.singletonList("0"));
-        } */
+        }
     }
 }
