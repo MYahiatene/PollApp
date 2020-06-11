@@ -6,7 +6,7 @@ import java.util.List;
 
 public class DataFilter implements Filter {
 @Override public List<PollResult> filter(List<PollResult> input) {
-    return null;
+    return input;
 }
 
 @Override public List<Double> compute(List<PollResult> input) {

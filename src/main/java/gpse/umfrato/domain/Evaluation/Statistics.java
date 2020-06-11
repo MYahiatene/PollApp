@@ -53,11 +53,10 @@ public void loadFilter(List<FilterCmd> input)
             Filter f = null;
             if(cmd.getFilterType().equals("questionAnswer"))
             {
-                f = new QuestionFilter(Long.valueOf(cmd.getTargetPollId()),Long.valueOf(cmd.getTargetQuestionId()),cmd.getTargetAnswerPossibilities(),true);
+                f = new QuestionFilter(Long.valueOf(cmd.getTargetPollId()),Long.valueOf(cmd.getTargetQuestionId()),cmd.getTargetAnswerPossibilities(),false);
             }
             if(f != null)
             {
-                System.out.println("addFilter");
                 filters.add(f);
             }
         }
@@ -66,12 +65,9 @@ public void loadFilter(List<FilterCmd> input)
     public String generateDiagram()
     {
         List<PollResult> prs = pollResultService.getPollResults(pollId);
-        System.out.println(prs.size());
-        System.out.println(filters.size());
         for(Filter f:filters) {
             prs = f.filter(prs);
         }
-        System.out.println(prs.size());
         DiagramData dd = new DiagramData(pollService.getPoll(prs.get(0).getPollId().toString()),prs,questionService);
         return "{\"name\":\"" + pollService.getPoll(pollId.toString()).getPollName() + "\",\"questionList\": " + dd.toJSON() + "}";
     }

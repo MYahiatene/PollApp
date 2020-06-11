@@ -91,12 +91,12 @@ public class InitializeDatabase implements InitializingBean {
 
         for(int i = 0; i < 150; i++)
         {
-            answerService.giveAnswer(String.valueOf(i),testPoll.getPollId().toString(),q1.getQuestionId().toString(), Collections.singletonList(String.valueOf(ThreadLocalRandom.current().nextInt(0,5))));
-            answerService.giveAnswer(String.valueOf(i),testPoll.getPollId().toString(),q2.getQuestionId().toString(), Collections.singletonList(String.valueOf(ThreadLocalRandom.current().nextInt(0,3))));
-            answerService.giveAnswer(String.valueOf(i),testPoll.getPollId().toString(),q3.getQuestionId().toString(), Collections.singletonList(String.valueOf(ThreadLocalRandom.current().nextInt(0,3))));
-            answerService.giveAnswer(String.valueOf(i),testPoll.getPollId().toString(),q4.getQuestionId().toString(), Collections.singletonList(String.valueOf(ThreadLocalRandom.current().nextInt(0,4))));
-            answerService.giveAnswer(String.valueOf(i),testPoll.getPollId().toString(),q5.getQuestionId().toString(), Collections.singletonList(String.valueOf(ThreadLocalRandom.current().nextInt(0,3))));
-            answerService.giveAnswer(String.valueOf(i),testPoll.getPollId().toString(),q6.getQuestionId().toString(), Collections.singletonList(String.valueOf(ThreadLocalRandom.current().nextInt(0,4))));
+            answerService.giveAnswer(String.valueOf(i),testPoll.getPollId().toString(),q1.getQuestionId().toString(), Collections.singletonList(String.valueOf(ThreadLocalRandom.current().nextInt(0,4))));
+            answerService.giveAnswer(String.valueOf(i),testPoll.getPollId().toString(),q2.getQuestionId().toString(), Collections.singletonList(String.valueOf(ThreadLocalRandom.current().nextInt(0,2))));
+            answerService.giveAnswer(String.valueOf(i),testPoll.getPollId().toString(),q3.getQuestionId().toString(), Collections.singletonList(String.valueOf(ThreadLocalRandom.current().nextInt(0,2))));
+            answerService.giveAnswer(String.valueOf(i),testPoll.getPollId().toString(),q4.getQuestionId().toString(), Collections.singletonList(String.valueOf(ThreadLocalRandom.current().nextInt(0,3))));
+            answerService.giveAnswer(String.valueOf(i),testPoll.getPollId().toString(),q5.getQuestionId().toString(), Collections.singletonList(String.valueOf(ThreadLocalRandom.current().nextInt(0,2))));
+            answerService.giveAnswer(String.valueOf(i),testPoll.getPollId().toString(),q6.getQuestionId().toString(), Collections.singletonList(String.valueOf(ThreadLocalRandom.current().nextInt(0,3))));
         }
     }
 }
