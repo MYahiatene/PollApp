@@ -33,15 +33,28 @@ it passes the attributes:
         </v-row>
         <!--        this part is only shown and enabled when a diagram is wanted -->
 
-        <v-row no-gutters>
-            <v-switch v-model="multipleColors" label="Verschiedene Farben pro Antwort"> </v-switch>
+        <v-row v-show="showDiagram" no-gutters>
+            <v-switch v-model="setMultipleColors" label="Verschiedene Farben pro Antwort"> </v-switch>
         </v-row>
 
-        <v-row v-show="showDiagram && multipleColors">
-            <v-col>
+        <v-row v-show="showDiagram && setMultipleColors">
+            <v-col v-if="!oneQuestion">
                 <draggable :list="colorList">
                     <div v-for="(color, index) in colorList" :key="index">
                         <v-chip
+                            v-if="index === currentChipIndex"
+                            class="ma-1"
+                            :color="color"
+                            close
+                            close-icon="mdi-minus-circle-outline"
+                            @click:close="deleteColor(index)"
+                            @click="currentChipIndex = index"
+                            large
+                        >
+                            Farbe {{ index + 1 }}</v-chip
+                        >
+                        <v-chip
+                            v-else
                             class="ma-1"
                             :color="color"
                             close
@@ -58,12 +71,31 @@ it passes the attributes:
                 </v-btn>
             </v-col>
 
+            <v-col v-else>
+                <draggable :list="colorList">
+                    <div v-for="(color, index) in colorList" :key="index">
+                        <v-chip
+                            v-if="index === currentChipIndex"
+                            class="ma-1"
+                            :color="color"
+                            @click="currentChipIndex = index"
+                            large
+                        >
+                            Farbe {{ index + 1 }}</v-chip
+                        >
+                        <v-chip v-else class="ma-1" :color="color" @click="currentChipIndex = index">
+                            Farbe {{ index + 1 }}</v-chip
+                        >
+                    </div>
+                </draggable>
+            </v-col>
+
             <v-col>
                 <v-color-picker v-model="currentChipColor" @input="colorChip"> </v-color-picker>
             </v-col>
         </v-row>
 
-        <v-row v-show="showDiagram && !multipleColors">
+        <v-row v-show="showDiagram && !setMultipleColors">
             <!--            <v-row v-show="!forbidColorSwitch && showDiagram">-->
             <v-col cols="12" lg="5">
                 <!--                overflowbutton for diagramColor-->
@@ -86,11 +118,36 @@ it passes the attributes:
         <v-row no-gutters>
             <v-switch v-model="showTable" label="Zeige eine Tabelle an"> </v-switch>
         </v-row>
+
+        <!-- if we edit the settings for all questions we are asked to confirm, if we want already eddited questions to be changed-->
+        <v-row v-if="!oneQuestion" no-gutters>
+            <v-switch v-model="useOnAll" label="Auf alle Diagramme anwenden?"> </v-switch>
+        </v-row>
         <!-- Button that will send the picked data to the parent component -->
         <v-row no-gutters>
             <v-btn
                 color="success"
-                @click="$emit('update-Visuals', showDiagram, chosenDiagram, chosenColorArray, showTable)"
+                @click="
+                    $emit(
+                        'update-Visuals',
+                        showDiagram,
+                        chosenDiagram,
+                        colorList,
+                        setChosenDiagramColor,
+                        setMultipleColors,
+                        showTable
+                    ),
+                        $emit(
+                            'update-all-Visuals',
+                            showDiagram,
+                            chosenDiagram,
+                            colorList,
+                            setChosenDiagramColor,
+                            setMultipleColors,
+                            showTable,
+                            useOnAll
+                        )
+                "
             >
                 Anwenden
             </v-btn>
@@ -108,6 +165,11 @@ export default {
     },
     // these props can be passed by the parent component
     props: {
+        // is this a settings window for one particular question or all questions?
+        oneQuestion: {
+            type: Boolean,
+            default: false,
+        },
         showDiagram: {
             type: Boolean,
         },
@@ -119,6 +181,15 @@ export default {
             type: Array,
             default: () => ['#aaaaaa'],
         },
+        chosenDiagramColor: {
+            type: String,
+            default: '#aaaaaa',
+        },
+
+        multipleColors: {
+            type: Boolean,
+            default: false,
+        },
         showTable: {
             type: Boolean,
         },
@@ -128,7 +199,7 @@ export default {
         this.chosenDiagramColorAsWord = this.diagramColorsInWords[this.diagramColors.indexOf(this.chosenDiagramColor)]
         this.setChosenDiagramColor = this.chosenDiagramColor
         this.colorList = this.chosenDiagramColors
-        console.log('ben here')
+        this.setMultipleColors = this.multipleColors
     },
 
     data() {
@@ -145,13 +216,15 @@ export default {
 
             setChosenDiagramColor: '',
 
-            multipleColors: true,
+            setMultipleColors: false,
 
             colorList: ['#123456', '#444444', '#789005'],
             // index of the chip that can be altered by colorPicker
             currentChipIndex: 0,
 
             currentChipColor: '',
+
+            useOnAll: false,
         }
     },
 
@@ -191,6 +264,10 @@ export default {
             if (index > -1) {
                 this.colorList.splice(index, 1)
             }
+
+            if (index <= this.currentChipIndex) {
+                this.currentChipIndex--
+            }
         },
 
         colorChip() {
@@ -199,19 +276,25 @@ export default {
     },
 
     computed: {
-        chosenColorArray() {
-            if (this.multipleColors) {
-                return this.colorList
-            } else {
-                const c = []
-                c.push(this.setChosenDiagramColor)
-                return c
-            }
+        styleForChosenChip() {
+            return (
+                'border-color:' + this.$vuetify.theme.currentTheme.info + '; border-style: solid; border-width: thick;'
+            )
         },
 
-        chosenDiagramColor() {
-            return this.chosenDiagramColors[0]
-        },
+        // chosenColorArray() {
+        //     if (this.multipleColors) {
+        //         return this.colorList
+        //     } else {
+        //         const c = []
+        //         c.push(this.setChosenDiagramColor)
+        //         return c
+        //     }
+        // },
+        //
+        // chosenDiagramColor() {
+        //     return this.chosenDiagramColors[0]
+        // },
     },
 }
 </script>

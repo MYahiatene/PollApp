@@ -22,8 +22,11 @@
                         <!--                    the visual settings the widget has right noe are passed as props-->
                         <visual-evaluation-settings
                             @input="onShow()"
+                            :one-question="true"
                             :chosen-diagram="diagramType"
-                            :chosen-diagram-colors="backgroundColors"
+                            :chosen-diagram-colors="choppedBackgroundColors"
+                            :chosen-diagram-color="backgroundColor"
+                            :multiple-colors="multipleColors"
                             :show-diagram="showDiagram"
                             :show-table="showTable"
                             v-on:update-Visuals="updateVisuals"
@@ -87,11 +90,25 @@ export default {
             type: Array,
         },
 
+        backgroundColor: {
+            type: String,
+            default: '#aaaaaa',
+        },
+
+        multipleColors: {
+            type: Boolean,
+            default: false,
+        },
+
         showTable: {
             type: Boolean,
             default: true,
         },
         showDiagram: {
+            type: Boolean,
+            default: true,
+        },
+        keepPrivateVisuals: {
             type: Boolean,
             default: true,
         },
@@ -103,6 +120,9 @@ export default {
         diagramKey: '',
         // these options are needed to display a visual diagram, they are passed as props into that component
         barChartOptions: {
+            legend: {
+                display: false,
+            },
             responsive: true,
             maintainAspectRatio: false,
             scales: {
@@ -124,11 +144,16 @@ export default {
             },
         },
 
+        // stores if we have used the visualSettings on this widget
+        visualsUpdated: false,
+
         // these aren't needed right now, might come in handy to keep the options that the widgets overrides the general design settings
-        privateDiagramColor: '',
-        privateDiagramType: '',
-        privateShowTable: '',
-        privateShowDiagram: '',
+        // privateBackgroundColor: '',
+        // backgroundColors: [],
+        // multipleColors: false,
+        // diagramType: '',
+        // showTable: '',
+        // showDiagram: '',
 
         // indicates that the setting window is closed by default
         visualSettings: false,
@@ -139,7 +164,18 @@ export default {
             { text: 'Relative Häufigkeit', value: 'rel', sortable: false },
         ],
     }),
+    mounted() {
+        // this.prepareVisualSettingData()
+    },
     computed: {
+        // backgroundColor() {
+        //     if (!this.visualsUpdated || !this.keepPrivateVisuals) {
+        //         return this.passedBackgroundColor
+        //     } else {
+        //         return this.privateBackgroundColor
+        //     }
+        // },
+
         // here we compute the data for the table
         items() {
             const h = []
@@ -150,19 +186,52 @@ export default {
         },
         // here we compute the data for the visual diagram, writing it into a format the components can process
         chartdataSet() {
-            return {
-                labels: this.answerPossibilities,
-                datasets: [
-                    {
-                        label: this.questionTitle,
-                        backgroundColor: this.backgroundColors,
-                        data: this.data,
-                    },
-                ],
+            if (this.multipleColors) {
+                return {
+                    labels: this.answerPossibilities,
+                    datasets: [
+                        {
+                            label: this.questionTitle,
+                            backgroundColor: this.choppedBackgroundColors,
+                            data: this.data,
+                        },
+                    ],
+                }
+            } else {
+                return {
+                    labels: this.answerPossibilities,
+                    datasets: [
+                        {
+                            label: this.questionTitle,
+                            backgroundColor: this.backgroundColor,
+                            data: this.data,
+                        },
+                    ],
+                }
             }
+        },
+
+        choppedBackgroundColors() {
+            const c = []
+            for (let i = 0; i < this.answerPossibilities.length; i++) {
+                c[i] = this.backgroundColors[i % this.backgroundColors.length]
+            }
+            return c
         },
     },
     methods: {
+        prepareVisualSettingData() {
+            if (!this.visualsUpdated || !this.keepPrivateVisuals) {
+                console.log('Hi, I was here')
+                this.visualsUpdated = false
+                // this.backgroundColor = this.passedBackgroundColor
+                // this.backgroundColors = this.passedBackgroundColors
+                // this.multipleColors = this.passedMultipleColors
+                // this.diagramType = this.passedDiagramType
+                // this.showTable = this.passedShowTable
+                // this.showDiagram = this.passedShowDiagram
+            }
+        },
         /*
 
       this method is emitted by the settings window.
@@ -170,13 +239,29 @@ export default {
       the diagram key is added to force the widget to actually update the color
 
        */
-        updateVisuals(showDiagram, DiagramType, DiagramColors, showTable) {
+        updateVisuals(showDiagram, diagramType, diagramColors, diagramColor, multipleColors, showTable) {
             this.showDiagram = showDiagram
-            this.diagramType = DiagramType
-            this.backgroundColors = DiagramColors
+            this.diagramType = diagramType
+
+            this.multipleColors = multipleColors
+
+            this.choppedBackgroundColors = diagramColors
+
+            this.backgroundColor = diagramColor
+            this.privateBackgroundColor = diagramColor
+
             this.showTable = showTable
+
             this.visualSettings = false
-            this.diagramKey = DiagramColors[0]
+            if (multipleColors) {
+                for (let i = 0; i < diagramColors.length; i++) {
+                    this.diagramKey = this.diagramKey + diagramColors[i]
+                }
+            } else {
+                this.diagramKey = diagramColor
+            }
+
+            this.visualsUpdated = true
         },
     },
 }

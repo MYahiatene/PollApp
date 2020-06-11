@@ -18,7 +18,8 @@ that each display a basic evaluation of one specific question-->
                         <!--             Here we open a setting window
         where the user can change the visual settings of every question at the same time-->
                         <v-card
-                            ><visual-evaluation-settings @update-Visuals="updateVisuals"> </visual-evaluation-settings
+                            ><visual-evaluation-settings :one-question="false" @update-all-Visuals="updateVisuals">
+                            </visual-evaluation-settings
                         ></v-card>
                     </v-dialog>
                     <v-spacer></v-spacer>
@@ -138,6 +139,9 @@ that each display a basic evaluation of one specific question-->
                                         :answer-possibilities="question.answerPossibilities"
                                         :data="question.data"
                                         :background-colors="defaultColors"
+                                        :background-color="defaultColor"
+                                        :multiple-colors="multipleColors"
+                                        :keep-private-visuals="!useOnAll"
                                         :diagram-type="defaultDiagramType"
                                     ></ChoiceQuestionEvaluationWidget>
                                     <v-spacer></v-spacer>
@@ -174,10 +178,13 @@ export default {
             // the dialog (setting window) is closed by default
             dialog: false,
             // default settings for the visual settings, they are passed as props into the choiceQuestionEvaluationWidgets
-            defaultColors: ['#aaaaaa', '#aaaaaa', '#aaaaaa', '#aaaaaa', '#aaaaaa', '#aaaaaa'],
+            defaultColors: ['#aaaaaa'],
+            defaultColor: '#aaaaaa',
+            multipleColors: false,
             defaultDiagramType: 'bar',
             showDiagram: true,
             showTable: true,
+            useOnAll: false,
             // options that will be displayed in the sub menu
             menuItems: [{ title: 'Visuelle Einstellungen' }, { title: 'Exportieren' }],
             // itemsPerPageArray: [1, 2, 3],
@@ -267,13 +274,27 @@ export default {
       the widget key is added to force the widget to actually update the color
 
        */
-        updateVisuals(showDiagram, DiagramType, DiagramColor, showTable) {
+        updateVisuals(showDiagram, DiagramType, DiagramColors, DiagramColor, multipleColors, showTable, useOnAll) {
             this.showDiagram = showDiagram
             this.defaultDiagramType = DiagramType
+
             this.defaultColor = DiagramColor
+            this.defaultColors = DiagramColors
+
+            this.multipleColors = multipleColors
             this.showTable = showTable
+
             this.dialog = false
-            this.widgetKey = DiagramColor
+
+            if (multipleColors) {
+                for (let i = 0; i < DiagramColors.length; i++) {
+                    this.widgetKey = this.diagramKey + DiagramColors[i]
+                }
+            } else {
+                this.widgetKey = DiagramColor
+            }
+
+            this.useOnAll = useOnAll
         },
 
         nextPage() {
