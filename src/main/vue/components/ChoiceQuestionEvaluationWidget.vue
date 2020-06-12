@@ -19,9 +19,8 @@
             <v-row v-if="visualSettings">
                 <v-col cols="12" lg="12">
                     <v-card>
-                        <!--                    the visual settings the widget has right noe are passed as props-->
+                        <!--                    the visual settings the widget gets the current settings passed as props-->
                         <visual-evaluation-settings
-                            @input="onShow()"
                             :one-question="true"
                             :chosen-diagram="diagramType"
                             :chosen-diagram-colors="choppedBackgroundColors"
@@ -53,6 +52,7 @@
             <v-row>
                 <v-col cols="12" lg="12">
                     <div v-if="showTable">
+                        <p>Median: {{ calculated.median }}</p>
                         <v-data-table :headers="header" :items="items" hide-default-footer dense> </v-data-table></div
                 ></v-col>
             </v-row>
@@ -86,6 +86,10 @@ export default {
             type: Array,
         },
 
+        calculated: {
+            type: Object,
+        },
+
         backgroundColors: {
             type: Array,
         },
@@ -108,10 +112,6 @@ export default {
             type: Boolean,
             default: true,
         },
-        keepPrivateVisuals: {
-            type: Boolean,
-            default: true,
-        },
     },
     name: 'ChoiceQuestionEvaluationWidget',
     data: () => ({
@@ -119,6 +119,8 @@ export default {
         // (value is set on the color of the diagram and update whenever updateVisuals is called)
         diagramKey: '',
         // these options are needed to display a visual diagram, they are passed as props into that component
+
+        // bar charts dont have a legend
         barChartOptions: {
             legend: {
                 display: false,
@@ -136,6 +138,8 @@ export default {
             },
         },
 
+        // pie charts dont have a grid in the background
+
         pieChartOptions: {
             responsive: true,
             maintainAspectRatio: false,
@@ -143,17 +147,6 @@ export default {
                 yAxes: [{ display: false }],
             },
         },
-
-        // stores if we have used the visualSettings on this widget
-        visualsUpdated: false,
-
-        // these aren't needed right now, might come in handy to keep the options that the widgets overrides the general design settings
-        // privateBackgroundColor: '',
-        // backgroundColors: [],
-        // multipleColors: false,
-        // diagramType: '',
-        // showTable: '',
-        // showDiagram: '',
 
         // indicates that the setting window is closed by default
         visualSettings: false,
@@ -164,27 +157,19 @@ export default {
             { text: 'Relative Häufigkeit', value: 'rel', sortable: false },
         ],
     }),
-    mounted() {
-        // this.prepareVisualSettingData()
-    },
-    computed: {
-        // backgroundColor() {
-        //     if (!this.visualsUpdated || !this.keepPrivateVisuals) {
-        //         return this.passedBackgroundColor
-        //     } else {
-        //         return this.privateBackgroundColor
-        //     }
-        // },
 
+    computed: {
         // here we compute the data for the table
         items() {
             const h = []
             for (let i = 0; i < this.answerPossibilities.length; i++) {
-                h.push({ antwort: this.answerPossibilities[i], abs: this.data[i], rel: '-' })
+                const percentage = Math.round(this.calculated.relative[i] * 100)
+                h.push({ antwort: this.answerPossibilities[i], abs: this.data[i], rel: percentage + '%' })
             }
             return h
         },
-        // here we compute the data for the visual diagram, writing it into a format the components can process
+        // here we compute the data for the visual diagram, writing it into a format the components can process.
+        // We either give one color or an array of colors
         chartdataSet() {
             if (this.multipleColors) {
                 return {
@@ -210,6 +195,10 @@ export default {
                 }
             }
         },
+        /*
+
+        This method creates an array of color, which length is the one of answers for this question
+       */
 
         choppedBackgroundColors() {
             const c = []
@@ -220,18 +209,6 @@ export default {
         },
     },
     methods: {
-        prepareVisualSettingData() {
-            if (!this.visualsUpdated || !this.keepPrivateVisuals) {
-                console.log('Hi, I was here')
-                this.visualsUpdated = false
-                // this.backgroundColor = this.passedBackgroundColor
-                // this.backgroundColors = this.passedBackgroundColors
-                // this.multipleColors = this.passedMultipleColors
-                // this.diagramType = this.passedDiagramType
-                // this.showTable = this.passedShowTable
-                // this.showDiagram = this.passedShowDiagram
-            }
-        },
         /*
 
       this method is emitted by the settings window.

@@ -33,14 +33,20 @@ it passes the attributes:
         </v-row>
         <!--        this part is only shown and enabled when a diagram is wanted -->
 
+        <!--        Here we can decide if we want multiple colors -->
+
         <v-row v-show="showDiagram" no-gutters>
             <v-switch v-model="setMultipleColors" label="Verschiedene Farben pro Antwort"> </v-switch>
         </v-row>
 
+        <!--        This allows us to assemble an array of colors using draggable chips and a color picker -->
+
         <v-row v-show="showDiagram && setMultipleColors">
             <v-col v-if="!oneQuestion">
+                <!--                this is rendered if we are in a settings window for one specific question-->
                 <draggable :list="colorList">
                     <div v-for="(color, index) in colorList" :key="index">
+                        <!--                        the chip that is currently editable in the color picker is displayed larger-->
                         <v-chip
                             v-if="index === currentChipIndex"
                             class="ma-1"
@@ -66,12 +72,14 @@ it passes the attributes:
                         >
                     </div>
                 </draggable>
+                <!--                a click on this button creates a new chip -->
                 <v-btn icon @click="newColor">
                     <v-icon> mdi-plus</v-icon>
                 </v-btn>
             </v-col>
 
             <v-col v-else>
+                <!--                if we are in a settings window for one component, the number of chips is set. So we can't delete one, nor can we add one-->
                 <draggable :list="colorList">
                     <div v-for="(color, index) in colorList" :key="index">
                         <v-chip
@@ -95,12 +103,11 @@ it passes the attributes:
             </v-col>
         </v-row>
 
+        <!--        this is shown if we only want one color -->
+
         <v-row v-show="showDiagram && !setMultipleColors">
-            <!--            <v-row v-show="!forbidColorSwitch && showDiagram">-->
             <v-col cols="12" lg="5">
                 <!--                overflowbutton for diagramColor-->
-
-                <!--                    :disabled="forbidColorSwitch"-->
                 <v-overflow-btn
                     dense
                     v-model="chosenDiagramColorAsWord"
@@ -110,6 +117,7 @@ it passes the attributes:
                 ></v-overflow-btn>
             </v-col>
             <v-col>
+                <!--                color picker -->
                 <v-color-picker v-model="setChosenDiagramColor" @input="resetChosenDiagramColor"> </v-color-picker>
             </v-col>
         </v-row>
@@ -229,36 +237,33 @@ export default {
     },
 
     methods: {
+        // updates the setChosenDiagramColor, when it was picked through the overflow button
         changeDiagramColor() {
-            // this.chosenDiagramColor = this.diagramColors[
-            //     this.diagramColorsInWords.indexOf(this.chosenDiagramColorAsWord)
-            // ]
             this.setChosenDiagramColor = this.diagramColors[
                 this.diagramColorsInWords.indexOf(this.chosenDiagramColorAsWord)
             ]
-            // this.disableColorSwitch()
         },
+        // updates the chosenDiagram, when it was picked through the overflow button
         changeDiagramType() {
             this.chosenDiagram = this.diagramTypes[this.diagramTypesInWords.indexOf(this.chosenDiagramAsWord)]
-            // this.forbidColorSwitch = false
         },
-
-        // disableColorSwitch() {
-        //     this.forbidColorSwitch = true
-        // },
 
         computeDiagram() {
             this.chosenDiagramAsWord = this.diagramTypesInWords[this.diagramTypes.indexOf(this.chosenDiagram)]
         },
-
+        // resets the value of chosenDiagramColorAsWord, so nothing is displayed in overflow button once you pick a color in the color picker
         resetChosenDiagramColor() {
             this.chosenDiagramColorAsWord = ''
         },
+
+        // if we add a new chip, we declare it the current chip, that can be edited
 
         newColor() {
             this.colorList.push('#aaaaaa')
             this.currentChipIndex = this.colorList.length - 1
         },
+
+        // if we delete a chip, the currentChipIndex needs to be decreased, if the deleted chip was in front of it
 
         deleteColor(index) {
             if (index > -1) {
@@ -270,31 +275,20 @@ export default {
             }
         },
 
+        // colors the current Chip in the color from the color picker
+
         colorChip() {
             this.colorList[this.currentChipIndex] = this.currentChipColor
         },
     },
 
     computed: {
+        // here we can give a chip an outline to set it apart
         styleForChosenChip() {
             return (
                 'border-color:' + this.$vuetify.theme.currentTheme.info + '; border-style: solid; border-width: thick;'
             )
         },
-
-        // chosenColorArray() {
-        //     if (this.multipleColors) {
-        //         return this.colorList
-        //     } else {
-        //         const c = []
-        //         c.push(this.setChosenDiagramColor)
-        //         return c
-        //     }
-        // },
-        //
-        // chosenDiagramColor() {
-        //     return this.chosenDiagramColors[0]
-        // },
     },
 }
 </script>
