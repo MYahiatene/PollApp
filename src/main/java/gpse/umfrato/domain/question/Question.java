@@ -2,6 +2,10 @@ package gpse.umfrato.domain.question;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import javax.persistence.*;
 import java.util.List;
 
@@ -27,7 +31,8 @@ public class Question {
     @Lob
     private String questionMessage;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Cascade(org.hibernate.annotations.CascadeType.ALL)
     private List<String> answerPossibilities;
 
     /**
@@ -38,11 +43,13 @@ public class Question {
     private boolean userAnswers = false;
 
     private int numberOfPossibleAnswers = 1;
+
     /**
      * This constructor receives a question message and saves in the question object.
-     * @param question the question message
+     *
+     * @param question            the question message
      * @param answerPossibilities a list with all possible answers to this question
-     * @param questionType the type how the question should be answered
+     * @param questionType        the type how the question should be answered
      */
     public Question(final String question, final List<String> answerPossibilities, final String questionType) {
         this.questionMessage = question;

@@ -1,12 +1,13 @@
 <template>
     <AuthGate v-if="isAuthenticated !== true"></AuthGate>
     <v-container v-else-if="storeValid">
+        <QuestionBuildWidget></QuestionBuildWidget>
         <v-card class="pa-2 ma-0">
             <v-text-field v-model="pollData.pollName" clearable class="display-1" />
         </v-card>
-        <v-row
-            ><v-col cols="2"
-                ><v-btn depressed @click="createCategory()" class="ma-5">
+        <v-row>
+            <v-col cols="2">
+                <v-btn depressed @click="createCategory()" class="ma-5">
                     <v-icon color="primary">
                         mdi-plus
                     </v-icon>
@@ -14,15 +15,14 @@
                 </v-btn>
             </v-col>
             <v-col cols="2">
-                <v-btn depressed @click="createQuestion()" class="ma-5">
+                <v-btn depressed @click="activateCreateQuestion()" class="ma-5">
                     <v-icon color="primary">
                         mdi-plus
                     </v-icon>
                     Frage hinzufügen
-                </v-btn></v-col
-            ></v-row
-        >
-
+                </v-btn>
+            </v-col>
+        </v-row>
         <v-row>
             <v-col cols="4">
                 <v-expansion-panels multiple>
@@ -53,61 +53,130 @@
                 <v-card max-width="500">
                     <v-card-title> Kategorie umbenennen</v-card-title>
                     <v-col>
-                        <v-text-field v-model="tmpcategory.categoryName"> </v-text-field>
+                        <v-text-field v-model="tmpcategory.categoryName"></v-text-field>
                     </v-col>
                     <v-card-actions>
                         <v-btn color="primary" dark class="mb-2" @click="this.categoryIndex = false">Abbrechen</v-btn>
-                        <v-spacer></v-spacer
-                        ><v-btn color="primary" dark class="mb-2" @click="save(tmpcategory)"
-                            >Sichern</v-btn
-                        ></v-card-actions
-                    ></v-card
-                >
+                        <v-spacer></v-spacer>
+                        <v-btn color="primary" dark class="mb-2" @click="save(tmpcategory)">Sichern </v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-col>
+            <v-col v-if="questionCreationIndex">
+                <v-card class="pa-1" :style="frameColor">
+                    <div>
+                        <v-card flat class="ma-0">
+                            <v-container>
+                                <v-row no-gutters>
+                                    <v-col>
+                                        <h3>Frage hinzufügen</h3>
+                                    </v-col>
+                                    <v-spacer></v-spacer>
+                                    <v-spacer></v-spacer>
+                                </v-row>
+                                <v-row no-gutters>
+                                    <v-textarea
+                                        v-model="questionObj.questionMessage"
+                                        label="Fragentext"
+                                        hint="Was soll den Umfrageteilnehmer gefragt werden?"
+                                        rows="1"
+                                    >
+                                    </v-textarea>
+                                </v-row>
+                                <v-row no-gutters>
+                                    <v-overflow-btn
+                                        v-model="questionObj.questionType"
+                                        :items="questionWidgets"
+                                        label="Fragenart"
+                                    ></v-overflow-btn>
+                                </v-row>
+                                <v-card-actions>
+                                    <v-col>
+                                        <v-btn
+                                            @click="
+                                                createQuestion(questionObj.questionMessage, questionObj.questionType)
+                                            "
+                                        >
+                                            <v-icon color="primary" left>
+                                                mdi-plus
+                                            </v-icon>
+                                            Speichern
+                                        </v-btn>
+                                    </v-col>
+                                    <v-col cols="2">
+                                        <v-btn @click="questionCreationIndex = false">
+                                            <v-icon color="primary" left>
+                                                mdi-minus
+                                            </v-icon>
+                                            Abbrechen
+                                        </v-btn>
+                                    </v-col>
+                                </v-card-actions>
+                            </v-container>
+                        </v-card>
+                    </div>
+                </v-card>
+            </v-col>
+            <v-col v-if="questionIndex !== 0" cols="8">
+                <v-container>
+                    <v-row>
+                        <v-col>
+                            <v-card class="pa-1" :style="frameColor" cols="6">
+                                <div>
+                                    <v-card flat class="ma-0">
+                                        <v-container>
+                                            <v-row no-gutters>
+                                                <v-col>
+                                                    <h3>Frage bearbeiten</h3>
+                                                </v-col>
+                                                <v-spacer></v-spacer>
+                                                <v-spacer></v-spacer>
+                                            </v-row>
+                                            <v-row no-gutters>
+                                                <v-textarea
+                                                    v-model="questionMessage"
+                                                    label="Fragentext"
+                                                    hint="Was soll den Umfrageteilnehmer gefragt werden?"
+                                                    rows="1"
+                                                >
+                                                </v-textarea>
+                                            </v-row>
+                                            <v-row no-gutters>
+                                                <v-overflow-btn
+                                                    v-model="questionTypeChoice"
+                                                    :items="questionWidgets"
+                                                    label="Fragenart"
+                                                ></v-overflow-btn>
+                                            </v-row>
+                                            <v-card-actions>
+                                                <v-row>
+                                                    <v-col cols="10">
+                                                        <v-btn @click="editQuestion">
+                                                            <v-icon color="primary" left>
+                                                                mdi-pencil
+                                                            </v-icon>
+                                                            Speichern
+                                                        </v-btn>
+                                                    </v-col>
+                                                    <v-col cols="6" md="6" sm="6" lg="2">
+                                                        <v-btn @click="deleteQuestion">
+                                                            <v-icon color="primary" left>
+                                                                mdi-delete
+                                                            </v-icon>
+                                                            Löschen
+                                                        </v-btn>
+                                                    </v-col>
+                                                </v-row>
+                                            </v-card-actions>
+                                        </v-container>
+                                    </v-card>
+                                </div>
+                            </v-card>
+                        </v-col>
+                    </v-row>
+                </v-container>
             </v-col>
         </v-row>
-
-        <v-col v-if="questionIndex !== 0" cols="12" lg="8" md="8" sm="8">
-            <v-card class="pa-1" :style="frameColor">
-                <div>
-                    <v-card flat class="ma-0">
-                        <v-container>
-                            <v-row no-gutters>
-                                <v-col>
-                                    <h3>Frage bearbeiten</h3>
-                                </v-col>
-                                <v-spacer></v-spacer>
-                                <v-spacer></v-spacer>
-                                <v-col>
-                                    <v-btn @click="deleteQuestion">
-                                        <v-icon color="primary" left>
-                                            mdi-delete
-                                        </v-icon>
-                                        Löschen
-                                    </v-btn>
-                                </v-col>
-                            </v-row>
-                            <v-row no-gutters>
-                                <v-textarea
-                                    v-model="questionMessage"
-                                    label="Fragentext"
-                                    hint="Was soll den Umfrageteilnehmer gefragt werden?"
-                                    rows="1"
-                                >
-                                </v-textarea>
-                            </v-row>
-                            <v-row no-gutters>
-                                <v-overflow-btn
-                                    v-model="questionTypeChoice"
-                                    :items="questionWidgets"
-                                    label="Fragenart"
-                                ></v-overflow-btn>
-                            </v-row>
-                            <v-row></v-row>
-                        </v-container>
-                    </v-card>
-                </div>
-            </v-card>
-        </v-col>
     </v-container>
     <v-container v-else>
         <v-card>
@@ -126,19 +195,20 @@
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import draggable from 'vuedraggable'
-// import QuestionBuildWidget from '../../components/QuestionBuildWidget'
+import QuestionBuildWidget from '../../components/QuestionBuildWidget'
 // import CategoryListElement from '../../components/CategoryListElement'
 
 export default {
     name: 'QuestionOverview',
     components: {
+        QuestionBuildWidget,
         /* CategoryListElement, */
-        /* QuestionBuildWidget */
         draggable,
     },
     data() {
         return {
             disableDrag: false,
+            questionCreationIndex: false,
             pollData: [],
             categoryData: [],
             questionListData: [],
@@ -157,7 +227,9 @@ export default {
                     value: 'RangeQuestion',
                 },
             ],
+            selectedQuestion: {},
             questionMessage: '',
+            questionObj: { questionMessage: '', questionType: '' },
             questionIndex: 0,
             tmpcategory: {},
             categoryIndex: false,
@@ -245,10 +317,32 @@ export default {
                         obj.questionList = ele.questionList
                         this.categoryData.push(obj)
                     })
+                    console.log('CategoryData')
+                    console.log(this.categoryData)
                 })
                 .catch((error) => {
                     console.log(error)
                 })
+        },
+        deleteQuestion() {
+            this.$axios.post('/removeQuestion', {
+                pollId: this.pollData.pollId,
+                questionId: this.selectedQuestion.questionId,
+            })
+            console.log(this.pollData.pollId)
+            console.log(this.selectedQuestion.questionId)
+            this.categoryData.forEach((element) => {
+                if (this.selectedQuestion.categoryId === element.categoryId) {
+                    element.questionList.forEach((el) => {
+                        if (el.questionId === this.selectedQuestion.questionId) {
+                            element.questionList.slice(element.questionList.indexOf(el), 1)
+                        }
+                    })
+                }
+            })
+            this.categoryData[0].questionList.forEach((question) => {
+                console.log(question.questionId)
+            })
         },
         createCategory() {
             this.$axios
@@ -265,6 +359,8 @@ export default {
                 })
         },
         editCat(category) {
+            this.questionIndex = 0
+            this.questionCreationIndex = false
             this.categoryIndex = true
             this.tmpcategory = category
         },
@@ -286,6 +382,30 @@ export default {
                     .catch((error) => {
                         console.log(error)
                     })
+        },
+        activateCreateQuestion() {
+            this.questionIndex = 0
+            this.categoryIndex = false
+            this.questionCreationIndex = true
+        },
+        createQuestion(NewQuestionMessage, NewQuestionType) {
+            if (NewQuestionMessage === '' || NewQuestionType === '') {
+                alert('Feld ausfüllen!')
+            } else {
+                const question = {
+                    pollId: this.pollData.pollId,
+                    questionMessage: NewQuestionMessage,
+                    questionType: NewQuestionType,
+                    categoryId: this.categoryData.categoryId,
+                    answerPossibilities: [],
+                    userAnswers: false,
+                    numberOfPossibleAnswers: 1,
+                }
+                this.$axios.post('/addquestion', question).then((response) => {
+                    question.questionId = response.data.questionId
+                })
+                this.categoryData[0].questionList.push(question)
+            }
         },
         ...mapActions({
             sendData: 'pollOverview/sendData',
@@ -311,6 +431,9 @@ export default {
             this.disableDrag = disable
         },
         selectQuestion(question, questionType) {
+            this.selectedQuestion = question
+            this.categoryIndex = false
+            this.questionCreationIndex = false
             this.questionIndex = 1
             this.questionMessage = question.questionMessage
 

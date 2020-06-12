@@ -34,9 +34,9 @@ public class QuestionController {
      * @param questionCmd has the question and the poll id
      */
     @PostMapping("/addquestion")
-    public Long addQuestion(final @RequestBody QuestionCmd questionCmd) {
+    public Question addQuestion(final @RequestBody QuestionCmd questionCmd) {
         return questionService.addQuestion(questionCmd.getPollId(), questionCmd.getQuestionMessage(),
-            questionCmd.getAnswerPossibilities(), questionCmd.getQuestionType()).getQuestionId();
+            questionCmd.getAnswerPossibilities(), questionCmd.getQuestionType());
     }
 
     /**
