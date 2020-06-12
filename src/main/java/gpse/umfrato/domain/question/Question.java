@@ -38,16 +38,36 @@ public class Question {
     private String questionType;
 
     private int numberOfPossibleAnswers;
+
+    private int endValue;
+
+    private int startValue;
+
+    private int stepSize;
+
+    private String belowMessage;
+
+    private String aboveMessage;
+
+    private Boolean hideValues;
     /**
      * This constructor receives a question message and saves in the question object.
      * @param question the question message
      * @param answerPossibilities a list with all possible answers to this question
      * @param questionType the type how the question should be answered
      */
-    public Question(final String question, final List<String> answerPossibilities, final String questionType) {
+    public Question(final String question, final List<String> answerPossibilities, final String questionType,
+                    final int endValue, final int startValue, final int stepSize, final String belowMessage,
+                    final String aboveMessage, final Boolean hideValues) {
         this.questionMessage = question;
         this.answerPossibilities = answerPossibilities;
         this.questionType = questionType;
+        this.endValue = endValue;
+        this.startValue = startValue;
+        this.stepSize = stepSize;
+        this.belowMessage = belowMessage;
+        this.aboveMessage = aboveMessage;
+        this.hideValues = hideValues;
     }
 }
 

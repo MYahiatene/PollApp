@@ -146,7 +146,7 @@ export default {
                 answerId: '1',
                 pollId: '1',
             },
-            rangeAnswers: ['10', '20', '30'],
+            rangeAnswers: [],
         }
     },
     /**
@@ -211,24 +211,25 @@ export default {
          * Don't know how attributes are saved, so this is a placeholder: change min, max, text1, text2
          * Don't know if I have to declare the appedning thing an answer or if it works like this.
          * */
-        getRangeQuestionAnswersNO() {
-            const max = 100
+        getRangeQuestionAnswers() {
+            /* const max = 100
             const min = 10
             const step = 10
             const text1 = 'under 10'
             const text2 = 'over 10'
             if (text1 != null) {
-                this.rangeAnswers.append({ text1 })
+                this.rangeAnswers.push({ text1 })
             }
             const size = (max - min) / step
             for (let i = 1; i <= size; i++) {
                 const value = min + i * step
-                this.rangeAnswers.append({ value })
+                this.rangeAnswers.push({ value })
             }
             if (text2 != null) {
-                this.rangeAnswers.append({ text2 })
-            }
-            return 'answer in rangeAnswers' // Doesn't work yet!
+                this.rangeAnswers.push({ text2 })
+            } */
+            this.getRangeQuestionAnswersMutation()
+            return 'answer in rangeAnswers'
         },
     },
     methods: {
@@ -334,23 +335,29 @@ export default {
          * Don't know how attributes are saved, so this is a placeholder: change min, max, text1, text2
          * Don't know if I have to declare the appedning thing an answer or if it works like this.
          * */
-        getRangeQuestionAnswers() {
+        getRangeQuestionAnswersMutation() {
             const max = 100
             const min = 10
             const step = 10
             const text1 = 'under 10'
-            const text2 = 'over 10'
-            if (text1 != null) {
-                this.rangeAnswers.append({ text1 })
+            const text2 = 'over 90'
+            this.rangeAnswers = [] // set it to null from previous questions
+            if (max != null && min != null && step != null) {
+                if (text1 != null) {
+                    this.rangeAnswers.push(text1)
+                }
+                const size = (max - min) / step
+                for (let i = 0; i < size; i++) {
+                    console.log(i)
+                    const value = min + i * step
+                    this.rangeAnswers.push(value)
+                }
+                if (text2 != null) {
+                    this.rangeAnswers.push(text2)
+                }
             }
-            const size = (max - min) / step
-            for (let i = 1; i <= size; i++) {
-                const value = min + i * step
-                this.rangeAnswers.append({ value })
-            }
-            if (text2 != null) {
-                this.rangeAnswers.append({ text2 })
-            }
+            console.log(this.rangeAnswers)
+            console.log("Hi I'm in the getRangeQuestionAnswers method!")
         },
         // -------------------------------------------------------------------------------------------------------------
         // Get or save information to/from the Backend

@@ -16,7 +16,13 @@ public interface QuestionService {
     Question addQuestion(final String pollId,
                                 final String questionMessage,
                                 final List<String> answerPossibilities,
-                                final String questionType);
+                                final String questionType,
+                                final int endValue,
+                                final int startValue,
+                                final int stepSize,
+                                final String belowMessage,
+                                final String aboveMessage,
+                                final boolean hideValues);
 
     /**
      * This method removes a selected question.

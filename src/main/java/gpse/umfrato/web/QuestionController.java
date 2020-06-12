@@ -37,7 +37,9 @@ public class QuestionController {
     @PostMapping("/poll/{id:\\d+}/addquestion")
     public void addQuestion(/*@PathVariable("id") final String id*/ final @RequestBody QuestionCmd questionCmd) {
         questionService.addQuestion(questionCmd.getPollId(), questionCmd.getQuestionMessage(),
-            questionCmd.getAnswerPossibilities(), questionCmd.getQuestionType());
+            questionCmd.getAnswerPossibilities(), questionCmd.getQuestionType(), questionCmd.getEndValue(),
+            questionCmd.getStartValue(), questionCmd.getStepSize(), questionCmd.getBelowMessage(),
+            questionCmd.getAboveMessage(), questionCmd.getHideValues());
     }
 
     /**

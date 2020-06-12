@@ -15,4 +15,16 @@ public class QuestionCmd {
 
     private String questionType;
 
+    private int endValue;
+
+    private int startValue;
+
+    private int stepSize;
+
+    private String aboveMessage;
+
+    private String belowMessage;
+
+    private Boolean hideValues;
+
 }

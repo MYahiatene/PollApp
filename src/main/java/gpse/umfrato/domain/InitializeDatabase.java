@@ -74,11 +74,11 @@ public class InitializeDatabase implements InitializingBean {
         try {
             pollService.createPoll(testPoll);
 
-            questionService.addQuestion("1", "testFrage", Arrays.asList("Ja", "Nein", "Vielleicht"), "ChoiceQuestion");
-            questionService.addQuestion("1", "testFrage2", Arrays.asList("Jein", "Fein", "Vielschwer"), "ChoiceQuestion");
-            questionService.addQuestion("1", "testFrage3", new ArrayList<>(), "TextQuestion");
-            questionService.addQuestion("1", "TestFrage 4", new ArrayList<>(), "RangeQuestion");
-            questionService.addQuestion("1", "TestFrage 5", new ArrayList<>(), "SliderQuestion");
+            questionService.addQuestion("1", "testFrage", Arrays.asList("Ja", "Nein", "Vielleicht"), "ChoiceQuestion", 0, 0, 0, null, null, false);
+            questionService.addQuestion("1", "testFrage2", Arrays.asList("Jein", "Fein", "Vielschwer"), "ChoiceQuestion",0, 0, 0, null, null, false);
+            questionService.addQuestion("1", "testFrage3", new ArrayList<>(), "TextQuestion",0, 0, 0, null, null, false);
+            questionService.addQuestion("1", "TestFrage 4", new ArrayList<>(), "RangeQuestion",100, 10, 10, null, null, false);
+            questionService.addQuestion("1", "TestFrage 5", new ArrayList<>(), "SliderQuestion",100, 0, 10, "small", "big", false);
 
             userService.loadUserByUsername(testUsername);
         } catch (UsernameNotFoundException e) {
