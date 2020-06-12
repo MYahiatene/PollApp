@@ -54,7 +54,7 @@ it passes the attributes:
                             close
                             close-icon="mdi-minus-circle-outline"
                             @click:close="deleteColor(index)"
-                            @click="currentChipIndex = index"
+                            @click="updateCurrentChip(index)"
                             large
                         >
                             Farbe {{ index + 1 }}</v-chip
@@ -66,7 +66,7 @@ it passes the attributes:
                             close
                             close-icon="mdi-minus-circle-outline"
                             @click:close="deleteColor(index)"
-                            @click="currentChipIndex = index"
+                            @click="updateCurrentChip(index)"
                         >
                             Farbe {{ index + 1 }}</v-chip
                         >
@@ -86,12 +86,12 @@ it passes the attributes:
                             v-if="index === currentChipIndex"
                             class="ma-1"
                             :color="color"
-                            @click="currentChipIndex = index"
+                            @click="updateCurrentChip(index)"
                             large
                         >
                             Farbe {{ index + 1 }}</v-chip
                         >
-                        <v-chip v-else class="ma-1" :color="color" @click="currentChipIndex = index">
+                        <v-chip v-else class="ma-1" :color="color" @click="updateCurrentChip(index)">
                             Farbe {{ index + 1 }}</v-chip
                         >
                     </div>
@@ -261,6 +261,7 @@ export default {
         newColor() {
             this.colorList.push('#aaaaaa')
             this.currentChipIndex = this.colorList.length - 1
+            this.loadChipColorInPicker()
         },
 
         // if we delete a chip, the currentChipIndex needs to be decreased, if the deleted chip was in front of it
@@ -272,6 +273,7 @@ export default {
 
             if (index <= this.currentChipIndex) {
                 this.currentChipIndex--
+                this.loadChipColorInPicker()
             }
         },
 
@@ -279,6 +281,19 @@ export default {
 
         colorChip() {
             this.colorList[this.currentChipIndex] = this.currentChipColor
+        },
+
+        // the color of the current chip is loaded into the color picker
+
+        loadChipColorInPicker() {
+            this.currentChipColor = this.colorList[this.currentChipIndex]
+        },
+
+        // when we click on a chip, that chip is the new currentChip the color of the chip is loaded into the color picker
+
+        updateCurrentChip(index) {
+            this.currentChipIndex = index
+            this.loadChipColorInPicker()
         },
     },
 
