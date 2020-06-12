@@ -215,7 +215,7 @@ export default {
         }
     },
     mounted() {
-        this.initialize()
+        this.initialize(this.$route.params.BaseEvaluationPage)
     },
     computed: {
         ...mapGetters({
@@ -309,8 +309,9 @@ export default {
             this.itemsPerPage = number
         },
 
-        forceUpdate() {
-            this.$forceUpdate()
+        async forceUpdate() {
+            await this.initialize(this.$route.params.BaseEvaluationPage)
+            this.widgetKey += 1
         },
     },
 }

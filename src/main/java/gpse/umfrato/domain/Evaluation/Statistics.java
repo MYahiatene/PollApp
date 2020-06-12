@@ -3,6 +3,7 @@ package gpse.umfrato.domain.Evaluation;
 import gpse.umfrato.domain.Evaluation.FilterBlocks.FilterImpl.DataFilter;
 import gpse.umfrato.domain.Evaluation.FilterBlocks.FilterImpl.Filter;
 import gpse.umfrato.domain.Evaluation.FilterBlocks.FilterImpl.QuestionFilter;
+import gpse.umfrato.domain.question.Question;
 import gpse.umfrato.domain.answer.Answer;
 import gpse.umfrato.domain.answer.AnswerService;
 import gpse.umfrato.domain.category.CategoryService;
@@ -39,14 +40,25 @@ public class Statistics {
         this.pollService = pollService;
         this.pollResultService = pollResultService;
         this.categoryService = categoryService;
-        pollId = Long.valueOf(data.getBasePollId());
-        for(String qid:data.getBaseQuestionIds())
+        if(data.getBasePollId() == null)
         {
-            questionIds.add(Long.valueOf(qid));
+            System.out.println("Wetten doch?");
+            return;
+        }
+        pollId = Long.valueOf(data.getBasePollId());
+        if(data.getBaseQuestionIds().isEmpty()) {
+            for (Question q: questionService.getAllQuestions(pollId)) {
+                questionIds.add(q.getQuestionId());
+            }
+        }
+        else {
+            for (String qid: data.getBaseQuestionIds()) {
+                questionIds.add(Long.valueOf(qid));
+            }
         }
     }
 
-public void loadFilter(List<FilterCmd> input)
+    public void loadFilter(List<FilterCmd> input)
     {
         for(FilterCmd cmd:input)
         {
@@ -64,7 +76,15 @@ public void loadFilter(List<FilterCmd> input)
 
     public String generateDiagram()
     {
+        if(pollId == null)
+        {
+            return "{\"name\":\"Ungültige Umfrage\"}";
+        }
         List<PollResult> prs = pollResultService.getPollResults(pollId);
+        if(prs.isEmpty())
+        {
+            return "{\"name\":\"" + pollService.getPoll(pollId.toString()).getPollName() + "\",\"questionList\": []}";
+        }
         for(Filter f:filters) {
             prs = f.filter(prs);
         }
@@ -244,11 +264,10 @@ public void loadFilter(List<FilterCmd> input)
 
         Answer[][] intermediateList = new Answer[input.get(0).getAnswerList().size()][input.size()];
 
-        for(int i = 0; i<input.size(); i++){
-            for(int j = 0; j<input.get(i).getAnswerList().size(); j++){
+        for(int i = 0; i<input.size(); i++)
+            for (int j = 0; j < input.get(i).getAnswerList().size(); j++) {
                 intermediateList[j][i] = input.get(i).getAnswerList().get(j); //Transpose array so that columns are Arrays of answers for one question
             }
-        }
 
         for(int i = 0; i<input.size(); i++){
             List<Answer> intermediate = new ArrayList<>();

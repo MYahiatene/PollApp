@@ -29,15 +29,18 @@ export const mutations = {
 }
 
 export const actions = {
-    async initialize({ commit }) {
+    async initialize({ commit }, pollId) {
+        console.log('INIT')
+        console.log(pollId)
         console.log(this.$axios.defaults.headers)
         const data = await this.$axios.post('/evaluation/generateDiagram', [
             {
                 filterType: 'DataFilter',
-                basePollId: 1,
-                baseQuestionIds: [3, 4, 5, 6, 7, 8],
+                basePollId: pollId,
+                baseQuestionIds: [],
             },
         ])
+        console.log(data)
         commit('initializeData', data)
         const pollData = await this.$axios.get('/poll')
         commit('initializePolls', pollData)

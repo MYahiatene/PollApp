@@ -108,7 +108,10 @@ public class EvaluationController {
      * @return*/
     @PostMapping("/generateDiagram")
     public String populateDiagram(final @RequestBody List<FilterCmd> input) {
-        LOGGER.info(input.toString());
+        if(input.isEmpty())
+        {
+            return "?";
+        }
         Statistics calculation = new Statistics(answerService,userService,questionService,pollService,pollResultService,categoryService,input.get(0));
         calculation.loadFilter(input);
         return calculation.generateDiagram();

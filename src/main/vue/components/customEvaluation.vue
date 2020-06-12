@@ -316,18 +316,14 @@ export default {
             return l
         },
     },
-    mounted() {
-        console.log(this.polls)
-        this.initialize()
-    },
     methods: {
-        ...mapActions({ initialize: 'evaluation/initialize', sendFilter: 'evaluation/sendFilter' }),
+        ...mapActions({ sendFilter: 'evaluation/sendFilter' }),
         saveToStore() {
             const filterData = []
             filterData.push({
                 filterType: 'DataFilter',
-                basePollId: 1,
-                baseQuestionIds: [3, 4, 5, 6, 7, 8],
+                basePollId: this.polls[this.pollIndex].pollId,
+                baseQuestionIds: [],
             })
             for (let f = 0; f < this.filterList.length; f++) {
                 const filter = this.filterList[f]

@@ -116,7 +116,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters, mapMutations } from 'vuex'
+import { mapGetters, mapMutations } from 'vuex'
 import baseQAFilter from '../components/Filter/baseQAFilter'
 
 export default {
@@ -140,7 +140,6 @@ export default {
     },
 
     methods: {
-        ...mapActions({ initialize: 'evaluation/initialize' }),
         ...mapMutations({ sendFilter: 'evaluation/sendFilter' }),
 
         saveToStore() {
@@ -187,7 +186,6 @@ export default {
     },
 
     mounted() {
-        this.initialize()
         this.chosenPoll = this.pollTitles[this.initialPollIndex]
         this.selectedQuestions = this.questionTitles
     },
