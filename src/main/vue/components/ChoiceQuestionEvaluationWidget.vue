@@ -49,11 +49,18 @@
             </v-row>
             <v-row> </v-row>
             <!-- here we display a table with the data-->
+
+            <v-row>
+                <v-col>
+                    <p>Median: {{ calculated.median }}</p>
+                </v-col>
+                <v-col>
+                    <p>Modus: {{ calculated.mode }}</p>
+                </v-col>
+            </v-row>
             <v-row>
                 <v-col cols="12" lg="12">
                     <div v-if="showTable">
-                        <p>Median: {{ calculated.median }}</p>
-                        <p>Modus: {{ calculated.mode }}</p>
                         <v-data-table :headers="header" :items="items" hide-default-footer dense> </v-data-table></div
                 ></v-col>
             </v-row>

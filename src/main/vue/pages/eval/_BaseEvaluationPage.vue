@@ -19,7 +19,8 @@ that each display a basic evaluation of one specific question-->
                 <v-toolbar>
                     <!--                    button for refresh-->
 
-                    <v-btn icon onClick="window.location.reload()" color="primary"><v-icon> mdi-refresh</v-icon></v-btn>
+                    <!--                    <v-btn icon onClick="window.location.reload()" color="primary"><v-icon> mdi-refresh</v-icon></v-btn>-->
+                    <v-btn icon @click="forceUpdate" color="primary"><v-icon> mdi-refresh</v-icon></v-btn>
 
                     <!--                    title of the poll-->
                     <v-card-title>{{ pollName }}</v-card-title>
@@ -306,6 +307,10 @@ export default {
         // updates how many widgets are displayed per page
         updateItemsPerPage(number) {
             this.itemsPerPage = number
+        },
+
+        forceUpdate() {
+            this.$forceUpdate()
         },
     },
 }
