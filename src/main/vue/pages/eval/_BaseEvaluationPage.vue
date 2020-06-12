@@ -12,8 +12,16 @@ that each display a basic evaluation of one specific question-->
         <v-container v-else-if="diagramData !== undefined">
             <v-row>
                 <!--        the app bar is used to navigate the page.
+
+
    All the buttons here apply to the entire poll, not one individual question-->
+
                 <v-toolbar>
+                    <!--                    button for refresh-->
+
+                    <v-btn icon onClick="window.location.reload()" color="primary"><v-icon> mdi-refresh</v-icon></v-btn>
+
+                    <!--                    title of the poll-->
                     <v-card-title>{{ pollName }}</v-card-title>
 
                     <v-dialog v-model="dialog">
