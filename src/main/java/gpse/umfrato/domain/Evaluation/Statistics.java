@@ -378,17 +378,22 @@ public void loadFilter(List<FilterCmd> input)
         return cumulated;
     }
 
-    private List<Double> cumulate(List<PollResult> pollAnswers, Double threshold){ //Kumulierte Häufigkeit
-        List<Double> outputList = new ArrayList<>();
+    private List<List<Double>> cumulate(List<PollResult> pollAnswers, Double threshold){ //Kumulierte Häufigkeit
+        List<List<Double>> outputList = new ArrayList<>();
         Iterator<PollResult> listIterator = pollAnswers.listIterator();
         while(listIterator.hasNext()){
-            double cumulated = 0;
+            List<Double> intermediateList = new ArrayList<>();
             PollResult next = listIterator.next();
             Iterator<Answer> answerIterator = next.getAnswerList().listIterator();
             while(answerIterator.hasNext()){
-                if(Double.parseDouble(answerIterator.next().getGivenAnswerList().get(0)) < threshold.doubleValue()) { cumulated++; } //Only take first element, won't work with anything else anyway
+                double cumulated = 0;
+                Answer individualAnswer = answerIterator.next();
+                ListIterator<String> checkBoxIterator = individualAnswer.getGivenAnswerList().listIterator();
+                while(checkBoxIterator.hasNext())
+                    if(Double.parseDouble(checkBoxIterator.next()) < threshold.doubleValue()) { cumulated++; } //Only take first element, won't work with anything else anyway
+                intermediateList.add(cumulated);
             }
-            outputList.add(cumulated);
+            outputList.add(intermediateList);
         }
         return outputList;
     }
