@@ -53,6 +53,7 @@
                 <v-col cols="12" lg="12">
                     <div v-if="showTable">
                         <p>Median: {{ calculated.median }}</p>
+                        <p>Modus: {{ calculated.mode }}</p>
                         <v-data-table :headers="header" :items="items" hide-default-footer dense> </v-data-table></div
                 ></v-col>
             </v-row>
