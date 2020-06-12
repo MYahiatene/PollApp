@@ -78,6 +78,7 @@ public class InitializeDatabase implements InitializingBean {
             questionService.addQuestion("1", "testFrage2", Arrays.asList("Jein", "Fein", "Vielschwer"), "ChoiceQuestion");
             questionService.addQuestion("1", "testFrage3", new ArrayList<>(), "TextQuestion");
             questionService.addQuestion("1", "TestFrage 4", new ArrayList<>(), "RangeQuestion");
+            questionService.addQuestion("1", "TestFrage 5", new ArrayList<>(), "SliderQuestion");
 
             userService.loadUserByUsername(testUsername);
         } catch (UsernameNotFoundException e) {

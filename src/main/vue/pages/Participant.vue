@@ -55,12 +55,15 @@
                                         </v-col>
                                     </div-->
                                 </div>
-                                <div v-else-if="question.questionType === 'RangeQuestion'">
+                                <div v-else-if="question.questionType === 'SliderQuestion'">
                                     <v-card-text>
                                         <!--might have to check if attributes aren't empty, depending on data bank-->
                                         <!--min="question.startValue"-->
                                         <!--max="question.endValue"-->
                                         <!--step="question.stepSize-->
+                                        <!--:thumb-label="hideValues" //noch schreiben-->
+                                        <!--<p>{{question.text1}}<span class="float-right">{{question.text2}}</span></p>-->
+                                        <p>No<span class="float-right">Yes</span></p>
                                         <v-slider
                                             v-model="value"
                                             min="0"
@@ -78,6 +81,21 @@
                                         >
                                         </v-slider>
                                     </v-card-text>
+                                </div>
+                                <!-- @change="getRangeQuestionAnswers"-->
+                                <div
+                                    v-else-if="question.questionType === 'RangeQuestion'"
+                                    @change="getRangeQuestionAnswers"
+                                >
+                                    <!--rangeAnswer in rangeAnswers-->
+                                    <v-list v-for="rangeAnswer in rangeAnswers" :key="rangeAnswer.text">
+                                        <v-checkbox
+                                            class="ma-4"
+                                            :label="rangeAnswer"
+                                            :color="fontColor"
+                                            @change="saveAnswerCheckbox($event, question, answer)"
+                                        ></v-checkbox>
+                                    </v-list>
                                 </div>
                             </v-card>
                         </v-list>
@@ -128,6 +146,7 @@ export default {
                 answerId: '1',
                 pollId: '1',
             },
+            rangeAnswers: ['10', '20', '30'],
         }
     },
     /**
@@ -186,6 +205,30 @@ export default {
          */
         hasNoPrevious() {
             return this.categoryIndex === 1 || !this.getChangeOfCategories
+        },
+        /**
+         * Generates the range answers out of min, max and possible texts and gives it back in format for v-for.
+         * Don't know how attributes are saved, so this is a placeholder: change min, max, text1, text2
+         * Don't know if I have to declare the appedning thing an answer or if it works like this.
+         * */
+        getRangeQuestionAnswersNO() {
+            const max = 100
+            const min = 10
+            const step = 10
+            const text1 = 'under 10'
+            const text2 = 'over 10'
+            if (text1 != null) {
+                this.rangeAnswers.append({ text1 })
+            }
+            const size = (max - min) / step
+            for (let i = 1; i <= size; i++) {
+                const value = min + i * step
+                this.rangeAnswers.append({ value })
+            }
+            if (text2 != null) {
+                this.rangeAnswers.append({ text2 })
+            }
+            return 'answer in rangeAnswers' // Doesn't work yet!
         },
     },
     methods: {
@@ -286,7 +329,29 @@ export default {
         addValue() {
             this.value = this.value + 1
         },
-
+        /**
+         * Generates the range answers out of min, max and possible texts and gives it back in format for v-for.
+         * Don't know how attributes are saved, so this is a placeholder: change min, max, text1, text2
+         * Don't know if I have to declare the appedning thing an answer or if it works like this.
+         * */
+        getRangeQuestionAnswers() {
+            const max = 100
+            const min = 10
+            const step = 10
+            const text1 = 'under 10'
+            const text2 = 'over 10'
+            if (text1 != null) {
+                this.rangeAnswers.append({ text1 })
+            }
+            const size = (max - min) / step
+            for (let i = 1; i <= size; i++) {
+                const value = min + i * step
+                this.rangeAnswers.append({ value })
+            }
+            if (text2 != null) {
+                this.rangeAnswers.append({ text2 })
+            }
+        },
         // -------------------------------------------------------------------------------------------------------------
         // Get or save information to/from the Backend
         /**
