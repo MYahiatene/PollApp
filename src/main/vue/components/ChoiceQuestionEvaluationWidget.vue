@@ -19,11 +19,13 @@
             <v-row v-if="visualSettings">
                 <v-col cols="12" lg="12">
                     <v-card>
-                        <!--                    the visual settings the widget has right noe are passed as props-->
+                        <!--                    the visual settings the widget gets the current settings passed as props-->
                         <visual-evaluation-settings
-                            @input="onShow()"
+                            :one-question="true"
                             :chosen-diagram="diagramType"
+                            :chosen-diagram-colors="choppedBackgroundColors"
                             :chosen-diagram-color="backgroundColor"
+                            :multiple-colors="multipleColors"
                             :show-diagram="showDiagram"
                             :show-table="showTable"
                             v-on:update-Visuals="updateVisuals"
@@ -37,10 +39,11 @@
                 <v-col cols="12" lg="12">
                     <!--                    we check in diagramType which one the user wants-->
                     <div v-if="diagramType === 'bar'" :key="diagramKey">
-                        <BarChartView :chartdata="chartdataSet" :options="options"></BarChartView>
+                        <BarChartView :chartdata="chartdataSet" :options="barChartOptions"></BarChartView>
                     </div>
-                    <div v-if="diagramType === 'pie'" :key="diagramKey">
-                        <PieChartView :chartdata="chartdataSet" :options="options"></PieChartView>
+                    <!--                     the height is set to 60% of the screen-->
+                    <div v-if="diagramType === 'pie'" :key="diagramKey" style="height: 60vh;">
+                        <PieChartView :chartdata="chartdataSet" :options="pieChartOptions"></PieChartView>
                     </div>
                 </v-col>
             </v-row>
@@ -49,6 +52,7 @@
             <v-row>
                 <v-col cols="12" lg="12">
                     <div v-if="showTable">
+                        <p>Median: {{ calculated.median }}</p>
                         <v-data-table :headers="header" :items="items" hide-default-footer dense> </v-data-table></div
                 ></v-col>
             </v-row>
@@ -82,8 +86,22 @@ export default {
             type: Array,
         },
 
+        calculated: {
+            type: Object,
+        },
+
+        backgroundColors: {
+            type: Array,
+        },
+
         backgroundColor: {
             type: String,
+            default: '#aaaaaa',
+        },
+
+        multipleColors: {
+            type: Boolean,
+            default: false,
         },
 
         showTable: {
@@ -101,7 +119,12 @@ export default {
         // (value is set on the color of the diagram and update whenever updateVisuals is called)
         diagramKey: '',
         // these options are needed to display a visual diagram, they are passed as props into that component
-        options: {
+
+        // bar charts dont have a legend
+        barChartOptions: {
+            legend: {
+                display: false,
+            },
             responsive: true,
             maintainAspectRatio: false,
             scales: {
@@ -114,11 +137,16 @@ export default {
                 ],
             },
         },
-        // these aren't needed right now, might come in handy to keep the options that the widgets overrides the general design settings
-        privateDiagramColor: '',
-        privateDiagramType: '',
-        privateShowTable: '',
-        privateShowDiagram: '',
+
+        // pie charts dont have a grid in the background
+
+        pieChartOptions: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                yAxes: [{ display: false }],
+            },
+        },
 
         // indicates that the setting window is closed by default
         visualSettings: false,
@@ -129,27 +157,55 @@ export default {
             { text: 'Relative Häufigkeit', value: 'rel', sortable: false },
         ],
     }),
+
     computed: {
         // here we compute the data for the table
         items() {
             const h = []
             for (let i = 0; i < this.answerPossibilities.length; i++) {
-                h.push({ antwort: this.answerPossibilities[i], abs: this.data[i], rel: '-' })
+                const percentage = Math.round(this.calculated.relative[i] * 100)
+                h.push({ antwort: this.answerPossibilities[i], abs: this.data[i], rel: percentage + '%' })
             }
             return h
         },
-        // here we compute the data for the visual diagram, writing it into a format the components can process
+        // here we compute the data for the visual diagram, writing it into a format the components can process.
+        // We either give one color or an array of colors
         chartdataSet() {
-            return {
-                labels: this.answerPossibilities,
-                datasets: [
-                    {
-                        label: this.questionTitle,
-                        backgroundColor: this.backgroundColor,
-                        data: this.data,
-                    },
-                ],
+            if (this.multipleColors) {
+                return {
+                    labels: this.answerPossibilities,
+                    datasets: [
+                        {
+                            label: this.questionTitle,
+                            backgroundColor: this.choppedBackgroundColors,
+                            data: this.data,
+                        },
+                    ],
+                }
+            } else {
+                return {
+                    labels: this.answerPossibilities,
+                    datasets: [
+                        {
+                            label: this.questionTitle,
+                            backgroundColor: this.backgroundColor,
+                            data: this.data,
+                        },
+                    ],
+                }
             }
+        },
+        /*
+
+        This method creates an array of color, which length is the one of answers for this question
+       */
+
+        choppedBackgroundColors() {
+            const c = []
+            for (let i = 0; i < this.answerPossibilities.length; i++) {
+                c[i] = this.backgroundColors[i % this.backgroundColors.length]
+            }
+            return c
         },
     },
     methods: {
@@ -160,13 +216,29 @@ export default {
       the diagram key is added to force the widget to actually update the color
 
        */
-        updateVisuals(showDiagram, DiagramType, DiagramColor, showTable) {
+        updateVisuals(showDiagram, diagramType, diagramColors, diagramColor, multipleColors, showTable) {
             this.showDiagram = showDiagram
-            this.diagramType = DiagramType
-            this.backgroundColor = DiagramColor
+            this.diagramType = diagramType
+
+            this.multipleColors = multipleColors
+
+            this.choppedBackgroundColors = diagramColors
+
+            this.backgroundColor = diagramColor
+            this.privateBackgroundColor = diagramColor
+
             this.showTable = showTable
+
             this.visualSettings = false
-            this.diagramKey = DiagramColor
+            if (multipleColors) {
+                for (let i = 0; i < diagramColors.length; i++) {
+                    this.diagramKey = this.diagramKey + diagramColors[i]
+                }
+            } else {
+                this.diagramKey = diagramColor
+            }
+
+            this.visualsUpdated = true
         },
     },
 }

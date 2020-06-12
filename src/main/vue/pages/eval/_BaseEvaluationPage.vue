@@ -6,11 +6,13 @@ Thusly the user can easily get a first impression on the results.
     <v-container>
         <!--        this is the real content of the page, a list of ChoiceQuestionEvaluationWidgets,
 that each display a basic evaluation of one specific question-->
+
+        <!--        Here we check if we are authenticated and if we could load the data -->
         <AuthGate v-if="isAuthenticated !== true"></AuthGate>
         <v-container v-else-if="diagramData !== undefined">
             <v-row>
                 <!--        the app bar is used to navigate the page.
-   All the buttons here apply to the entire poll, nit one individual question-->
+   All the buttons here apply to the entire poll, not one individual question-->
                 <v-toolbar>
                     <v-card-title>{{ pollName }}</v-card-title>
 
@@ -18,12 +20,15 @@ that each display a basic evaluation of one specific question-->
                         <!--             Here we open a setting window
         where the user can change the visual settings of every question at the same time-->
                         <v-card
-                            ><visual-evaluation-settings @update-Visuals="updateVisuals"> </visual-evaluation-settings
+                            ><visual-evaluation-settings :one-question="false" @update-all-Visuals="updateVisuals">
+                            </visual-evaluation-settings
                         ></v-card>
                     </v-dialog>
                     <v-spacer></v-spacer>
 
                     <v-spacer></v-spacer>
+
+                    <!--            This button will lead to the Page where we can filter and analyse the data-->
 
                     <v-btn :to="'/filterForm'" color="primary">
                         Filter
@@ -31,7 +36,7 @@ that each display a basic evaluation of one specific question-->
 
                     <v-spacer></v-spacer>
 
-                    <!--            This button will lead to the Page where we can filter and analyse the data-->
+                    <!--                   title of the poll-->
 
                     <custom-evaluation :chosen-poll="this.pollName" />
 
@@ -51,6 +56,8 @@ that each display a basic evaluation of one specific question-->
                     </v-menu>
                 </v-toolbar>
             </v-row>
+
+            <!--             Here the real content of the page starts -->
             <v-row>
                 <v-col cols="12" lg="12">
                     <v-data-iterator
@@ -63,6 +70,7 @@ that each display a basic evaluation of one specific question-->
                         hide-default-footer
                     >
                         <template v-slot:header>
+                            <!--                            in he toolbar we can search for items and set the number of items per page -->
                             <v-toolbar class="mb-1">
                                 <v-text-field
                                     v-model="search"
@@ -129,6 +137,7 @@ that each display a basic evaluation of one specific question-->
                                     md="12"
                                     sm="12"
                                 >
+                                    <!--                                 Here we have the ChoiceQuestionEvaluationWidgets    -->
                                     <ChoiceQuestionEvaluationWidget
                                         :key="widgetKey"
                                         :show-table="showTable"
@@ -137,7 +146,10 @@ that each display a basic evaluation of one specific question-->
                                         :question-title="question.title"
                                         :answer-possibilities="question.answerPossibilities"
                                         :data="question.data"
+                                        :calculated="question.calculated"
+                                        :background-colors="defaultColors"
                                         :background-color="defaultColor"
+                                        :multiple-colors="multipleColors"
                                         :diagram-type="defaultDiagramType"
                                     ></ChoiceQuestionEvaluationWidget>
                                     <v-spacer></v-spacer>
@@ -149,6 +161,7 @@ that each display a basic evaluation of one specific question-->
             </v-row>
         </v-container>
         <v-container v-else>
+            <!--             this is displayed, if -->
             <v-card>
                 <v-card-title>Der Server antwortet nicht</v-card-title>
             </v-card>
@@ -174,10 +187,13 @@ export default {
             // the dialog (setting window) is closed by default
             dialog: false,
             // default settings for the visual settings, they are passed as props into the choiceQuestionEvaluationWidgets
+            defaultColors: ['#aaaaaa'],
             defaultColor: '#aaaaaa',
+            multipleColors: false,
             defaultDiagramType: 'bar',
             showDiagram: true,
             showTable: true,
+            useOnAll: false,
             // options that will be displayed in the sub menu
             menuItems: [{ title: 'Visuelle Einstellungen' }, { title: 'Exportieren' }],
             // itemsPerPageArray: [1, 2, 3],
@@ -199,42 +215,17 @@ export default {
             isAuthenticated: 'login/isAuthenticated',
         }),
 
-        /**
-         * creates array with all the questionId in a list, not needed right now, but might come in handy
-         * @returns an array with all the ids from questionList
-         */
-        idList() {
-            const l = []
-            if (this.diagramData !== undefined) {
-                for (let i = 0; i < this.diagramData.length; i++) {
-                    l.push(i + 1)
-                }
-            }
-            return l
-        },
-
-        /**
-         * Gives us the highest questionId
-         * @returns {number} length of questionList
-         */
-
-        highestQuestionId() {
-            if (this.diagramData !== undefined) {
-                return this.diagramData.length
-            } else {
-                return 0
-            }
-        },
-
+        // computes the number of pages
         numberOfPages() {
             return Math.ceil(this.items.length / this.itemsPerPage)
         },
-        filteredKeys() {
-            return this.keys.filter((key) => key !== `id`)
-        },
+
+        // filteredKeys() {
+        //     return this.keys.filter((key) => key !== `id`)
+        // },
+
+        // gets diagramData
         items() {
-            console.log('diagramData ')
-            console.log(this.diagramData)
             return this.diagramData
         },
 
@@ -247,11 +238,14 @@ export default {
                     answerPossibilities: this.items[i].answerPossibilities,
                     data: this.items[i].data,
                     id: this.items[i].id,
-                    title: 'Frage ' + this.items[i].id + ': ' + this.items[i].title,
+                    title: 'Frage ' + (i + 1) + ': ' + this.items[i].title,
+                    calculated: this.items[i].calculated,
                 }
             }
             return i2
         },
+
+        // we compute an array of option on how many questions we want per page
 
         itemsPerPageArray() {
             return [1, this.items.length / 2, this.items.length]
@@ -267,21 +261,41 @@ export default {
       the widget key is added to force the widget to actually update the color
 
        */
-        updateVisuals(showDiagram, DiagramType, DiagramColor, showTable) {
+        updateVisuals(showDiagram, DiagramType, DiagramColors, DiagramColor, multipleColors, showTable, useOnAll) {
             this.showDiagram = showDiagram
             this.defaultDiagramType = DiagramType
+
             this.defaultColor = DiagramColor
+            this.defaultColors = DiagramColors
+
+            this.multipleColors = multipleColors
             this.showTable = showTable
+
             this.dialog = false
-            this.widgetKey = DiagramColor
+
+            if (multipleColors) {
+                for (let i = 0; i < DiagramColors.length; i++) {
+                    this.widgetKey += +DiagramColors[i]
+                }
+            } else {
+                this.widgetKey = DiagramColor
+            }
+
+            this.useOnAll = useOnAll
         },
+
+        // goes to next page
 
         nextPage() {
             if (this.page + 1 <= this.numberOfPages) this.page += 1
         },
+
+        // goes to last page
         formerPage() {
             if (this.page - 1 >= 1) this.page -= 1
         },
+
+        // updates how many widgets are displayed per page
         updateItemsPerPage(number) {
             this.itemsPerPage = number
         },
