@@ -146,21 +146,28 @@ that each display a basic evaluation of one specific question-->
                                     md="12"
                                     sm="12"
                                 >
-                                    <!--                                 Here we have the ChoiceQuestionEvaluationWidgets    -->
-                                    <ChoiceQuestionEvaluationWidget
-                                        :key="widgetKey"
-                                        :show-table="showTable"
-                                        :show-diagram="showDiagram"
-                                        :questionId="question.id"
-                                        :question-title="question.title"
-                                        :answer-possibilities="question.answerPossibilities"
-                                        :data="question.data"
-                                        :calculated="question.calculated"
-                                        :background-colors="defaultColors"
-                                        :background-color="defaultColor"
-                                        :multiple-colors="multipleColors"
-                                        :diagram-type="defaultDiagramType"
-                                    ></ChoiceQuestionEvaluationWidget>
+                                    <div v-if="question.type === 'choice'">
+                                        <!--                                 Here we have the ChoiceQuestionEvaluationWidgets    -->
+                                        <ChoiceQuestionEvaluationWidget
+                                            :key="widgetKey"
+                                            :show-table="showTable"
+                                            :show-diagram="showDiagram"
+                                            :questionId="question.id"
+                                            :question-title="question.title"
+                                            :answer-possibilities="question.answerPossibilities"
+                                            :data="question.data"
+                                            :calculated="question.calculated"
+                                            :background-colors="defaultColors"
+                                            :background-color="defaultColor"
+                                            :multiple-colors="multipleColors"
+                                            :diagram-type="defaultDiagramType"
+                                        ></ChoiceQuestionEvaluationWidget>
+                                    </div>
+
+                                    <div v-else-if="question.type === 'text'">
+                                        <textQuestionEvaluationWidget :questionID="question.questionID">
+                                        </textQuestionEvaluationWidget>
+                                    </div>
                                     <v-spacer></v-spacer>
                                 </v-col>
                             </v-row>
@@ -184,10 +191,17 @@ import AuthGate from '../../components/AuthGate'
 import ChoiceQuestionEvaluationWidget from '../../components/ChoiceQuestionEvaluationWidget'
 import visualEvaluationSettings from '../../components/visualEvaluationSettings'
 import CustomEvaluation from '../../components/customEvaluation'
+import TextQuestionEvaluationWidget from '../../components/TextQuestionEvaluationWidget'
 
 export default {
     name: 'BaseEvaluationPage',
-    components: { AuthGate, ChoiceQuestionEvaluationWidget, visualEvaluationSettings, CustomEvaluation },
+    components: {
+        AuthGate,
+        ChoiceQuestionEvaluationWidget,
+        visualEvaluationSettings,
+        CustomEvaluation,
+        TextQuestionEvaluationWidget,
+    },
     data() {
         return {
             // key that forces the diagram to update
@@ -249,6 +263,8 @@ export default {
                     id: this.items[i].id,
                     title: 'Frage ' + (i + 1) + ': ' + this.items[i].title,
                     calculated: this.items[i].calculated,
+                    type: 'choice', // bzw 'text'
+                    questionID: 0,
                 }
             }
             return i2
