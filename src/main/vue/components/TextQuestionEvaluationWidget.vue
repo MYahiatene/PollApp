@@ -20,7 +20,7 @@
                                     solo
                                     hide-details
                                     prepend-inner-icon="mdi-pencil"
-                                    label="Search"
+                                    label="Suchen"
                                 ></v-text-field>
                                 <!--<v-checkbox :v-model="caseSensitive" @change="rerender"></v-checkbox>-->
                             </v-toolbar>
@@ -37,6 +37,7 @@
                                             :custom-filter="filterOnlyCapsText"
                                             class="elevation-1"
                                             dense
+                                            :footer-props="footerProps"
                                         >
                                         </v-data-table>
                                     </v-card>
@@ -48,6 +49,7 @@
                                             :custom-filter="filterOnlyCapsText"
                                             class="elevation-1"
                                             dense
+                                            :footer-props="footerProps"
                                         >
                                         </v-data-table>
                                     </v-card>
@@ -109,32 +111,6 @@ export default {
             freqHeaders: [
                 { text: 'Wort', value: 'text', sortable: false },
                 { text: 'Frequenz', value: 'value', sortable: true },
-            ],
-            mockAnswers: [
-                {
-                    text: 'Uh wickey wild wild Wicky wicky wild Wickey wild wicky wicky wild wild wild west f gse',
-                    answered: '2020',
-                    creator: 'Idi Amin',
-                    id: '0',
-                },
-                {
-                    text: 'Uh wickey wild wild Wicky wicky wild Wickey wild wicky wicky wild wild wild west',
-                    answered: '2012',
-                    creator: 'Kony',
-                    id: '1',
-                },
-                {
-                    text: 'telefone sind schon sehr fesch',
-                    answered: '2020',
-                    creator: 'Da Vinci',
-                    id: '2',
-                },
-                {
-                    text: 'Fck GSE der die das im die die die die die das nacho fuck afd',
-                    answered: '2010',
-                    creator: 'TBrettmann',
-                    id: '3',
-                },
             ],
             fillers: [
                 'nicht',
@@ -530,6 +506,11 @@ export default {
                 'willkürlich',
                 'zynisch',
             ],
+            footerProps: {
+                itemsPerPageText: 'Zeilen pro Seite',
+                itemsPerPageOptions: [10, 20, 50, -1],
+                itemsPerPageAllText: 'Alle',
+            },
         }
     },
     computed: {
@@ -542,7 +523,7 @@ export default {
         answers() {
             console.log('Fuck this')
             console.log(this.diagramData)
-            return this.diagramData[6]
+            return this.diagramData[6].answers
         },
 
         prepareAnswers() {

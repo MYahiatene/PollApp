@@ -40,14 +40,10 @@ that each display a basic evaluation of one specific question-->
                     <!--            This button will lead to the Page where we can filter and analyse the data-->
 
                     <v-btn :to="'/filterForm'" color="primary">
-                        Filter
+                        Analyse
                     </v-btn>
 
-                    <v-spacer></v-spacer>
-
                     <!--                   title of the poll-->
-
-                    <custom-evaluation :chosen-poll="this.pollName" />
 
                     <!--            here we have a sub menu, that can hold a list of different options or setings-->
                     <v-menu bottom left>
@@ -103,7 +99,7 @@ that each display a basic evaluation of one specific question-->
                                 <v-spacer></v-spacer>
                                 <template>
                                     <v-row class="mt-2" align="center" justify="center">
-                                        <span class="black--text">Items per page</span>
+                                        <span class="black--text">Fragen pro Seite</span>
                                         <v-menu offset-y>
                                             <template v-slot:activator="{ on }">
                                                 <v-btn text class="ml-2" v-on="on">
@@ -124,7 +120,7 @@ that each display a basic evaluation of one specific question-->
 
                                         <v-spacer></v-spacer>
 
-                                        <span class="mr-4 black--text"> Page {{ page }} of {{ numberOfPages }} </span>
+                                        <span class="mr-4 black--text"> Seite {{ page }} von {{ numberOfPages }} </span>
                                         <v-btn dark color="secondary" class="mr-1" @click="formerPage">
                                             <v-icon>mdi-chevron-left</v-icon>
                                         </v-btn>
@@ -193,7 +189,6 @@ import { mapActions, mapGetters } from 'vuex'
 import AuthGate from '../../components/AuthGate'
 import ChoiceQuestionEvaluationWidget from '../../components/ChoiceQuestionEvaluationWidget'
 import visualEvaluationSettings from '../../components/visualEvaluationSettings'
-import CustomEvaluation from '../../components/customEvaluation'
 import TextQuestionEvaluationWidget from '../../components/TextQuestionEvaluationWidget'
 
 export default {
@@ -202,7 +197,6 @@ export default {
         AuthGate,
         ChoiceQuestionEvaluationWidget,
         visualEvaluationSettings,
-        CustomEvaluation,
         TextQuestionEvaluationWidget,
     },
     data() {
@@ -267,7 +261,7 @@ export default {
                     title: 'Frage ' + (i + 1) + ': ' + this.items[i].title,
                     calculated: this.items[i].calculated,
                     type: this.items[i].type,
-                    questionID: this.items[i].questionID,
+                    questionID: i, // we need the index in the list
                 }
             }
             return i2
@@ -276,7 +270,7 @@ export default {
         // we compute an array of option on how many questions we want per page
 
         itemsPerPageArray() {
-            return [1, this.items.length / 2, this.items.length]
+            return [1, Math.round(this.items.length / 2), this.items.length]
         },
     },
     methods: {
