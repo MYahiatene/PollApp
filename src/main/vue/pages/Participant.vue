@@ -19,7 +19,7 @@
                                 <v-card-title class="col" :style="fontColorText">
                                     <!--the visibility of the index of the current questions in relation to the total
                                     number of questions, given in the settings of the poll-->
-                                    <div v-if="getVisibility">{{ getQuestionIndex() }}/{{ getNumberOfQuestions }}</div>
+                                    <div v-if="getVisibility">{{ getIndex() }}/{{ getNumberOfQuestions }}</div>
                                     <div class="ps-4">{{ question.questionMessage }}</div>
                                 </v-card-title>
                                 <div v-if="question.questionType === 'TextQuestion'">
@@ -73,11 +73,11 @@
                                             thumb-label="always"
                                             append-icon="mdi-plus"
                                             prepend-icon="mdi-minus"
+                                            :color="fontColor"
+                                            :track-color="backgroundColor"
                                             @click:append="addValue"
                                             @click:prepend="subValue"
                                             @change="saveAnswerRangeQuestion($event, question)"
-                                            :color="fontColor"
-                                            :track-color="backgroundColor"
                                         >
                                         </v-slider>
                                     </v-card-text>
@@ -169,6 +169,7 @@ export default {
             getCategory: 'participant/getCategory',
             getChangeOfCategories: 'participant/getChangeOfCategories',
             getUsername: 'participant/getUsername',
+            getQuestionIndex: 'participant/getQuestionIndex',
         }),
         /**
          * Get's the given FontColor from PollData.
@@ -234,13 +235,14 @@ export default {
     },
     methods: {
         /**
-         * Increases the questionIndex at the page and gives back the current questionIndex. Is called when the
+         * Increases the questionIndex in the store and gives back the current questionIndex. Is called when the
          * visibility is true and gives the index of the question inside the category.
          * @returns (questionIndex: number)
          */
-        getQuestionIndex() {
-            // this.questionIndex += 1
-            return this.questionIndex // - 1
+        getIndex() {
+            this.$store.commit('participant/setQuestionIndex')
+            this.questionIndex = this.getQuestionIndex
+            return this.questionIndex
         },
         /**
          * Calls setCategory in the store to get the next category in the poll and save it at the page, if there is one

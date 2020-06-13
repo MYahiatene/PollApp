@@ -13,6 +13,7 @@ export const state = () => ({
     visibility: false,
     changeOfCategories: false,
     numberOfQuestions: 0,
+    questionIndex: 0,
     categoryIndex: 1,
     poll: ['Object'],
     answer: ['Object'],
@@ -56,6 +57,10 @@ export const getters = {
     getAnswer: (state) => {
         return state.answer
     },
+    getQuestionIndex: (state) => {
+        console.log(state.questionIndex)
+        return state.questionIndex
+    },
 }
 
 export const mutations = {
@@ -78,6 +83,9 @@ export const mutations = {
     setUsername: (state, username) => {
         state.username = username
     },
+    setQuestionIndex: (state) => {
+        state.questionIndex += 1
+    },
     /**
      * Set's the answer object gotten from showAnswer as the current state.
      * @param state
@@ -99,11 +107,13 @@ export const mutations = {
             if (index !== state.poll[1].data.categoryList.length) {
                 state.category = state.poll[1].data.categoryList[index]
                 state.categoryIndex = index + 1
+                state.questionIndex = 0
             }
         } else if (args === -1) {
             if (index !== 1) {
                 state.category = state.poll[1].data.categoryList[index - 2]
                 state.categoryIndex = index - 1
+                state.questionIndex = 0
             }
         }
     },
