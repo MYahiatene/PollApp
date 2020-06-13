@@ -281,7 +281,14 @@ export default {
     },
     methods: {
         editQuestion(question) {
-            console.log(question.questionMessage + '\n' + question.questionType)
+            this.$axios.post('/editquestion', {
+                questionId: this.selectedQuestion.questionId,
+                answerPossibilities: this.selectedQuestion.answerPossibilities,
+                numberOfPossibleAnswers: this.selectedQuestion.numberOfPossibleAnswers,
+                questionMessage: this.selectedQuestion.questionMessage,
+                questionType: this.selectedQuestion.questionType,
+            })
+            this.questionIndex = 0
         },
         checkMove(evt) {
             console.log(evt.draggedContext.element)
