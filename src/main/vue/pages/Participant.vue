@@ -58,28 +58,46 @@
                                 <div v-else-if="question.questionType === 'SliderQuestion'">
                                     <v-card-text>
                                         <!--might have to check if attributes aren't empty, depending on data bank-->
-                                        <!--min="question.startValue"-->
-                                        <!--max="question.endValue"-->
-                                        <!--step="question.stepSize-->
-                                        <!--:thumb-label="hideValues" //noch schreiben-->
-                                        <!--<p>{{question.text1}}<span class="float-right">{{question.text2}}</span></p>-->
-                                        <p>No<span class="float-right">Yes</span></p>
-                                        <v-slider
-                                            v-model="value"
-                                            min="0"
-                                            max="10"
-                                            ticks
-                                            tick-size="4"
-                                            thumb-label="always"
-                                            append-icon="mdi-plus"
-                                            prepend-icon="mdi-minus"
-                                            :color="fontColor"
-                                            :track-color="backgroundColor"
-                                            @click:append="addValue"
-                                            @click:prepend="subValue"
-                                            @change="saveAnswerRangeQuestion($event, question)"
-                                        >
-                                        </v-slider>
+                                        <p>
+                                            {{ question.belowMessage }}
+                                            <span class="float-right">{{ question.aboveMessage }}</span>
+                                        </p>
+                                        <div v-if="question.hideValues === false">
+                                            <v-slider
+                                                v-model="value"
+                                                :min="question.startValue"
+                                                :max="question.endValue"
+                                                :step="question.stepSize"
+                                                ticks
+                                                tick-size="4"
+                                                thumb-label="always"
+                                                append-icon="mdi-plus"
+                                                prepend-icon="mdi-minus"
+                                                :color="fontColor"
+                                                :track-color="backgroundColor"
+                                                @click:append="addValue"
+                                                @click:prepend="subValue"
+                                                @change="saveAnswerSliderQuestion($event, question)"
+                                            >
+                                            </v-slider>
+                                        </div>
+                                        <div v-else>
+                                            <v-slider
+                                                v-model="value"
+                                                min="0"
+                                                max="10"
+                                                ticks
+                                                tick-size="4"
+                                                append-icon="mdi-plus"
+                                                prepend-icon="mdi-minus"
+                                                :color="fontColor"
+                                                :track-color="backgroundColor"
+                                                @click:append="addValue"
+                                                @click:prepend="subValue"
+                                                @change="saveAnswerSliderQuestion($event, question)"
+                                            >
+                                            </v-slider>
+                                        </div>
                                     </v-card-text>
                                 </div>
                                 <!-- @change="getRangeQuestionAnswers"-->
@@ -106,8 +124,8 @@
                         <!-- button to get to the previous category, if there is no previous one, the button is disabled,
                          else, the previous category is loaded by getPreviousCategory() if clicked -->
                         <v-btn class="pl-4" :disabled="hasNoPrevious" @click="getPreviousCategory()"
-                            >Vorherige Seite</v-btn
-                        >
+                            >Vorherige Seite
+                        </v-btn>
                         <!-- button to get to the next category, same principle as the one above -->
                         <v-btn class="pl-4" :disabled="hasNoNext" @click="getNextCategory()">Nächste Seite</v-btn>
                         <v-btn :color="fontColor" nuxt to="/AfterParticipated">
@@ -213,23 +231,8 @@ export default {
          * Don't know if I have to declare the appedning thing an answer or if it works like this.
          * */
         getRangeQuestionAnswers() {
-            /* const max = 100
-            const min = 10
-            const step = 10
-            const text1 = 'under 10'
-            const text2 = 'over 10'
-            if (text1 != null) {
-                this.rangeAnswers.push({ text1 })
-            }
-            const size = (max - min) / step
-            for (let i = 1; i <= size; i++) {
-                const value = min + i * step
-                this.rangeAnswers.push({ value })
-            }
-            if (text2 != null) {
-                this.rangeAnswers.push({ text2 })
-            } */
-            this.getRangeQuestionAnswersMutation()
+            console.log('Hi im in the computed method!')
+            this.generateRangeQuestionAnswers()
             return 'answer in rangeAnswers'
         },
     },
@@ -311,7 +314,7 @@ export default {
          * @param e (Change-Event)
          * @param question The question object, so it can get the QuestionID
          */
-        saveAnswerRangeQuestion(e, question) {
+        saveAnswerSliderQuestion(e, question) {
             this.answerObj.answerList = [e]
             this.answerObj.pollId = this.getPoll[1].data.pollId
             this.answerObj.questionId = question.questionId
@@ -337,7 +340,16 @@ export default {
          * Don't know how attributes are saved, so this is a placeholder: change min, max, text1, text2
          * Don't know if I have to declare the appedning thing an answer or if it works like this.
          * */
-        getRangeQuestionAnswersMutation() {
+        generateRangeQuestionAnswers() {
+            console.log('Hi, the function is called!')
+            /*
+            const questionId = this.getQuestionIndex
+            const max = this.getCategory.questionList[questionId].endValue
+            const min = this.getCategory.questionList[questionId].startValue
+            const step = this.getCategory.questionList[questionId].stepSize
+            const text1 = this.getCategory.questionList[questionId].belowMessage
+            const text2 = this.getCategory.questionList[questionId].aboveMessage
+             */
             const max = 100
             const min = 10
             const step = 10
@@ -359,7 +371,7 @@ export default {
                 }
             }
             console.log(this.rangeAnswers)
-            console.log("Hi I'm in the getRangeQuestionAnswers method!")
+            console.log('Hi Im in the getRangeQuestionAnswersMutation method!')
         },
         // -------------------------------------------------------------------------------------------------------------
         // Get or save information to/from the Backend
