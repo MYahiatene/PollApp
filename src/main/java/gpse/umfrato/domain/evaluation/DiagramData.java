@@ -276,8 +276,8 @@ public class DiagramData {
                                     td.getEditedDates().add(pr.getLastEditAt());
                                     //vielleicht auch eine neue ID, aber ich wüsste nicht warum, da nur key für frontend
                                     td.getIds().add(pr.getPollResultId());
+                                }
                                 break;
-                            }
                             case RANGE_QUESTION:
                                 final RangeData rd = (RangeData) qd;
                                 break;
