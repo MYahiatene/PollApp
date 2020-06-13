@@ -33,7 +33,7 @@ public class Question {
     /**
      * This attribute represents the type of question (dropdown, text field, ...).
      */
-    private String questionType;
+    private String questionType; //ChoiceQuestion, TextQuestion, RangeQuestion, SliderQuestion
 
     private boolean userAnswers = false;
 

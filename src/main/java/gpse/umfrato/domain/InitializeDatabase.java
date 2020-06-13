@@ -15,6 +15,7 @@ import javax.transaction.Transactional;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Service
@@ -88,7 +89,8 @@ public class InitializeDatabase implements InitializingBean {
         Question q4 = questionService.addQuestion(testPoll.getPollId().toString(),"Was hat Sie am Meisten überzeugt?",Arrays.asList("Die Vorträge", "Die Informationsstände", "Das Catering", "Ich kann mich nicht entscheiden"), "ChoiceQuestion");
         Question q5 = questionService.addQuestion(testPoll.getPollId().toString(),"Werden Sie uns nächstes Jahr wieder besuchen?",Arrays.asList("Ja", "Nein", "Vielleicht"), "ChoiceQuestion");
         Question q6 = questionService.addQuestion(testPoll.getPollId().toString(),"Wie viel Zeit haben sie auf der Messe verbracht?",Arrays.asList("unter einer Stunde", "1-2 Stunden", "2-5 Stunden", "über 5 Stunden"), "ChoiceQuestion");
-
+        Question q7 = questionService.addQuestion(testPoll.getPollId().toString(),"Beschreiben Sie die Messe in ein bis 5 Wörtern",Collections.emptyList(),"TextQuestion");
+        List<String> answers = Arrays.asList("Ich fand die Messe scheiße","Die Messe war super","Eigentlich relativ ok","Was weiß ich denn bitte?" , "Stände waren gut, Catering nicht");
         for(int i = 0; i < 150; i++)
         {
             answerService.giveAnswer(String.valueOf(i),testPoll.getPollId().toString(),q1.getQuestionId().toString(), Collections.singletonList(String.valueOf(ThreadLocalRandom.current().nextInt(0,5))));
@@ -97,6 +99,7 @@ public class InitializeDatabase implements InitializingBean {
             answerService.giveAnswer(String.valueOf(i),testPoll.getPollId().toString(),q4.getQuestionId().toString(), Collections.singletonList(String.valueOf(ThreadLocalRandom.current().nextInt(0,4))));
             answerService.giveAnswer(String.valueOf(i),testPoll.getPollId().toString(),q5.getQuestionId().toString(), Collections.singletonList(String.valueOf(ThreadLocalRandom.current().nextInt(0,3))));
             answerService.giveAnswer(String.valueOf(i),testPoll.getPollId().toString(),q6.getQuestionId().toString(), Collections.singletonList(String.valueOf(ThreadLocalRandom.current().nextInt(0,4))));
+            answerService.giveAnswer(String.valueOf(i),testPoll.getPollId().toString(),q7.getQuestionId().toString(), Collections.singletonList(answers.get(ThreadLocalRandom.current().nextInt(0,answers.size() - 1))));
         }
     }
 }

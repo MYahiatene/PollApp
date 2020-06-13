@@ -111,9 +111,10 @@ public class QuestionServiceImpl implements QuestionService {
         final List<Category> categories = poll.getCategoryList();
         final List<Question> allQuestions = new ArrayList<>();
 
-        for (final Category g : categories) {
-            allQuestions.addAll(g.getQuestionList());
-        }
+        //for (final Category g : categories) {
+            allQuestions.addAll(categories.get(0).getQuestionList());
+        //}
+        System.out.println(allQuestions.size());
         if (allQuestions.isEmpty()) {
             throw new BadRequestException();
         }
