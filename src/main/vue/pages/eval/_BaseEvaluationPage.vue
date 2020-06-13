@@ -322,11 +322,11 @@ export default {
             this.itemsPerPage = number
         },
 
-        //updates the page
+        // updates the page
         async forceUpdate() {
-            //gets the stuff from the database
+            // gets the stuff from the database
             await this.initialize(this.$route.params.BaseEvaluationPage)
-            //forces the diagrams to update
+            // forces the diagrams to update
             this.widgetKey += 1
         },
     },

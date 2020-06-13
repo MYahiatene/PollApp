@@ -13,6 +13,36 @@ import java.util.List;
 @NoArgsConstructor
 public class Question {
 
+    // needed for RangeQuestions
+
+    private float endValue;
+
+    private float startValue;
+
+    private float stepSize;
+
+    // needed for Slide and RangeQuestions
+
+    private String belowMessage;
+
+    private String aboveMessage;
+
+    // needed for Slide Questions
+
+
+    private boolean hideValues = true; // gut so?
+
+
+    // needed for Text Questions
+
+
+
+    private boolean textMultiline = false;
+
+    private int textMinimum;
+
+    private int textMaximum;
+
     /**
      * This attribute represents an unique id from the object question.
      */
