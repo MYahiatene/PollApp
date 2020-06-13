@@ -263,8 +263,8 @@ export default {
                     id: this.items[i].id,
                     title: 'Frage ' + (i + 1) + ': ' + this.items[i].title,
                     calculated: this.items[i].calculated,
-                    type: 'choice', // bzw 'text'
-                    questionID: 0,
+                    type: this.items[i].type,
+                    questionID: this.items[i].questionID,
                 }
             }
             return i2
