@@ -7,12 +7,9 @@ import gpse.umfrato.domain.user.User;
 import gpse.umfrato.domain.user.UserRepository;
 import gpse.umfrato.domain.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -92,7 +89,7 @@ public class UserController {
     }
 
     /**
-     * Checks if the users token has the authority admin
+     * Checks if the users token has the authority admin.
      */
     @PreAuthorize("hasAuthority('Admin')")
     @GetMapping("/checkToken")
@@ -101,7 +98,8 @@ public class UserController {
     }
 
     /**
-     * Deletes a user in the data base
+     * Deletes a user in the data base.
+     * @param deleteUserCmd the user to delete
      */
     @PreAuthorize("hasAuthority('Admin')")
     @PutMapping("/deleteUser")

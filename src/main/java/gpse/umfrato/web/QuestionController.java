@@ -1,14 +1,11 @@
 package gpse.umfrato.web;
 
 import gpse.umfrato.domain.cmd.QuestionCmd;
-import gpse.umfrato.domain.poll.Poll;
 import gpse.umfrato.domain.question.Question;
 import gpse.umfrato.domain.question.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.persistence.EntityNotFoundException;
-import java.util.List;
 import java.util.logging.Logger;
 
 @RequestMapping(value = "/api", method = RequestMethod.GET)
@@ -43,7 +40,8 @@ public class QuestionController {
     /**
      * This method deletes a question.
      *
-     * @param questionCmd has the poll id
+     * @param pollId     has the poll id
+     * @param questionId has the question id
      */
     @PostMapping("/poll/{pollId:\\d+}/removequestion/{questionId:\\d+}")
     public void deleteQuestion(@PathVariable("pollId") final String pollId, @PathVariable("questionId")

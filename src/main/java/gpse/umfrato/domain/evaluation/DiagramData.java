@@ -45,7 +45,8 @@ public class DiagramData {
         private String median;
         private String mode;
 
-        /* default */ ChoiceData(final long questionId, final String questionMessage, final List<String> answerPossibilities) {
+        /* default */ ChoiceData(final long questionId, final String questionMessage,
+                                 final List<String> answerPossibilities) {
             this.questionId = questionId;
             this.questionTitle = questionMessage;
             this.answerPossibilities = answerPossibilities;
@@ -113,9 +114,9 @@ public class DiagramData {
                     .append(",\"title\": \"").append(questionTitle)
                     .append("\",\"answerPossibilities\": [");
             for (int i = 0; i < answerPossibilities.size(); i++) {
-                json.append("\"").append(answerPossibilities.get(i)).append("\"");
+                json.append('\"').append(answerPossibilities.get(i)).append('\"');
                 if (i < answerPossibilities.size() - 1) {
-                    json.append(",");
+                    json.append(',');
                 }
             }
             json.append("],\"data\": ").append(data)
@@ -161,14 +162,14 @@ public class DiagramData {
                     .append(",\"title\": \"").append(questionTitle)
                     .append("\",\"answers\": [");
             for (int i = 0; i < ids.size(); i++) {
-                json.append("{")
+                json.append('{')
                         .append("\"id\": ").append(ids.get(i))
                         .append(",\"text\": \"").append(texts.get(i))
                         .append("\",\"answered\": \"").append(editedDates.get(i))
                         .append("\",\"creator\": \"").append(creator.get(i))
                         .append("\"}");
                 if (i + 1 < ids.size()) {
-                    json.append(",");
+                    json.append(',');
                 }
             }
             json.append("]}");
@@ -236,27 +237,20 @@ public class DiagramData {
         for (final Question q: questionService.getAllQuestions(poll.getPollId())) {
             QuestionData qd = null;
             switch (q.getQuestionType()) {
-                case "ChoiceQuestion": {
+                case "ChoiceQuestion":
                     qd = new ChoiceData(q.getQuestionId(), q.getQuestionMessage(), q.getAnswerPossibilities());
                     break;
-                }
-                case "TextQuestion": {
+                case "TextQuestion":
                     qd = new TextData(q.getQuestionId(), q.getQuestionMessage());
                     break;
-                }
-                case "RangeQuestion": {
+                case "RangeQuestion":
                     qd = new RangeData(q.getQuestionId(), q.getQuestionMessage());
                     break;
-                }
-                case "SliderQuestion": {
+                case "SliderQuestion":
                     qd = new SliderData(q.getQuestionId(), q.getQuestionMessage());
                     break;
-                }
-                default: {
-
+                default:
                     break;
-
-                }
             }
             if (qd != null) {
                 questions.add(qd);
@@ -267,33 +261,31 @@ public class DiagramData {
                 for (final QuestionData qd: questions) {
                     if (qd.getQuestionId() == a.getQuestionId()) {
                         switch (qd.getQuestionType()) {
-                            case CHOICE_QUESTION: {
+                            case CHOICE_QUESTION:
                                 final ChoiceData cd = (ChoiceData) qd;
                                 for (final String s: a.getGivenAnswerList()) {
                                     cd.addAnswer(Integer.parseInt(s));
                                 }
                                 break;
-                            }
-                            case TEXT_QUESTION: {
+                            case TEXT_QUESTION:
                                 if (!a.getGivenAnswerList().isEmpty()) {
                                     final TextData td = (TextData) qd;
                                     td.getCreator().add(pr.getPollTaker());
                                     //nur die neuste (letzte) Antwort
                                     td.getTexts().add(a.getGivenAnswerList().get(a.getGivenAnswerList().size() - 1));
                                     td.getEditedDates().add(pr.getLastEditAt());
-                                    //vielleicht auch eine neue ID, aber ich wüsste nciht warum
+                                    //vielleicht auch eine neue ID, aber ich wüsste nicht warum, da nur key für frontend
                                     td.getIds().add(pr.getPollResultId());
-                                }
                                 break;
                             }
-                            case RANGE_QUESTION: {
+                            case RANGE_QUESTION:
                                 final RangeData rd = (RangeData) qd;
                                 break;
-                            }
-                            case SLIDER_QUESTION: {
+                            case SLIDER_QUESTION:
                                 final SliderData sd = (SliderData) qd;
                                 break;
-                            }
+                            default:
+                                break;
                         }
                     }
                 }
@@ -306,14 +298,14 @@ public class DiagramData {
 
     public String toJSON() {
         final StringBuilder json = new StringBuilder();
-        json.append("[");
+        json.append('[');
         for (int i = 0; i < questions.size(); i++) {
             json.append(questions.get(i).toJSON());
             if (i + 1 < questions.size()) {
-                json.append(",");
+                json.append(',');
             }
         }
-        json.append("]");
+        json.append(']');
         return json.toString();
     }
 

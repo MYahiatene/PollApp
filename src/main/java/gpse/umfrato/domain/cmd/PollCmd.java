@@ -3,9 +3,6 @@ package gpse.umfrato.domain.cmd;
 import gpse.umfrato.domain.poll.Poll;
 import lombok.Data;
 
-import java.sql.Blob;
-import java.time.LocalDateTime;
-
 @Data
 public class PollCmd {
 

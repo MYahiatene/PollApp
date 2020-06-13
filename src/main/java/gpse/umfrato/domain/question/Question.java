@@ -1,7 +1,5 @@
 package gpse.umfrato.domain.question;
 
-import gpse.umfrato.domain.answer.Answer;
-import gpse.umfrato.domain.poll.Poll;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import javax.persistence.*;
@@ -31,19 +29,17 @@ public class Question {
 
     // needed for Slide Questions
 
-
     private boolean hideValues = true; // gut so?
 
-
     // needed for Text Questions
-
-
 
     private boolean textMultiline = false;
 
     private int textMinimum;
 
     private int textMaximum;
+
+    private boolean hasConsistencyRelationship = false;
 
     /**
      * This attribute represents an unique id from the object question.

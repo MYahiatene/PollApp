@@ -18,6 +18,7 @@ public class CategoryController {
 
     @PostMapping("/poll/{pollId:\\d+}/addcategory")
     public Long addCategory(final @RequestBody CategoryCmd categoryCmd) {
-        return categoryService.createCategory(categoryCmd.getName(), Long.parseLong(categoryCmd.getPollId())).getCategoryId();
+        return categoryService.createCategory(categoryCmd.getName(),
+                Long.parseLong(categoryCmd.getPollId())).getCategoryId();
     }
 }

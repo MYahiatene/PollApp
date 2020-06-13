@@ -1,6 +1,5 @@
 package gpse.umfrato.domain.cmd;
 
-import gpse.umfrato.domain.poll.Poll;
 import gpse.umfrato.domain.question.Question;
 import lombok.Data;
 
@@ -30,9 +29,11 @@ public class QuestionCmd {
 
     private int textMaximum;
 
-    private Long questionId;
+    private boolean hasConsistencyRelationship;
 
-    private Long categoryId;
+    private long questionId;
+
+    private long categoryId;
 
     private String questionMessage;
 
@@ -46,23 +47,35 @@ public class QuestionCmd {
 
     public Question getQuestion() {
         final Question question = new Question(questionMessage, answerPossibilities, questionType);
-        switch(question.getQuestionType()){
+        // question.setQuestionId(questionId);
+        // question.setCategoryId(categoryId);
+        switch (question.getQuestionType()) {
             case "TextQuestion":
                 question.setTextMaximum(textMaximum);
                 question.setTextMinimum(textMinimum);
-                question.setTextMultiline(true);
+                question.setTextMultiline(textMultiline);
                 break;
             case "RangeQuestion":
-            case "SliderQuestion":
-                question.setEndValue(endValue);
+                question.setEndValue(endValue == 0.0f?5.0f:stepSize);
                 question.setStartValue(startValue);
-                question.setStepSize(stepSize);
+                question.setStepSize(stepSize == 0.0f?1.0f:stepSize);
                 question.setBelowMessage(belowMessage == null ? "" : belowMessage);
                 question.setAboveMessage(aboveMessage == null ? "" : aboveMessage);
+                question.setHasConsistencyRelationship(hasConsistencyRelationship);
+                break;
+            case "SliderQuestion":
+                question.setEndValue(endValue == 0.0f?1.0f:stepSize);
+                question.setStartValue(startValue);
+                question.setStepSize(stepSize == 0.0f?0.01f:stepSize);
+                question.setBelowMessage(belowMessage == null ? "" : belowMessage);
+                question.setAboveMessage(aboveMessage == null ? "" : aboveMessage);
+                question.setHideValues(hideValues);
                 break;
             case "ChoiceQuestion":
                 question.setAnswerPossibilities(answerPossibilities);
                 question.setNumberOfPossibleAnswers(numberOfPossibleAnswers);
+                question.setUserAnswers(userAnswers);
+                question.setHasConsistencyRelationship(hasConsistencyRelationship);
                 break;
             case "SortQuestion":
                 question.setAnswerPossibilities(answerPossibilities);

@@ -73,14 +73,14 @@ public class InitializeDatabase implements InitializingBean {
             //answerService.giveAnswer(testUsername, one, "3", Arrays.asList("Ja", "Nein"));
         } catch (UsernameNotFoundException e) {
             userService.createUser(tbettmannUserName, dummyPassword, "Tobias", "Bettmann",
-                "Admin","tbettmann@reply.de");
+                "Admin", "tbettmann@reply.de");
         }
 
         try {
             userService.loadUserByUsername("testnutzer");
         } catch (UsernameNotFoundException ex) {
             userService.createUser("testNutzer", dummyPassword, "Markus", "Mueller",
-                "Teilnehmer","mmueller@gmx.de");
+                "Teilnehmer", "mmueller@gmx.de");
         }
         pollService.createPoll(testPoll);
         final Question q1 = questionService.addQuestion(testPoll.getPollId().toString(),
@@ -90,17 +90,17 @@ public class InitializeDatabase implements InitializingBean {
                 "Welches Geschlecht haben Sie?", Arrays.asList("Weiblich", "Männlich", "Divers"),
                 "ChoiceQuestion");
         final Question q3 = questionService.addQuestion(testPoll.getPollId().toString(),
-                "Wie geht es Ihnen heute?",Arrays.asList("Gut", "In Ordnung", "Schlecht"),
+                "Wie geht es Ihnen heute?", Arrays.asList("Gut", "In Ordnung", "Schlecht"),
                 "ChoiceQuestion");
         final Question q4 = questionService.addQuestion(testPoll.getPollId().toString(),
-                "Was hat Sie am Meisten überzeugt?",Arrays.asList("Die Vorträge",
+                "Was hat Sie am Meisten überzeugt?", Arrays.asList("Die Vorträge",
                         "Die Informationsstände", "Das Catering", "Ich kann mich nicht entscheiden"),
                 "ChoiceQuestion");
         final Question q5 = questionService.addQuestion(testPoll.getPollId().toString(),
-                "Werden Sie uns nächstes Jahr wieder besuchen?",Arrays.asList("Ja", "Nein",
+                "Werden Sie uns nächstes Jahr wieder besuchen?", Arrays.asList("Ja", "Nein",
                         "Vielleicht"), "ChoiceQuestion");
         final Question q6 = questionService.addQuestion(testPoll.getPollId().toString(),
-                "Wie viel Zeit haben sie auf der Messe verbracht?",Arrays.asList("unter einer Stunde",
+                "Wie viel Zeit haben sie auf der Messe verbracht?", Arrays.asList("unter einer Stunde",
                         "1-2 Stunden", "2-5 Stunden", "über 5 Stunden"), "ChoiceQuestion");
         final Question q7 = questionService.addQuestion(testPoll.getPollId().toString(),
                 "Beschreiben Sie die Messe in ein bis 5 Wörtern", Collections.emptyList(),

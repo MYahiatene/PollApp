@@ -1,7 +1,5 @@
 package gpse.umfrato.domain.question;
 
-import org.springframework.security.access.prepost.PreAuthorize;
-
 import java.util.List;
 public interface QuestionService {
     /**
