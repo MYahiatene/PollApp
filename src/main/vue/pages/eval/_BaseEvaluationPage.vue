@@ -20,7 +20,7 @@ that each display a basic evaluation of one specific question-->
                     <!--                    button for refresh-->
 
                     <!--                    <v-btn icon onClick="window.location.reload()" color="primary"><v-icon> mdi-refresh</v-icon></v-btn>-->
-                    <v-btn icon @click="forceUpdate" color="primary"><v-icon> mdi-refresh</v-icon></v-btn>
+                    <v-btn icon color="primary" @click="forceUpdate"><v-icon> mdi-refresh</v-icon></v-btn>
 
                     <!--                    title of the poll-->
                     <v-card-title>{{ pollName }}</v-card-title>
@@ -152,7 +152,7 @@ that each display a basic evaluation of one specific question-->
                                             :key="widgetKey"
                                             :show-table="showTable"
                                             :show-diagram="showDiagram"
-                                            :questionId="question.id"
+                                            :question-id="question.id"
                                             :question-title="question.title"
                                             :answer-possibilities="question.answerPossibilities"
                                             :data="question.data"
@@ -165,7 +165,10 @@ that each display a basic evaluation of one specific question-->
                                     </div>
 
                                     <div v-else-if="question.type === 'text'">
-                                        <textQuestionEvaluationWidget :questionID="question.questionID">
+                                        <textQuestionEvaluationWidget
+                                            :question-i-d="question.questionID"
+                                            :question-title="question.title"
+                                        >
                                         </textQuestionEvaluationWidget>
                                     </div>
                                     <v-spacer></v-spacer>

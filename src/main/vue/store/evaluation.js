@@ -5,6 +5,7 @@ export const state = () => ({
 })
 export const getters = {
     getDiagramData(state) {
+        console.log(state.DiagramData)
         return state.DiagramData.questionList
     },
     getPollName(state) {

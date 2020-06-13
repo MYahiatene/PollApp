@@ -1,65 +1,64 @@
 <template>
-    <v-container grid-list-md text-xs-center>
-        <v-layout row wrap>
-            <v-container fluid>
-                <v-data-iterator
-                    :items="answers"
-                    :search="search"
-                    :sort-by="sortBy"
-                    :sort-desc="sortDesc"
-                    hide-default-footer
-                >
-                    <template v-slot:header>
-                        <v-toolbar class="mb-1">
-                            <v-text-field
-                                v-model="search"
-                                clearable
-                                flat
-                                solo
-                                hide-details
-                                prepend-inner-icon="mdi-pencil"
-                                label="Search"
-                            ></v-text-field>
-                            <!--<v-checkbox :v-model="caseSensitive" @change="rerender"></v-checkbox>-->
-                        </v-toolbar>
-                    </template>
+    <v-card>
+        <v-card-title>{{ questionTitle }}</v-card-title>
+        <v-container grid-list-md text-xs-center>
+            <v-layout row wrap>
+                <v-container fluid>
+                    <v-data-iterator
+                        :items="answers"
+                        :search="search"
+                        :sort-by="sortBy"
+                        :sort-desc="sortDesc"
+                        hide-default-footer
+                    >
+                        <template v-slot:header>
+                            <v-toolbar class="mb-1">
+                                <v-text-field
+                                    v-model="search"
+                                    clearable
+                                    flat
+                                    solo
+                                    hide-details
+                                    prepend-inner-icon="mdi-pencil"
+                                    label="Search"
+                                ></v-text-field>
+                                <!--<v-checkbox :v-model="caseSensitive" @change="rerender"></v-checkbox>-->
+                            </v-toolbar>
+                        </template>
 
-                    <template>
-                        <v-row>
-                            <v-col>
-                                <v-card>
-                                    <v-container>
-                                        <template v-if="tableView">
-                                            <v-data-table
-                                                :headers="tableHeaders"
-                                                :items="prepareAnswers"
-                                                :search="search"
-                                                :custom-filter="filterOnlyCapsText"
-                                                class="elevation-1"
-                                                dense
-                                            >
-                                            </v-data-table>
-                                        </template>
-                                        <template v-if="tableView">
-                                            <v-data-table
-                                                :headers="freqHeaders"
-                                                :items="prepareWordFrequencies"
-                                                :search="search"
-                                                :custom-filter="filterOnlyCapsText"
-                                                class="elevation-1"
-                                                dense
-                                            >
-                                            </v-data-table>
-                                        </template>
-                                    </v-container>
-                                </v-card>
-                            </v-col>
-                        </v-row>
-                    </template>
-                </v-data-iterator>
-            </v-container>
-        </v-layout>
-    </v-container>
+                        <template>
+                            <v-row>
+                                <v-col>
+                                    <v-card v-if="tableView" class="ma-1" flat>
+                                        <v-data-table
+                                            :headers="tableHeaders"
+                                            :items="prepareAnswers"
+                                            :search="search"
+                                            :custom-filter="filterOnlyCapsText"
+                                            class="elevation-1"
+                                            dense
+                                        >
+                                        </v-data-table>
+                                    </v-card>
+                                    <v-card v-if="tableView" class="ma-1" flat>
+                                        <v-data-table
+                                            :headers="freqHeaders"
+                                            :items="prepareWordFrequencies"
+                                            :search="search"
+                                            :custom-filter="filterOnlyCapsText"
+                                            class="elevation-1"
+                                            dense
+                                        >
+                                        </v-data-table>
+                                    </v-card>
+                                </v-col>
+                            </v-row>
+                        </template>
+                    </v-data-iterator>
+                </v-container>
+            </v-layout>
+        </v-container>
+    </v-card>
 </template>
 
 <script>
@@ -67,6 +66,14 @@ import { mapActions, mapGetters } from 'vuex'
 
 export default {
     name: 'TextQuestionEvaluationWidget',
+    props: {
+        questionID: {
+            type: Number,
+        },
+        questionTitle: {
+            type: String,
+        },
+    },
     data: () => {
         return {
             options: {
@@ -103,7 +110,7 @@ export default {
                 { text: 'Wort', value: 'text', sortable: false },
                 { text: 'Frequenz', value: 'value', sortable: true },
             ],
-            answers: [
+            mockAnswers: [
                 {
                     text: 'Uh wickey wild wild Wicky wicky wild Wickey wild wicky wicky wild wild wild west f gse',
                     answered: '2020',
@@ -525,16 +532,19 @@ export default {
             ],
         }
     },
-    props: {
-        questionID: {
-            type: Number,
-        },
-    },
     computed: {
         ...mapGetters({
+            diagramData: 'evaluation/getDiagramData', // diagramdata.questionlist(questionID)
             pollName: 'evaluation/getPollName',
             isAuthenticated: 'login/isAuthenticated',
         }),
+
+        answers() {
+            console.log('Fuck this')
+            console.log(this.diagramData)
+            return this.diagramData[6]
+        },
+
         prepareAnswers() {
             const data = []
             const freqMap = {}
@@ -574,7 +584,6 @@ export default {
     mounted() {
         // console.log('mounted')
         // console.log(this.polls)
-        this.initialize()
     },
     methods: {
         ...mapActions({ initialize: 'navigation/initialize' }),
