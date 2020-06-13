@@ -124,7 +124,7 @@ public class Poll {
      */
     public Poll(final String pollCreator, final String anonymityStatus, final String pollName, final String createdAt,
                 final String activatedAt, final String deactivatedAt, final int pollStatus, final String backgroundColor,
-                final String fontColor, final String logo, boolean visibility, final boolean categoryChange) {
+                final String fontColor, final String logo, final boolean visibility, final boolean categoryChange) {
         this.pollName = pollName;
         this.pollCreator = pollCreator;
         this.anonymityStatus = anonymityStatus;

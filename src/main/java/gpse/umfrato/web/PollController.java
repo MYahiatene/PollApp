@@ -43,7 +43,7 @@ public class PollController {
     @PreAuthorize("hasAuthority('Admin')")
     public String createPoll(final @RequestBody PollCmd pollCmd) {
         try {
-            Poll poll = pollService.createPoll(pollCmd.getCmdPoll());
+            final Poll poll = pollService.createPoll(pollCmd.getCmdPoll());
             return "Poll created! with id: " + poll.getPollId().toString();
         } catch (BadRequestException e) {
             return "Poll creation failed!";

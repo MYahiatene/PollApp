@@ -12,7 +12,12 @@
                 <v-row>
                     <v-col cols="8">
                         <!-- loads the questions from the current category in a list-->
-                        <v-list v-for="question in getCategory.questionList" :key="question.questionId" two-line>
+                        <v-list
+                            v-for="question in getCategory.questionList"
+                            :key="question.questionId"
+                            two-line
+                            :color="backgroundColor"
+                        >
                             <!-- every question is in a card and consists of the questionMessageand the way to answer
                             it, and depending on the settings of the poll, the number of questions -->
                             <v-card class="mx-auto">

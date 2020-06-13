@@ -23,15 +23,15 @@ public class PollResultServiceImpl implements PollResultService {
     }
 
     @Override
-    public PollResult createPollResult(Long pollID, String username) {
+    public PollResult createPollResult(final Long pollID, final String username) {
         return new PollResult(pollID, username);
     }
 
     @Override
-    public List<Answer> getUserAnswers(List<PollResult> input, String pollTaker) {
-        ListIterator<PollResult> iter = input.listIterator();
+    public List<Answer> getUserAnswers(final List<PollResult> input, final String pollTaker) {
+        final ListIterator<PollResult> iter = input.listIterator();
         while (iter.hasNext()) {
-            PollResult index = iter.next();
+            final PollResult index = iter.next();
             if (index.getPollTaker() == pollTaker) {
                 return index.getAnswerList();
             }

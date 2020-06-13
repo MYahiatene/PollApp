@@ -1,11 +1,11 @@
-package gpse.umfrato.domain.evaluation.FilterBlocks.FilterImpl;
+package gpse.umfrato.domain.evaluation.filterBlocks.FilterImpl;
 
 
 import gpse.umfrato.domain.pollresult.PollResult;
 
 import java.util.List;
 
-public interface Filter {
+public interface filter {
 
     List<PollResult> filter(List<PollResult> input);
 

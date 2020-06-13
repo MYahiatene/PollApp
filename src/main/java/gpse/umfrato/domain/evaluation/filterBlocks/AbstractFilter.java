@@ -1,4 +1,4 @@
-package gpse.umfrato.domain.evaluation.FilterBlocks;
+package gpse.umfrato.domain.evaluation.filterBlocks;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

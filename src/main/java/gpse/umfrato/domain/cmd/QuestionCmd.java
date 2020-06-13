@@ -57,8 +57,8 @@ public class QuestionCmd {
                 question.setEndValue(endValue);
                 question.setStartValue(startValue);
                 question.setStepSize(stepSize);
-                question.setBelowMessage(belowMessage == "" ? "" : belowMessage);
-                question.setAboveMessage(aboveMessage == "" ? "" : aboveMessage);
+                question.setBelowMessage(belowMessage == null ? "" : belowMessage);
+                question.setAboveMessage(aboveMessage == null ? "" : aboveMessage);
                 break;
             case "ChoiceQuestion":
                 question.setAnswerPossibilities(answerPossibilities);

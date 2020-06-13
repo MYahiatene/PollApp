@@ -16,6 +16,12 @@ public class DiagramData {
 
     public static final String DIVIDER_STRING = " / ";
 
+    private final List<QuestionData> questions = new ArrayList<>();
+    @JsonIgnore
+    private final QuestionService questionService;
+    @JsonIgnore
+    private final Poll poll;
+
     interface QuestionData {
         enum QuestionType { CHOICE_QUESTION, TEXT_QUESTION, RANGE_QUESTION, SLIDER_QUESTION }
 
@@ -39,17 +45,17 @@ public class DiagramData {
         private String median;
         private String mode;
 
-        ChoiceData(long questionId, String questionMessage, List<String> answerPossibilities) {
+        ChoiceData(final long questionId, final String questionMessage, final List<String> answerPossibilities) {
             this.questionId = questionId;
             this.questionTitle = questionMessage;
             this.answerPossibilities = answerPossibilities;
             data = new ArrayList<>();
-            for (String ignored: answerPossibilities) {
+            for (final String ignored: answerPossibilities) {
                 data.add(0);
             }
         }
 
-        public void addAnswer(int answerPossibility) {
+        public void addAnswer(final int answerPossibility) {
             data.set(answerPossibility, data.get(answerPossibility) + 1);
         }
 
@@ -61,7 +67,7 @@ public class DiagramData {
         @Override
         public void statistics() {
             int size = 0;
-            List<Integer> maxima = new ArrayList<>();
+            final List<Integer> maxima = new ArrayList<>();
             int max = 0;
             //Häufigste Antwort und Menge der Antworten raussuchen
             for (int i = 0; i < data.size(); i++) {
@@ -74,8 +80,8 @@ public class DiagramData {
                     maxima.add(i);
                 }
             }
-            StringBuilder modeText = new StringBuilder();
-            for (Integer i: maxima) {
+            final StringBuilder modeText = new StringBuilder();
+            for (final Integer i: maxima) {
                 modeText.append(answerPossibilities.get(i)).append(DIVIDER_STRING);
             }
             modeText.replace(modeText.lastIndexOf(DIVIDER_STRING), modeText.length(), "");
@@ -101,7 +107,7 @@ public class DiagramData {
 
         @Override
         public String toJSON() {
-            StringBuilder json = new StringBuilder();
+            final StringBuilder json = new StringBuilder();
             json.append("{\"id\": ").append(questionId)
                     .append(",\"type\": ").append("\"choice\"")
                     .append(",\"title\": \"").append(questionTitle)
@@ -132,7 +138,7 @@ public class DiagramData {
         private List<String> editedDates = new ArrayList<>();
         private List<String> creator = new ArrayList<>();
 
-        TextData(long questionId, String questionMessage) {
+        TextData(final long questionId, final String questionMessage) {
             this.questionId = questionId;
             this.questionTitle = questionMessage;
         }
@@ -149,7 +155,7 @@ public class DiagramData {
 
         @Override
         public String toJSON() {
-            StringBuilder json = new StringBuilder();
+            final StringBuilder json = new StringBuilder();
             json.append("{\"id\": ").append(questionId)
                     .append(",\"type\": ").append("\"text\"")
                     .append(",\"title\": \"").append(questionTitle)
@@ -176,7 +182,7 @@ public class DiagramData {
         long questionId;
         String questionTitle;
 
-        RangeData(long questionId, String questionMessage) {
+        RangeData(final long questionId, final String questionMessage) {
             this.questionId = questionId;
             this.questionTitle = questionMessage;
         }
@@ -200,7 +206,7 @@ public class DiagramData {
         long questionId;
         String questionTitle;
 
-        SliderData(long questionId, String questionMessage) {
+        SliderData(final long questionId, final String questionMessage) {
             this.questionId = questionId;
             this.questionTitle = questionMessage;
         }
@@ -218,20 +224,16 @@ public class DiagramData {
         }
     }
 
-    private final List<QuestionData> questions = new ArrayList<>();
-    @JsonIgnore
-    private final QuestionService questionService;
-    @JsonIgnore
-    private final Poll poll;
 
-    public DiagramData(Poll poll, List<PollResult> results, QuestionService questionService) {
+
+    public DiagramData(final Poll poll, final List<PollResult> results, final QuestionService questionService) {
         this.questionService = questionService;
         this.poll = poll;
         loadData(results);
     }
 
-    private void loadData(List<PollResult> results) {
-        for (Question q: questionService.getAllQuestions(poll.getPollId())) {
+    private void loadData(final List<PollResult> results) {
+        for (final Question q: questionService.getAllQuestions(poll.getPollId())) {
             QuestionData qd = null;
             switch (q.getQuestionType()) {
                 case "ChoiceQuestion": {
@@ -252,27 +254,29 @@ public class DiagramData {
                 }
                 default: {
 
+                    break;
+
                 }
             }
             if (qd != null) {
                 questions.add(qd);
             }
         }
-        for (PollResult pr: results) {
-            for (Answer a: pr.getAnswerList()) {
-                for (QuestionData qd: questions) {
+        for (final PollResult pr: results) {
+            for (final Answer a: pr.getAnswerList()) {
+                for (final QuestionData qd: questions) {
                     if (qd.getQuestionId() == a.getQuestionId()) {
                         switch (qd.getQuestionType()) {
                             case CHOICE_QUESTION: {
-                                ChoiceData cd = (ChoiceData) qd;
-                                for (String s: a.getGivenAnswerList()) {
+                                final ChoiceData cd = (ChoiceData) qd;
+                                for (final String s: a.getGivenAnswerList()) {
                                     cd.addAnswer(Integer.parseInt(s));
                                 }
                                 break;
                             }
                             case TEXT_QUESTION: {
                                 if (!a.getGivenAnswerList().isEmpty()) {
-                                    TextData td = (TextData) qd;
+                                    final TextData td = (TextData) qd;
                                     td.getCreator().add(pr.getPollTaker());
                                     //nur die neuste (letzte) Antwort
                                     td.getTexts().add(a.getGivenAnswerList().get(a.getGivenAnswerList().size() - 1));
@@ -283,11 +287,11 @@ public class DiagramData {
                                 break;
                             }
                             case RANGE_QUESTION: {
-                                RangeData rd = (RangeData) qd;
+                                final RangeData rd = (RangeData) qd;
                                 break;
                             }
                             case SLIDER_QUESTION: {
-                                SliderData sd = (SliderData) qd;
+                                final SliderData sd = (SliderData) qd;
                                 break;
                             }
                         }
@@ -295,13 +299,13 @@ public class DiagramData {
                 }
             }
         }
-        for (QuestionData qd: questions) {
+        for (final QuestionData qd: questions) {
             qd.statistics();
         }
     }
 
     public String toJSON() {
-        StringBuilder json = new StringBuilder();
+        final StringBuilder json = new StringBuilder();
         json.append("[");
         for (int i = 0; i < questions.size(); i++) {
             json.append(questions.get(i).toJSON());
