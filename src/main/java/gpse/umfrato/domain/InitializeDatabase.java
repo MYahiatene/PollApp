@@ -77,7 +77,7 @@ public class InitializeDatabase implements InitializingBean {
             questionService.addQuestion("1", "testFrage", Arrays.asList("Ja", "Nein", "Vielleicht"), "ChoiceQuestion", 0, 0, 0, null, null, false, 1);
             questionService.addQuestion("1", "testFrage2", Arrays.asList("Jein", "Fein", "Vielschwer"), "ChoiceQuestion",0, 0, 0, null, null, false, 2);
             questionService.addQuestion("1", "testFrage3", new ArrayList<>(), "TextQuestion",0, 0, 0, null, null, false, 3);
-            questionService.addQuestion("1", "TestFrage 4", new ArrayList<>(), "RangeQuestion",100, 10, 10, null, null, false, 4);
+            questionService.addQuestion("1", "TestFrage 4", new ArrayList<>(), "RangeQuestion",100, 10, 10, "belowMessage", "aboveMessage", false, 4);
             questionService.addQuestion("1", "TestFrage 5", new ArrayList<>(), "SliderQuestion",100, 0, 10, "small", "big", false, 5);
             questionService.addQuestion("1", "TestFrage 5", new ArrayList<>(), "SliderQuestion",100, 0, 10, "small", "big", false, 6);
             questionService.addQuestion("1", "testFrage 6", Arrays.asList("Ja", "Nein", "Vielleicht"), "RadioButton", 0, 0, 0, null, null, false, 7);

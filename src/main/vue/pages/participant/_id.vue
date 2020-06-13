@@ -27,7 +27,6 @@
                                     <v-card-text>
                                         <!--<div v-if="question.textMultiline === true">
                                         :rules="textQuestionRules"-->
-                                        <!--rows="1"-->
                                         <!--:rules="textQuestionRules"-->
                                         <div>
                                             <v-textarea
@@ -35,7 +34,7 @@
                                                 auto-grow
                                                 counter
                                                 :color="fontColor"
-                                                :rules="[rules1.friendlyUrl]"
+                                                rows="1"
                                                 @input="saveAnswerField($event, question)"
                                             >
                                             </v-textarea>
@@ -113,10 +112,10 @@
                                 <!-- @change="getRangeQuestionAnswers"-->
                                 <div v-else-if="question.questionType === 'RangeQuestion'">
                                     <!--rangeAnswer in rangeAnswers-->
-                                    <v-list v-for="rangeAnswer in rangeAnswers" :key="rangeAnswer.text">
+                                    <v-list v-for="answer in question.answerPossibilities" :key="answer">
                                         <v-checkbox
                                             class="ma-4"
-                                            :label="rangeAnswer"
+                                            :label="answer"
                                             :color="fontColor"
                                             @change="saveAnswerCheckbox($event, question, answer)"
                                         ></v-checkbox>
@@ -181,6 +180,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
+// import Arrays from 'java.util.Arrays'
 export default {
     name: 'Participant',
     layout: 'participant', // uses special layout/participant instead of default-layout
@@ -206,16 +206,6 @@ export default {
                 pollId: '1',
             },
             rangeAnswers: [],
-            rules1: {
-                friendlyUrl(value) {
-                    console.log('validating value')
-                    if (/^[a-z0-9-]*$/.test(value)) {
-                        return true
-                    }
-                    return 'only lowercase letters, numbers and dashes are allowed'
-                },
-            },
-            rules: [(l) => l.length <= 25 || 'Max 25 characters'],
             textQuestionRules: [
                 (v) => v.length >= 10 || 'Eingabe muss länger als 10 Zeichen sein!',
                 (v) => v.length <= 100 || 'Eingabe muss kürzer als 100 Zeichen sein!',
@@ -249,7 +239,52 @@ export default {
             const c = []
             for (let i = 0; i < this.getCategory.questionList.length; i++) {
                 if (this.getCategory.questionList[i].questionType === 'RangeQuestion') {
-                    c[i] = this.getCategory.questionList[i]
+                    const rangeAnswers = []
+                    const max = this.getCategory.questionList[i].endValue
+                    const min = this.getCategory.questionList[i].startValue
+                    const step = this.getCategory.questionList[i].stepSize
+                    const text1 = this.getCategory.questionList[i].belowMessage
+                    const text2 = this.getCategory.questionList[i].aboveMessage
+
+                    /* const rangeAnswers = []
+                    const max = 100
+                    const min = 10
+                    const step = 10
+                    const text1 = 'id'
+                    const text2 = 'hjsrfb' */
+                    if (max != null && min != null && step != null) {
+                        if (text1 != null) {
+                            rangeAnswers.push(text1)
+                        }
+                        const size = (max - min) / step
+                        for (let i = 0; i < size; i++) {
+                            const value = min + i * step
+                            rangeAnswers.push(String(value))
+                        }
+                        if (text2 != null) {
+                            rangeAnswers.push(text2)
+                        }
+                    }
+                    console.log(rangeAnswers)
+                    // Arrays.asList(rangeAnswers)
+                    const obj = {
+                        questionType: this.getCategory.questionList[i].questionType,
+                        questionIndex: this.getCategory.questionList[i].questionIndex,
+                        questionMessage: this.getCategory.questionList[i].questionMessage,
+                        categoryIndex: this.getCategory.questionList[i].categoryIndex,
+                        questionId: this.getCategory.questionList[i].questionId,
+                        answerPossibilities: rangeAnswers,
+                        endValue: this.getCategory.questionList[i].endValue,
+                        startValue: this.getCategory.questionList[i].startValue,
+                        stepSize: this.getCategory.questionList[i].stepSize,
+                        belowMessage: this.getCategory.questionList[i].belowMessage,
+                        aboveMessage: this.getCategory.questionList[i].aboveMessage,
+                        hideValues: this.getCategory.questionList[i].hideValues,
+                    }
+                    // this makes unexpected side effects
+                    // this.getCategory.questionList[i].answerPossibilites = ['test1', 'test2']
+                    console.log(obj)
+                    c[i] = obj
                 } else {
                     c[i] = this.getCategory.questionList[i]
                 }
