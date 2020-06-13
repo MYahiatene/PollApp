@@ -18,4 +18,6 @@ public class QuestionCmd {
     private List<String> answerPossibilities;
 
     private String questionType;
+
+    private int numberOfPossibleAnswers;
 }

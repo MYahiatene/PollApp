@@ -36,4 +36,8 @@ public interface QuestionService {
     Question getQuestion(Long questionId);
 
     List<Question> getAllQuestions(final long categoryId);
+
+    Question editQuestion(final Long questionID, final List<String> answerPossibilities, final int numberOfPossibleAnswers,
+                      final String questionMessage,
+                      final String questionType);
 }

@@ -131,7 +131,7 @@
                                             </v-row>
                                             <v-row no-gutters>
                                                 <v-textarea
-                                                    v-model="questionMessage"
+                                                    v-model="selectedQuestion.questionMessage"
                                                     label="Fragentext"
                                                     hint="Was soll den Umfrageteilnehmer gefragt werden?"
                                                     rows="1"
@@ -140,15 +140,15 @@
                                             </v-row>
                                             <v-row no-gutters>
                                                 <v-overflow-btn
-                                                    v-model="questionTypeChoice"
                                                     :items="questionWidgets"
+                                                    v-model="selectedQuestion.questionType"
                                                     label="Fragenart"
                                                 ></v-overflow-btn>
                                             </v-row>
                                             <v-card-actions>
                                                 <v-row>
                                                     <v-col cols="10">
-                                                        <v-btn @click="editQuestion">
+                                                        <v-btn @click="editQuestion(selectedQuestion)">
                                                             <v-icon color="primary" left>
                                                                 mdi-pencil
                                                             </v-icon>
@@ -280,6 +280,9 @@ export default {
         },
     },
     methods: {
+        editQuestion(question) {
+            console.log(question.questionMessage + '\n' + question.questionType)
+        },
         checkMove(evt) {
             console.log(evt.draggedContext.element)
             console.log(this.categoryData)

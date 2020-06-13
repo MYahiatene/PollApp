@@ -119,5 +119,18 @@ public class QuestionServiceImpl implements QuestionService {
         return questionRepository.findQuestionsByCategoryId(categoryId);
     }
 
+    @Override
+    public Question editQuestion(final Long questionID,final List<String> answerPossibilities, int numberOfPossibleAnswers, String questionMessage, String questionType) {
+
+        Question question =questionRepository.findById(questionID).orElseThrow(EntityNotFoundException::new);
+        question.setAnswerPossibilities(answerPossibilities);
+        question.setNumberOfPossibleAnswers(numberOfPossibleAnswers);
+        question.setQuestionMessage(questionMessage);
+        question.setQuestionType(questionType);
+        questionRepository.save(question);
+        return question;
+
+    }
+
 
 }

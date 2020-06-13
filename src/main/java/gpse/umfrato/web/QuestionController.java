@@ -66,4 +66,12 @@ public class QuestionController {
 
         return questionService.getAllQuestions(categoryId);
     }
+
+    @PostMapping("/editquestion")
+    public Question editQuestion(final @RequestBody QuestionCmd questionCmd) {
+        return questionService.editQuestion(Long.valueOf(questionCmd.getQuestionId()), questionCmd.getAnswerPossibilities(),
+            questionCmd.getNumberOfPossibleAnswers(),
+            questionCmd.getQuestionMessage(),
+            questionCmd.getQuestionType());
+    }
 }
