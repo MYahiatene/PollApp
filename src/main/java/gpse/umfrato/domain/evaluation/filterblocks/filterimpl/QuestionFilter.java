@@ -19,10 +19,9 @@ private final boolean absoluteMatch;
 
 @Override public List<PollResult> filter(final List<PollResult> input) {
     final List<PollResult> filteredList = new ArrayList<>();
-    for(final PollResult pr: input)
-    {
+    for (final PollResult pr: input) {
         boolean match = false;
-        if(pr.getPollId().equals(targetPollId)) {
+        if (pr.getPollId().equals(targetPollId)) {
             for (final Answer a: pr.getAnswerList()) {
                 if (a.getQuestionId().equals(targetQuestionId)) {
                     if (absoluteMatch) {
@@ -45,8 +44,7 @@ private final boolean absoluteMatch;
                 }
             }
         }
-        if(match)
-        {
+        if (match) {
             filteredList.add(pr);
         }
     }

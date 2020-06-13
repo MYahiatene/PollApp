@@ -197,7 +197,7 @@ public class DiagramData {
         }
 
         @Override public String toJSON() {
-            return "{\"id\": " + questionId + ",\"type\": " + "\"text\"" + ",\"title\": " + questionTitle + "}";
+            return "{\"id\": " + questionId + ",\"type\":  \"range\" ,\"title\": " + questionTitle + "}";
         }
     }
 
@@ -221,7 +221,7 @@ public class DiagramData {
         }
 
         @Override public String toJSON() {
-            return "{\"id\": " + questionId + ",\"type\": " + "\"text\"" + ",\"title\": " + questionTitle + "}";
+            return "{\"id\": " + questionId + ",\"type\":  \"slider\" ,\"title\": " + questionTitle + "}";
         }
     }
 

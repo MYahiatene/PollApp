@@ -18,8 +18,8 @@ import java.util.logging.Logger;
 
 public class Statistics {
 
+    private static final double MEDIAN_QUANTILE = 0.5;
     private static final Logger LOGGER = Logger.getLogger("EvaluationController");
-    public static final double MEDIAN_QUANTILE = 0.5;
     private final AnswerService answerService;
     private final UserService userService;
     private final QuestionService questionService;
@@ -201,7 +201,7 @@ public class Statistics {
     }*/
 
     public static List<Double> modus(final List<PollResult> allValues) {
-        final List<Double> modi = new ArrayList < >();
+        final List<Double> modi = new ArrayList<>();
         // Iterate over answers
         for (final PollResult allValue: allValues) {
             // Iterate over questions for answer i
@@ -234,23 +234,23 @@ public class Statistics {
 
 
     private List<List<Answer>> toNormalList(final List<PollResult> input) {
-        final List<List<Answer>> outputList = new ArrayList < >();
+        final List<List<Answer>> outputList = new ArrayList<>();
         Answer[][] output = new Answer[input.size()][input.get(0).getAnswerList().size()];
-        for (int i = 0; i<input.size(); i++) { //Iterate over singular pollResults
-            for (int j = 0; j<input.get(i).getAnswerList().size(); j++) { //Iterate over singular Answers
+        for (int i = 0; i < input.size(); i++) { //Iterate over singular pollResults
+            for (int j = 0; j < input.get(i).getAnswerList().size(); j++) { //Iterate over singular Answers
                 output[i][j] = input.get(i).getAnswerList().get(j);
             }
         }
 
         Answer[][] intermediateList = new Answer[input.get(0).getAnswerList().size()][input.size()];
 
-        for (int i = 0; i<input.size(); i++) {
+        for (int i = 0; i < input.size(); i++) {
             for (int j = 0; j < input.get(i).getAnswerList().size(); j++) {
                 //Transpose array so that columns are Arrays of answers for one question
                 intermediateList[j][i] = input.get(i).getAnswerList().get(j);
             }
         }
-        for (int i = 0; i<input.size(); i++) {
+        for (int i = 0; i < input.size(); i++) {
             List<Answer> intermediate;
             intermediate = Arrays.asList(intermediateList[i]);
             outputList.add(intermediate);
@@ -259,7 +259,7 @@ public class Statistics {
     }
 
     private List<Double> toFirstValuesList(final List<Answer> input) {
-        final List<Double> allFirstValues = new ArrayList < >();
+        final List<Double> allFirstValues = new ArrayList<>();
         for (final Answer answer: input) {
             final Double next = Double.parseDouble(answer.getGivenAnswerList().get(0));
             allFirstValues.add(next);
