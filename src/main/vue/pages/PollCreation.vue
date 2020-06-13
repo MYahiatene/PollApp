@@ -205,8 +205,7 @@ export default {
                     value: 3,
                 },
             ],
-            titleRules: [
-                (v) => !!v || 'Titel fehlt' ],
+            titleRules: [(v) => !!v || 'Titel fehlt'],
             anonymityRules: [(v) => !!v || 'Anonymitätsgrad fehlt.'],
         }
     },
@@ -243,15 +242,7 @@ export default {
                 fontColor: this.fontColor,
                 logo: this.logo,
             }
-            const token = localStorage.getItem('user-token')
-            const instance = this.$axios.create({
-                baseURL: 'http://127.0.0.1:8088/api',
-                timeout: 1000,
-                headers: {
-                    Authorization: 'Bearer ' + token,
-                },
-            })
-            instance.post('/createpoll', obj).catch()
+            this.$axios.post('/createpoll', obj).catch()
             this.$router.push('/polls')
         },
         formatDate(date) {
