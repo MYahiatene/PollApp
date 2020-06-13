@@ -34,7 +34,7 @@
                                 <h2>{{ category.categoryName }}</h2></v-expansion-panel-header
                             >
                             <v-expansion-panel-content>
-                                <draggable :list="category.questionList" :options="{ group: 'test' }">
+                                <draggable :move="checkMove" :list="category.questionList" :options="{ group: 'test' }">
                                     <v-list v-for="question in category.questionList" :key="question.questionId">
                                         <v-list-item @click="selectQuestion(question, question.questionType)"
                                             >{{ question.questionMessage }}
@@ -280,6 +280,10 @@ export default {
         },
     },
     methods: {
+        checkMove(evt) {
+            console.log(evt.draggedContext.element)
+            console.log(this.categoryData)
+        },
         pollName() {
             return this.pollData.pollName
         },
