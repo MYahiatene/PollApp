@@ -1,5 +1,7 @@
 package gpse.umfrato.domain.poll;
 
+import java.util.logging.Logger;
+import gpse.umfrato.domain.question.Question;
 import gpse.umfrato.domain.category.CategoryRepository;
 import gpse.umfrato.domain.category.CategoryService;
 import gpse.umfrato.web.BadRequestException;
@@ -7,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import javax.transaction.Transactional;
 import java.util.List;
 
@@ -16,6 +20,8 @@ class PollServiceImpl implements PollService {
     private final PollRepository pollRepository;
     private final CategoryRepository categoryRepository;
     private final CategoryService categoryService;
+
+    private static final Logger LOGGER = Logger.getLogger("PollService");
 
     /**
      * This class constructor initializes the poll repository.

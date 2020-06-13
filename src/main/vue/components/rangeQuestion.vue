@@ -63,6 +63,9 @@ export default {
                 (v) =>
                     parseFloat(v) < this.endValue - this.startValue ||
                     'Die Schrittweite muss kleiner als die Reichweite sein!',
+                (v) =>
+                    (this.endValue - this.startValue) % parseFloat(v, 10) === 0 ||
+                    'Die Reichweite muss durch die Schrittweite teilbar sein',
             ],
         }
     },
