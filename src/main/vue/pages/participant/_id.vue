@@ -1,7 +1,6 @@
 <template>
     <!--Build page after PollData from created() method is here-->
     <div v-if="getPoll[1] !== undefined">
-        <AuthGate v-if="isAuthenticated !== true"></AuthGate>
         <v-container>
             <!--When/After the PollData "arrived" show the logo-->
             <div v-if="getPoll[1].data.logo !== undefined">
@@ -180,11 +179,9 @@
 
 <script>
     import { mapGetters } from 'vuex'
-    import AuthGate from '../components/AuthGate'
     export default {
         name: 'Participant',
         layout: 'participant', // uses special layout/participant instead of default-layout
-        components: { AuthGate },
         data() {
             return {
                 poll: ['Object'],
