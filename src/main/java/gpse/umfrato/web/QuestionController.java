@@ -1,5 +1,8 @@
 package gpse.umfrato.web;
 
+import gpse.umfrato.domain.category.Category;
+import gpse.umfrato.domain.cmd.CategoryCmd;
+import gpse.umfrato.domain.cmd.QuestionCategoryChangeCmd;
 import gpse.umfrato.domain.cmd.QuestionCmd;
 import gpse.umfrato.domain.poll.Poll;
 import gpse.umfrato.domain.question.Question;
@@ -11,9 +14,12 @@ import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.logging.Logger;
 
+import javax.transaction.Transactional;
+import java.util.List;
+
 @RequestMapping(value = "/api", method = RequestMethod.GET)
 @RestController
-@CrossOrigin //(origins = "http://127.0.0.1:8080")
+@CrossOrigin(origins = "http://127.0.0.1:8080")
 public class QuestionController {
 
     private static final Logger LOGGER = Logger.getLogger("QuestionController");
@@ -34,10 +40,10 @@ public class QuestionController {
      *
      * @param questionCmd has the question and the poll id
      */
-    @PostMapping("/poll/{id:\\d+}/addquestion")
-    public Long addQuestion(/*@PathVariable("id") final String id*/ final @RequestBody QuestionCmd questionCmd) {
+    @PostMapping("/addquestion")
+    public Question addQuestion(final @RequestBody QuestionCmd questionCmd) {
         return questionService.addQuestion(questionCmd.getPollId(), questionCmd.getQuestionMessage(),
-            questionCmd.getAnswerPossibilities(), questionCmd.getQuestionType()).getQuestionId();
+            questionCmd.getAnswerPossibilities(), questionCmd.getQuestionType());
     }
 
     /**
@@ -45,10 +51,9 @@ public class QuestionController {
      *
      * @param questionCmd has the poll id
      */
-    @PostMapping("/poll/{pollId:\\d+}/removequestion/{questionId:\\d+}")
-    public void deleteQuestion(@PathVariable("pollId") final String pollId, @PathVariable("questionId")
-    final String questionId) {
-        questionService.removeQuestion(pollId, questionId);
+    @PutMapping("/removeQuestion")
+    public void deleteQuestion(final @RequestBody QuestionCmd questionCmd) {
+        questionService.removeQuestion(questionCmd.getCategoryId(), questionCmd.getQuestionId());
     }
 
     /**
@@ -57,8 +62,29 @@ public class QuestionController {
      * @param questionCmd has the poll id of the question
      * @return returns the requested question
      */
-    @GetMapping("/poll/{pollId:\\d+}/getquestion/{questionId:\\d+}")
+    @GetMapping("/getOneQuestion")
     public Question getQuestion(final @RequestBody QuestionCmd questionCmd) {
+
         return questionService.getQuestion(Long.valueOf(questionCmd.getPollId()));
+    }
+
+    @GetMapping("/getallquestions")
+    public List<Question> getAllQuestions(final @RequestParam long categoryId) {
+
+        return questionService.getAllQuestions(categoryId);
+    }
+
+    @PostMapping("/editquestion")
+    public Question editQuestion(final @RequestBody QuestionCmd questionCmd) {
+        return questionService.editQuestion(Long.valueOf(questionCmd.getQuestionId()), questionCmd.getAnswerPossibilities(),
+            questionCmd.getNumberOfPossibleAnswers(),
+            questionCmd.getQuestionMessage(),
+            questionCmd.getQuestionType());
+    }
+
+    @PostMapping("/changequestioncategory")
+    public Question changequestioncategory(final @RequestBody QuestionCategoryChangeCmd questionCategoryChangeCmd) {
+        return questionService.changeCategory(questionCategoryChangeCmd.getQuestionId(),
+            questionCategoryChangeCmd.getOldCategoryId(), questionCategoryChangeCmd.getNewCategoryId());
     }
 }

@@ -73,6 +73,7 @@ public class PollController {
     /**
      * This method returns the poll (questions, settings etc).
      *
+     * @param pollId has the id of the poll
      * @return a selected poll
      */
     @GetMapping("/participant")
@@ -82,6 +83,10 @@ public class PollController {
         } catch(EntityNotFoundException e) {
             return null;
         }
+    @GetMapping("/getonepoll")
+    public Poll getPoll(@RequestParam long pollId) {
+        return pollService.getPoll(String.valueOf(pollId));
+    }
 
     }
 

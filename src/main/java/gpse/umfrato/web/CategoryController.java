@@ -1,11 +1,18 @@
 package gpse.umfrato.web;
 
+import gpse.umfrato.domain.category.Category;
 import gpse.umfrato.domain.category.CategoryService;
 import gpse.umfrato.domain.cmd.CategoryCmd;
+import gpse.umfrato.domain.cmd.DeleteUserCmd;
+import gpse.umfrato.domain.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-@RequestMapping(value = "/api", method = RequestMethod.GET)
+import javax.transaction.Transactional;
+import java.util.List;
+
+@RequestMapping(value = "/api")
 @RestController
 @CrossOrigin
 public class CategoryController {
@@ -16,8 +23,38 @@ public class CategoryController {
         this.categoryService = categoryService;
     }
 
-    @PostMapping("/poll/{pollId:\\d+}/addcategory")
-    public Long addCategory(final @RequestBody CategoryCmd categoryCmd) {
-        return categoryService.createCategory(categoryCmd.getName(), Long.parseLong(categoryCmd.getPollId())).getCategoryId();
+    @PostMapping("/addcategory")
+    public Category addCategory(final @RequestBody CategoryCmd categoryCmd) {
+        return categoryService.createCategory(categoryCmd.getName(), Long.parseLong(categoryCmd.getPollId()));
+    }
+
+    @GetMapping("/getallcategories")
+    public List<Category> getCategories(@RequestParam long pollId) {
+        return categoryService.getAllCategories(pollId);
+    }
+
+    /**
+     * Deletes a category in the data base
+     */
+    @PreAuthorize("hasAuthority('Admin')")
+    @PutMapping("/deletecategory")
+    public String deleteCategory(final @RequestBody CategoryCmd categoryCmd) {
+        categoryService.deleteCategory(Long.parseLong(categoryCmd.getCategoryId()));
+        return "Test";
+    }
+
+    @PutMapping("/editcategory")
+    public void editCategory(final @RequestBody CategoryCmd categoryCmd) {
+        categoryService.editCategory(Long.valueOf(categoryCmd.getCategoryId()), categoryCmd.getName());
+    }
+
+    /**
+     * Deletes a category in the data base
+     */
+    @PreAuthorize("hasAuthority('Admin')")
+    @PutMapping("/deletecategoryandquestions")
+    public String deleteCategoryAndQuestions(final @RequestBody CategoryCmd categoryCmd) {
+        categoryService.deleteCategoryAndQuestions(Long.valueOf(categoryCmd.getCategoryId()));
+        return "Test";
     }
 }

@@ -11,10 +11,13 @@ public class QuestionCmd {
 
     private String questionId;
 
+    private String categoryId;
+
     private String questionMessage;
 
     private List<String> answerPossibilities;
 
     private String questionType;
 
+    private int numberOfPossibleAnswers;
 }

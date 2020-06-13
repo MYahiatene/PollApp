@@ -35,13 +35,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(final HttpSecurity http) throws Exception {
         http.cors().and().csrf().disable()
             .authorizeRequests()
-            .antMatchers("/api/**").hasAnyAuthority("Admin","User")
+            .antMatchers("/api/**").hasAnyAuthority("Admin", "User")
             .and()
             .addFilter(new JwtAuthenticationFilter(authenticationManager(), securityConstants))
             .addFilter(new JwtAuthorizationFilter(authenticationManager(), securityConstants))
             .sessionManagement()
             .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-        http.headers().frameOptions().disable();
+            http.headers().frameOptions().disable();
     }
 
     @Autowired

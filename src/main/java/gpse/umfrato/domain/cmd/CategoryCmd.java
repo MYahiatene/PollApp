@@ -6,4 +6,5 @@ import lombok.Data;
 public class CategoryCmd {
     private String name;
     private String pollId;
+    private String categoryId;
 }

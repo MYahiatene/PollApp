@@ -3,6 +3,7 @@ package gpse.umfrato.domain.question;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.List;
+
 public interface QuestionService {
     /**
      * This method creates a question for a poll.
@@ -14,9 +15,9 @@ public interface QuestionService {
      * @return the question which is created
      */
     Question addQuestion(final String pollId,
-                                final String questionMessage,
-                                final List<String> answerPossibilities,
-                                final String questionType);
+                         final String questionMessage,
+                         final List<String> answerPossibilities,
+                         final String questionType);
 
     /**
      * This method removes a selected question.
@@ -34,13 +35,15 @@ public interface QuestionService {
      */
     Question getQuestion(Long questionId);
 
-    /**
-     * This method returns all questions from a poll.
-     *
-     * @param pollId the id of the poll
-     * @return all questions from a poll
-     */
-    List<Question> getAllQuestions(final long pollId);
+    List<Question> getAllQuestions(final long categoryId);
 
-    List<Question> getQuestionsFromCategory(final long categoryId);
+    Question editQuestion(final Long questionID, final List<String> answerPossibilities, final int numberOfPossibleAnswers,
+                      final String questionMessage,
+                      final String questionType);
+
+
+    Question changeCategory(final Long questionId, final Long oldCategoryId, final Long newCategoryId);
+
 }
+
+

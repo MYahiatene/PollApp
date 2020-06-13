@@ -2,6 +2,7 @@ package gpse.umfrato.domain.question;
 
 import gpse.umfrato.domain.category.Category;
 import gpse.umfrato.domain.category.CategoryRepository;
+import gpse.umfrato.domain.category.CategoryService;
 import gpse.umfrato.domain.poll.Poll;
 import gpse.umfrato.domain.poll.PollRepository;
 import gpse.umfrato.domain.poll.PollService;
@@ -21,6 +22,8 @@ public class QuestionServiceImpl implements QuestionService {
      * Initializes the poll service.
      */
     /*default*/ final PollService pollService;
+
+    private final CategoryService categoryService;
 
     /*default*/ final CategoryRepository categoryRepository;
 
@@ -44,11 +47,13 @@ public class QuestionServiceImpl implements QuestionService {
      */
     @Autowired
     public QuestionServiceImpl(final PollRepository pollRepository, final QuestionRepository questionRepository,
-                               final PollService pollService, final CategoryRepository categoryRepository) {
+                               final PollService pollService, final CategoryRepository categoryRepository,
+                               final CategoryService categoryService) {
         this.pollRepository = pollRepository;
         this.questionRepository = questionRepository;
         this.pollService = pollService;
         this.categoryRepository = categoryRepository;
+        this.categoryService = categoryService;
     }
 
 
@@ -63,24 +68,27 @@ public class QuestionServiceImpl implements QuestionService {
                                 final String questionMessage,
                                 final List<String> answerPossibilities,
                                 final String questionType) {
-        final Question question = new Question(questionMessage, answerPossibilities, questionType);
-        final Category category = categoryRepository.findCategoryByPollId(Long.valueOf(pollId));
-        category.getQuestionList().add(question);
-        question.setCategoryId(category.getCategoryId());
+        Question question = new Question(questionMessage, answerPossibilities, questionType);
+        question.setCategoryId(pollRepository.findById(Long.valueOf(pollId)).orElseThrow(EntityNotFoundException::new)
+            .getCategoryList().get(0).getCategoryId());
+        pollRepository.findById(Long.valueOf(pollId)).orElseThrow(EntityNotFoundException::new)
+            .getCategoryList().get(0).getQuestionList().add(question);
         questionRepository.save(question);
-        categoryRepository.save(category);
+
         return question;
     }
 
     /**
      * This method removes a selected question.
      *
-     * @param pollId     the id of the poll where the question is setted
-     * @param questionId the id of the selectes question
+     * @param categoryId the id of the category where the question is set
+     * @param questionId the id of the selected question
      */
     @Override
-    public void removeQuestion(final String pollId, final String questionId) {
+    public void removeQuestion(final String categoryId, final String questionId) {
         try {
+            categoryRepository.findById(Long.valueOf(categoryId))
+                .orElseThrow(EntityNotFoundException::new).getQuestionList().remove(questionRepository.getOne(Long.valueOf(questionId)));
             questionRepository.deleteById(Long.valueOf(questionId));
 
         } catch (EntityNotFoundException e) {
@@ -101,29 +109,39 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     /**
-     * This method returns all questions from a poll.
+     * This method returns all questions with the categoryId
      *
-     * @return all questions from a poll
+     * @param categoryId the id of the category
+     * @return All the questions
      */
     @Override
-    public List<Question> getAllQuestions(final long pollId) {
-        final Poll poll = pollRepository.findById(pollId).orElseThrow(EntityNotFoundException::new);
-        final List<Category> categories = poll.getCategoryList();
-        final List<Question> allQuestions = new ArrayList<>();
-
-        for (final Category g : categories) {
-            allQuestions.addAll(g.getQuestionList());
-        }
-        if (allQuestions.isEmpty()) {
-            throw new BadRequestException();
-        }
-
-        return allQuestions;
+    public List<Question> getAllQuestions(final long categoryId) {
+        return questionRepository.findQuestionsByCategoryId(categoryId);
     }
 
     @Override
-    public List<Question> getQuestionsFromCategory(final long categoryId) {
-        return questionRepository.findQuestionByCategoryId(categoryId);
+    public Question editQuestion(final Long questionID, final List<String> answerPossibilities, int numberOfPossibleAnswers, String questionMessage, String questionType) {
+
+        Question question = questionRepository.findById(questionID).orElseThrow(EntityNotFoundException::new);
+        question.setAnswerPossibilities(answerPossibilities);
+        question.setNumberOfPossibleAnswers(numberOfPossibleAnswers);
+        question.setQuestionMessage(questionMessage);
+        question.setQuestionType(questionType);
+        questionRepository.save(question);
+        return question;
+
+    }
+
+    @Override
+    public Question changeCategory(final Long questionId, final Long oldCategoryId, final Long newCategoryId) {
+        Question question = questionRepository.findById(questionId).orElseThrow(EntityNotFoundException::new);
+        Category oldCategory = categoryRepository.findById(oldCategoryId).orElseThrow(EntityNotFoundException::new);
+        oldCategory.getQuestionList()
+            .remove(question);
+        Category newCategory = categoryRepository.findById(newCategoryId).orElseThrow(EntityNotFoundException::new);
+        newCategory.getQuestionList().add(question);
+        question.setCategoryId(newCategoryId);
+        return question;
     }
 
 

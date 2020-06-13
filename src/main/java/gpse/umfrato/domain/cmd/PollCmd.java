@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Data
 public class PollCmd {
 
-    private String id; //shouldn't this b generated, so not be listed here?
+    private String pollId;
 
     private String pollcreator;
 
@@ -42,4 +42,8 @@ public class PollCmd {
             pollStatus, backgroundColor, fontColor, logo, visibility, categoryChange);
         return poll;
     }
+
+
 }
+
+
