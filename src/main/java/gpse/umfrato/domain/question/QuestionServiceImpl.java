@@ -71,6 +71,16 @@ public class QuestionServiceImpl implements QuestionService {
         return question;
     }
 
+    @Override
+    public Question addQuestion(final Long pollId, final Question question) {
+        final Category category = categoryRepository.findCategoryByPollId(pollId);
+        category.getQuestionList().add(question);
+        question.setCategoryId(category.getCategoryId());
+        questionRepository.save(question);
+        categoryRepository.save(category);
+        return question;
+    }
+
     /**
      * This method removes a selected question.
      *

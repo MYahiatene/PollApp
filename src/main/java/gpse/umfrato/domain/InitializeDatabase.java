@@ -105,6 +105,15 @@ public class InitializeDatabase implements InitializingBean {
         final Question q7 = questionService.addQuestion(testPoll.getPollId().toString(),
                 "Beschreiben Sie die Messe in ein bis 5 Wörtern", Collections.emptyList(),
                 "TextQuestion");
+        final Question q8 = new Question();
+        q8.setQuestionType("RangeQuestion");
+        q8.setQuestionMessage("Wie alt sind Sie?");
+        q8.setBelowMessage("Jünger");
+        q8.setStartValue(20f);
+        q8.setStepSize(10f);
+        q8.setEndValue(70);
+        q8.setAboveMessage("Älter");
+        questionService.addQuestion(testPoll.getPollId(), q8);
         final List<String> answers = Arrays.asList("Ich fand die Messe scheiße", "Die Messe war super",
                 "Eigentlich relativ ok", "Was weiß ich denn bitte?", "Stände waren gut, Catering nicht");
         for (int i = 0; i < 150; i++) {
@@ -129,6 +138,9 @@ public class InitializeDatabase implements InitializingBean {
             answerService.giveAnswer(String.valueOf(i), testPoll.getPollId().toString(), q7.getQuestionId().toString(),
                     Collections.singletonList(answers.get(ThreadLocalRandom.current()
                             .nextInt(0, answers.size() - 1))));
+            answerService.giveAnswer(String.valueOf(i), testPoll.getPollId().toString(), q8.getQuestionId().toString(),
+                    Collections.singletonList(String.valueOf(ThreadLocalRandom.current()
+                            .nextInt(0, 7))));
         }
     }
 }

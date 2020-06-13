@@ -16,6 +16,8 @@ public interface QuestionService {
                                 final List<String> answerPossibilities,
                                 final String questionType);
 
+    Question addQuestion(final Long pollId, final Question question);
+
     /**
      * This method removes a selected question.
      *
