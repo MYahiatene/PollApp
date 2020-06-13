@@ -27,14 +27,14 @@
             <v-col cols="4">
                 <v-expansion-panels multiple>
                     <v-expansion-panel v-for="category in categoryData" :key="category.categoryId">
-                        <draggable :options="{ group: 'test' }">
-                            <v-icon @click="editCat(category)">mdi-pencil</v-icon>
-                            <v-icon @click="deleteCategory(category)">mdi-delete</v-icon>
+                        <v-icon @click="editCat(category)">mdi-pencil</v-icon>
+                        <v-icon @click="deleteCategory(category)">mdi-delete</v-icon>
+                        <draggable :list="category.questionList" :options="{ group: 'test' }">
                             <v-expansion-panel-header class="justify-self-start" disable-icon-rotate>
                                 <h2>{{ category.categoryName }}</h2></v-expansion-panel-header
                             >
                             <v-expansion-panel-content>
-                                <draggable v-model="category.questionList" :options="{ group: 'test' }">
+                                <draggable :list="category.questionList" :options="{ group: 'test' }">
                                     <v-list v-for="question in category.questionList" :key="question.questionId">
                                         <v-list-item @click="selectQuestion(question, question.questionType)"
                                             >{{ question.questionMessage }}
