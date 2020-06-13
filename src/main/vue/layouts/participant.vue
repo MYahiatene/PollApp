@@ -49,11 +49,10 @@
 
 <script>
 import { mdiBrightness4 } from '@mdi/js'
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 export default {
     data() {
         return {
-            id: 0,
             poll: null,
             goDark: false,
             fixed: false,
@@ -87,7 +86,6 @@ export default {
      * Calls showPoll (below mapAction) to get PollData for background color.
      */
     mounted() {
-        this.id = this.$route.params.id
         this.showPoll()
     },
     computed: {
@@ -126,9 +124,7 @@ export default {
         /**
          * Calls showPoll in store/participant to get PollData for the background color.
          */
-        showPoll() {
-            this.$store.dispatch('participant/showPoll', this.id)
-        },
+        ...mapActions({ showPoll: 'participant/showPoll' }),
     },
 }
 </script>
