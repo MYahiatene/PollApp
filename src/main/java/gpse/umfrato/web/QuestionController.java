@@ -44,7 +44,7 @@ public class QuestionController {
      *
      * @param questionCmd has the poll id
      */
-    @PostMapping("/removeQuestion")
+    @PutMapping("/removeQuestion")
     public void deleteQuestion(final @RequestBody QuestionCmd questionCmd) {
         questionService.removeQuestion(questionCmd.getPollId(), questionCmd.getQuestionId());
     }

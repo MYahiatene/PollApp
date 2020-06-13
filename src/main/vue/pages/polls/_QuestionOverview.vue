@@ -33,18 +33,15 @@
                             <v-expansion-panel-header class="justify-self-start" disable-icon-rotate>
                                 <h2>{{ category.categoryName }}</h2></v-expansion-panel-header
                             >
-                            <draggable :options="{ group: 'test' }">
-                                <v-expansion-panel-content
-                                    v-for="question in category.questionList"
-                                    :key="question.questionId"
-                                >
-                                    <v-list>
+                            <v-expansion-panel-content>
+                                <draggable v-model="category.questionList" :options="{ group: 'test' }">
+                                    <v-list v-for="question in category.questionList" :key="question.questionId">
                                         <v-list-item @click="selectQuestion(question, question.questionType)"
                                             >{{ question.questionMessage }}
                                         </v-list-item>
                                     </v-list>
-                                </v-expansion-panel-content>
-                            </draggable>
+                                </draggable>
+                            </v-expansion-panel-content>
                         </draggable>
                     </v-expansion-panel>
                 </v-expansion-panels>
@@ -325,7 +322,7 @@ export default {
                 })
         },
         deleteQuestion() {
-            this.$axios.post('/removeQuestion', {
+            this.$axios.put('/removeQuestion', {
                 pollId: this.pollData.pollId,
                 questionId: this.selectedQuestion.questionId,
             })

@@ -31,8 +31,8 @@ public class Question {
     @Lob
     private String questionMessage;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    @Cascade(org.hibernate.annotations.CascadeType.ALL)
+
+    @ElementCollection
     private List<String> answerPossibilities;
 
     /**
