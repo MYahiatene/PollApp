@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import gpse.umfrato.domain.category.Category;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.apache.tomcat.jni.Time;
 
 import javax.persistence.*;
 import java.util.ArrayList;

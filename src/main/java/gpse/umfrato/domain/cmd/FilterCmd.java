@@ -1,12 +1,10 @@
 package gpse.umfrato.domain.cmd;
 
 import lombok.Data;
-import org.springframework.validation.beanvalidation.SpringConstraintValidatorFactory;
 
 import java.util.List;
 
-@Data
-public class FilterCmd {
+@Data public class FilterCmd {
 
     private String filterType;
 

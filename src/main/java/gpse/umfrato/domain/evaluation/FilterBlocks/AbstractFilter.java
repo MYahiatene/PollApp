@@ -1,9 +1,7 @@
-package gpse.umfrato.domain.Evaluation.FilterBlocks;
+package gpse.umfrato.domain.evaluation.FilterBlocks;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import javax.persistence.Entity;
 
 //@Entity
 @Data

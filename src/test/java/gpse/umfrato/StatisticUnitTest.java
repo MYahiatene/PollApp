@@ -1,7 +1,5 @@
 package gpse.umfrato;
 
-import gpse.umfrato.domain.Evaluation.DiagramData;
-import gpse.umfrato.domain.Evaluation.Statistics;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 

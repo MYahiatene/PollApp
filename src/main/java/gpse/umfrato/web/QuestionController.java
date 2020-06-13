@@ -30,10 +30,6 @@ public class QuestionController {
      */
     @PostMapping("/poll/{id:\\d+}/addquestion")
     public Long addQuestion(/*@PathVariable("id") final String id*/ final @RequestBody QuestionCmd questionCmd) {
-        System.out.println(questionCmd.getPollId());
-        System.out.println(questionCmd.getQuestionMessage());
-        System.out.println(questionCmd.getAnswerPossibilities());
-        System.out.println(questionCmd.getQuestionType());
         return questionService.addQuestion(questionCmd.getPollId(), questionCmd.getQuestionMessage(),
             questionCmd.getAnswerPossibilities(), questionCmd.getQuestionType()).getQuestionId();
     }
@@ -46,8 +42,6 @@ public class QuestionController {
     @PostMapping("/poll/{pollId:\\d+}/removequestion/{questionId:\\d+}")
     public void deleteQuestion(@PathVariable("pollId") final String pollId, @PathVariable("questionId")
     final String questionId) {
-        System.out.println(pollId);
-        System.out.println(questionId);
         questionService.removeQuestion(pollId, questionId);
     }
 
@@ -59,7 +53,6 @@ public class QuestionController {
      */
     @GetMapping("/poll/{pollId:\\d+}/getquestion/{questionId:\\d+}")
     public Question getQuestion(final @RequestBody QuestionCmd questionCmd) {
-
         return questionService.getQuestion(Long.valueOf(questionCmd.getPollId()));
     }
 }
