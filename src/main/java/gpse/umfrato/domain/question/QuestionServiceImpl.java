@@ -81,7 +81,7 @@ public class QuestionServiceImpl implements QuestionService {
     /**
      * This method removes a selected question.
      *
-     * @param categoryId     the id of the category where the question is set
+     * @param categoryId the id of the category where the question is set
      * @param questionId the id of the selected question
      */
     @Override
@@ -120,9 +120,9 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public Question editQuestion(final Long questionID,final List<String> answerPossibilities, int numberOfPossibleAnswers, String questionMessage, String questionType) {
+    public Question editQuestion(final Long questionID, final List<String> answerPossibilities, int numberOfPossibleAnswers, String questionMessage, String questionType) {
 
-        Question question =questionRepository.findById(questionID).orElseThrow(EntityNotFoundException::new);
+        Question question = questionRepository.findById(questionID).orElseThrow(EntityNotFoundException::new);
         question.setAnswerPossibilities(answerPossibilities);
         question.setNumberOfPossibleAnswers(numberOfPossibleAnswers);
         question.setQuestionMessage(questionMessage);
@@ -130,6 +130,18 @@ public class QuestionServiceImpl implements QuestionService {
         questionRepository.save(question);
         return question;
 
+    }
+
+    @Override
+    public Question changeCategory(final Long questionId, final Long oldCategoryId, final Long newCategoryId) {
+        Question question = questionRepository.findById(questionId).orElseThrow(EntityNotFoundException::new);
+        Category oldCategory = categoryRepository.findById(oldCategoryId).orElseThrow(EntityNotFoundException::new);
+        oldCategory.getQuestionList()
+            .remove(question);
+        Category newCategory = categoryRepository.findById(newCategoryId).orElseThrow(EntityNotFoundException::new);
+        newCategory.getQuestionList().add(question);
+        question.setCategoryId(newCategoryId);
+        return question;
     }
 
 

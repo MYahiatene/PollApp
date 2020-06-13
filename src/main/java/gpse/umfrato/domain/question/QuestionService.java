@@ -40,4 +40,10 @@ public interface QuestionService {
     Question editQuestion(final Long questionID, final List<String> answerPossibilities, final int numberOfPossibleAnswers,
                       final String questionMessage,
                       final String questionType);
+
+
+    Question changeCategory(final Long questionId, final Long oldCategoryId, final Long newCategoryId);
+
 }
+
+

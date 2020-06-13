@@ -34,7 +34,7 @@
                                 <h2>{{ category.categoryName }}</h2></v-expansion-panel-header
                             >
                             <v-expansion-panel-content>
-                                <draggable :move="checkMove" :list="category.questionList" :options="{ group: 'test' }">
+                                <draggable @end="onEnd" :list="category.questionList" :options="{ group: 'test' }">
                                     <v-list v-for="question in category.questionList" :key="question.questionId">
                                         <v-list-item @click="selectQuestion(question, question.questionType)"
                                             >{{ question.questionMessage }}
@@ -290,9 +290,17 @@ export default {
             })
             this.questionIndex = 0
         },
-        checkMove(evt) {
-            console.log(evt.draggedContext.element)
-            console.log(this.categoryData)
+        onEnd(evt) {
+            /*
+            console.log('old drag index:\n' + evt.oldDraggableIndex + '\n')
+            console.log('new drag index:\n' + evt.newDraggableIndex + '\n')
+            console.log('old index:\n' + evt.oldIndex + '\n')
+            console.log('new index:\n' + evt.newIndex + '\n') */
+            console.log(evt)
+            if (evt.pullMode) {
+                //  this.$axios.post('/changequestioncategory')
+            }
+            // console.log(this.categoryData)
         },
         pollName() {
             return this.pollData.pollName

@@ -2,6 +2,7 @@ package gpse.umfrato.web;
 
 import gpse.umfrato.domain.category.Category;
 import gpse.umfrato.domain.cmd.CategoryCmd;
+import gpse.umfrato.domain.cmd.QuestionCategoryChangeCmd;
 import gpse.umfrato.domain.cmd.QuestionCmd;
 import gpse.umfrato.domain.question.Question;
 import gpse.umfrato.domain.question.QuestionService;
@@ -73,5 +74,11 @@ public class QuestionController {
             questionCmd.getNumberOfPossibleAnswers(),
             questionCmd.getQuestionMessage(),
             questionCmd.getQuestionType());
+    }
+
+    @PostMapping("/changequestioncategory")
+    public Question changequestioncategory(final @RequestBody QuestionCategoryChangeCmd questionCategoryChangeCmd) {
+        return questionService.changeCategory(questionCategoryChangeCmd.getQuestionId(),
+            questionCategoryChangeCmd.getOldCategoryId(), questionCategoryChangeCmd.getNewCategoryId());
     }
 }
