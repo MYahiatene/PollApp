@@ -1,7 +1,7 @@
 package gpse.umfrato.domain.evaluation;
 
-import gpse.umfrato.domain.evaluation.filterBlocks.FilterImpl.filter;
-import gpse.umfrato.domain.evaluation.filterBlocks.FilterImpl.questionFilter;
+import gpse.umfrato.domain.evaluation.filterblocks.filterimpl.Filter;
+import gpse.umfrato.domain.evaluation.filterblocks.filterimpl.QuestionFilter;
 import gpse.umfrato.domain.question.Question;
 import gpse.umfrato.domain.answer.Answer;
 import gpse.umfrato.domain.answer.AnswerService;
@@ -25,7 +25,7 @@ public class Statistics {
     private final PollService pollService;
     private final PollResultService pollResultService;
     private final CategoryService categoryService;
-    private List<filter> filters = new ArrayList<>();
+    private List<Filter> filters = new ArrayList<>();
     private Long pollId;
     private final List<Long> questionIds = new ArrayList<>();
 
@@ -55,13 +55,13 @@ public class Statistics {
     public void loadFilter(final List<FilterCmd> input)
     {
         for (final FilterCmd cmd:input) {
-            filter f = null;
+            Filter filter = null;
             if (cmd.getFilterType().equals("questionAnswer")) {
-                f = new questionFilter(Long.valueOf(cmd.getTargetPollId()), Long.valueOf(cmd.getTargetQuestionId()),
+                filter = new QuestionFilter(Long.valueOf(cmd.getTargetPollId()), Long.valueOf(cmd.getTargetQuestionId()),
                         cmd.getTargetAnswerPossibilities(), false);
             }
-            if (f != null) {
-                filters.add(f);
+            if (filter != null) {
+                filters.add(filter);
             }
         }
     }
@@ -74,7 +74,7 @@ public class Statistics {
         if (prs.isEmpty()) {
             return "{\"name\":\"" + pollService.getPoll(pollId.toString()).getPollName() + "\",\"questionList\": []}";
         }
-        for (final filter f:filters) {
+        for (final Filter f:filters) {
             prs = f.filter(prs);
         }
         final DiagramData dd = new DiagramData(pollService.getPoll(prs.get(0).getPollId().toString()),prs,questionService);
@@ -330,11 +330,11 @@ public class Statistics {
             /**Build up a thing that makes a sortable list of all the first elements of this list*/
             final List<Double> allFirstValues = toFirstValuesList(questions);
             Collections.sort(allFirstValues);
-            final int n = allFirstValues.size();
+            final int size = allFirstValues.size();
             double xnp = 0.0;
-            final double xnp1 = allFirstValues.get(constrict(n * p, allFirstValues.size()));
-            if (n * p % 1.0 == 0.0) {
-                xnp = allFirstValues.get(constrict((n * p) - 1,allFirstValues.size()));
+            final double xnp1 = allFirstValues.get(constrict(size * p, allFirstValues.size()));
+            if (size * p % 1.0 == 0.0) {
+                xnp = allFirstValues.get(constrict(size * p - 1,allFirstValues.size()));
                 quantiles.add((xnp + xnp1) / 2);
             }
             else {
@@ -377,7 +377,7 @@ public class Statistics {
         return cumulated;
     }
 
-    private List<List<Double>> cumulate(final List<PollResult> pollAnswers, Double threshold) { //Kumulierte Häufigkeit
+    private List<List<Double>> cumulate(final List<PollResult> pollAnswers, final Double threshold) { //Kumulierte Häufigkeit
         final List<List<Double>> outputList = new ArrayList<>();
         final Iterator<PollResult> listIterator = pollAnswers.listIterator();
         while (listIterator.hasNext()) {
@@ -400,7 +400,7 @@ public class Statistics {
         return outputList;
     }
 
-    public static <T> List<Answer> filterByAnswer(final List<Answer> input, List<T> wantedAnswers) {
+    public static <T> List<Answer> filterByAnswer(final List<Answer> input, final List<T> wantedAnswers) {
         final ListIterator<Answer> iter = input.listIterator();
         final List<Answer> output = new ArrayList<>();
         while (iter.hasNext()) {
@@ -412,7 +412,7 @@ public class Statistics {
         return output;
     }
 
-    public static <T> List<Answer> filterByUser(String pollID, String username) {
+    public static <T> List<Answer> filterByUser(final String pollID, final String username) {
         /**TODO: PollResultServiceImpl NEEDS POLLRESULTS ELSE FILTERING BY USER WONT WORK*/
         //List<PollResult> unfilteredResults = pollResultService.getAllPollResults();
         //List<Answer> filteredResults = pollResultService.getUserAnswers(unfilteredResults, username);

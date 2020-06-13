@@ -1,4 +1,4 @@
-package gpse.umfrato.domain.evaluation.filterBlocks.FilterImpl;
+package gpse.umfrato.domain.evaluation.filterblocks.filterimpl;
 
 import gpse.umfrato.domain.answer.Answer;
 import gpse.umfrato.domain.pollresult.PollResult;
@@ -7,7 +7,7 @@ import lombok.AllArgsConstructor;
 import java.util.*;
 
 @AllArgsConstructor
-public class questionFilter implements filter {
+public class QuestionFilter implements Filter {
 
 private final Long targetPollId;
 

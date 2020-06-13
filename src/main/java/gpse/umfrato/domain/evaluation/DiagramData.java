@@ -22,7 +22,7 @@ public class DiagramData {
     @JsonIgnore
     private final Poll poll;
 
-    interface QuestionData {
+    /* default */ interface QuestionData {
         enum QuestionType { CHOICE_QUESTION, TEXT_QUESTION, RANGE_QUESTION, SLIDER_QUESTION }
 
         long getQuestionId();
@@ -37,15 +37,15 @@ public class DiagramData {
     @Getter
     @Setter
     private class ChoiceData implements QuestionData {
-        long questionId;
-        String questionTitle;
+        /* default */ long questionId;
+        /* default */ String questionTitle;
         private List<String> answerPossibilities;
         private List<Integer> data;
         private List<Double> relative;
         private String median;
         private String mode;
 
-        ChoiceData(final long questionId, final String questionMessage, final List<String> answerPossibilities) {
+        /* default */ ChoiceData(final long questionId, final String questionMessage, final List<String> answerPossibilities) {
             this.questionId = questionId;
             this.questionTitle = questionMessage;
             this.answerPossibilities = answerPossibilities;
@@ -131,14 +131,14 @@ public class DiagramData {
     @Getter
     @Setter
     private class TextData implements QuestionData {
-        long questionId;
-        String questionTitle;
+        /* default */ long questionId;
+        /* default */ String questionTitle;
         private List<Long> ids = new ArrayList<>();
         private List<String> texts = new ArrayList<>();
         private List<String> editedDates = new ArrayList<>();
         private List<String> creator = new ArrayList<>();
 
-        TextData(final long questionId, final String questionMessage) {
+        /* default */ TextData(final long questionId, final String questionMessage) {
             this.questionId = questionId;
             this.questionTitle = questionMessage;
         }
@@ -179,10 +179,10 @@ public class DiagramData {
     @Getter
     @Setter
     private static class RangeData implements QuestionData {
-        long questionId;
-        String questionTitle;
+        /* default */ long questionId;
+        /* default */ String questionTitle;
 
-        RangeData(final long questionId, final String questionMessage) {
+        /* default */ RangeData(final long questionId, final String questionMessage) {
             this.questionId = questionId;
             this.questionTitle = questionMessage;
         }
@@ -203,10 +203,10 @@ public class DiagramData {
     @Getter
     @Setter
     private static class SliderData implements QuestionData {
-        long questionId;
-        String questionTitle;
+        /* default */ long questionId;
+        /* default */ String questionTitle;
 
-        SliderData(final long questionId, final String questionMessage) {
+        /* default */ SliderData(final long questionId, final String questionMessage) {
             this.questionId = questionId;
             this.questionTitle = questionMessage;
         }

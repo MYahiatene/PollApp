@@ -67,7 +67,7 @@ public class QuestionCmd {
             case "SortQuestion":
                 question.setAnswerPossibilities(answerPossibilities);
                 break;
-            default: throw new NullPointerException("Don't do that");
+            default: break;
         }
         return question;
     }
