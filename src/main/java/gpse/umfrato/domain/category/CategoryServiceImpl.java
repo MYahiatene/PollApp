@@ -33,8 +33,8 @@ public class CategoryServiceImpl implements CategoryService {
     public Category createCategory(final String name, final long pollId) {
         final Category category = new Category(name, pollId);
         category.setPollId(pollId);
-        categoryRepository.save(category);
         pollRepository.findById(pollId).orElseThrow(EntityNotFoundException::new).getCategoryList().add(category);
+        categoryRepository.save(category);
         return category;
     }
 
@@ -49,7 +49,10 @@ public class CategoryServiceImpl implements CategoryService {
         categoryRepository.findById(categoryId).orElseThrow(EntityNotFoundException::new).getQuestionList()
             .forEach(question -> question.setCategoryId(standardCategoryId));
 
+        pollRepository.findById(pollId).orElseThrow(EntityNotFoundException::new).getCategoryList().
+            remove(categoryRepository.findById(categoryId).orElseThrow(EntityNotFoundException::new));
         categoryRepository.deleteById(categoryId);
+
     }
 
     @Override
@@ -67,7 +70,6 @@ public class CategoryServiceImpl implements CategoryService {
         final Category category = categoryRepository.getOne(categoryId);
         category.setCategoryName(name);
         categoryRepository.save(category);
-
     }
 
 }
