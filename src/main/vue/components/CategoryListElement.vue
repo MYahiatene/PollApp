@@ -1,0 +1,120 @@
+<template>
+    <v-expansion-panel>
+        <v-expansion-panel-header class="my-0" :style="headerColor">
+            <template v-slot:default="{ open }">
+                <div v-if="open">
+                    <!--                    In class we apply negative margin, so that the header is dense-->
+                    <v-text-field
+                        v-model="categoryName"
+                        class="headline my-n4"
+                        placeholder="Name der Kategorie"
+                        @focusin="$emit('text-input', true)"
+                        @focusout="$emit('text-input', false)"
+                    />
+                </div>
+                <div v-else>
+                    <h2 style="font-weight: normal;">{{ categoryName }}</h2>
+                    <v-spacer></v-spacer>
+                </div>
+            </template>
+        </v-expansion-panel-header>
+        <v-expansion-panel-content :style="backgroundColor">
+            <v-row>
+                <v-col>
+                    <v-btn depressed @click="removeCategory(categoryID)">
+                        <v-icon color="primary" left>mdi-delete</v-icon>
+                        Kategorie
+                    </v-btn>
+                </v-col>
+                <v-col>
+                    <v-btn depressed @click="createQuestion(categoryID)">
+                        <v-icon color="primary" left>mdi-plus</v-icon>
+                        Frage
+                    </v-btn>
+                </v-col>
+            </v-row>
+            <draggable v-model="questions">
+                <v-list v-for="question in questions" :key="question.questionId" :style="backgroundColor">
+                    <QuestionListElement
+                        :poll-id="pollID"
+                        :category-id="category.categoryId"
+                        :question-id="question.questionId"
+                        :question-message="question.questionMessage"
+                        :question-type="question.questionType"
+                    ></QuestionListElement>
+                    <v-spacer></v-spacer>
+                    <v-spacer></v-spacer>
+                </v-list>
+                <p v-if="questions.length === 0">Es wurden noch keine Fragen in dieser Kategorie erstellt.</p>
+            </draggable>
+        </v-expansion-panel-content>
+    </v-expansion-panel>
+</template>
+
+<script>
+import { mapActions, mapGetters, mapMutations } from 'vuex'
+import draggable from 'vuedraggable'
+import QuestionListElement from './QuestionListElement'
+
+export default {
+    name: 'CategoryListElement',
+    components: { QuestionListElement, draggable },
+    props: {
+        categoryID: {
+            type: Number,
+        },
+        pollID: {
+            type: Number,
+        },
+    },
+    computed: {
+        ...mapGetters({ getCategory: 'pollOverview/getCategory' }),
+        category() {
+            return this.getCategory(this.categoryID)
+        },
+        categoryName: {
+            get() {
+                return this.getCategory(this.categoryID).categoryName
+            },
+            set(data) {
+                const category = {
+                    categoryID: this.categoryID,
+                    name: data,
+                }
+                this.setName(category)
+            },
+        },
+        questions: {
+            get() {
+                return this.getCategory(this.categoryID).questionList
+            },
+            set(newList) {
+                const payload = {
+                    questions: newList,
+                    categoryID: this.categoryID,
+                }
+                this.setQuestions(payload)
+            },
+        },
+
+        // this needs to be computed, so we can get it from the nuxt Config
+
+        backgroundColor() {
+            return 'background-color:' + this.$vuetify.theme.currentTheme.background2 + ';'
+        },
+
+        headerColor() {
+            return 'background-color:' + this.$vuetify.theme.currentTheme.header + ';'
+        },
+    },
+    methods: {
+        ...mapMutations({ setName: 'pollOverview/setCategoryName', setQuestions: 'pollOverview/updateQuestionOrder' }),
+        ...mapActions({
+            createQuestion: 'pollOverview/createQuestion',
+            removeCategory: 'pollOverview/deleteCategory',
+        }),
+    },
+}
+</script>
+
+<style scoped></style>

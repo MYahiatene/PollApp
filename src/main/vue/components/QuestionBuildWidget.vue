@@ -2,73 +2,120 @@
 <!--the final question type and to preview (wysiwyg) the final question as it will be displayed to the participants-->
 <template>
     <div>
-        <v-card>
-            <v-container>
-                <v-row no-gutters>
-                    <v-col>
-                        <h3>Frage erstellen</h3>
-                    </v-col>
-                </v-row>
-                <v-row no-gutters>
-                    <v-textarea
-                        v-model="questionText"
-                        label="Fragentext"
-                        hint="Was soll den Umfrageteilnehmer gefragt werden?"
-                        rows="1"
-                    >
-                    </v-textarea>
-                </v-row>
-                <v-row no-gutters>
-                    <v-overflow-btn
-                        v-model="questionChoice"
-                        :items="questionTypes"
-                        label="Fragenart"
-                        @change="changeQuestionType()"
-                    ></v-overflow-btn>
-                </v-row>
-                <v-row>
-                    <component :is="currentComponent"></component>
-                </v-row>
-                <v-row no-gutters>
-                    <v-btn color="success" class="mr-4" @click="sendData()">Erstellen</v-btn>
-                </v-row>
-            </v-container>
-        </v-card>
+        <div v-if="questionToLoad !== 0">
+            <v-card flat class="ma-0">
+                <v-container>
+                    <v-row no-gutters>
+                        <v-col>
+                            <h3>Frage bearbeiten</h3>
+                        </v-col>
+                        <v-spacer></v-spacer>
+                        <v-spacer></v-spacer>
+                        <v-col>
+                            <v-btn @click="deleteQuestion">
+                                <v-icon color="primary" left>
+                                    mdi-delete
+                                </v-icon>
+                                Löschen
+                            </v-btn>
+                        </v-col>
+                    </v-row>
+                    <v-row no-gutters>
+                        <v-textarea
+                            v-model="questionMessage"
+                            label="Fragentext"
+                            hint="Was soll den Umfrageteilnehmer gefragt werden?"
+                            rows="1"
+                        >
+                        </v-textarea>
+                    </v-row>
+                    <v-row no-gutters>
+                        <v-overflow-btn
+                            v-model="questionTypeChoice"
+                            :items="questionWidgets"
+                            label="Fragenart"
+                        ></v-overflow-btn>
+                    </v-row>
+                    <v-row>
+                        <component :is="questionTypeChoice"></component>
+                    </v-row>
+                </v-container>
+            </v-card>
+        </div>
+        <div v-else>
+            <v-card flat class="mt-1 pa-1">
+                <p class="ma-2">(Wähle eine Frage aus einer Kategorie, um sie zu bearbeiten.)</p>
+            </v-card>
+        </div>
     </div>
 </template>
 
 <script>
-import { mapActions } from 'vuex'
-import ChoiceQuestionConfigWidget from './ChoiceQuestionConfigWidget'
+import { mapMutations, mapGetters, mapActions } from 'vuex'
+import ChoiceQuestion from './ChoiceQuestion'
 import TextQuestion from './textQuestion'
 import RangeQuestion from './rangeQuestion'
 
 export default {
     name: 'QuestionBuildWidget',
-    components: { ChoiceQuestionConfigWidget, TextQuestion, RangeQuestion },
+    components: { ChoiceQuestion, TextQuestion, RangeQuestion },
     data() {
         return {
-            questionText: '',
-            currentComponent: '',
-            questionChoice: '',
-            allComponents: ['ChoiceQuestionConfigWidget', 'TextQuestion', 'RangeQuestion'],
-            questionTypes: ['Auswahlfrage', 'Freitextfrage', 'Intervallfrage'],
-            changeQuestionType() {
-                this.currentComponent = this.allComponents[this.questionTypes.indexOf(this.questionChoice)]
-            },
+            questionWidgets: [
+                {
+                    text: 'Auswahlfrage',
+                    value: 'ChoiceQuestion',
+                },
+                {
+                    text: 'Freitextfrage',
+                    value: 'TextQuestion',
+                },
+                {
+                    text: 'Intervallfrage',
+                    value: 'RangeQuestion',
+                },
+            ],
         }
     },
-    computed: {},
-    methods: {
-        ...mapActions({
-            setQuestionText: 'questionOverview/setQuestionText',
+    computed: {
+        ...mapGetters({
+            question: 'pollOverview/getQuestion',
+            questionToLoad: 'pollOverview/questionToLoad',
         }),
-        sendData() {
-            // mapActions(['questionOverview/setQuestionText', { text: this.questionText }])
-            // this.$store.dispatch('questionOverview/setQuestionText', this.questionText)
-            // this.test()
-            this.setQuestionText(this.questionText)
+        questionMessage: {
+            get() {
+                return this.question.questionMessage
+            },
+            set(questionMessage) {
+                this.setQuestionMessage(questionMessage)
+            },
         },
+        questionTypeChoice: {
+            get() {
+                switch (this.question.questionType) {
+                    case 'ChoiceQuestion':
+                        return 'ChoiceQuestion'
+                    case 'TextQuestion':
+                        return 'TextQuestion'
+                    case 'RangeQuestion':
+                        return 'RangeQuestion'
+                    default:
+                        return ''
+                }
+            },
+            set(questionType) {
+                this.setQuestionType(questionType)
+            },
+        },
+    },
+    methods: {
+        ...mapMutations({
+            setQuestionMessage: 'pollOverview/setQuestionMessage',
+            setQuestionType: 'pollOverview/setQuestionType',
+        }),
+        ...mapActions({
+            deleteQuestion: 'pollOverview/deleteQuestion',
+        }),
     },
 }
 </script>

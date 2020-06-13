@@ -1,6 +1,6 @@
 <template>
     <!--     In this file we define the header that will be displayed on all pages in the entire app -->
-    <v-app :dark="setTheme" :style="backgroundColor">
+    <v-app :dark="setTheme === 'true'" :style="backgroundColor">
         <!--        set Theme returns a boolean value depending on the theme the user wants (light=false, dark=true)-->
         <!--        backgroundColor is a computed string that sets the background to the color defined in the nuxt.config.js depending on the chosen theme-->
         <v-app-bar fixed app>
@@ -27,7 +27,7 @@
             </div>
             <!--            light/dark mode button-->
             <v-btn icon>
-                <v-icon color="primary" @click="setTheme()">{{ modeIcon }}</v-icon>
+                <v-icon color="primary" @click="setTheme()">mdi-brightness-4</v-icon>
             </v-btn>
         </v-app-bar>
         <!--content of the individual page-->
@@ -44,14 +44,12 @@
 </template>
 
 <script>
-import { mdiBrightness4 } from '@mdi/js'
 import { mapGetters } from 'vuex'
 export default {
     data() {
         return {
             goDark: false,
             fixed: false,
-            modeIcon: mdiBrightness4,
             items: [
                 {
                     icon: 'mdi-pencil',
@@ -61,7 +59,7 @@ export default {
                 {
                     icon: 'mdi-pencil',
                     title: 'Umfragen',
-                    to: '/navigation',
+                    to: '/polls',
                 },
                 {
                     icon: 'mdi-chart-line',

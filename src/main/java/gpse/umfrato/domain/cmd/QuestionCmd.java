@@ -9,6 +9,8 @@ public class QuestionCmd {
 
     private String pollId;
 
+    private String questionId;
+
     private String questionMessage;
 
     private List<String> answerPossibilities;
