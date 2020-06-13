@@ -35,9 +35,11 @@ public class Question {
     /**
      * This attribute represents the type of question (dropdown, text field, ...).
      */
-    private String questionType;
+    private String questionType; //ChoiceQuestion, TextQuestion, RangeQuestion, SliderQuestion
 
-    private int numberOfPossibleAnswers;
+    private boolean userAnswers = false;
+
+    private int numberOfPossibleAnswers = 1;
     /**
      * This constructor receives a question message and saves in the question object.
      * @param question the question message

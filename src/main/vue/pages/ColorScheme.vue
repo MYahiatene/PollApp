@@ -33,15 +33,13 @@
                 </v-btn>
 
                 <v-spacer />
-                <v-card-text>
-                    <v-slider
-                        v-model="value"
-                        append-icon="mdi-plus"
-                        prepend-icon="mdi-minus"
-                        @click:append="zoomIn"
-                        @click:prepend="zoomOut"
-                    ></v-slider>
-                </v-card-text>
+            </v-card>
+            <v-card class="ma-1 pa-1">
+                <div v-for="(color, index) in colors" :key="index">
+                    <v-card :style="color.color" class="pa-10 ma-1">
+                        {{ color.name }}
+                    </v-card>
+                </div>
             </v-card>
         </v-flex>
     </v-layout>
@@ -50,17 +48,14 @@
 <script>
 export default {
     name: 'ColorScheme',
-    data() {
-        return {
-            value: 0,
-        }
-    },
-    methods: {
-        zoomOut() {
-            this.value = this.value - 10 || 0
-        },
-        zoomIn() {
-            this.value = this.value + 10 || 100
+
+    computed: {
+        colors() {
+            return [
+                { name: 'softAccent', color: 'backgroundColor:' + this.$vuetify.theme.currentTheme.softAccent + ';' },
+                { name: 'background2', color: 'backgroundColor:' + this.$vuetify.theme.currentTheme.background2 + ';' },
+                { name: 'header', color: 'backgroundColor:' + this.$vuetify.theme.currentTheme.header + ';' },
+            ]
         },
     },
 }

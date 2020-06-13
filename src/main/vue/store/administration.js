@@ -4,10 +4,10 @@ export const state = () => ({
 })
 
 export const getters = {
-    getToken: (state) => {
+    getToken(state) {
         return state.token
     },
-    getResponse: (state) => {
+    getResponse(state) {
         return state.response
     },
 }

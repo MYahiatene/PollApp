@@ -26,7 +26,7 @@
                     <v-row no-gutters>
                         <v-col cols="12" md="4">
                             <v-overflow-btn
-                                v-model="anonymityTypes"
+                                v-model="selectedAnonymityType"
                                 :items="anonomityTypes"
                                 placeholder="Anonymitätsgrad"
                                 :rules="anonymityRules"
@@ -169,9 +169,9 @@
 </template>
 
 <script>
-// import { mapGetters } from 'vuex'
+import { mapGetters } from 'vuex'
 export default {
-    name: 'QuestionCreation',
+    name: 'PollCreation',
     components: {},
     data() {
         return {
@@ -190,6 +190,7 @@ export default {
             creationDate: this.formatDate(new Date().toISOString().substr(0, 10)),
             date: new Date().toISOString().substr(0, 10),
             menu: false,
+            selectedAnonymityType: '',
             anonomityTypes: [
                 {
                     text: 'Anonym',
@@ -204,11 +205,16 @@ export default {
                     value: 3,
                 },
             ],
-            titleRules: [(v) => !!v || 'Titel fehlt', (v) => v.length <= 20 || 'Name must be less than 20 characters'],
+            titleRules: [
+                (v) => !!v || 'Titel fehlt' ],
             anonymityRules: [(v) => !!v || 'Anonymitätsgrad fehlt.'],
         }
     },
     computed: {
+        ...mapGetters({
+            isAuthenticated: 'login/isAuthenticated',
+            getUsername: 'login/getUsername',
+        }),
         time() {
             const today = new Date()
             return today.getHours() + ':' + today.getMinutes() + ':00'
@@ -224,7 +230,7 @@ export default {
          */
         sendData() {
             const obj = {
-                pollcreator: 'Richie',
+                pollcreator: this.getUsername,
                 anonymityStatus: this.selectedAnonymityType,
                 pollname: this.title,
                 pollCreatedAt: this.creationDate,
@@ -246,6 +252,7 @@ export default {
                 },
             })
             instance.post('/createpoll', obj).catch()
+            this.$router.push('/polls')
         },
         formatDate(date) {
             if (!date) return null

@@ -1,4 +1,4 @@
-import colors from 'vuetify/es5/util/colors'
+
 
 export default {
     mode: 'universal',
@@ -57,7 +57,7 @@ export default {
             themes: {
                 dark: {
                     background: '#000000',
-                    primary: colors.teal.lighten1,
+                    primary: '#26A69A',
                     accent: '#992078',
                     secondary: '#337982',
                     info: '#114955',
@@ -65,20 +65,39 @@ export default {
                     error: '#F5420C',
                     success: '#5E9112',
                     myColor: '#1f5355',
+                    lightColor: '#eeffff',
+                    background2: '#101214',
+                    softAccent: '#072d38',
+                    header: '#151b24',
                 },
                 light: {
                     background: '#eefcfa',
                     primary: '#114955',
                     accent: '#551044',
                     secondary: '#337982',
-                    info: colors.teal.lighten1,
+                    info: '#26A69A',
                     warning: '#F5D63C',
                     error: '#F5420C',
                     success: '#8EC136',
                     myColor: '#1f5355',
+                    lightColor: '#eeffff',
+                    // these colors work for darkMode as well as for lightMode
+                    neutralHighlightColor: '#88cccc',
+                    neutralGray: '#888888',
+                    //
+                    background2: '#a0b4b8',
+                    softAccent: '#8dc4c3',
+                    header: '#698f96'
                 },
             },
         },
+    },
+// added to allow devtools
+    vue: {
+        config: {
+            productionTip: false,
+            devtools: true
+        }
     },
     /*
      ** Build configuration

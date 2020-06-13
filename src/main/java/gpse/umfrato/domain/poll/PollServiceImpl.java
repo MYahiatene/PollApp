@@ -6,8 +6,6 @@ import gpse.umfrato.domain.category.CategoryRepository;
 import gpse.umfrato.domain.category.CategoryService;
 import gpse.umfrato.web.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
@@ -50,7 +48,7 @@ class PollServiceImpl implements PollService {
     public Poll createPoll(final Poll poll) {
         // final Poll newPoll = poll;
         pollRepository.save(poll);
-        categoryRepository.save(categoryService.createCategory("Keine Kategorie", poll.getPollId()));
+        categoryRepository.save(categoryService.createCategory("Standardkategorie", poll.getPollId()));
 
         return poll;
     }
