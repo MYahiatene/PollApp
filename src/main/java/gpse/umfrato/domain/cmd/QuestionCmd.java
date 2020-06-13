@@ -27,4 +27,6 @@ public class QuestionCmd {
 
     private Boolean hideValues;
 
+    private int questionIndex;
+
 }

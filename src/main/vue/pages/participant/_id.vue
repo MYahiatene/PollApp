@@ -19,7 +19,9 @@
                                 <v-card-title class="col" :style="fontColorText">
                                     <!--the visibility of the index of the current questions in relation to the total
                                     number of questions, given in the settings of the poll-->
-                                    <div v-if="getVisibility">{{ getIndex() }}/{{ getNumberOfQuestions }}</div>
+                                    <div v-if="getVisibility">
+                                        {{ question.questionIndex }}/{{ getNumberOfQuestions }}
+                                    </div>
                                     <div class="ps-4">{{ question.questionMessage }}</div>
                                 </v-card-title>
                                 <div v-if="question.questionType === 'TextQuestion'">
@@ -140,17 +142,17 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import AuthGate from '../components/AuthGate'
+import AuthGate from '../../components/AuthGate'
 export default {
     name: 'Participant',
     layout: 'participant', // uses special layout/participant instead of default-layout
     components: { AuthGate },
     data() {
         return {
+            id: 0,
             poll: ['Object'],
             answer: ['Object'],
             category: ['Object'],
-            questionIndex: 1,
             categoryIndex: 1,
             categoryLength: 0,
             enabled: false,
@@ -171,6 +173,7 @@ export default {
      * Calls showPoll in methods to getPoll before/while the page is created.
      */
     created() {
+        this.id = this.$route.params.id
         this.showPoll()
     },
     computed: {
@@ -187,7 +190,6 @@ export default {
             getCategory: 'participant/getCategory',
             getChangeOfCategories: 'participant/getChangeOfCategories',
             getUsername: 'participant/getUsername',
-            getQuestionIndex: 'participant/getQuestionIndex',
         }),
         /**
          * Get's the given FontColor from PollData.
@@ -237,16 +239,6 @@ export default {
         },
     },
     methods: {
-        /**
-         * Increases the questionIndex in the store and gives back the current questionIndex. Is called when the
-         * visibility is true and gives the index of the question inside the category.
-         * @returns (questionIndex: number)
-         */
-        getIndex() {
-            this.$store.commit('participant/setQuestionIndex')
-            this.questionIndex = this.getQuestionIndex
-            return this.questionIndex
-        },
         /**
          * Calls setCategory in the store to get the next category in the poll and save it at the page, if there is one
          * and sets the categoryIndex from the getter getCategoryIndex from the store, the total amount of questions as
@@ -362,7 +354,6 @@ export default {
                 }
                 const size = (max - min) / step
                 for (let i = 0; i < size; i++) {
-                    console.log(i)
                     const value = min + i * step
                     this.rangeAnswers.push(value)
                 }
@@ -379,7 +370,7 @@ export default {
          * Calls showPoll in store/participant.js.
          */
         showPoll() {
-            this.$store.dispatch('participant/showPoll')
+            this.$store.dispatch('participant/showPoll', this.id)
             this.poll = this.getPoll
         },
         /**

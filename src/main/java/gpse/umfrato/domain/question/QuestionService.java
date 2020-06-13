@@ -22,7 +22,8 @@ public interface QuestionService {
                                 final int stepSize,
                                 final String belowMessage,
                                 final String aboveMessage,
-                                final boolean hideValues);
+                                final boolean hideValues,
+                                final int questionIndex);
 
     /**
      * This method removes a selected question.

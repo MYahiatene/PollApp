@@ -64,25 +64,19 @@ public class PollController {
         }
     }
 
-    @GetMapping("/poll/{id:\\d+}")
-    public Poll getPoll(final @RequestBody PollCmd pollCmd) {
-        return pollService.getPoll(pollCmd.getId());
-    }
-
-
     /**
      * This method returns the poll (questions, settings etc).
      *
-     * @return a selected poll
+     * @return a poll with the pollId given in the PathVariable
      */
-    @GetMapping("/participant")
-    public Poll getParticipant() {
-        try {
-            return pollService.getPoll("1");
-        } catch(EntityNotFoundException e) {
-            return null;
+    @GetMapping("/participant/{id:\\d+}")
+    public Poll getPoll(@PathVariable("id") final String id) {
+        Poll poll = pollService.getPoll(id);
+        if (poll != null) {
+            return poll;
+        } else {
+            throw new BadRequestException();
         }
-
     }
 
     /**

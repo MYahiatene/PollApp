@@ -13,7 +13,6 @@ export const state = () => ({
     visibility: false,
     changeOfCategories: false,
     numberOfQuestions: 0,
-    questionIndex: 0,
     categoryIndex: 1,
     poll: ['Object'],
     answer: ['Object'],
@@ -21,7 +20,7 @@ export const state = () => ({
     username: '',
 })
 /**
- * Defines mapGetters for Usage in Participant.vue.
+ * Defines mapGetters for Usage in _id.vue.
  * @type {{getPoll: (function(*): [string]|null),
  *         getNumberOfQuestions: (function(*): number),
  *         getVisibility: (function(*): boolean),
@@ -57,10 +56,6 @@ export const getters = {
     getAnswer: (state) => {
         return state.answer
     },
-    getQuestionIndex: (state) => {
-        console.log(state.questionIndex)
-        return state.questionIndex
-    },
 }
 
 export const mutations = {
@@ -83,9 +78,6 @@ export const mutations = {
     setUsername: (state, username) => {
         state.username = username
     },
-    setQuestionIndex: (state) => {
-        state.questionIndex += 1
-    },
     /**
      * Set's the answer object gotten from showAnswer as the current state.
      * @param state
@@ -103,17 +95,16 @@ export const mutations = {
      */
     setCategory: (state, args) => {
         const index = state.categoryIndex
+        const categoryLength = state.poll[1].data.categoryList.length
         if (args === 1) {
-            if (index !== state.poll[1].data.categoryList.length) {
+            if (index !== categoryLength) {
                 state.category = state.poll[1].data.categoryList[index]
                 state.categoryIndex = index + 1
-                state.questionIndex = 0
             }
         } else if (args === -1) {
             if (index !== 1) {
                 state.category = state.poll[1].data.categoryList[index - 2]
                 state.categoryIndex = index - 1
-                state.questionIndex = 0
             }
         }
     },
@@ -122,15 +113,16 @@ export const actions = {
     /**
      * Defines mapAction showPoll and sets the global axios with the token saved in localstorage and the baseURL to get
      * the poll from the PollController in the backend. After it got the poll,it commits the poll,to save it in this
-     * store (setPoll), so the mapGetters can access the data and give it back to the Participant.vue page. It also
+     * store (setPoll), so the mapGetters can access the data and give it back to the _id.vue page. It also
      * get's the username and updates it the same way.
      * @param commit
      * @returns {Promise<void>}
      */
-    async showPoll({ commit }) {
+    async showPoll({ commit }, id) {
+        console.log('showPoll id: ', id)
         this.$axios.defaults.baseURL = 'http://localhost:8088/api/'
         this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('user-token')
-        const poll = await this.$axios.get('/participant')
+        const poll = await this.$axios.get('/participant/' + id)
         const username = await this.$axios.post('/getUsername', { anonymityStatus: poll.data.anonymityStatus })
         commit('setUsername', username.data)
         commit('setPoll', poll)
@@ -139,7 +131,7 @@ export const actions = {
      * Defines mapAction showAnswer and sets the global axios with the token saved in localstorage and the baseURL to get
      * all the answers from one user from the AnswerController in the backend. After it got the answers,it commits
      * the answers,to save it in this store (setAnswer), so the mapGetters can access the data and give it back
-     * to the Participant.vue page.
+     * to the _id.vue page.
      * @param state
      * @param answerObj
      * @returns {Promise<void>}

@@ -50,6 +50,12 @@ public class Question {
     private String aboveMessage;
 
     private Boolean hideValues;
+
+    /**
+     * This attribute represents the index of the question inside a category
+     */
+    private int questionIndex;
+
     /**
      * This constructor receives a question message and saves in the question object.
      * @param question the question message
@@ -58,7 +64,7 @@ public class Question {
      */
     public Question(final String question, final List<String> answerPossibilities, final String questionType,
                     final int endValue, final int startValue, final int stepSize, final String belowMessage,
-                    final String aboveMessage, final Boolean hideValues) {
+                    final String aboveMessage, final Boolean hideValues, final int questionIndex) {
         this.questionMessage = question;
         this.answerPossibilities = answerPossibilities;
         this.questionType = questionType;
@@ -68,6 +74,7 @@ public class Question {
         this.belowMessage = belowMessage;
         this.aboveMessage = aboveMessage;
         this.hideValues = hideValues;
+        this.questionIndex = questionIndex;
     }
 }
 

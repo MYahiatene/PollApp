@@ -39,7 +39,7 @@ public class QuestionController {
         questionService.addQuestion(questionCmd.getPollId(), questionCmd.getQuestionMessage(),
             questionCmd.getAnswerPossibilities(), questionCmd.getQuestionType(), questionCmd.getEndValue(),
             questionCmd.getStartValue(), questionCmd.getStepSize(), questionCmd.getBelowMessage(),
-            questionCmd.getAboveMessage(), questionCmd.getHideValues());
+            questionCmd.getAboveMessage(), questionCmd.getHideValues(), questionCmd.getQuestionIndex());
     }
 
     /**

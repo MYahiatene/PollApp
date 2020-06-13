@@ -56,7 +56,7 @@ export default {
                 {
                     icon: 'mdi-pencil',
                     title: 'Teilnahme',
-                    to: '/participant',
+                    to: '/participant/1',
                 },
                 {
                     icon: 'mdi-pencil',
