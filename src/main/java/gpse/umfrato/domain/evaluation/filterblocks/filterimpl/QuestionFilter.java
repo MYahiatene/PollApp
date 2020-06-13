@@ -18,7 +18,6 @@ private final List<String> targetAnswerPossibilities;
 private final boolean absoluteMatch;
 
 @Override public List<PollResult> filter(final List<PollResult> input) {
-    int index = 0;
     final List<PollResult> filteredList = new ArrayList<>();
     for(final PollResult pr: input)
     {
@@ -31,6 +30,7 @@ private final boolean absoluteMatch;
                         for (final String ga: a.getGivenAnswerList()) {
                             if (!targetAnswerPossibilities.contains(ga)) {
                                 match = false;
+                                break;
                             }
                         }
                     } else {
@@ -49,7 +49,6 @@ private final boolean absoluteMatch;
         {
             filteredList.add(pr);
         }
-        index++;
     }
     return filteredList;
 }

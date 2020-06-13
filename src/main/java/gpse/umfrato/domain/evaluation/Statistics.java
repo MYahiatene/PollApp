@@ -19,7 +19,7 @@ import java.util.logging.Logger;
 public class Statistics {
 
     private static final Logger LOGGER = Logger.getLogger("EvaluationController");
-    public static final double MEDIAN = 0.5;
+    public static final double MEDIAN_QUANTILE = 0.5;
     private final AnswerService answerService;
     private final UserService userService;
     private final QuestionService questionService;
@@ -201,17 +201,14 @@ public class Statistics {
     }*/
 
     public static List<Double> modus(final List<PollResult> allValues) {
-
         final List<Double> modi = new ArrayList < >();
         // Iterate over answers
-        for (int i = 0; i < allValues.size(); i++) {
+        for (final PollResult allValue: allValues) {
             // Iterate over questions for answer i
-            for (final int j = 0; j<allValues.get(i).getAnswerList().size(); i++) {
+            for (int j = 0; j < allValue.getAnswerList().size(); j++) {
                 // If Question j from answer i is higher than the current highest set that element
-                if (Double.parseDouble(allValues.get(i).getAnswerList().get(j).getGivenAnswerList().get(0))
-                        > modi.get(j)) {
-                    modi.set(j, Double.parseDouble(
-                            allValues.get(i).getAnswerList().get(j).getGivenAnswerList().get(0)));
+                if (Double.parseDouble(allValue.getAnswerList().get(j).getGivenAnswerList().get(0)) > modi.get(j)) {
+                    modi.set(j, Double.parseDouble(allValue.getAnswerList().get(j).getGivenAnswerList().get(0)));
                 }
             }
         }
@@ -232,10 +229,7 @@ public class Statistics {
         if (casted < 0) {
             return 0;
         }
-        if (casted > max) {
-            return max;
-        }
-        return casted;
+        return Math.min(casted, max);
     }
 
 
@@ -266,7 +260,7 @@ public class Statistics {
 
     private List<Double> toFirstValuesList(final List<Answer> input) {
         final List<Double> allFirstValues = new ArrayList < >();
-        for (Answer answer: input) {
+        for (final Answer answer: input) {
             final Double next = Double.parseDouble(answer.getGivenAnswerList().get(0));
             allFirstValues.add(next);
         }
@@ -314,10 +308,10 @@ public class Statistics {
         if (allValues.isEmpty()) {
             return null;
         }
-        if (p < 0.0) {
-            p = 0.0;
-        } else if (p > 1.0) {
-            p = 1.0;
+        if (p < (double) 0) {
+            p = 0;
+        } else if (p > (double) 1) {
+            p = 1;
         }
 
         final List<List<Answer>> answers = toNormalList(allValues);
@@ -326,14 +320,14 @@ public class Statistics {
         while (answerIterator.hasNext()) {
             final List<Answer> questions = answerIterator.next();
             /**Now we can operate on a list of answers for one singular question at a goddamn time*/
-            final ListIterator<Answer> questionIterator = questions.listIterator();
+            // final ListIterator<Answer> questionIterator = questions.listIterator();
             /**Build up a thing that makes a sortable list of all the first elements of this list*/
             final List<Double> allFirstValues = toFirstValuesList(questions);
             Collections.sort(allFirstValues);
             final int size = allFirstValues.size();
-            double xnp = 0.0;
+            double xnp;
             final double xnp1 = allFirstValues.get(constrict(size * p, allFirstValues.size()));
-            if (size * p % 1.0 == 0.0) {
+            if (size * p % 1.0 == (double) 0) {
                 xnp = allFirstValues.get(constrict(size * p - 1, allFirstValues.size()));
                 quantiles.add((xnp + xnp1) / 2);
             } else {
@@ -354,7 +348,7 @@ public class Statistics {
     }*/
 
     private List<Double> median(final List<PollResult> values) {
-        return pQuantile(values, MEDIAN);
+        return pQuantile(values, MEDIAN_QUANTILE);
     }
 
     /**
@@ -363,7 +357,7 @@ public class Statistics {
      * @param values list of values to cumulate.
      * @param threshold to use in function.
      * @param <T> generic type of items used in values.
-     * @return
+     * @return cumulated values
      */
     private <T extends Number> double cumulate(final List<T> values, final T threshold) { //Kumulierte Häufigkeit
         double cumulated = 0;
@@ -389,7 +383,7 @@ public class Statistics {
                 final Answer individualAnswer = answerIterator.next();
                 final ListIterator<String> checkBoxIterator = individualAnswer.getGivenAnswerList().listIterator();
                 while (checkBoxIterator.hasNext()) {
-                    if (Double.parseDouble(checkBoxIterator.next()) < threshold.doubleValue()) {
+                    if (Double.parseDouble(checkBoxIterator.next()) < threshold) {
                         cumulated++;
                     } //Only take first element, won't work with anything else anyway
                 }
@@ -405,7 +399,7 @@ public class Statistics {
         final List<Answer> output = new ArrayList<>();
         while (iter.hasNext()) {
             final Answer index = iter.next();
-            if (!Collections.disjoint(Arrays.asList(index.getGivenAnswerList()), wantedAnswers)) {
+            if (!Collections.disjoint(index.getGivenAnswerList(), wantedAnswers)) {
                 output.add(index);
             }
         }
