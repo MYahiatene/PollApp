@@ -18,7 +18,9 @@
                                 <v-card-title class="col" :style="fontColorText">
                                     <!--the visibility of the index of the current questions in relation to the total
                                     number of questions, given in the settings of the poll-->
-                                    <div v-if="getVisibility">{{ getIndex() }}/{{ getNumberOfQuestions }}</div>
+                                    <div v-if="getVisibility">
+                                        {{ question.questionIndex }}/{{ getNumberOfQuestions }}
+                                    </div>
                                     <div class="ps-4">{{ question.questionMessage }}</div>
                                 </v-card-title>
                                 <div v-if="question.questionType === 'TextQuestion'">
@@ -137,7 +139,7 @@
                                         <v-radio label="Option 2" value="radio-2"></v-radio>
                                     </v-radio-group>
                                     <div v-for="answer in question.answerPossibilites" :key="answer">
-                                        <input name="myfield" type="radio" v-bind:value="item.val" />
+                                        <input name="myfield" type="radio" :value="item.val" />
                                         <label>{{ answer }}</label>
                                     </div>
                                     <v-radio-group>
@@ -150,7 +152,7 @@
                                             ></v-radio>
                                         </div>
                                     </v-radio-group>
-                                    <div class="column" v-for="answer in question.answerPossibilites" :key="answer">
+                                    <div v-for="answer in question.answerPossibilites" :key="answer" class="column">
                                         <input :value="answer" class="radio-custom" type="radio" />
                                     </div>
                                 </div>
@@ -163,7 +165,7 @@
                         <!-- button to get to the previous category, if there is no previous one, the button is disabled,
                          else, the previous category is loaded by getPreviousCategory() if clicked -->
                         <v-btn class="pl-4" :disabled="hasNoPrevious" @click="getPreviousCategory()"
-                        >Vorherige Seite
+                            >Vorherige Seite
                         </v-btn>
                         <!-- button to get to the next category, same principle as the one above -->
                         <v-btn class="pl-4" :disabled="hasNoNext" @click="getNextCategory()">Nächste Seite</v-btn>
@@ -178,238 +180,230 @@
 </template>
 
 <script>
-    import { mapGetters } from 'vuex'
-    export default {
-        name: 'Participant',
-        layout: 'participant', // uses special layout/participant instead of default-layout
-        data() {
-            return {
-                poll: ['Object'],
-                answer: ['Object'],
-                category: ['Object'],
-                question: ['Object'],
-                questionIndex: 1,
-                categoryIndex: 1,
-                categoryLength: 0,
-                enabled: false,
-                disableMe: false,
-                value: 0,
-                answerObj: {
-                    username: 'Nina',
-                    anonymityStatus: 'anonym',
-                    questionId: '1',
-                    answerList: [],
-                    answerId: '1',
-                    pollId: '1',
+import { mapGetters } from 'vuex'
+export default {
+    name: 'Participant',
+    layout: 'participant', // uses special layout/participant instead of default-layout
+    data() {
+        return {
+            id: 0,
+            poll: ['Object'],
+            answer: ['Object'],
+            category: ['Object'],
+            question: ['Object'],
+            questionIndex: 1,
+            categoryIndex: 1,
+            categoryLength: 0,
+            enabled: false,
+            disableMe: false,
+            value: 0,
+            answerObj: {
+                username: 'Nina',
+                anonymityStatus: 'anonym',
+                questionId: '1',
+                answerList: [],
+                answerId: '1',
+                pollId: '1',
+            },
+            rangeAnswers: [],
+            rules1: {
+                friendlyUrl(value) {
+                    console.log('validating value')
+                    if (/^[a-z0-9-]*$/.test(value)) {
+                        return true
+                    }
+                    return 'only lowercase letters, numbers and dashes are allowed'
                 },
-                rangeAnswers: [],
-                rules1: {
-                    friendlyUrl(value) {
-                        console.log('validating value')
-                        if (/^[a-z0-9-]*$/.test(value)) {
-                            return true
-                        }
-                        return 'only lowercase letters, numbers and dashes are allowed'
-                    },
-                },
-                rules: [(l) => l.length <= 25 || 'Max 25 characters'],
-                textQuestionRules: [
-                    (v) => v.length >= 10 || 'Eingabe muss länger als 10 Zeichen sein!',
-                    (v) => v.length <= 100 || 'Eingabe muss kürzer als 100 Zeichen sein!',
-                ],
+            },
+            rules: [(l) => l.length <= 25 || 'Max 25 characters'],
+            textQuestionRules: [
+                (v) => v.length >= 10 || 'Eingabe muss länger als 10 Zeichen sein!',
+                (v) => v.length <= 100 || 'Eingabe muss kürzer als 100 Zeichen sein!',
+            ],
+        }
+    },
+    /**
+     * Calls showPoll in methods to getPoll before/while the page is created.
+     */
+    created() {
+        this.id = this.$route.params.id
+        this.showPoll()
+    },
+    computed: {
+        /**
+         * Calls mapGetters defined in store/participant or store/login.
+         */
+        ...mapGetters({
+            getPoll: 'participant/getPoll',
+            getAnswer: 'participant/getAnswer',
+            isAuthenticated: 'login/isAuthenticated',
+            getVisibility: 'participant/getVisibility',
+            getNumberOfQuestions: 'participant/getNumberOfQuestions',
+            getCategoryIndex: 'participant/getCategoryIndex',
+            getCategory: 'participant/getCategory',
+            getChangeOfCategories: 'participant/getChangeOfCategories',
+            getUsername: 'participant/getUsername',
+            getQuestionIndex: 'participant/getQuestionIndex',
+        }),
+        computedQuestionList() {
+            const c = []
+            for (let i = 0; i < this.getCategory.questionList.length; i++) {
+                if (this.getCategory.questionList[i].questionType === 'RangeQuestion') {
+                    c[i] = this.getCategory.questionList[i]
+                } else {
+                    c[i] = this.getCategory.questionList[i]
+                }
             }
+            return c
         },
         /**
-         * Calls showPoll in methods to getPoll before/while the page is created.
+         * Get's the given FontColor from PollData.
+         * @returns {fontColor}
          */
-        created() {
-            this.showPoll()
+        fontColor() {
+            return this.getPoll[1].data.fontColor
         },
-        computed: {
-            /**
-             * Calls mapGetters defined in store/participant or store/login.
-             */
-            ...mapGetters({
-                getPoll: 'participant/getPoll',
-                getAnswer: 'participant/getAnswer',
-                isAuthenticated: 'login/isAuthenticated',
-                getVisibility: 'participant/getVisibility',
-                getNumberOfQuestions: 'participant/getNumberOfQuestions',
-                getCategoryIndex: 'participant/getCategoryIndex',
-                getCategory: 'participant/getCategory',
-                getChangeOfCategories: 'participant/getChangeOfCategories',
-                getUsername: 'participant/getUsername',
-                getQuestionIndex: 'participant/getQuestionIndex',
-            }),
-            computedQuestionList() {
-                const c = []
-                for (let i = 0; i < this.getCategory.questionList.length; i++) {
-                    if (this.getCategory.questionList[i].questionType === 'RangeQuestion') {
-                        c[i] = this.getCategory.questionList[i]
-                    } else {
-                        c[i] = this.getCategory.questionList[i]
+        /**
+         * Get's the given BackgroundColor from PollData.
+         * @returns {backgroundColor}
+         */
+        backgroundColor() {
+            return this.getPoll[1].data.backgroundColor
+        },
+        /**
+         * Get's the given fontColor from PollData.
+         * @returns {color: fontColor}
+         */
+        fontColorText() {
+            return 'color:' + this.getPoll[1].data.fontColor
+        },
+        /**
+         * Returns true if there is no next category in the poll or if the ChangeOfCategories is not allowed in the poll
+         * @returns {boolean}
+         */
+        hasNoNext() {
+            return this.categoryIndex === this.categoryLength || !this.getChangeOfCategories
+        },
+        /**
+         * Returns true if there is no previous category in the poll or if the ChangeOfCategories is not allowed in
+         * the poll
+         * @returns {boolean}
+         */
+        hasNoPrevious() {
+            return this.categoryIndex === 1 || !this.getChangeOfCategories
+        },
+        /**
+         * Generates the range answers out of min, max and possible texts and gives it back in format for v-for.
+         * Don't know how attributes are saved, so this is a placeholder: change min, max, text1, text2
+         * Don't know if I have to declare the appedning thing an answer or if it works like this.
+         * */
+        getRangeQuestionAnswers() {
+            console.log('Hi im in the computed method!')
+            this.generateRangeQuestionAnswers()
+            return 'answer in rangeAnswers'
+        },
+    },
+    methods: {
+        setQuestion(question) {
+            console.log('Hi setting question!')
+            this.question = question
+        },
+        /**
+         * Calls setCategory in the store to get the next category in the poll and save it at the page, if there is one
+         * and sets the categoryIndex from the getter getCategoryIndex from the store, the total amount of questions as
+         * the categoryLength and force updates the page to load the questions from th new category.
+         */
+        getNextCategory() {
+            this.$store.commit('participant/setCategory', 1)
+            this.categoryIndex = this.getCategoryIndex
+            this.categoryLength = this.getPoll[1].data.categoryList.length
+            this.category = this.getCategory
+            this.$forceUpdate()
+        },
+        /**
+         * Calls setCategory in the store to get the previous category in the poll and loads the category etc. like
+         * in getNextcategory().
+         */
+        getPreviousCategory() {
+            this.$store.commit('participant/setCategory', -1)
+            this.categoryIndex = this.getCategoryIndex
+            this.categoryLength = this.getPoll[1].data.categoryList.length
+            this.category = this.getCategory
+            this.$forceUpdate()
+        },
+        /**
+         * Get's the given answer of a checkbox question and calls saveAnswer() to persist it in the database. This
+         * happens after every change (check or uncheck) of a checkbox.
+         * @param e (Change-Event)
+         * @param question The question object, so it can get the QuestionID
+         * @param answer The answer object, so it can get the answer possibilities.
+         */
+        saveAnswerCheckbox(e, question, answer) {
+            this.answerObj.answerList = []
+            let i
+            // checks if checkBox was checked, not unchecked
+            if (e === true) {
+                for (i = 0; i < question.answerPossibilities.length; i++) {
+                    if (answer === question.answerPossibilities[i]) {
+                        this.answerObj.answerList.push(i) // index of true checkbox
                     }
                 }
-                return c
-            },
-            /**
-             * Get's the given FontColor from PollData.
-             * @returns {fontColor}
-             */
-            fontColor() {
-                return this.getPoll[1].data.fontColor
-            },
-            /**
-             * Get's the given BackgroundColor from PollData.
-             * @returns {backgroundColor}
-             */
-            backgroundColor() {
-                return this.getPoll[1].data.backgroundColor
-            },
-            /**
-             * Get's the given fontColor from PollData.
-             * @returns {color: fontColor}
-             */
-            fontColorText() {
-                return 'color:' + this.getPoll[1].data.fontColor
-            },
-            /**
-             * Returns true if there is no next category in the poll or if the ChangeOfCategories is not allowed in the poll
-             * @returns {boolean}
-             */
-            hasNoNext() {
-                return this.categoryIndex === this.categoryLength || !this.getChangeOfCategories
-            },
-            /**
-             * Returns true if there is no previous category in the poll or if the ChangeOfCategories is not allowed in
-             * the poll
-             * @returns {boolean}
-             */
-            hasNoPrevious() {
-                return this.categoryIndex === 1 || !this.getChangeOfCategories
-            },
-            /**
-             * Generates the range answers out of min, max and possible texts and gives it back in format for v-for.
-             * Don't know how attributes are saved, so this is a placeholder: change min, max, text1, text2
-             * Don't know if I have to declare the appedning thing an answer or if it works like this.
-             * */
-            getRangeQuestionAnswers() {
-                console.log('Hi im in the computed method!')
-                this.generateRangeQuestionAnswers()
-                return 'answer in rangeAnswers'
-            },
+            }
+            this.answerObj.pollId = this.getPoll[1].data.pollId
+            this.answerObj.questionId = question.questionId
+
+            this.showAnswer() // TODO: Fails with 405???
+
+            // this.saveAnswer() // alternative: Button after every TextField
         },
-        methods: {
-            setQuestion(question) {
-                console.log('Hi setting question!')
-                this.question = question
-            },
-            /**
-             * Increases the questionIndex in the store and gives back the current questionIndex. Is called when the
-             * visibility is true and gives the index of the question inside the category.
-             * @returns (questionIndex: number)
-             */
-            getIndex() {
-                // this.$store.commit('participant/setQuestionIndex')
-                // this.questionIndex = this.getQuestionIndex
-                return this.questionIndex
-            },
-            /**
-             * Calls setCategory in the store to get the next category in the poll and save it at the page, if there is one
-             * and sets the categoryIndex from the getter getCategoryIndex from the store, the total amount of questions as
-             * the categoryLength and force updates the page to load the questions from th new category.
-             */
-            getNextCategory() {
-                this.$store.commit('participant/setCategory', 1)
-                this.categoryIndex = this.getCategoryIndex
-                this.categoryLength = this.getPoll[1].data.categoryList.length
-                this.category = this.getCategory
-                this.$forceUpdate()
-            },
-            /**
-             * Calls setCategory in the store to get the previous category in the poll and loads the category etc. like
-             * in getNextcategory().
-             */
-            getPreviousCategory() {
-                this.$store.commit('participant/setCategory', -1)
-                this.categoryIndex = this.getCategoryIndex
-                this.categoryLength = this.getPoll[1].data.categoryList.length
-                this.category = this.getCategory
-                this.$forceUpdate()
-            },
-            /**
-             * Get's the given answer of a checkbox question and calls saveAnswer() to persist it in the database. This
-             * happens after every change (check or uncheck) of a checkbox.
-             * @param e (Change-Event)
-             * @param question The question object, so it can get the QuestionID
-             * @param answer The answer object, so it can get the answer possibilities.
-             */
-            saveAnswerCheckbox(e, question, answer) {
-                this.answerObj.answerList = []
-                let i
-                // checks if checkBox was checked, not unchecked
-                if (e === true) {
-                    for (i = 0; i < question.answerPossibilities.length; i++) {
-                        if (answer === question.answerPossibilities[i]) {
-                            this.answerObj.answerList.push(i) // index of true checkbox
-                        }
-                    }
-                }
-                this.answerObj.pollId = this.getPoll[1].data.pollId
-                this.answerObj.questionId = question.questionId
+        /**
+         * Get's the given answer of a free text question and calls saveAnswer() to persist it in the database. This
+         * happens after every single character.
+         * @param e (Input-Event)
+         * @param question The question object, so it can get the QuestionID
+         */
+        saveAnswerField(e, question) {
+            this.answerObj.answerList = [e]
+            this.answerObj.pollId = this.getPoll[1].data.pollId
+            this.answerObj.questionId = question.questionId
 
-                this.showAnswer() // TODO: Fails with 405???
+            this.saveAnswer() // alternative: Button after every TextField
+        },
+        /**
+         * Get's the given answer of a Range Question and calls saveAnswer() to persist it in the database.
+         * This happens after every change to the slider.
+         * @param e (Change-Event)
+         * @param question The question object, so it can get the QuestionID
+         */
+        saveAnswerSliderQuestion(e, question) {
+            this.answerObj.answerList = [e]
+            this.answerObj.pollId = this.getPoll[1].data.pollId
+            this.answerObj.questionId = question.questionId
 
-                // this.saveAnswer() // alternative: Button after every TextField
-            },
-            /**
-             * Get's the given answer of a free text question and calls saveAnswer() to persist it in the database. This
-             * happens after every single character.
-             * @param e (Input-Event)
-             * @param question The question object, so it can get the QuestionID
-             */
-            saveAnswerField(e, question) {
-                this.answerObj.answerList = [e]
-                this.answerObj.pollId = this.getPoll[1].data.pollId
-                this.answerObj.questionId = question.questionId
-
-                this.saveAnswer() // alternative: Button after every TextField
-            },
-            /**
-             * Get's the given answer of a Range Question and calls saveAnswer() to persist it in the database.
-             * This happens after every change to the slider.
-             * @param e (Change-Event)
-             * @param question The question object, so it can get the QuestionID
-             */
-            saveAnswerSliderQuestion(e, question) {
-                this.answerObj.answerList = [e]
-                this.answerObj.pollId = this.getPoll[1].data.pollId
-                this.answerObj.questionId = question.questionId
-
-                this.saveAnswer()
-            },
-            /**
-             * Moves the slider one step to the left, if possible.
-             * It's called by click on + Icon at a Range Question.
-             */
-            subValue() {
-                this.value = this.value - 1
-            },
-            /**
-             * Moves the slider one step to the right, if possible.
-             * It's called by click on + Icon at a Range Question.
-             */
-            addValue() {
-                this.value = this.value + 1
-            },
-            /**
-             * Generates the range answers out of min, max and possible texts and gives it back in format for v-for.
-             * Don't know how attributes are saved, so this is a placeholder: change min, max, text1, text2
-             * Don't know if I have to declare the appedning thing an answer or if it works like this.
-             * */
-            generateRangeQuestionAnswers() {
-                console.log('Hi, the function is called!')
-                /*
+            this.saveAnswer()
+        },
+        /**
+         * Moves the slider one step to the left, if possible.
+         * It's called by click on + Icon at a Range Question.
+         */
+        subValue() {
+            this.value = this.value - 1
+        },
+        /**
+         * Moves the slider one step to the right, if possible.
+         * It's called by click on + Icon at a Range Question.
+         */
+        addValue() {
+            this.value = this.value + 1
+        },
+        /**
+         * Generates the range answers out of min, max and possible texts and gives it back in format for v-for.
+         * Don't know how attributes are saved, so this is a placeholder: change min, max, text1, text2
+         * Don't know if I have to declare the appedning thing an answer or if it works like this.
+         * */
+        generateRangeQuestionAnswers() {
+            console.log('Hi, the function is called!')
+            /*
                 const questionId = this.getQuestionIndex
                 // how can I access this??? Both ways don't work
                 const max = this.getCategory.data.questio...
@@ -418,64 +412,64 @@
                 const text1 = this.getCategory.questionList[questionId].belowMessage
                 const text2 = this.getCategory.questionList[questionId].aboveMessage
                 */
-                const max = 100
-                const min = 10
-                const step = 10
-                const text1 = 'under 10'
-                const text2 = 'over 90'
-                this.rangeAnswers = [] // set it to null from previous questions
-                if (max != null && min != null && step != null) {
-                    if (text1 != null) {
-                        this.rangeAnswers.push(text1)
-                    }
-                    const size = (max - min) / step
-                    for (let i = 0; i < size; i++) {
-                        const value = min + i * step
-                        this.rangeAnswers.push(value)
-                    }
-                    if (text2 != null) {
-                        this.rangeAnswers.push(text2)
-                    }
+            const max = 100
+            const min = 10
+            const step = 10
+            const text1 = 'under 10'
+            const text2 = 'over 90'
+            this.rangeAnswers = [] // set it to null from previous questions
+            if (max != null && min != null && step != null) {
+                if (text1 != null) {
+                    this.rangeAnswers.push(text1)
                 }
-                console.log(this.question)
-                console.log(this.rangeAnswers)
-                console.log('Hi Im in the getRangeQuestionAnswersMutation method!')
-            },
-            // -------------------------------------------------------------------------------------------------------------
-            // Get or save information to/from the Backend
-            /**
-             * Calls showPoll in store/participant.js.
-             */
-            showPoll() {
-                this.$store.dispatch('participant/showPoll')
-                this.poll = this.getPoll
-            },
-            /**
-             * Calls saveAnswers from the store with the answerobj (cmdAnswer with all given input)
-             */
-            saveAnswer() {
-                this.answerObj.username = this.getUsername
-                this.$store.dispatch('participant/saveAnswer', this.answerObj)
-            },
-            /**
-             * Calls showAnswer in store/participant. (Needed to get already given answers for multiple choice checkbox.)
-             * Right now only used to get already checked boxes for multiple choice, but since alll answers from one
-             * user are given back it can also be used for loading the page with already given answers, for non-anonym
-             * and partialy anonym users, after they saved it.
-             */
-            showAnswer() {
-                this.answerObj.username = this.getUsername
-                this.answerObj.pollId = this.getPoll[1].data.pollId
-                // console.log('Hi, from Participant page pre store.dispatch')
-                this.$store.dispatch('participant/showAnswer', this.answerObj)
-                // console.log('Hi, from Participant page post store.dispatch')
-                this.answer = this.getAnswer
-                console.log('This is the answer object:')
-
-                console.log(this.answer) // never ending object, something is wrong: Start here to debug...
-            },
+                const size = (max - min) / step
+                for (let i = 0; i < size; i++) {
+                    const value = min + i * step
+                    this.rangeAnswers.push(value)
+                }
+                if (text2 != null) {
+                    this.rangeAnswers.push(text2)
+                }
+            }
+            console.log(this.question)
+            console.log(this.rangeAnswers)
+            console.log('Hi Im in the getRangeQuestionAnswersMutation method!')
         },
-    }
+        // -------------------------------------------------------------------------------------------------------------
+        // Get or save information to/from the Backend
+        /**
+         * Calls showPoll in store/participant.js.
+         */
+        showPoll() {
+            this.$store.dispatch('participant/showPoll', this.id)
+            this.poll = this.getPoll
+        },
+        /**
+         * Calls saveAnswers from the store with the answerobj (cmdAnswer with all given input)
+         */
+        saveAnswer() {
+            this.answerObj.username = this.getUsername
+            this.$store.dispatch('participant/saveAnswer', this.answerObj)
+        },
+        /**
+         * Calls showAnswer in store/participant. (Needed to get already given answers for multiple choice checkbox.)
+         * Right now only used to get already checked boxes for multiple choice, but since alll answers from one
+         * user are given back it can also be used for loading the page with already given answers, for non-anonym
+         * and partialy anonym users, after they saved it.
+         */
+        showAnswer() {
+            this.answerObj.username = this.getUsername
+            this.answerObj.pollId = this.getPoll[1].data.pollId
+            // console.log('Hi, from Participant page pre store.dispatch')
+            this.$store.dispatch('participant/showAnswer', this.answerObj)
+            // console.log('Hi, from Participant page post store.dispatch')
+            this.answer = this.getAnswer
+            console.log('This is the answer object:')
+
+            console.log(this.answer) // never ending object, something is wrong: Start here to debug...
+        },
+    },
+}
 </script>
 
 <style scoped></style>
