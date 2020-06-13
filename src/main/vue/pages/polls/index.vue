@@ -38,46 +38,6 @@
                                     class="elevation-1"
                                     :footer-props="footerProps"
                                 >
-                                    <!--<thead>
-                                        <tr>
-                                            <th class="text-left">Name</th>
-                                            <th class="text-left">PollIDs</th>
-                                            <th class="text-left">PollCreator</th>
-                                            <th class="text-left">CreationDate</th>
-                                            <th class="text-left">ActivatedDate</th>
-                                            <th class="text-left">DeactivatedDate</th>
-                                            <th class="text-left">Anonymitätsgrad</th>
-                                            <th class="text-left">Status</th>
-                                            <th class="text-left">Kategorienliste</th>
-                                            <th class="text-left">Fragenanzahl</th>
-                                        </tr>
-                                    </thead>-->
-                                    <!--<td v-for="header in headers">
-                                        {{ myprops.item[header.value] }}
-                                    </td>-->
-                                    <!--<template slot="items">
-                                    <td
-                                        v-for="(key, index) in filteredKeys"
-                                        :key="index"
-                                        :class="{ 'teal--text': sortBy === key }"
-                                    >
-                                        {{ key }}
-                                    </td>
-                                </template>-->
-                                    <!--<td :class="{ 'teal--text': sortBy === key }">{{ key }}:</td>
-                                            <td class="align-end" :class="{ 'teal--text': sortBy === key }">
-                                                {{ items[index][key.toLowerCase()] }}
-                                            </td>-->
-                                    <!--<tr v-for="item in desserts" :key="item.pollId">
-                                            <td class="text-left">{{ item.name }}</td>
-                                            <td class="text-left">{{ item.pollId }}</td>
-                                            <td class="text-left">{{ item.pollCreator }}</td>
-                                            <td class="text-left">{{ item.creationDate }}</td>
-                                            <td class="text-left">{{ item.activatedAt }}</td>
-                                            <td class="text-left">{{ item.deactivatedAt }}</td>
-                                            <td class="text-left">{{ item.anonymityStatus }}</td>
-                                            <td class="text-left">{{ item.status }}</td>
-                                        </tr>-->
                                     <template v-slot:item.status="{ item }">
                                         <v-icon @click="activatePoll(item)">
                                             {{ item.statusIcon }}
@@ -96,55 +56,6 @@
                                 </v-data-table>
                             </template>
                         </v-container>
-
-                        <!--<template>
-                        <div>{{ itemsList }}</div>
-                        <v-data-table :items="itemsList" class="elevation-1" hide-actions hide-headers>
-                            <template slot="items" slot-scope="props">
-                                <td>@{{ props.item.name }}</td>
-                                <td class="text-xs-right">@{{ props.items }}</td>
-                            </template>
-                        </v-data-table>
-                    </template>-->
-                        <!--<template>
-                        <v-card>
-                            <v-simple-table dense>
-                                <template v-slot:default="props">
-                                    <thead>
-                                        <tr>
-                                            <th class="text-left">Name</th>
-                                            <th class="text-left">PollStatus</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr v-for="item in props.items" :key="item.pollId">
-                                            <td>{{ item.pollId }}</td>
-                                            <td>{{ item.pollName }}</td>
-                                        </tr>
-                                    </tbody>
-                                </template>
-                            </v-simple-table>
-                        </v-card>
-                    </template>-->
-                        <!--<v-card>
-                                    <v-card-title class="subheading font-weight-bold"
-                                        >#{{ item.pollId }} {{ item.pollName }}
-                                        <v-spacer></v-spacer>
-                                    </v-card-title>
-                                    <v-divider></v-divider>
-                                    <v-list dense>
-                                        <v-list-item v-for="(key, index) in filteredKeys" :key="index">
-                                            <v-list-item-content :class="{ 'teal--text': sortBy === key }"
-                                                >{{ translateKey(key) }}:</v-list-item-content
-                                            >
-                                            <v-list-item-content
-                                                class="align-end"
-                                                :class="{ 'teal--text': sortBy === key }"
-                                                >{{ showValue(item, key) }}</v-list-item-content
-                                            >
-                                        </v-list-item>
-                                    </v-list>
-                                </v-card>-->
                     </v-data-iterator>
                 </v-container>
             </v-layout>

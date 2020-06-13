@@ -111,22 +111,22 @@ public class InitializeDatabase implements InitializingBean {
         for (int i = 0; i < 150; i++) {
             answerService.giveAnswer(String.valueOf(i), testPoll.getPollId().toString(), q1.getQuestionId().toString(),
                     Collections.singletonList(String.valueOf(ThreadLocalRandom.current()
-                            .nextInt(0, q1.getNumberOfPossibleAnswers()))));
+                            .nextInt(0, q1.getAnswerPossibilities().size()))));
             answerService.giveAnswer(String.valueOf(i), testPoll.getPollId().toString(), q2.getQuestionId().toString(),
                     Collections.singletonList(String.valueOf(ThreadLocalRandom.current()
-                            .nextInt(0, q2.getNumberOfPossibleAnswers()))));
+                            .nextInt(0, q2.getAnswerPossibilities().size()))));
             answerService.giveAnswer(String.valueOf(i), testPoll.getPollId().toString(), q3.getQuestionId().toString(),
                     Collections.singletonList(String.valueOf(ThreadLocalRandom.current()
-                            .nextInt(0, q3.getNumberOfPossibleAnswers()))));
+                            .nextInt(0, q3.getAnswerPossibilities().size()))));
             answerService.giveAnswer(String.valueOf(i), testPoll.getPollId().toString(), q4.getQuestionId().toString(),
                     Collections.singletonList(String.valueOf(ThreadLocalRandom.current()
-                            .nextInt(0, q4.getNumberOfPossibleAnswers()))));
+                            .nextInt(0, q4.getAnswerPossibilities().size()))));
             answerService.giveAnswer(String.valueOf(i), testPoll.getPollId().toString(), q5.getQuestionId().toString(),
                     Collections.singletonList(String.valueOf(ThreadLocalRandom.current()
-                            .nextInt(0, q5.getNumberOfPossibleAnswers()))));
+                            .nextInt(0, q5.getAnswerPossibilities().size()))));
             answerService.giveAnswer(String.valueOf(i), testPoll.getPollId().toString(), q6.getQuestionId().toString(),
                     Collections.singletonList(String.valueOf(ThreadLocalRandom.current()
-                            .nextInt(0, q6.getNumberOfPossibleAnswers()))));
+                            .nextInt(0, q6.getAnswerPossibilities().size()))));
             answerService.giveAnswer(String.valueOf(i), testPoll.getPollId().toString(), q7.getQuestionId().toString(),
                     Collections.singletonList(answers.get(ThreadLocalRandom.current()
                             .nextInt(0, answers.size() - 1))));
