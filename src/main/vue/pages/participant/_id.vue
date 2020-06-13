@@ -387,9 +387,9 @@ export default {
             this.answerObj.pollId = this.getPoll[1].data.pollId
             this.answerObj.questionId = question.questionId
 
-            this.showAnswer() // TODO: Fails with 405???
+            // this.showAnswer() // TODO: Fails with 405???
 
-            // this.saveAnswer() // alternative: Button after every TextField
+            this.saveAnswer() // alternative: Button after every TextField
         },
         /**
          * Get's the given answer of a free text question and calls saveAnswer() to persist it in the database. This
