@@ -23,7 +23,10 @@ public interface QuestionService {
                                 final String belowMessage,
                                 final String aboveMessage,
                                 final boolean hideValues,
-                                final int questionIndex);
+                                final int questionIndex,
+                                final Boolean textMultiline,
+                                final int textMinimum,
+                                final int textMaximum);
 
     /**
      * This method removes a selected question.

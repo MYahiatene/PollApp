@@ -25,10 +25,9 @@
                                 </v-card-title>
                                 <div v-if="question.questionType === 'TextQuestion'">
                                     <v-card-text>
-                                        <!--<div v-if="question.textMultiline === true">
-                                        :rules="textQuestionRules"-->
+                                        <!--<div v-if="question.textMultiline === true">-->
                                         <!--:rules="textQuestionRules"-->
-                                        <div>
+                                        <div v-if="true">
                                             <v-textarea
                                                 label="Antwort"
                                                 auto-grow
@@ -38,6 +37,13 @@
                                                 @input="saveAnswerField($event, question)"
                                             >
                                             </v-textarea>
+                                        </div>
+                                        <div v-else>
+                                            <v-text-field
+                                                label="Antwort"
+                                                :color="fontColor"
+                                                @input="saveAnswerField($event, question)"
+                                            ></v-text-field>
                                         </div>
                                     </v-card-text>
                                 </div>

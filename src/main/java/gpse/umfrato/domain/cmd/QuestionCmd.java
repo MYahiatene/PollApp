@@ -29,4 +29,10 @@ public class QuestionCmd {
 
     private int questionIndex;
 
+    private Boolean textMultiline;
+
+    private int textMinimum;
+
+    private int textMaximum;
+
 }

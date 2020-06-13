@@ -56,6 +56,12 @@ public class Question {
      */
     private int questionIndex;
 
+    private Boolean textMultiline;
+
+    private int textMinimum;
+
+    private int textMaximum;
+
     /**
      * This constructor receives a question message and saves in the question object.
      * @param question the question message
@@ -64,7 +70,8 @@ public class Question {
      */
     public Question(final String question, final List<String> answerPossibilities, final String questionType,
                     final int endValue, final int startValue, final int stepSize, final String belowMessage,
-                    final String aboveMessage, final Boolean hideValues, final int questionIndex) {
+                    final String aboveMessage, final Boolean hideValues, final int questionIndex,
+                    final Boolean textMultiline, final int textMinimum, final int textMaximum) {
         this.questionMessage = question;
         this.answerPossibilities = answerPossibilities;
         this.questionType = questionType;
@@ -75,6 +82,9 @@ public class Question {
         this.aboveMessage = aboveMessage;
         this.hideValues = hideValues;
         this.questionIndex = questionIndex;
+        this.textMultiline = textMultiline;
+        this.textMinimum = textMinimum;
+        this.textMaximum = textMaximum;
     }
 }
 

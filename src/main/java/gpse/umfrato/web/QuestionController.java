@@ -39,8 +39,9 @@ public class QuestionController {
         questionService.addQuestion(questionCmd.getPollId(), questionCmd.getQuestionMessage(),
             questionCmd.getAnswerPossibilities(), questionCmd.getQuestionType(), questionCmd.getEndValue(),
             questionCmd.getStartValue(), questionCmd.getStepSize(), questionCmd.getBelowMessage(),
-            questionCmd.getAboveMessage(), questionCmd.getHideValues(), questionCmd.getQuestionIndex());
-    }
+            questionCmd.getAboveMessage(), questionCmd.getHideValues(), questionCmd.getQuestionIndex(),
+            true, questionCmd.getTextMinimum(), questionCmd.getTextMaximum());
+    } // questionCmd.getTextMultiline apparently doesn't know it...
 
     /**
      * This method deletes a question.
