@@ -46,7 +46,7 @@ public class QuestionController {
      */
     @PutMapping("/removeQuestion")
     public void deleteQuestion(final @RequestBody QuestionCmd questionCmd) {
-        questionService.removeQuestion(questionCmd.getPollId(), questionCmd.getQuestionId());
+        questionService.removeQuestion(questionCmd.getCategoryId(), questionCmd.getQuestionId());
     }
 
     /**

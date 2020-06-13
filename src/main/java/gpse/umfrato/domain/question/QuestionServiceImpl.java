@@ -81,12 +81,14 @@ public class QuestionServiceImpl implements QuestionService {
     /**
      * This method removes a selected question.
      *
-     * @param pollId     the id of the poll where the question is setted
-     * @param questionId the id of the selectes question
+     * @param categoryId     the id of the category where the question is set
+     * @param questionId the id of the selected question
      */
     @Override
-    public void removeQuestion(final String pollId, final String questionId) {
+    public void removeQuestion(final String categoryId, final String questionId) {
         try {
+            categoryRepository.findById(Long.valueOf(categoryId))
+                .orElseThrow(EntityNotFoundException::new).getQuestionList().remove(questionRepository.getOne(Long.valueOf(questionId)));
             questionRepository.deleteById(Long.valueOf(questionId));
 
         } catch (EntityNotFoundException e) {

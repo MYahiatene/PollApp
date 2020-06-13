@@ -7,6 +7,7 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -33,7 +34,7 @@ public class Question {
 
 
     @ElementCollection
-    private List<String> answerPossibilities;
+    private List<String> answerPossibilities = new ArrayList<>();
 
     /**
      * This attribute represents the type of question (dropdown, text field, ...).

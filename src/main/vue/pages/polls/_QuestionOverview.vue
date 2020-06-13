@@ -326,12 +326,15 @@ export default {
                 })
         },
         deleteQuestion() {
+            console.log('selectedQuestion:\n')
+            console.log(this.selectedQuestion)
             this.$axios.put('/removeQuestion', {
                 pollId: this.pollData.pollId,
                 questionId: this.selectedQuestion.questionId,
+                categoryId: this.selectedQuestion.categoryId,
             })
             console.log(this.pollData.pollId)
-            console.log(this.selectedQuestion.questionId)
+            console.log(this.selectedQuestion)
             this.categoryData.forEach((element) => {
                 if (this.selectedQuestion.categoryId === element.categoryId) {
                     element.questionList.forEach((el) => {
@@ -397,7 +400,7 @@ export default {
                     pollId: this.pollData.pollId,
                     questionMessage: NewQuestionMessage,
                     questionType: NewQuestionType,
-                    categoryId: this.categoryData.categoryId,
+                    categoryId: this.pollData.categoryList[0].categoryId,
                     answerPossibilities: [],
                     userAnswers: false,
                     numberOfPossibleAnswers: 1,
