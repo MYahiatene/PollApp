@@ -12,7 +12,7 @@
                     <v-col cols="8">
                         <!-- loads the questions from the current category in a list-->
                         <v-list v-for="question in computedQuestionList" :key="question.questionId" two-line>
-                            <!-- every question is in a Kard and consists of the questionMessage and the way to answer
+                            <!-- every question is in a Zard and consists of the questionMessage and the way to answer
                             it, and depending on the settings of the poll, the number of questions -->
                             <v-card class="mx-auto">
                                 <v-card-title class="col" :style="fontColorText">
