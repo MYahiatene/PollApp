@@ -2,7 +2,9 @@
     <div>
         <AuthGate v-if="isAuthenticated !== true"></AuthGate>
         <v-container v-else-if="storeValid">
-            <v-card class="pa-2 ma-0"><v-text-field class="display-1" v-model="pollData.pollName" /></v-card>
+            <v-card class="pa-2 ma-0">
+                <v-text-field class="display-1" v-model="pollData.pollName" />
+            </v-card>
 
             <v-container>
                 <v-row>
@@ -59,7 +61,10 @@
                     </v-col>
                     <v-col cols="12" lg="8" md="8" sm="8">
                         <v-card v-show="buildIndex || editIndex" class="pa-1" :style="frameColor">
-                            <QuestionBuildWidget :pollData="pollData" :buildIndex="buildIndex"></QuestionBuildWidget>
+                            <QuestionBuildWidget
+                                :categoryData="categoryData"
+                                :buildIndex="buildIndex"
+                            ></QuestionBuildWidget>
                         </v-card>
                     </v-col>
                 </v-row>
@@ -73,8 +78,8 @@
                         mdi-sync-alert
                     </v-icon>
                     Der Umfrato-Server hat noch nicht geantwortet
-                    <v-spacer
-                /></v-card-title>
+                    <v-spacer />
+                </v-card-title>
             </v-card>
         </v-container>
     </div>
@@ -179,10 +184,10 @@ export default {
         },
         onEnd(evt) {
             /*
-            console.log('old drag index:\n' + evt.oldDraggableIndex + '\n')
-            console.log('new drag index:\n' + evt.newDraggableIndex + '\n')
-            console.log('old index:\n' + evt.oldIndex + '\n')
-            console.log('new index:\n' + evt.newIndex + '\n') */
+                console.log('old drag index:\n' + evt.oldDraggableIndex + '\n')
+                console.log('new drag index:\n' + evt.newDraggableIndex + '\n')
+                console.log('old index:\n' + evt.oldIndex + '\n')
+                console.log('new index:\n' + evt.newIndex + '\n') */
             console.log(evt)
             if (evt.pullMode) {
                 //  this.$axios.post('/changequestioncategory')
@@ -296,22 +301,22 @@ export default {
         createQuestion(NewQuestionMessage, NewQuestionType) {
             this.buildIndex = 1
             /* if (NewQuestionMessage === '' || NewQuestionType === '') {
-                alert('Feld ausfüllen!')
-            } else {
-                const question = {
-                    pollId: this.pollData.pollId,
-                    questionMessage: NewQuestionMessage,
-                    questionType: NewQuestionType,
-                    categoryId: this.pollData.categoryList[0].categoryId,
-                    answerPossibilities: [],
-                    userAnswers: false,
-                    numberOfPossibleAnswers: 1,
-                }
-                this.$axios.post('/addquestion', question).then((response) => {
-                    question.questionId = response.data.questionId
-                })
-                this.categoryData[0].questionList.push(question)
-            } */
+                    alert('Feld ausfüllen!')
+                } else {
+                    const question = {
+                        pollId: this.pollData.pollId,
+                        questionMessage: NewQuestionMessage,
+                        questionType: NewQuestionType,
+                        categoryId: this.pollData.categoryList[0].categoryId,
+                        answerPossibilities: [],
+                        userAnswers: false,
+                        numberOfPossibleAnswers: 1,
+                    }
+                    this.$axios.post('/addquestion', question).then((response) => {
+                        question.questionId = response.data.questionId
+                    })
+                    this.categoryData[0].questionList.push(question)
+                } */
         },
         ...mapActions({
             sendData: 'pollOverview/sendData',

@@ -25,7 +25,7 @@
                     <v-row>
                         <component
                             :questionData="questionData"
-                            :pollData="pollData"
+                            :categoryData="categoryData"
                             :is="questionType"
                             :buildIndex:="buildIndex"
                         ></component>
@@ -57,7 +57,7 @@ export default {
     name: 'QuestionBuildWidget2',
     components: { ChoiceQuestion, TextQuestion, RangeQuestion },
     props: {
-        pollData: { type: Object },
+        categoryData: { type: Array },
         buildIndex: {
             type: Number,
         },
@@ -118,6 +118,7 @@ export default {
                 numberOfPossibleAnswers: this.getQuestion.numberOfPossibleAnswers,
                 userAnswers: this.getQuestion.userAnswers,
             })
+            this.categoryData[0].questionList.push(this.getQuestion)
         },
         ...mapMutations({
             setQuestionMessage: 'pollOverview/setQuestionMessage',
