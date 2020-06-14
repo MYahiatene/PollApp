@@ -9,7 +9,7 @@ import java.util.List;
 @Data
 public class QuestionCmd {
 
-    private String pollId;
+    private Long pollId;
 
     private float endValue;
 
@@ -41,51 +41,44 @@ public class QuestionCmd {
 
     private String questionType;
 
-    private int questionIndex;
-
     private boolean userAnswers;
 
     private int numberOfPossibleAnswers;
 
     public Question getQuestion() {
-        final Question question = new Question(questionMessage, answerPossibilities, questionType,0, 0, 0, null, null, false, 1, false, 10, 100);
-        question.setQuestionId(questionId);
-        question.setCategoryId(categoryId);
-        question.setQuestionIndex(questionIndex);
-        switch (question.getQuestionType()) {
+        Question question = null;
+        switch (questionType) {
             case "TextQuestion":
-                question.setTextMaximum(textMaximum);
-                question.setTextMinimum(textMinimum);
-                question.setTextMultiline(textMultiline);
-                break;
+                question = new Question(questionMessage, textMultiline, textMinimum, textMaximum);
+                question.setQuestionId(questionId);
+                question.setCategoryId(categoryId);
+                return question;
             case "RangeQuestion":
-                question.setEndValue(endValue == 0.0f ? 5.0f : stepSize);
-                question.setStartValue(startValue);
-                question.setStepSize(stepSize == 0.0f ? 1.0f : stepSize);
-                question.setBelowMessage(belowMessage == null ? "" : belowMessage);
-                question.setAboveMessage(aboveMessage == null ? "" : aboveMessage);
+                question = new Question(questionMessage, (endValue == 0.0f ? 5.0f : stepSize), startValue,
+                    (stepSize == 0.0f ? 1.0f : stepSize), (belowMessage == null ? "" : belowMessage),
+                    (aboveMessage == null ? "" : aboveMessage));
+                question.setQuestionId(questionId);
+                question.setCategoryId(categoryId);
                 question.setHasConsistencyRelationship(hasConsistencyRelationship);
-                break;
+                return question;
             case "SliderQuestion":
-                question.setEndValue(endValue == 0.0f ? 1.0f : stepSize);
-                question.setStartValue(startValue);
-                question.setStepSize(stepSize == 0.0f ? 0.01f : stepSize);
-                question.setBelowMessage(belowMessage == null ? "" : belowMessage);
-                question.setAboveMessage(aboveMessage == null ? "" : aboveMessage);
-                question.setHideValues(hideValues);
-                break;
+                question = new Question(questionMessage, (endValue == 0.0f ? 1.0f : stepSize), startValue,
+                    (stepSize == 0.0f ? 0.1f : stepSize), (belowMessage == null ? "" : belowMessage),
+                    (aboveMessage == null ? "" : aboveMessage), hideValues);
+                question.setQuestionId(questionId);
+                question.setCategoryId(categoryId);
+                return question;
             case "ChoiceQuestion":
-                question.setAnswerPossibilities(answerPossibilities);
+                question = new Question(questionMessage, answerPossibilities);
+                question.setQuestionId(questionId);
+                question.setCategoryId(categoryId);
                 question.setNumberOfPossibleAnswers(numberOfPossibleAnswers);
                 question.setUserAnswers(userAnswers);
                 question.setHasConsistencyRelationship(hasConsistencyRelationship);
-                break;
-            case "SortQuestion":
-                question.setAnswerPossibilities(answerPossibilities);
-                break;
-            default: break;
+                return question;
+            default: return null;
         }
-        return question;
+
     }
 
 }

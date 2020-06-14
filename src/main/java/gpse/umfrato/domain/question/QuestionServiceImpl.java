@@ -59,26 +59,12 @@ public class QuestionServiceImpl implements QuestionService {
     /**
      * This method creates a question for a poll.
      *
-     * @param questionMessage the given question
+     * @param pollId th eId of the poll
+     * @param question the question
      * @return the question which is created
      */
     @Override
-    public Question addQuestion(final String pollId,
-                                final String questionMessage,
-                                final List<String> answerPossibilities,
-                                final String questionType,
-                                final int endValue,
-                                final int startValue,
-                                final int stepSize,
-                                final String belowMessage,
-                                final String aboveMessage,
-                                final boolean hideValues,
-                                final int questionIndex,
-                                final Boolean textMultiline,
-                                final int textMinimum,
-                                final int textMaximum) {
-        final Question question = new Question(questionMessage, answerPossibilities, questionType, endValue, startValue,
-            stepSize, belowMessage, aboveMessage, hideValues, questionIndex, textMultiline, textMinimum, textMaximum);
+    public Question addQuestion(final Long pollId, final Question question) {
         question.setCategoryId(pollRepository.findById(Long.valueOf(pollId)).orElseThrow(EntityNotFoundException::new)
             .getCategoryList().get(0).getCategoryId());
         pollRepository.findById(Long.valueOf(pollId)).orElseThrow(EntityNotFoundException::new)
