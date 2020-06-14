@@ -5,12 +5,17 @@ import gpse.umfrato.domain.poll.Poll;
 import gpse.umfrato.domain.poll.PollService;
 import gpse.umfrato.domain.question.Question;
 import gpse.umfrato.domain.question.QuestionService;
+import gpse.umfrato.domain.user.User;
 import gpse.umfrato.domain.user.UserService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import javax.transaction.Transactional;
 import java.time.Instant;
 import java.util.Arrays;
@@ -69,8 +74,15 @@ public class InitializeDatabase implements InitializingBean {
             userService.loadUserByUsername(tbettmannUserName);
             pollService.createPoll(testPoll);
 
-            //questionService.addQuestion(one, "testFrage", Arrays.asList("Frage1", "Frage2", "Frage3"), "freitext");
-            //answerService.giveAnswer(testUsername, one, "3", Arrays.asList("Ja", "Nein"));
+            questionService.addQuestion("1", "testFrage", Arrays.asList("Ja", "Nein", "Vielleicht"), "ChoiceQuestion", 0, 0, 0, null, null, false, 1, false, 10, 100);
+            questionService.addQuestion("1", "testFrage2", Arrays.asList("Jein", "Fein", "Vielschwer"), "ChoiceQuestion",0, 0, 0, null, null, false, 2, false, 10, 100);
+            questionService.addQuestion("1", "testFrage3", new ArrayList<>(), "TextQuestion",0, 0, 0, null, null, false, 3, false, 10, 100);
+            questionService.addQuestion("1", "TestFrage 4", new ArrayList<>(), "RangeQuestion",100, 10, 10, "belowMessage", "aboveMessage", false, 4, false, 10, 100);
+            questionService.addQuestion("1", "TestFrage 5", new ArrayList<>(), "SliderQuestion",100, 0, 10, "small", "big", false, 5, false, 10, 100);
+            questionService.addQuestion("1", "TestFrage 5", new ArrayList<>(), "SliderQuestion",100, 0, 10, "small", "big", false, 6, false, 10, 100);
+            questionService.addQuestion("1", "testFrage 6", Arrays.asList("Ja", "Nein", "Vielleicht"), "RadioButton", 0, 0, 0, null, null, false, 7, false, 10, 100);
+
+            userService.loadUserByUsername(testUsername);
         } catch (UsernameNotFoundException e) {
             userService.createUser(tbettmannUserName, dummyPassword, "Tobias", "Bettmann",
                 "Admin", "tbettmann@reply.de");

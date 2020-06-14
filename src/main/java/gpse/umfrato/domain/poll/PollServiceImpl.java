@@ -19,6 +19,7 @@ class PollServiceImpl implements PollService {
     private final CategoryRepository categoryRepository;
     private final CategoryService categoryService;
 
+    private int anonymUsername = 0;
 
     /**
      * This class constructor initializes the poll repository.
@@ -76,5 +77,17 @@ class PollServiceImpl implements PollService {
     public Poll getPoll(final String id) {
         final Long pollId = Long.valueOf(id);
         return pollRepository.findById(pollId).orElseThrow(EntityNotFoundException::new);
+    }
+
+    /**
+     * This method creates a unique username for anonym polls.
+     * @return a number as an anonym Username
+     */
+    @Override
+    public String createAnonymUsername() {
+        this.anonymUsername++;
+        LOGGER.info("anonymUsername = ");
+        LOGGER.info(String.valueOf(this.anonymUsername));
+        return String.valueOf(this.anonymUsername);
     }
 }

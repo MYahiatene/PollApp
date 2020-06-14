@@ -16,6 +16,7 @@ export const actions = {
             .then((res) => {
                 const newPoll = res.data
                 commit('savePoll', newPoll)
+                console.log('PollID: ', newPoll)
             })
             .catch(() => {
                 commit('savePoll', null)

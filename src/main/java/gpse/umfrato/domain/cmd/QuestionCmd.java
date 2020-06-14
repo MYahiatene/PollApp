@@ -41,14 +41,17 @@ public class QuestionCmd {
 
     private String questionType;
 
+    private int questionIndex;
+
     private boolean userAnswers;
 
     private int numberOfPossibleAnswers;
 
     public Question getQuestion() {
         final Question question = new Question(questionMessage, answerPossibilities, questionType);
-        // question.setQuestionId(questionId);
-        // question.setCategoryId(categoryId);
+        question.setQuestionId(questionId);
+        question.setCategoryId(categoryId);
+        question.setQuestionIndex(questionIndex);
         switch (question.getQuestionType()) {
             case "TextQuestion":
                 question.setTextMaximum(textMaximum);

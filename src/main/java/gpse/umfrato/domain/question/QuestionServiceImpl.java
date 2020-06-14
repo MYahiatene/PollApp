@@ -61,8 +61,19 @@ public class QuestionServiceImpl implements QuestionService {
     public Question addQuestion(final String pollId,
                                 final String questionMessage,
                                 final List<String> answerPossibilities,
-                                final String questionType) {
-        final Question question = new Question(questionMessage, answerPossibilities, questionType);
+                                final String questionType,
+                                final int endValue,
+                                final int startValue,
+                                final int stepSize,
+                                final String belowMessage,
+                                final String aboveMessage,
+                                final boolean hideValues,
+                                final int questionIndex,
+                                final Boolean textMultiline,
+                                final int textMinimum,
+                                final int textMaximum) {
+        final Question question = new Question(questionMessage, answerPossibilities, questionType, endValue, startValue,
+        stepSize, belowMessage, aboveMessage, hideValues, questionIndex, textMultiline, textMinimum, textMaximum);
         final Category category = categoryRepository.findCategoryByPollId(Long.valueOf(pollId));
         category.getQuestionList().add(question);
         question.setCategoryId(category.getCategoryId());
