@@ -18,7 +18,8 @@
                 ></v-text-field>
             </v-row>
             <v-row>
-                <v-col cols="1">
+                <v-col cols="10"></v-col>
+                <v-col cols="2">
                     <v-btn @click="addAnswer">
                         <v-icon color="primary" left>
                             mdi-plus
@@ -31,13 +32,9 @@
             <v-row no-gutters>
                 <v-text-field
                     label="Maximale Antwortanzahl"
-                    :hint="
-                        'Maximale Anzahl gleichzeitig auswählbarer Antworten (1 bis ' +
-                        (getQuestion.answerPossibilities.length - 1) +
-                        ')'
-                    "
+                    :hint="'Maximale Anzahl gleichzeitig auswählbarer Antworten'"
                     type="number"
-                    v-model="nrPossibleAnswers"
+                    v-model="numberOfPossibleAnswers"
                     min="1"
                     :max="getQuestion.answerPossibilities.length - 1"
                     step="1"
@@ -63,29 +60,15 @@ export default {
             obj: {},
             answerCountRules: [
                 (v) =>
-                    parseFloat(v) < this.getQuestion.answerPossibilities.length ||
-                    'Es könnten keine ' +
-                        v +
-                        ' Antworten ausgewählt werden, weil bisher nur ' +
+                    (parseFloat(v) >= 1 && parseFloat(v) < this.getQuestion.answerPossibilities.length) ||
+                    'Die maximale Anwortzahl kann sich nur zwischen 1 und ' +
                         (this.getQuestion.answerPossibilities.length - 1) +
-                        ' Antwortmöglichkeit' +
-                        (this.getQuestion.answerPossibilities.length - 1 > 1 ? 'en' : '') +
-                        ' erstellt wurde' +
-                        (this.getQuestion.answerPossibilities.length - 1 > 1 ? 'n' : '') +
-                        '!',
+                        ' Antworten befinden',
             ],
         }
     },
     computed: {
         ...mapGetters({ getQuestion: 'questionOverview/getQuestion', questionToLoad: 'pollOverview/questionToLoad' }),
-        nrPossibleAnswers: {
-            get() {
-                return this.getQuestion.numberOfPossibleAnswers
-            },
-            set(number) {
-                this.setNrOfPossibleAnswers(parseInt(number))
-            },
-        },
         questionChoiceType: {
             get() {
                 return this.getQuestion.choiceType
@@ -111,6 +94,14 @@ export default {
                 this.setAnswerPossibility(this.obj)
             },
         },
+        numberOfPossibleAnswers: {
+            get() {
+                return this.getQuestion.numberOfPossibleAnswers
+            },
+            set(value) {
+                this.setNumberOfPossibleAnswers(value)
+            },
+        },
     },
     methods: {
         ...mapMutations({
@@ -120,6 +111,7 @@ export default {
             setChoiceType: 'questionOverview/setChoiceType',
             setUserAnswers: 'questionOverview/setUserAnswers',
             addAnswer: 'questionOverview/addAnswer',
+            setNumberOfPossibleAnswers: 'questionOverview/setNumberOfPossibleAnswers',
         }),
         ...mapActions({
             setAnswerPossibility: 'questionOverview/setAnswerPossibility',

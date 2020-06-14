@@ -29,10 +29,13 @@ export const mutations = {
         state.question.userAnswers = userAnswers
     },
     addAnswer(state) {
-        state.question.answerPossibilities.push('')
+        state.question.answerPossibilities.push(' ')
     },
     setAnswerP(state, obj) {
         state.question.answerPossibilities[obj.index] = obj.answer
+    },
+    setNumberOfPossibleAnswers(state, NumberOfPossibleAnswers) {
+        state.question.numberOfPossibleAnswers = NumberOfPossibleAnswers
     },
 }
 export const getters = {

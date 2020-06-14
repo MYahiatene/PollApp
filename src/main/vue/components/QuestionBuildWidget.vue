@@ -9,16 +9,6 @@
                         <v-col>
                             <h3>{{ header }}</h3>
                         </v-col>
-                        <v-spacer></v-spacer>
-                        <v-spacer></v-spacer>
-                        <v-col>
-                            <v-btn @click="createQuestion">
-                                <v-icon color="primary" left>
-                                    mdi-plus
-                                </v-icon>
-                                Speichern
-                            </v-btn>
-                        </v-col>
                     </v-row>
                     <v-row no-gutters>
                         <v-textarea
@@ -39,6 +29,17 @@
                             :is="questionTypeChoice"
                             :buildIndex:="buildIndex"
                         ></component>
+                    </v-row>
+                    <v-row>
+                        <v-col cols="10"></v-col>
+                        <v-col cols="2">
+                            <v-btn @click="createQuestion">
+                                <v-icon color="primary" left>
+                                    mdi-plus
+                                </v-icon>
+                                Speichern
+                            </v-btn>
+                        </v-col>
                     </v-row>
                 </v-container>
             </v-card>
@@ -83,7 +84,7 @@ export default {
     },
     computed: {
         ...mapGetters({
-            question: 'pollOverview/getQuestion',
+            getQuestion: 'questionOverview/getQuestion',
             questionToLoad: 'pollOverview/questionToLoad',
             getQuestionMessage: 'questionOverview/getQuestionMessage',
         }),
@@ -100,15 +101,9 @@ export default {
         },
     },
     methods: {
-        createQuestion(NewQuestionMessage, NewQuestionType) {
-            this.buildIndex = false
-            const question = {
-                pollId: '1',
-                questionType: 'freitext',
-            }
-            this.$axios.post('/addquestion', question).then((response) => {
-                question.questionId = response.data.questionId
-            })
+        createQuestion() {
+            this.buildIndex = 0
+            this.$axios.post('/addquestion', this.getQuestion)
         },
         ...mapMutations({
             setQuestionMessage: 'pollOverview/setQuestionMessage',
