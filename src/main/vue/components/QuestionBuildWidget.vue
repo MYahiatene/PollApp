@@ -115,34 +115,34 @@ export default {
     },
     methods: {
         createQuestion() {
+            console.log('BuildIndex:\n')
+            console.log(this.buildIndex)
+            if (this.buildIndex === 1) {
+                this.$axios.post('/addquestion', {
+                    pollId: this.$route.params.QuestionOverview,
+                    questionType: this.getQuestion.questionType,
+                    questionMessage: this.getQuestion.questionMessage,
+                    answerPossibilities: this.getQuestion.answerPossibilities,
+                    numberOfPossibleAnswers: this.getQuestion.numberOfPossibleAnswers,
+                    userAnswers: this.getQuestion.userAnswers,
+                })
+                this.categoryData[0].questionList.push(this.getQuestion)
+            } else {
+                this.$axios.put('/editquestion', {
+                    pollId: this.$route.params.QuestionOverview,
+                    questionType: this.getQuestion.questionType,
+                    questionMessage: this.getQuestion.questionMessage,
+                    answerPossibilities: this.getQuestion.answerPossibilities,
+                    numberOfPossibleAnswers: this.getQuestion.numberOfPossibleAnswers,
+                    userAnswers: this.getQuestion.userAnswers,
+                    questionId: this.getQuestion.questionId,
+                })
+            }
+            console.log('BuildIndex:\n')
+            console.log(this.buildIndex)
+            console.log('QuestionMessage:\n' + this.getQuestion.questionMessage)
+            console.log('QuestionId:\n' + this.getQuestion.questionId)
             this.setBuildIndex(0)
-            this.$axios.post('/addquestion', {
-                pollId: this.$route.params.QuestionOverview,
-                questionType: this.getQuestion.questionType,
-                questionMessage: this.getQuestion.questionMessage,
-                answerPossibilities: this.getQuestion.answerPossibilities,
-                numberOfPossibleAnswers: this.getQuestion.numberOfPossibleAnswers,
-                userAnswers: this.getQuestion.userAnswers,
-            })
-            this.categoryData[0].questionList.push(this.getQuestion)
-            this.setQuestion({
-                categoryId: null,
-                questionMessage: '',
-                answerPossibilities: [],
-                questionType: '',
-                userAnswers: false,
-                numberOfPossibleAnswers: 1,
-                endValue: 10,
-                startValue: 0,
-                stepSize: 1,
-                belowMessage: '',
-                aboveMessage: '',
-                hideValues: false,
-                textMultiline: true,
-                textMinimum: 0,
-                textMaximum: 1000,
-                choiceType: '',
-            })
         },
         ...mapMutations({
             setQuestionMessage: 'pollOverview/setQuestionMessage',

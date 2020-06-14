@@ -27,9 +27,7 @@ public interface QuestionService {
 
     List<Question> getAllQuestions(final long categoryId);
 
-    Question editQuestion(final Long questionID, final List<String> answerPossibilities, final int numberOfPossibleAnswers,
-                      final String questionMessage,
-                      final String questionType);
+    Question editQuestion(QuestionCmd questionCmd);
 
 
     Question changeCategory(final Long questionId, final Long oldCategoryId, final Long newCategoryId);

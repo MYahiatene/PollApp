@@ -4,10 +4,10 @@
         <v-row no-gutters class="ma-n2 my-n4 pa-4">
             <v-col cols="12" lg="10" md="10" sm="10">
                 <v-list-item-title>
-                    {{ choppedTitle }}
+                    {{ question.questionMessage }}
                 </v-list-item-title>
                 <v-list-item-subtitle>
-                    {{ translatedQuestionType }}
+                    {{ question.questionType }}
                 </v-list-item-subtitle>
             </v-col>
             <v-col cols="12" lg="2" md="2" sm="2">

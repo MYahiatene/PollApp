@@ -136,14 +136,29 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public Question editQuestion(final Long questionID, final List<String> answerPossibilities, int numberOfPossibleAnswers, String questionMessage, String questionType) {
+    public Question editQuestion(QuestionCmd questionCmd) {
+        Question question = questionRepository.
+            findById(questionCmd.getQuestionId()).orElseThrow(EntityNotFoundException::new);
 
-        Question question = questionRepository.findById(questionID).orElseThrow(EntityNotFoundException::new);
-        question.setAnswerPossibilities(answerPossibilities);
-        question.setNumberOfPossibleAnswers(numberOfPossibleAnswers);
-        question.setQuestionMessage(questionMessage);
-        question.setQuestionType(questionType);
-        questionRepository.save(question);
+        switch (questionCmd.getQuestionType()) {
+            case "TextQuestion":
+                break;
+            case "RangeQuestion":
+                break;
+            case "SliderQuestion":
+                break;
+            case "ChoiceQuestion":
+                question.setAnswerPossibilities(questionCmd.getAnswerPossibilities());
+                question.setNumberOfPossibleAnswers(questionCmd.getNumberOfPossibleAnswers());
+                question.setQuestionMessage(questionCmd.getQuestionMessage());
+                question.setQuestionType(questionCmd.getQuestionType());
+                question.setUserAnswers(questionCmd.isUserAnswers());
+                questionRepository.save(question);
+                break;
+            default:
+                return null;
+        }
+
         return question;
 
     }

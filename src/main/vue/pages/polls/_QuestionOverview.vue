@@ -15,7 +15,7 @@
                             </v-icon>
                             Kategorie
                         </v-btn>
-                        <v-btn depressed @click="buildIndex = 1">
+                        <v-btn depressed @click="addQuestion()">
                             <v-icon color="primary" left>mdi-plus</v-icon>
                             Frage
                         </v-btn>
@@ -177,6 +177,28 @@ export default {
         },
     },
     methods: {
+        addQuestion() {
+            this.setQuestion({
+                categoryId: null,
+                questionMessage: '',
+                answerPossibilities: [],
+                questionType: '',
+                userAnswers: false,
+                numberOfPossibleAnswers: 1,
+                endValue: 10,
+                startValue: 0,
+                stepSize: 1,
+                belowMessage: '',
+                aboveMessage: '',
+                hideValues: false,
+                textMultiline: true,
+                textMinimum: 0,
+                textMaximum: 1000,
+                choiceType: '',
+                questionId: null,
+            })
+            this.buildIndex = 1
+        },
         editQuestion(question) {
             this.$axios.post('/editquestion', {
                 questionId: this.selectedQuestion.questionId,
@@ -333,6 +355,7 @@ export default {
             setPollID: 'pollOverview/setPollID',
             updateCategorys: 'pollOverview/updateCategoryOrder',
             setBuildIndex: 'questionOverview/setBuildIndex',
+            setQuestion: 'questionOverview/setQuestion',
         }),
         saveState() {
             const payload = {

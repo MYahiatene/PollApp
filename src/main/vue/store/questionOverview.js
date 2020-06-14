@@ -17,6 +17,7 @@ export const state = () => ({
         textMinimum: 0,
         textMaximum: 1000,
         choiceType: '',
+        questionId: null,
     },
 })
 export const mutations = {
