@@ -75,10 +75,6 @@ export default {
             ],
         }
     },
-    mounted() {
-        this.minCharSwitch = this.getQuestion.textMinimum !== undefined && this.getQuestion.textMinimum !== null
-        this.maxCharSwitch = this.getQuestion.textMaximum !== undefined && this.getQuestion.textMaximum !== null
-    },
     methods: {
         ...mapMutations({
             multiline: 'pollOverview/setTextMultiline',
