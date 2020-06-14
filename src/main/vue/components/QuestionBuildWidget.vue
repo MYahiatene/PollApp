@@ -58,9 +58,6 @@ export default {
     components: { ChoiceQuestion, TextQuestion, RangeQuestion },
     props: {
         categoryData: { type: Array },
-        buildIndex: {
-            type: Number,
-        },
     },
     data() {
         return {
@@ -86,7 +83,16 @@ export default {
             getQuestion: 'questionOverview/getQuestion',
             questionToLoad: 'pollOverview/questionToLoad',
             getQuestionMessage: 'questionOverview/getQuestionMessage',
+            getBuildIndex: 'questionOverview/getBuildIndex',
         }),
+        buildIndex: {
+            get() {
+                return this.getBuildIndex
+            },
+            set(value) {
+                this.setBuildIndex(value)
+            },
+        },
         header() {
             return this.buildIndex === 1 ? 'Frage erstellen' : 'Frage editieren'
         },
@@ -109,7 +115,7 @@ export default {
     },
     methods: {
         createQuestion() {
-            this.buildIndex = 0
+            this.setBuildIndex(0)
             this.$axios.post('/addquestion', {
                 pollId: this.$route.params.QuestionOverview,
                 questionType: this.getQuestion.questionType,
@@ -123,6 +129,7 @@ export default {
         ...mapMutations({
             setQuestionMessage: 'pollOverview/setQuestionMessage',
             setQuestionType: 'questionOverview/setQuestionType',
+            setBuildIndex: 'questionOverview/setBuildIndex',
         }),
         ...mapActions({
             setQM: 'questionOverview/setQuestionMessage',

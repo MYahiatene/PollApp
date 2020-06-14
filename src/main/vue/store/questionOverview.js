@@ -1,4 +1,5 @@
 export const state = () => ({
+    buildIndex: 0,
     question: {
         categoryId: null,
         questionMessage: '',
@@ -40,6 +41,9 @@ export const mutations = {
     setNumberOfPossibleAnswers(state, NumberOfPossibleAnswers) {
         state.question.numberOfPossibleAnswers = NumberOfPossibleAnswers
     },
+    setBuildIndex(state, buildIndex) {
+        state.buildIndex = buildIndex
+    },
 }
 export const getters = {
     getQuestionMessage(state) {
@@ -47,6 +51,9 @@ export const getters = {
     },
     getQuestion(state) {
         return state.question
+    },
+    getBuildIndex(state) {
+        return state.buildIndex
     },
 }
 export const actions = {

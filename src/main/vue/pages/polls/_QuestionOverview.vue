@@ -60,11 +60,8 @@
                         </v-row>
                     </v-col>
                     <v-col cols="12" lg="8" md="8" sm="8">
-                        <v-card v-show="buildIndex || editIndex" class="pa-1" :style="frameColor">
-                            <QuestionBuildWidget
-                                :categoryData="categoryData"
-                                :buildIndex="buildIndex"
-                            ></QuestionBuildWidget>
+                        <v-card v-show="buildIndex > 0" class="pa-1" :style="frameColor">
+                            <QuestionBuildWidget :categoryData="categoryData"></QuestionBuildWidget>
                         </v-card>
                     </v-col>
                 </v-row>
@@ -97,7 +94,6 @@ export default {
     data() {
         return {
             editIndex: false,
-            buildIndex: 0,
             disableDrag: false,
             questionCreationIndex: false,
             pollData: [],
@@ -148,9 +144,18 @@ export default {
         ...mapGetters({
             isAuthenticated: 'login/isAuthenticated',
             getCategories: 'pollOverview/getCategory',
+            getBuildIndex: 'questionOverview/getBuildIndex',
         }),
         pollId() {
             return parseInt(this.$route.params.QuestionOverview)
+        },
+        buildIndex: {
+            get() {
+                return this.getBuildIndex
+            },
+            set(value) {
+                this.setBuildIndex(value)
+            },
         },
         pollname: {
             get() {
@@ -327,6 +332,7 @@ export default {
             setPollName: 'pollOverview/setPollName',
             setPollID: 'pollOverview/setPollID',
             updateCategorys: 'pollOverview/updateCategoryOrder',
+            setBuildIndex: 'questionOverview/setBuildIndex',
         }),
         saveState() {
             const payload = {
