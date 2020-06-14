@@ -30,11 +30,13 @@
             <draggable v-model="questions">
                 <v-list v-for="question in questions" :key="question.questionId" :style="backgroundColor">
                     <QuestionListElement
+                        :pollData="pollData"
                         :poll-id="pollID"
                         :category-id="categoryID"
                         :question-id="question.questionId"
                         :question-message="question.questionMessage"
                         :question-type="question.questionType"
+                        :buildIndex="buildIndex"
                     ></QuestionListElement>
                     <v-spacer></v-spacer>
                     <v-spacer></v-spacer>
@@ -54,6 +56,9 @@ export default {
     name: 'CategoryListElement',
     components: { QuestionListElement, draggable },
     props: {
+        pollData: {
+            type: Object,
+        },
         categoryID: {
             type: Number,
         },
@@ -66,6 +71,7 @@ export default {
         questions: {
             type: Array,
         },
+        buildIndex: { type: Number },
     },
     computed: {
         ...mapGetters({ getCategory: 'pollOverview/getCategory', getPolls: 'navigation/getPolls' }),

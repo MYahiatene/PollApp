@@ -36,9 +36,11 @@
 </template>
 
 <script>
-import { mapMutations, mapGetters } from 'vuex'
+import { mapGetters, mapMutations } from 'vuex'
+
 export default {
     name: 'ChoiceQuestion',
+    props: { pollData: { type: Array }, questionData: { type: Object }, buildIndex: { type: Number } },
     data() {
         return {
             choiceType: ['Standartauswahl', 'Drop-Down', 'Sortieren'],

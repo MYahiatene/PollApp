@@ -1,13 +1,13 @@
 <!--this widget enables the user to configure a general question, including all of its common features, to specify-->
 <!--the final question type and to preview (wysiwyg) the final question as it will be displayed to the participants-->
 <template>
-    <div v-if="loadedIndex === true">
+    <div v-if="buildIndex > 0">
         <div>
             <v-card flat class="ma-0">
                 <v-container>
                     <v-row no-gutters>
                         <v-col>
-                            <h3>Frage erstellen</h3>
+                            <h3>{{ header }}</h3>
                         </v-col>
                         <v-spacer></v-spacer>
                         <v-spacer></v-spacer>
@@ -33,7 +33,12 @@
                         <v-select v-model="questionTypeChoice" :items="questionWidgets" label="Fragenart"></v-select>
                     </v-row>
                     <v-row>
-                        <component :is="questionTypeChoice"></component>
+                        <component
+                            :questionData="questionData"
+                            :pollData="pollData"
+                            :is="questionTypeChoice"
+                            :buildIndex:="buildIndex"
+                        ></component>
                     </v-row>
                 </v-container>
             </v-card>
@@ -44,20 +49,21 @@
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import ChoiceQuestion from './ChoiceQuestion'
-import TextQuestion from './SavetextQuestion'
+import TextQuestion from './TextQuestion'
 import RangeQuestion from './rangeQuestion'
 
 export default {
     name: 'QuestionBuildWidget2',
     components: { ChoiceQuestion, TextQuestion, RangeQuestion },
     props: {
-        pollData: { type: Array },
-        loadedIndex: {
-            type: Boolean,
+        pollData: { type: Object },
+        buildIndex: {
+            type: Number,
         },
     },
     data() {
         return {
+            questionData: { questionTypeChoice: this.questionTypeChoice },
             questionTypeChoice: '',
             questionMessage: '',
             questionWidgets: [
@@ -81,6 +87,9 @@ export default {
             question: 'pollOverview/getQuestion',
             questionToLoad: 'pollOverview/questionToLoad',
         }),
+        header() {
+            return this.buildIndex === 1 ? 'Frage erstellen' : 'Frage editieren'
+        },
     },
     methods: {
         createQuestion(NewQuestionMessage, NewQuestionType) {

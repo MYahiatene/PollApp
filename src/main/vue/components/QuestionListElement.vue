@@ -23,10 +23,13 @@
 
 <script>
 import { mapGetters, mapMutations } from 'vuex'
+
 export default {
     name: 'QuestionListElement',
 
     props: {
+        pollData: { type: Object },
+        buildIndex: { type: Number },
         pollId: {
             type: Number,
         },
@@ -88,6 +91,7 @@ export default {
     methods: {
         ...mapMutations({ setToLoad: 'pollOverview/setToLoad' }),
         setIDs() {
+            this.buildIndex = 2
             const IDs = {
                 pollID: this.pollId,
                 categoryID: this.categoryId,

@@ -40,10 +40,12 @@
                                                         two-line
                                                     >
                                                         <CategoryListElement
+                                                            :buildIndex="buildIndex"
                                                             :categoryID="category.categoryId"
                                                             :pollID="pollData.pollId"
                                                             :categoryName="category.categoryName"
                                                             :questions="category.questionList"
+                                                            :pollData="pollData"
                                                             @text-input="disableDraggable"
                                                         />
                                                     </v-list>
@@ -57,8 +59,7 @@
                     </v-col>
                     <v-col cols="12" lg="8" md="8" sm="8">
                         <v-card v-show="buildIndex || editIndex" class="pa-1" :style="frameColor">
-                            <QuestionBuildWidget :pollData="pollData" :editIndex="editIndex"></QuestionBuildWidget>
-                            <QuestionBuildWidget2 :loadedIndex="buildIndex"></QuestionBuildWidget2>
+                            <QuestionBuildWidget :pollData="pollData" :buildIndex="buildIndex"></QuestionBuildWidget>
                         </v-card>
                     </v-col>
                 </v-row>
@@ -82,17 +83,16 @@
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import draggable from 'vuedraggable'
-import QuestionBuildWidget from '../../components/QuestionEditWidget'
 import CategoryListElement from '../../components/CategoryListElement'
-import QuestionBuildWidget2 from '../../components/QuestionSaveWidget'
+import QuestionBuildWidget from '../../components/QuestionBuildWidget'
 
 export default {
     name: 'QuestionOverview',
-    components: { CategoryListElement, QuestionBuildWidget2, QuestionBuildWidget, draggable },
+    components: { CategoryListElement, QuestionBuildWidget, draggable },
     data() {
         return {
             editIndex: false,
-            buildIndex: false,
+            buildIndex: 0,
             disableDrag: false,
             questionCreationIndex: false,
             pollData: [],
@@ -294,7 +294,7 @@ export default {
             this.questionCreationIndex = true
         },
         createQuestion(NewQuestionMessage, NewQuestionType) {
-            this.buildIndex = true
+            this.buildIndex = 1
             /* if (NewQuestionMessage === '' || NewQuestionType === '') {
                 alert('Feld ausfüllen!')
             } else {

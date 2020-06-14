@@ -58,6 +58,7 @@ import { mapGetters, mapMutations } from 'vuex'
 
 export default {
     name: 'TextQuestion',
+    props: { pollData: { type: Object }, questionData: { type: Object }, buildIndex: { type: Number } },
     data() {
         return {
             minCharSwitch: false,
