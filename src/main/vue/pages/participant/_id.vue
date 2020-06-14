@@ -6,12 +6,24 @@
             <div v-if="getPoll[1].data.logo !== undefined">
                 <img :src="getPoll[1].data.logo" alt="failedToLoadLogo" />
             </div>
-            <v-subheader class="display-1 font-weight-bold" :style="fontColorText"> Umfrage 1</v-subheader>
             <v-content>
                 <v-row>
                     <v-col cols="8">
+                        <v-card>
+                            <!--<v-subheader class="display-1 font-weight-bold my-3 py-6" :style="fontColorText">
+                                Umfrage 1
+                            </v-subheader>-->
+                            <h1 class="my-3 pa-5" :style="fontColorText">
+                                {{ getPoll[1].data.pollName }}
+                            </h1>
+                        </v-card>
                         <!-- loads the questions from the current category in a list-->
-                        <v-list v-for="question in computedQuestionList" :key="question.questionId" two-line>
+                        <v-list
+                            v-for="question in computedQuestionList"
+                            :key="question.questionId"
+                            :color="backgroundColor"
+                            two-line
+                        >
                             <!-- every question is in a Zard and consists of the questionMessage and the way to answer
                             it, and depending on the settings of the poll, the number of questions -->
                             <v-card class="mx-auto">
@@ -48,14 +60,34 @@
                                     </v-card-text>
                                 </div>
                                 <div v-else-if="question.questionType === 'ChoiceQuestion'">
-                                    <v-list v-for="answer in question.answerPossibilities" :key="answer.text">
-                                        <v-checkbox
-                                            class="ma-4"
-                                            :label="answer"
-                                            :color="fontColor"
-                                            @change="saveAnswerCheckbox($event, question, answer)"
-                                        ></v-checkbox>
-                                    </v-list>
+                                    <!--Radio Button since only one answer possible-->
+                                    <div v-if="question.numberOfPossiblesAnswers === 1">
+                                        <v-card-text>
+                                            <v-radio-group v-model="radioGroup">
+                                                <v-radio
+                                                    v-for="answer in question.answerPossibilities"
+                                                    class="my-n2"
+                                                    :key="answer"
+                                                    :label="`${answer}`"
+                                                    :value="answer"
+                                                    @change="saveAnswerCheckbox($event, question, answer)"
+                                                ></v-radio>
+                                            </v-radio-group>
+                                        </v-card-text>
+                                    </div>
+                                    <div v-else>
+                                        <!--Checkboxes, so that multiple answers are technically allowed,
+                                        not able to save them yet-->
+                                        <v-list v-for="answer in question.answerPossibilities" :key="answer.text">
+                                            <v-checkbox
+                                                class="my-n2 mx-3"
+                                                dense
+                                                :label="answer"
+                                                :color="fontColor"
+                                                @change="saveAnswerCheckbox($event, question, answer)"
+                                            ></v-checkbox>
+                                        </v-list>
+                                    </div>
                                     <!-- checks the individual response options for every question, not valid with
                                     the backend -->
                                     <!--div v-if="question.ownAnswersAllowed">
@@ -77,9 +109,10 @@
                                             {{ question.belowMessage }}
                                             <span class="float-right">{{ question.aboveMessage }}</span>
                                         </p>
+                                        <!--Currently choosen value are supposed to be shown-->
                                         <div v-if="question.hideValues === false">
                                             <v-slider
-                                                v-model="value"
+                                                v-model="value1"
                                                 :min="question.startValue"
                                                 :max="question.endValue"
                                                 :step="question.stepSize"
@@ -96,9 +129,10 @@
                                             >
                                             </v-slider>
                                         </div>
-                                        <div v-else>
+                                        <!--Thumb-label is not being shown-->
+                                        <div v-else-if="question.hideValues === true">
                                             <v-slider
-                                                v-model="value"
+                                                v-model="value2"
                                                 min="0"
                                                 max="10"
                                                 ticks
@@ -120,23 +154,12 @@
                                     <!--rangeAnswer in rangeAnswers-->
                                     <v-list v-for="answer in question.answerPossibilities" :key="answer">
                                         <v-checkbox
-                                            class="ma-4"
+                                            class="my-n2 mx-3"
                                             :label="answer"
                                             :color="fontColor"
                                             @change="saveAnswerCheckbox($event, question, answer)"
                                         ></v-checkbox>
                                     </v-list>
-                                </div>
-                                <div v-else-if="question.questionType === 'RadioButton'">
-                                    <v-radio-group v-model="radioGroup">
-                                        <v-radio
-                                            v-for="answer in question.answerPossibilities"
-                                            :key="answer"
-                                            :label="`${answer}`"
-                                            :value="answer"
-                                            @change="saveAnswerCheckbox($event, question, answer)"
-                                        ></v-radio>
-                                    </v-radio-group>
                                 </div>
                             </v-card>
                         </v-list>
@@ -180,7 +203,8 @@ export default {
             categoryLength: 0,
             enabled: false,
             disableMe: false,
-            value: 0,
+            value1: 0,
+            value2: 0,
             answerObj: {
                 username: 'Nina',
                 anonymityStatus: 'anonym',
@@ -247,7 +271,8 @@ export default {
                         const size = (max - min) / step
                         for (let i = 0; i < size; i++) {
                             const value = min + i * step
-                            rangeAnswers.push(String(value))
+                            const nextValue = value + step
+                            rangeAnswers.push(String(value) + ' - ' + String(nextValue))
                         }
                         if (text2 != null) {
                             rangeAnswers.push(text2)

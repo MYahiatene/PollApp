@@ -65,7 +65,7 @@ public class InitializeDatabase implements InitializingBean {
         final String dummyPassword = "{bcrypt}$2a$10$WoG5Z4YN9Z37EWyNCkltyeFr6PtrSXSLMeFWOeDUwcanht5CIJgPa";
 
 
-        final Poll testPoll = new Poll(testUsername, "anonym", "testPoll", Instant.now().toString(),
+        final Poll testPoll = new Poll(testUsername, "anonym", "Mittagessen", Instant.now().toString(),
             Instant.now().toString(), Instant.now().toString(), 0, "#c4fcdb", "#c42843",
             logoUrl, true, true);
         final User testUser = new User("testNutzer", dummyPassword, "Markus", "Mueller","Admin","testuser@testmail.de");
@@ -74,13 +74,17 @@ public class InitializeDatabase implements InitializingBean {
         try {
             pollService.createPoll(testPoll);
 
-            questionService.addQuestion("1", "testFrage", Arrays.asList("Ja", "Nein", "Vielleicht"), "ChoiceQuestion", 0, 0, 0, null, null, false, 1, false, 10, 100);
-            questionService.addQuestion("1", "testFrage2", Arrays.asList("Jein", "Fein", "Vielschwer"), "ChoiceQuestion",0, 0, 0, null, null, false, 2, false, 10, 100);
-            questionService.addQuestion("1", "testFrage3", new ArrayList<>(), "TextQuestion",0, 0, 0, null, null, false, 3, false, 10, 100);
-            questionService.addQuestion("1", "TestFrage 4", new ArrayList<>(), "RangeQuestion",100, 10, 10, "belowMessage", "aboveMessage", false, 4, false, 10, 100);
-            questionService.addQuestion("1", "TestFrage 5", new ArrayList<>(), "SliderQuestion",100, 0, 10, "small", "big", false, 5, false, 10, 100);
-            questionService.addQuestion("1", "TestFrage 5", new ArrayList<>(), "SliderQuestion",100, 0, 10, "small", "big", false, 6, false, 10, 100);
-            questionService.addQuestion("1", "testFrage 6", Arrays.asList("Ja", "Nein", "Vielleicht"), "RadioButton", 0, 0, 0, null, null, false, 7, false, 10, 100);
+            questionService.addQuestion("1", "Wieviele Mitarbeiter aus ihrer Arbeitsgruppe kommen mit?", new ArrayList<>(), "RangeQuestion",20, 0, 5, "Niemand", "Mehr als 20", false, 1, false, 10, 100);
+            questionService.addQuestion("1", "Wie hungrig sind Sie?", new ArrayList<>(), "SliderQuestion",100, 0, 10, "Überhaupt nicht", "Sehr", true, 2, false, 10, 100);
+            questionService.addQuestion("1", "Wie viele Kalorien wollen Sie heute zu sich nehmen?", new ArrayList<>(), "SliderQuestion",1000, 0, 100, "small", "big", false, 3, false, 10, 100);
+
+            // questionService.addQuestion("1", "testFrage", Arrays.asList("Ja", "Nein", "Vielleicht"), "ChoiceQuestion", 0, 0, 0, null, null, false, 1, false, 10, 100);
+            // questionService.addQuestion("1", "testFrage2", Arrays.asList("Jein", "Fein", "Vielschwer"), "ChoiceQuestion",0, 0, 0, null, null, false, 2, false, 10, 100);
+            // questionService.addQuestion("1", "testFrage3", new ArrayList<>(), "TextQuestion",0, 0, 0, null, null, false, 3, false, 10, 100);
+            // questionService.addQuestion("1", "TestFrage 4", new ArrayList<>(), "RangeQuestion",100, 10, 10, "belowMessage", "aboveMessage", false, 4, false, 10, 100);
+            // questionService.addQuestion("1", "TestFrage 5", new ArrayList<>(), "SliderQuestion",100, 0, 10, "small", "big", false, 5, false, 10, 100);
+            // questionService.addQuestion("1", "TestFrage 5", new ArrayList<>(), "SliderQuestion",100, 0, 10, "small", "big", false, 6, false, 10, 100);
+            // questionService.addQuestion("1", "testFrage 6", Arrays.asList("Ja", "Nein", "Vielleicht"), "RadioButton", 0, 0, 0, null, null, false, 7, false, 10, 100);
 
             userService.loadUserByUsername(testUsername);
         } catch (UsernameNotFoundException e) {
