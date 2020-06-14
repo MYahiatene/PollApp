@@ -49,7 +49,7 @@
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import ChoiceQuestion from './ChoiceQuestion'
 import TextQuestion from './EditTextQuestion'
-import RangeQuestion from './rangeQuestion'
+import RangeQuestion from './RangeQuestion'
 
 export default {
     name: 'QuestionBuildWidget',

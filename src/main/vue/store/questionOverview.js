@@ -15,10 +15,39 @@ export const state = () => ({
         textMultiline: true,
         textMinimum: 0,
         textMaximum: 1000,
+        choiceType: '',
     },
 })
-export const mutations = {}
-export const getters = {}
+export const mutations = {
+    setQuestionMes(state, questionMessage) {
+        state.question.questionMessage = questionMessage
+    },
+    setChoiceType(state, choiceType) {
+        state.question.choiceType = choiceType
+    },
+    setUserAnswers(state, userAnswers) {
+        state.question.userAnswers = userAnswers
+    },
+    addAnswer(state) {
+        state.question.answerPossibilities.push('')
+    },
+    setAnswerP(state, obj) {
+        state.question.answerPossibilities[obj.index] = obj.answer
+    },
+}
+export const getters = {
+    getQuestionMessage(state) {
+        return state.question.questionMessage
+    },
+    getQuestion(state) {
+        return state.question
+    },
+}
 export const actions = {
-    createPoll({ commit }, poll) {},
+    setQuestionMessage({ commit }, questionMessage) {
+        commit('setQuestionMes', questionMessage)
+    },
+    setAnswerPossibility({ commit }, obj) {
+        commit('setAnswerP', obj)
+    },
 }

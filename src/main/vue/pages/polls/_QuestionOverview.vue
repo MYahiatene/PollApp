@@ -13,7 +13,7 @@
                             </v-icon>
                             Kategorie
                         </v-btn>
-                        <v-btn depressed @click="createQuestion(pollData.pollId)">
+                        <v-btn depressed @click="buildIndex = 1">
                             <v-icon color="primary" left>mdi-plus</v-icon>
                             Frage
                         </v-btn>

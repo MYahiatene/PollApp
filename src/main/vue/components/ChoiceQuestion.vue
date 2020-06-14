@@ -2,16 +2,33 @@
 <template>
     <v-container>
         <v-row no-gutters>
-            <v-overflow-btn :items="choiceType" label="Antwortart"></v-overflow-btn>
+            <v-overflow-btn v-model="questionChoiceType" :items="choiceType" label="Antwortart"></v-overflow-btn>
         </v-row>
         <v-form>
-            <v-row v-for="(answer, index) in getQuestion.answerPossibilities" :key="index" no-gutters>
+            <v-row v-for="(answer, index) in answerPossibilities" :key="index" no-gutters>
                 <v-text-field
-                    :value="getQuestion.answerPossibilities[index]"
+                    v-model="answerPossibility"
+                    :value="answer"
                     :label="'Antwortmöglichkeit ' + (index + 1)"
-                    @input="(text) => updateAnswer({ index, text })"
+                    @input="
+                        (answer) => {
+                            obj.answer = answer
+                            obj.index = index
+                        }
+                    "
                 ></v-text-field>
             </v-row>
+            <v-row>
+                <v-col cols="1">
+                    <v-btn @click="addAnswer">
+                        <v-icon color="primary" left>
+                            mdi-plus
+                        </v-icon>
+                        Antwort
+                    </v-btn>
+                </v-col>
+            </v-row>
+            <v-row></v-row>
             <v-row no-gutters>
                 <v-text-field
                     label="Maximale Antwortanzahl"
@@ -36,14 +53,15 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations } from 'vuex'
+import { mapGetters, mapMutations, mapActions } from 'vuex'
 
 export default {
     name: 'ChoiceQuestion',
-    props: { pollData: { type: Array }, questionData: { type: Object }, buildIndex: { type: Number } },
+    props: { pollData: { type: Object }, questionData: { type: Object }, buildIndex: { type: Number } },
     data() {
         return {
-            choiceType: ['Standartauswahl', 'Drop-Down', 'Sortieren'],
+            choiceType: ['Standardauswahl', 'Drop-Down', 'Sortieren'],
+            obj: {},
             answerCountRules: [
                 (v) =>
                     parseFloat(v) < this.getQuestion.answerPossibilities.length ||
@@ -60,7 +78,7 @@ export default {
         }
     },
     computed: {
-        ...mapGetters({ getQuestion: 'pollOverview/getQuestion', questionToLoad: 'pollOverview/questionToLoad' }),
+        ...mapGetters({ getQuestion: 'questionOverview/getQuestion', questionToLoad: 'pollOverview/questionToLoad' }),
         nrPossibleAnswers: {
             get() {
                 return this.getQuestion.numberOfPossibleAnswers
@@ -69,22 +87,48 @@ export default {
                 this.setNrOfPossibleAnswers(parseInt(number))
             },
         },
+        questionChoiceType: {
+            get() {
+                return this.getQuestion.choiceType
+            },
+            set(value) {
+                this.setChoiceType(value)
+            },
+        },
         userAnswersPossible: {
             get() {
                 return this.getQuestion.userAnswers
             },
-            set(active) {
-                this.setUserAnswers(active)
+            set(value) {
+                this.setUserAnswers(value)
+            },
+        },
+        answerPossibilities: {
+            get() {
+                return this.getQuestion.answerPossibilities
+            },
+        },
+        answerPossibility: {
+            get() {
+                return this.getQuestion.answerPossibilities
+            },
+            set() {
+                console.log(this.obj)
+                this.setAnswerPossibility(this.obj)
             },
         },
     },
     methods: {
         ...mapMutations({
             setNrOfPossibleAnswers: 'pollOverview/setNrOfPossibleAnswers',
-            setUserAnswers: 'pollOverview/setUserAnswers',
             updateAnswer: 'pollOverview/updateAnswer',
-            addAnswer: 'pollOverview/addAnswer',
             removeAnswer: 'pollOverview/removeAnswer',
+            setChoiceType: 'questionOverview/setChoiceType',
+            setUserAnswers: 'questionOverview/setUserAnswers',
+            addAnswer: 'questionOverview/addAnswer',
+        }),
+        ...mapActions({
+            setAnswerPossibility: 'questionOverview/setAnswerPossibility',
         }),
         updateSingleAnswer(index, text) {
             const payload = {

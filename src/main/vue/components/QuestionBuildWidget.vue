@@ -22,7 +22,7 @@
                     </v-row>
                     <v-row no-gutters>
                         <v-textarea
-                            v-model="questionMessage"
+                            v-model="questionMessageModel"
                             label="Fragentext"
                             hint="Was soll den Umfrageteilnehmer gefragt werden?"
                             rows="1"
@@ -50,7 +50,7 @@
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import ChoiceQuestion from './ChoiceQuestion'
 import TextQuestion from './TextQuestion'
-import RangeQuestion from './rangeQuestion'
+import RangeQuestion from './RangeQuestion'
 
 export default {
     name: 'QuestionBuildWidget2',
@@ -65,7 +65,6 @@ export default {
         return {
             questionData: { questionTypeChoice: this.questionTypeChoice },
             questionTypeChoice: '',
-            questionMessage: '',
             questionWidgets: [
                 {
                     text: 'Auswahlfrage',
@@ -86,9 +85,18 @@ export default {
         ...mapGetters({
             question: 'pollOverview/getQuestion',
             questionToLoad: 'pollOverview/questionToLoad',
+            getQuestionMessage: 'questionOverview/getQuestionMessage',
         }),
         header() {
             return this.buildIndex === 1 ? 'Frage erstellen' : 'Frage editieren'
+        },
+        questionMessageModel: {
+            get() {
+                return this.getQuestionMessage
+            },
+            set(value) {
+                this.setQM(value)
+            },
         },
     },
     methods: {
@@ -96,7 +104,6 @@ export default {
             this.buildIndex = false
             const question = {
                 pollId: '1',
-                questionMessage: 'testFrage7',
                 questionType: 'freitext',
             }
             this.$axios.post('/addquestion', question).then((response) => {
@@ -108,6 +115,7 @@ export default {
             setQuestionType: 'pollOverview/setQuestionType',
         }),
         ...mapActions({
+            setQM: 'questionOverview/setQuestionMessage',
             deleteQuestion: 'pollOverview/deleteQuestion',
         }),
     },
