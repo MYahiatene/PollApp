@@ -8,7 +8,6 @@ import gpse.umfrato.domain.poll.PollRepository;
 import gpse.umfrato.domain.poll.PollService;
 import gpse.umfrato.web.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
@@ -67,8 +66,19 @@ public class QuestionServiceImpl implements QuestionService {
     public Question addQuestion(final String pollId,
                                 final String questionMessage,
                                 final List<String> answerPossibilities,
-                                final String questionType) {
-        Question question = new Question(questionMessage, answerPossibilities, questionType);
+                                final String questionType,
+                                final int endValue,
+                                final int startValue,
+                                final int stepSize,
+                                final String belowMessage,
+                                final String aboveMessage,
+                                final boolean hideValues,
+                                final int questionIndex,
+                                final Boolean textMultiline,
+                                final int textMinimum,
+                                final int textMaximum) {
+        final Question question = new Question(questionMessage, answerPossibilities, questionType, endValue, startValue,
+            stepSize, belowMessage, aboveMessage, hideValues, questionIndex, textMultiline, textMinimum, textMaximum);
         question.setCategoryId(pollRepository.findById(Long.valueOf(pollId)).orElseThrow(EntityNotFoundException::new)
             .getCategoryList().get(0).getCategoryId());
         pollRepository.findById(Long.valueOf(pollId)).orElseThrow(EntityNotFoundException::new)

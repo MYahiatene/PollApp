@@ -12,8 +12,13 @@
                 <v-row>
                     <v-col cols="8">
                         <!-- loads the questions from the current category in a list-->
-                        <v-list v-for="question in getCategory.questionList" :key="question.questionId" two-line>
-                            <!-- every question is in a card and consists of the questionMessageand the way to answer
+                        <v-list
+                            v-for="question in getCategory.questionList"
+                            :key="question.questionId"
+                            two-line
+                            :color="backgroundColor"
+                        >
+                            <!-- every question is in a Kard and consists of the questionMessageand the way to answer
                             it, and depending on the settings of the poll, the number of questions -->
                             <v-card class="mx-auto">
                                 <v-card-title class="col" :style="fontColorText">
@@ -104,7 +109,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import AuthGate from '../components/AuthGate'
+import AuthGate from '../../components/AuthGate'
 export default {
     name: 'Participant',
     layout: 'participant', // uses special layout/participant instead of default-layout

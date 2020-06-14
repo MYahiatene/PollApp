@@ -1,7 +1,7 @@
 package gpse.umfrato.domain.evaluation;
 
-import gpse.umfrato.domain.evaluation.FilterBlocks.FilterImpl.Filter;
-import gpse.umfrato.domain.evaluation.FilterBlocks.FilterImpl.QuestionFilter;
+import gpse.umfrato.domain.evaluation.filterblocks.filterimpl.Filter;
+import gpse.umfrato.domain.evaluation.filterblocks.filterimpl.QuestionFilter;
 import gpse.umfrato.domain.question.Question;
 import gpse.umfrato.domain.answer.Answer;
 import gpse.umfrato.domain.answer.AnswerService;
@@ -18,6 +18,7 @@ import java.util.logging.Logger;
 
 public class Statistics {
 
+    private static final double MEDIAN_QUANTILE = 0.5;
     private static final Logger LOGGER = Logger.getLogger("EvaluationController");
     private final AnswerService answerService;
     private final UserService userService;
@@ -32,7 +33,7 @@ public class Statistics {
     public Statistics(final AnswerService answerService, final UserService userService,
                       final QuestionService questionService, final PollService pollService,
                       final PollResultService pollResultService, final CategoryService categoryService,
-                      FilterCmd data) {
+                      final FilterCmd data) {
         this.answerService = answerService;
         this.userService = userService;
         this.questionService = questionService;
@@ -40,28 +41,26 @@ public class Statistics {
         this.pollResultService = pollResultService;
         this.categoryService = categoryService;
         pollId = Long.valueOf(data.getBasePollId());
-        if(data.getBaseQuestionIds().isEmpty()) {
-            for (Question q: questionService.getAllQuestions(pollId)) {
+        if (data.getBaseQuestionIds().isEmpty()) {
+            for (final Question q: questionService.getAllQuestions(pollId)) {
                 questionIds.add(q.getQuestionId());
             }
-        }
-        else {
-            for (String qid: data.getBaseQuestionIds()) {
+        } else {
+            for (final String qid: data.getBaseQuestionIds()) {
                 questionIds.add(Long.valueOf(qid));
             }
         }
     }
 
-    public void loadFilter(List<FilterCmd> input)
-    {
-        for (FilterCmd cmd:input) {
-            Filter f = null;
+    public void loadFilter(final List<FilterCmd> input) {
+        for (final FilterCmd cmd:input) {
+            Filter filter = null;
             if (cmd.getFilterType().equals("questionAnswer")) {
-                f = new QuestionFilter(Long.valueOf(cmd.getTargetPollId()), Long.valueOf(cmd.getTargetQuestionId()),
-                        cmd.getTargetAnswerPossibilities(), false);
+                filter = new QuestionFilter(Long.valueOf(cmd.getTargetPollId()),
+                        Long.valueOf(cmd.getTargetQuestionId()), cmd.getTargetAnswerPossibilities(), false);
             }
-            if (f != null) {
-                filters.add(f);
+            if (filter != null) {
+                filters.add(filter);
             }
         }
     }
@@ -74,10 +73,11 @@ public class Statistics {
         if (prs.isEmpty()) {
             return "{\"name\":\"" + pollService.getPoll(pollId.toString()).getPollName() + "\",\"questionList\": []}";
         }
-        for (Filter f:filters) {
+        for (final Filter f:filters) {
             prs = f.filter(prs);
         }
-        DiagramData dd = new DiagramData(pollService.getPoll(prs.get(0).getPollId().toString()),prs,questionService);
+        final DiagramData dd = new DiagramData(pollService.getPoll(prs.get(0).getPollId().toString()), prs,
+                questionService);
         return "{\"name\":\"" + pollService.getPoll(pollId.toString()).getPollName() + "\",\"questionList\": "
                 + dd.toJSON() + "}";
     }
@@ -88,19 +88,18 @@ public class Statistics {
      * @param totalNumber total number of values.
      * @return relative value.
      */
-    public static double getRelativeFrequencyOfOneValue(double value, double totalNumber) throws ArithmeticException {
-        if (totalNumber<value) {
+    public static double getRelativeFrequencyOfOneValue(final double value,
+                                                        final double totalNumber) throws ArithmeticException {
+        if (totalNumber < value) {
             throw new ArithmeticException("totalNumber must be larger than value!");
         }
         return value / totalNumber;
     }
 
     // Maybe list<pollresult>, depends
-    public static double getRelativeFrequencyOfOneValue(String value, double totalNumber) throws ArithmeticException {
-        if (totalNumber<Integer.parseInt(value)) {
-            throw new ArithmeticException("totalNumber must be larger than value!");
-        }
-        return Integer.parseInt(value) / totalNumber;
+    public static double getRelativeFrequencyOfOneValue(final String value,
+                                                        final double totalNumber) throws ArithmeticException {
+        return getRelativeFrequencyOfOneValue(Double.parseDouble(value), totalNumber);
     }
 
     /**
@@ -130,31 +129,31 @@ public class Statistics {
         return listOfValues;
     }*/
 
-    public static List<List<Double>> getRelativeFrequencyOfDoubleValues(List<PollResult> values) {
+    public static List<List<Double>> getRelativeFrequencyOfDoubleValues(final List<PollResult> values) {
 
-        List<Double> totalNumbers = new ArrayList<>();
+        final List<Double> totalNumbers = new ArrayList<>();
         ListIterator<PollResult> answerIterator = values.listIterator();
         while (answerIterator.hasNext()) {
-            PollResult next = answerIterator.next();
-            ListIterator<Answer> answersForOneUser = next.getAnswerList().listIterator();
+            final PollResult next = answerIterator.next();
+            final ListIterator<Answer> answersForOneUser = next.getAnswerList().listIterator();
             while (answersForOneUser.hasNext()) {
                 double totalNumber = 0;
-                Answer nextAnswer = answersForOneUser.next();
+                final Answer nextAnswer = answersForOneUser.next();
                 totalNumber += Double.parseDouble(nextAnswer.getGivenAnswerList().get(0));
                 totalNumbers.add(totalNumber);
             }
         }
         //We've got a list of totalNumbers for each of the PollResults --> Each PollResult has one totalNumber
-        List<List<Double>> listOfValues = new ArrayList<>();
+        final List<List<Double>> listOfValues = new ArrayList<>();
         answerIterator = values.listIterator();
-        while (answerIterator.hasNext()){
-            PollResult next = answerIterator.next();
-            ListIterator<Answer> answersForOneUser = next.getAnswerList().listIterator();
+        while (answerIterator.hasNext()) {
+            final PollResult next = answerIterator.next();
+            final ListIterator<Answer> answersForOneUser = next.getAnswerList().listIterator();
             while (answersForOneUser.hasNext()) {
-                List<Double> innerValues = new ArrayList<>();
-                double totalNumber = 0;
-                Answer nextAnswer = answersForOneUser.next();
-                for (int i = 0; i < nextAnswer.getGivenAnswerList().size() ; i++) {
+                final List<Double> innerValues = new ArrayList<>();
+                final double totalNumber = 0;
+                final Answer nextAnswer = answersForOneUser.next();
+                for (int i = 0; i < nextAnswer.getGivenAnswerList().size(); i++) {
                     innerValues.add(getRelativeFrequencyOfOneValue(nextAnswer.getGivenAnswerList().get(i),
                             totalNumber));
                 }
@@ -201,14 +200,15 @@ public class Statistics {
 
     }*/
 
-    public static List<Double> modus(List<PollResult> allValues) {
-
-        List<Double> modi = new ArrayList<>();
-        for (int i = 0; i<allValues.size(); i++) { // Iterate over answers
-            for (int j = 0; j<allValues.get(i).getAnswerList().size(); i++) { // Iterate over questions for answer i
-                if (Double.parseDouble(allValues.get(i).getAnswerList().get(j).getGivenAnswerList().get(0)) >
-                        modi.get(j)) { // If Question j from answer i is higher than the current highest set that element
-                    modi.set(j, Double.parseDouble(allValues.get(i).getAnswerList().get(j).getGivenAnswerList().get(0)));
+    public static List<Double> modus(final List<PollResult> allValues) {
+        final List<Double> modi = new ArrayList<>();
+        // Iterate over answers
+        for (final PollResult allValue: allValues) {
+            // Iterate over questions for answer i
+            for (int j = 0; j < allValue.getAnswerList().size(); j++) {
+                // If Question j from answer i is higher than the current highest set that element
+                if (Double.parseDouble(allValue.getAnswerList().get(j).getGivenAnswerList().get(0)) > modi.get(j)) {
+                    modi.set(j, Double.parseDouble(allValue.getAnswerList().get(j).getGivenAnswerList().get(0)));
                 }
             }
         }
@@ -223,50 +223,45 @@ public class Statistics {
      * @param max one above the biggest value val can be or the size of the array to access.
      * @return the constricted integer.
      */
-    private static <T> int constrict(T val, int max)
-    {
+    private static <T> int constrict(final T val, int max) {
         max -= 1;
-        int casted = Integer.parseInt((String) val);
+        final int casted = Integer.parseInt((String) val);
         if (casted < 0) {
             return 0;
         }
-        if (casted > max) {
-            return max;
-        }
-        return casted;
+        return Math.min(casted, max);
     }
 
 
-    private List<List<Answer>> toNormalList(List<PollResult> input) {
-        List<List<Answer>> outputList = new ArrayList<>();
+    private List<List<Answer>> toNormalList(final List<PollResult> input) {
+        final List<List<Answer>> outputList = new ArrayList<>();
         Answer[][] output = new Answer[input.size()][input.get(0).getAnswerList().size()];
-
-        for (int i = 0; i<input.size(); i++) { //Iterate over singular pollResults
-            for (int j = 0; j<input.get(i).getAnswerList().size(); j++) { //Iterate over singular Answers
+        for (int i = 0; i < input.size(); i++) { //Iterate over singular pollResults
+            for (int j = 0; j < input.get(i).getAnswerList().size(); j++) { //Iterate over singular Answers
                 output[i][j] = input.get(i).getAnswerList().get(j);
             }
         }
 
         Answer[][] intermediateList = new Answer[input.get(0).getAnswerList().size()][input.size()];
 
-        for (int i = 0; i<input.size(); i++) {
+        for (int i = 0; i < input.size(); i++) {
             for (int j = 0; j < input.get(i).getAnswerList().size(); j++) {
-                intermediateList[j][i] = input.get(i).getAnswerList().get(j); //Transpose array so that columns are Arrays of answers for one question
+                //Transpose array so that columns are Arrays of answers for one question
+                intermediateList[j][i] = input.get(i).getAnswerList().get(j);
             }
         }
-
-        for (int i = 0; i<input.size(); i++) {
-            List<Answer> intermediate = new ArrayList<>();
+        for (int i = 0; i < input.size(); i++) {
+            List<Answer> intermediate;
             intermediate = Arrays.asList(intermediateList[i]);
             outputList.add(intermediate);
         }
         return outputList;
     }
 
-    private List<Double> toFirstValuesList(List<Answer> input) {
-        List<Double> allFirstValues = new ArrayList<>();
-        for (int i = 0; i<input.size(); i++) {
-            Double next = Double.parseDouble(input.get(i).getGivenAnswerList().get(0));
+    private List<Double> toFirstValuesList(final List<Answer> input) {
+        final List<Double> allFirstValues = new ArrayList<>();
+        for (final Answer answer: input) {
+            final Double next = Double.parseDouble(answer.getGivenAnswerList().get(0));
             allFirstValues.add(next);
         }
         return allFirstValues;
@@ -309,35 +304,33 @@ public class Statistics {
         }
     }*/
 
-    private List<Double> pQuantile(List<PollResult> allValues, double p) {
+    private List<Double> pQuantile(final List<PollResult> allValues, double p) {
         if (allValues.isEmpty()) {
             return null;
         }
-        if (p < 0.0) {
-            p = 0.0;
-        }
-        else if (p > 1.0) {
-            p = 1.0;
+        if (p < (double) 0) {
+            p = 0;
+        } else if (p > (double) 1) {
+            p = 1;
         }
 
-        List<List<Answer>> answers = toNormalList(allValues);
-        List<Double> quantiles = new ArrayList<>();
-        ListIterator<List<Answer>> answerIterator = answers.listIterator();
+        final List<List<Answer>> answers = toNormalList(allValues);
+        final List<Double> quantiles = new ArrayList<>();
+        final ListIterator<List<Answer>> answerIterator = answers.listIterator();
         while (answerIterator.hasNext()) {
-            List<Answer> questions = answerIterator.next();
+            final List<Answer> questions = answerIterator.next();
             /**Now we can operate on a list of answers for one singular question at a goddamn time*/
-            ListIterator<Answer> questionIterator = questions.listIterator();
+            // final ListIterator<Answer> questionIterator = questions.listIterator();
             /**Build up a thing that makes a sortable list of all the first elements of this list*/
-            List<Double> allFirstValues = toFirstValuesList(questions);
+            final List<Double> allFirstValues = toFirstValuesList(questions);
             Collections.sort(allFirstValues);
-            int n = allFirstValues.size();
-            double xnp = 0.0;
-            double xnp1 = allFirstValues.get(constrict(n * p, allFirstValues.size()));
-            if (n * p % 1.0 == 0.0) {
-                xnp = allFirstValues.get(constrict((n * p) - 1,allFirstValues.size()));
+            final int size = allFirstValues.size();
+            double xnp;
+            final double xnp1 = allFirstValues.get(constrict(size * p, allFirstValues.size()));
+            if (size * p % 1.0 == (double) 0) {
+                xnp = allFirstValues.get(constrict(size * p - 1, allFirstValues.size()));
                 quantiles.add((xnp + xnp1) / 2);
-            }
-            else {
+            } else {
                 quantiles.add(xnp1);
             }
         }
@@ -354,21 +347,21 @@ public class Statistics {
         return pQuantile(values, 0.5);
     }*/
 
-    private List<Double> median(List<PollResult> values)
-    {
-        return pQuantile(values, 0.5);
+    private List<Double> median(final List<PollResult> values) {
+        return pQuantile(values, MEDIAN_QUANTILE);
     }
 
     /**
-     * This function cumulates a list of generic types and returns the percentage of values being under the given threshold.
+     * This function cumulates a list of generic types and returns the percentage of values being under the given
+     * threshold.
      * @param values list of values to cumulate.
      * @param threshold to use in function.
      * @param <T> generic type of items used in values.
-     * @return
+     * @return cumulated values
      */
-    private <T extends Number> double cumulate(List<T> values, T threshold) { //Kumulierte Häufigkeit
+    private <T extends Number> double cumulate(final List<T> values, final T threshold) { //Kumulierte Häufigkeit
         double cumulated = 0;
-        Iterator<T> listIterator = values.listIterator();
+        final Iterator<T> listIterator = values.listIterator();
         while (listIterator.hasNext()) {
             if (listIterator.next().doubleValue() < threshold.doubleValue()) {
                 cumulated++;
@@ -377,19 +370,20 @@ public class Statistics {
         return cumulated;
     }
 
-    private List<List<Double>> cumulate(List<PollResult> pollAnswers, Double threshold) { //Kumulierte Häufigkeit
-        List<List<Double>> outputList = new ArrayList<>();
-        Iterator<PollResult> listIterator = pollAnswers.listIterator();
+    //Kumulierte Häufigkeit
+    private List<List<Double>> cumulate(final List<PollResult> pollAnswers, final Double threshold) {
+        final List<List<Double>> outputList = new ArrayList<>();
+        final Iterator<PollResult> listIterator = pollAnswers.listIterator();
         while (listIterator.hasNext()) {
-            List<Double> intermediateList = new ArrayList<>();
-            PollResult next = listIterator.next();
-            Iterator<Answer> answerIterator = next.getAnswerList().listIterator();
+            final List<Double> intermediateList = new ArrayList<>();
+            final PollResult next = listIterator.next();
+            final Iterator<Answer> answerIterator = next.getAnswerList().listIterator();
             while (answerIterator.hasNext()) {
                 double cumulated = 0;
-                Answer individualAnswer = answerIterator.next();
-                ListIterator<String> checkBoxIterator = individualAnswer.getGivenAnswerList().listIterator();
+                final Answer individualAnswer = answerIterator.next();
+                final ListIterator<String> checkBoxIterator = individualAnswer.getGivenAnswerList().listIterator();
                 while (checkBoxIterator.hasNext()) {
-                    if (Double.parseDouble(checkBoxIterator.next()) < threshold.doubleValue()) {
+                    if (Double.parseDouble(checkBoxIterator.next()) < threshold) {
                         cumulated++;
                     } //Only take first element, won't work with anything else anyway
                 }
@@ -400,19 +394,19 @@ public class Statistics {
         return outputList;
     }
 
-    public static <T> List<Answer> filterByAnswer(List<Answer> input, List<T> wantedAnswers) {
-        ListIterator<Answer> iter = input.listIterator();
-        List<Answer> output = new ArrayList<>();
+    public static <T> List<Answer> filterByAnswer(final List<Answer> input, final List<T> wantedAnswers) {
+        final ListIterator<Answer> iter = input.listIterator();
+        final List<Answer> output = new ArrayList<>();
         while (iter.hasNext()) {
-            Answer index = iter.next();
-            if (!Collections.disjoint(Arrays.asList(index.getGivenAnswerList()), wantedAnswers)) {
+            final Answer index = iter.next();
+            if (!Collections.disjoint(index.getGivenAnswerList(), wantedAnswers)) {
                 output.add(index);
             }
         }
         return output;
     }
 
-    public static <T> List<Answer> filterByUser(String pollID, String username) {
+    public static <T> List<Answer> filterByUser(final String pollID, final String username) {
         /**TODO: PollResultServiceImpl NEEDS POLLRESULTS ELSE FILTERING BY USER WONT WORK*/
         //List<PollResult> unfilteredResults = pollResultService.getAllPollResults();
         //List<Answer> filteredResults = pollResultService.getUserAnswers(unfilteredResults, username);

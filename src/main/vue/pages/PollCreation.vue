@@ -27,7 +27,7 @@
                         <v-col cols="12" md="4">
                             <v-overflow-btn
                                 v-model="selectedAnonymityType"
-                                :items="anonomityTypes"
+                                :items="anonymityTypes"
                                 placeholder="Anonymitätsgrad"
                                 :rules="anonymityRules"
                             ></v-overflow-btn>
@@ -191,7 +191,7 @@ export default {
             date: new Date().toISOString().substr(0, 10),
             menu: false,
             selectedAnonymityType: '',
-            anonomityTypes: [
+            anonymityTypes: [
                 {
                     text: 'Anonym',
                     value: 1,

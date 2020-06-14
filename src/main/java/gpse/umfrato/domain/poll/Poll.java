@@ -10,8 +10,6 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
-// import java.time.LocalDateTime;
-
 /**
  * This Object represents a poll.
  */
@@ -87,20 +85,14 @@ public class Poll {
     private int pollStatus;
 
     /**
-     * This attribute represents the ability to see the number of questions for the participant
+     * This attribute represents the ability to see the number of questions for the participant.
      */
     private boolean visibility;
 
     /**
-     * This attribute represents the ability of the participant to change between the categories/pages of the poll
+     * This attribute represents the ability of the participant to change between the categories/pages of the poll.
      */
     private boolean categoryChange;
-
-    /**
-     * This attribute represents a question list with all questions of this poll.
-     */
-    @OneToMany(cascade = CascadeType.ALL)
-    private List<Question> questionList = new ArrayList<>();
 
     /**
      * This attribute represents the link to reach the poll if it is activated.
@@ -117,14 +109,21 @@ public class Poll {
      * @param pollCreator     the name of the user who creates the poll
      * @param pollName        the name of the poll
      * @param anonymityStatus the anonymitystatus of the poll
-     * @param pollStatus      the status (activated/deactivated) of the poll
+     * @param pollName        the name of the poll
      * @param createdAt       the date when the poll is created
      * @param activatedAt     the date when the poll activated
      * @param deactivatedAt   the date when the poll deactivates
+     * @param pollStatus      the status (activated/deactivated) of the poll
+     * @param backgroundColor the background color displayed on the website
+     * @param fontColor       the color used for all questions
+     * @param logo            the logo displayed on the website
+     * @param visibility      whether or not a rolling question number should be displayed
+     * @param categoryChange  whether or not it is possible to go to an already answered category
      */
     public Poll(final String pollCreator, final String anonymityStatus, final String pollName, final String createdAt,
-                final String activatedAt, final String deactivatedAt, final int pollStatus, final String backgroundColor,
-                final String fontColor, final String logo, boolean visibility, final boolean categoryChange) {
+                final String activatedAt, final String deactivatedAt, final int pollStatus,
+                final String backgroundColor, final String fontColor, final String logo, final boolean visibility,
+                final boolean categoryChange) {
         this.pollName = pollName;
         this.pollCreator = pollCreator;
         this.anonymityStatus = anonymityStatus;

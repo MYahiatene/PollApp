@@ -53,11 +53,6 @@ export default {
             items: [
                 {
                     icon: 'mdi-pencil',
-                    title: 'Teilnahme',
-                    to: '/participant',
-                },
-                {
-                    icon: 'mdi-pencil',
                     title: 'Umfragen',
                     to: '/polls',
                 },
