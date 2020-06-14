@@ -6,17 +6,12 @@ import gpse.umfrato.domain.poll.Poll;
 import gpse.umfrato.domain.poll.PollService;
 import gpse.umfrato.domain.question.Question;
 import gpse.umfrato.domain.question.QuestionService;
-import gpse.umfrato.domain.user.User;
 import gpse.umfrato.domain.user.UserService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import javax.transaction.Transactional;
 import java.time.Instant;
 import java.util.Arrays;
@@ -94,20 +89,20 @@ public class InitializeDatabase implements InitializingBean {
         pollService.createPoll(testPoll);
         final Question q1 = questionService.addQuestion(testPoll.getPollId(),
                 new Question("Wie hat Ihnen die Veranstaltung insgesamt gefallen?", Arrays.asList("Sehr gut",
-                    "Gut", "Überwiegend gut", "Schlecht", "Ich weiß nicht")));
+                    "Gut", "Überwiegend gut", "Schlecht", "Ich weiß nicht"), 1, false));
         final Question q2 = questionService.addQuestion(testPoll.getPollId(),
-                new Question("Welches Geschlecht haben Sie?", Arrays.asList("Weiblich", "Männlich", "Divers")));
+                new Question("Welches Geschlecht haben Sie?", Arrays.asList("Weiblich", "Männlich", "Divers"), 1, false));
         final Question q3 = questionService.addQuestion(testPoll.getPollId(),
-                new Question("Wie geht es Ihnen heute?", Arrays.asList("Gut", "In Ordnung", "Schlecht")));
+                new Question("Wie geht es Ihnen heute?", Arrays.asList("Gut", "In Ordnung", "Schlecht"), 1, false));
         final Question q4 = questionService.addQuestion(testPoll.getPollId(),
                 new Question("Was hat Sie am Meisten überzeugt?", Arrays.asList("Die Vorträge",
-                    "Die Informationsstände", "Das Catering", "Ich kann mich nicht entscheiden")));
+                    "Die Informationsstände", "Das Catering", "Ich kann mich nicht entscheiden"), 1, false));
         final Question q5 = questionService.addQuestion(testPoll.getPollId(),
                 new Question("Werden Sie uns nächstes Jahr wieder besuchen?", Arrays.asList("Ja", "Nein",
-                        "Vielleicht")));
+                        "Vielleicht"), 1, false));
         final Question q6 = questionService.addQuestion(testPoll.getPollId(),
             new Question("Wie viel Zeit haben sie auf der Messe verbracht?", Arrays.asList("unter einer Stunde",
-                        "1-2 Stunden", "2-5 Stunden", "über 5 Stunden")));
+                        "1-2 Stunden", "2-5 Stunden", "über 5 Stunden"), 1, false));
         final Question q7 = questionService.addQuestion(testPoll.getPollId(),
             new Question("Beschreiben Sie die Messe in ein bis 5 Wörtern", true, 1,5));
         final Question q8 = questionService.addQuestion(testPoll.getPollId(), new Question("Wie alt sind Sie?",
