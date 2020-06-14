@@ -18,7 +18,7 @@ export const state = () => ({
     answer: ['Object'],
     category: ['Object'],
     username: '',
-})
+});
 /**
  * Defines mapGetters for Usage in _id.vue.
  * @type {{getPoll: (function(*): [string]|null),
@@ -50,24 +50,24 @@ export const getters = {
         return state.changeOfCategories
     },
     getUsername: (state) => {
-        // console.log('getUsername: ', state.username)
         return state.username
     },
     getAnswer: (state) => {
         return state.answer
     },
-}
+};
 
 export const mutations = {
     /**
-     * Sets the poll gotten from showPoll as the current state.
+     * Sets the poll gotten from showPoll as the current state and the features visibility, changeOfCategories,
+     * numberOfQuestions and the category too, because they are called from the page directly.
      * @type {{setPoll: mutations.setPoll}}
      */
     setPoll: (state, poll) => {
-        state.poll.push(poll)
-        state.visibility = poll.data.visibility
-        state.changeOfCategories = poll.data.categoryChange
-        state.numberOfQuestions = poll.data.categoryList[0].questionList.length // number of questions in this category
+        state.poll.push(poll);
+        state.visibility = poll.data.visibility;
+        state.changeOfCategories = poll.data.categoryChange;
+        state.numberOfQuestions = poll.data.categoryList[0].questionList.length; // number of questions in this category
         state.category = poll.data.categoryList[0]
     },
     /**
@@ -84,9 +84,9 @@ export const mutations = {
      * @param answer
      */
     setAnswer: (state, answer) => {
-        console.log('Hi from store setter!')
+        // console.log('Hi from store setter!')
         state.answer = answer
-        console.log('Hi from store setter after being set')
+        // console.log('Hi from store setter after being set')
     },
     /**
      * Sets the next or previous category of the poll as the current one, if there is one, depending on the argument
@@ -94,21 +94,21 @@ export const mutations = {
      * @type {{setCategory: mutations.setCategory}}
      */
     setCategory: (state, args) => {
-        const index = state.categoryIndex
-        const categoryLength = state.poll[1].data.categoryList.length
+        const index = state.categoryIndex;
+        const categoryLength = state.poll[1].data.categoryList.length;
         if (args === 1) {
             if (index !== categoryLength) {
-                state.category = state.poll[1].data.categoryList[index]
+                state.category = state.poll[1].data.categoryList[index];
                 state.categoryIndex = index + 1
             }
         } else if (args === -1) {
             if (index !== 1) {
-                state.category = state.poll[1].data.categoryList[index - 2]
+                state.category = state.poll[1].data.categoryList[index - 2];
                 state.categoryIndex = index - 1
             }
         }
     },
-}
+};
 export const actions = {
     /**
      * Defines mapAction showPoll and sets the global axios with the token saved in localstorage and the baseURL to get
@@ -119,12 +119,12 @@ export const actions = {
      * @returns {Promise<void>}
      */
     async showPoll({ commit }, id) {
-        console.log('showPoll id: ', id)
-        this.$axios.defaults.baseURL = 'http://localhost:8088/api/'
-        this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('user-token')
-        const poll = await this.$axios.get('/participant/' + id)
-        const username = await this.$axios.post('/getUsername', { anonymityStatus: poll.data.anonymityStatus })
-        commit('setUsername', username.data)
+        // console.log('showPoll id: ', id)
+        this.$axios.defaults.baseURL = 'http://localhost:8088/api/';
+        this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('user-token');
+        const poll = await this.$axios.get('/participant/' + id);
+        const username = await this.$axios.post('/getUsername', { anonymityStatus: poll.data.anonymityStatus });
+        commit('setUsername', username.data);
         commit('setPoll', poll)
     },
     /**
@@ -138,17 +138,17 @@ export const actions = {
      */
     async showAnswer(state, answerObj) {
         // console.log('Hi, from participant store pre axios.post')
-        this.$axios.defaults.baseURL = 'http://localhost:8088/api/'
-        this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('user-token')
-        console.log('Hi, from participant store pre axios.post')
+        this.$axios.defaults.baseURL = 'http://localhost:8088/api/';
+        this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('user-token');
+        console.log('Hi, from participant store pre axios.post');
         const answer = await this.$axios.post('/getPollResult', {
             pollId: answerObj.pollId,
             username: answerObj.username,
-        })
-        // console.log('Hi, from participant store post axios.post')
-        state.answer = answer
-        // console.log('Hi, from participant store post store.commit')
-        // console.log(answer)
+        });
+        console.log('Hi, from participant store post axios.post');
+        state.answer = answer;
+        console.log('Hi, from participant store post store.commit');
+        console.log(answer)
     },
     /* Eventuell einen Header mitsenden, statt data?, aber eigentlich ja das gleiche...
      *  const options = {
@@ -164,9 +164,9 @@ export const actions = {
      * @param answerObj object with (username, questionId, answerList, pollId)
      */
     saveAnswer(state, answerObj) {
-        this.$axios.defaults.baseURL = 'http://localhost:8088/api/'
-        this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('user-token')
+        this.$axios.defaults.baseURL = 'http://localhost:8088/api/';
+        this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('user-token');
         return this.$axios.post('/poll/pollId:1/addanswer', answerObj)
         // api.saveAnswers(answerObj)
     },
-}
+};

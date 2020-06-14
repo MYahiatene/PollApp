@@ -4,16 +4,11 @@ package gpse.umfrato.web;
 import gpse.umfrato.domain.cmd.PollCmd;
 import gpse.umfrato.domain.poll.Poll;
 import gpse.umfrato.domain.poll.PollService;
-import gpse.umfrato.domain.question.Question;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import javax.persistence.EntityNotFoundException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -67,6 +62,7 @@ public class PollController {
     /**
      * This method returns the poll (questions, settings etc).
      *
+     * @param id repreents the pollId
      * @return a poll with the pollId given in the PathVariable
      */
     @GetMapping("/participant/{id:\\d+}")
@@ -82,10 +78,11 @@ public class PollController {
     /**
      * This method returns the username or creates an anonym one if the poll is anonym.
      *
+     * @param pollCmd represents the given Poll
      * @return a username
      */
     // @GetMapping("/getUsername")
-    @RequestMapping(value="/getUsername", method=RequestMethod.POST)
+    @RequestMapping(value = "/getUsername", method = RequestMethod.POST)
     public String getUsername(final @RequestBody PollCmd pollCmd) {
         if (pollCmd.getAnonymityStatus().equals("anonym")) {
             return pollService.createAnonymUsername();

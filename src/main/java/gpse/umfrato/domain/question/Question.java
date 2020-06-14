@@ -1,7 +1,5 @@
 package gpse.umfrato.domain.question;
 
-import gpse.umfrato.domain.answer.Answer;
-import gpse.umfrato.domain.poll.Poll;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import javax.persistence.*;
@@ -52,7 +50,7 @@ public class Question {
     private Boolean hideValues;
 
     /**
-     * This attribute represents the index of the question inside a category
+     * This attribute represents the index of the question inside a category.
      */
     private int questionIndex;
 
@@ -67,6 +65,16 @@ public class Question {
      * @param question the question message
      * @param answerPossibilities a list with all possible answers to this question
      * @param questionType the type how the question should be answered
+     * @param endValue            the end Value of a range, for rangeQuestions
+     * @param startValue          the start Value of a range, for rangeQuestions
+     * @param stepSize            the size of the steps between the start and end value of a rangeQuestion
+     * @param belowMessage        the message for the meaning of the start value of a range Question
+     * @param aboveMessage        the message for the meaning of the end value of a range Question
+     * @param hideValues
+     * @param questionIndex       the index of a question inside its category
+     * @param textMultiline
+     * @param textMinimum         the minimal number of letters needed in a textfield
+     * @param textMaximum         the maximal number of letters possible in a textfield
      */
     public Question(final String question, final List<String> answerPossibilities, final String questionType,
                     final int endValue, final int startValue, final int stepSize, final String belowMessage,

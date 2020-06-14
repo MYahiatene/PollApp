@@ -1,7 +1,5 @@
 package gpse.umfrato.domain.poll;
 
-import org.springframework.security.access.prepost.PreAuthorize;
-
 import java.util.List;
 
 public interface PollService {
@@ -28,6 +26,10 @@ public interface PollService {
      */
     Poll getPoll(String id);
 
+    /**
+     * This method creates a unique username for anonym polls.
+     * @return a number as an anonym Username
+     */
     String createAnonymUsername();
 
 }

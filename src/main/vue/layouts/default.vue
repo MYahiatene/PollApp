@@ -55,11 +55,6 @@ export default {
             items: [
                 {
                     icon: 'mdi-pencil',
-                    title: 'Teilnahme',
-                    to: '/participant/1',
-                },
-                {
-                    icon: 'mdi-pencil',
                     title: 'Umfragen',
                     to: '/navigation',
                 },
@@ -99,7 +94,7 @@ export default {
      */
     methods: {
         setTheme() {
-            this.goDark = !this.goDark
+            this.goDark = !this.goDark;
             if (this.goDark === true) {
                 return (this.$vuetify.theme.dark = true)
             } else {

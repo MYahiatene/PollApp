@@ -1,7 +1,5 @@
 package gpse.umfrato.domain.question;
 
-import org.springframework.security.access.prepost.PreAuthorize;
-
 import java.util.List;
 public interface QuestionService {
     /**
@@ -11,6 +9,16 @@ public interface QuestionService {
      * @param pollId              the id of the poll where the question belongs to
      * @param answerPossibilities a list of possible answers to the question
      * @param questionType        the type how the answers should be like
+     * @param endValue            the end Value of a range, for rangeQuestions
+     * @param startValue          the start Value of a range, for rangeQuestions
+     * @param stepSize            the size of the steps between the start and end value of a rangeQuestion
+     * @param belowMessage        the message for the meaning of the start value of a range Question
+     * @param aboveMessage        the message for the meaning of the end value of a range Question
+     * @param hideValues
+     * @param questionIndex       the index of a question inside its category
+     * @param textMultiline
+     * @param textMinimum         the minimal number of letters needed in a textfield
+     * @param textMaximum         the maximal number of letters possible in a textfield
      * @return the question which is created
      */
     Question addQuestion(final String pollId,
