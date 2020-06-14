@@ -18,7 +18,7 @@
                             two-line
                             :color="backgroundColor"
                         >
-                            <!-- every question is in a card and consists of the questionMessageand the way to answer
+                            <!-- every question is in a Card and consists of the questionMessageand the way to answer
                             it, and depending on the settings of the poll, the number of questions -->
                             <v-card class="mx-auto">
                                 <v-card-title class="col" :style="fontColorText">
