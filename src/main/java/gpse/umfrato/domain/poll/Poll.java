@@ -7,10 +7,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.sql.Blob;
-// import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+// import java.time.LocalDateTime;
 
 /**
  * This Object represents a poll.

@@ -26,18 +26,12 @@
                         Kategorie
                     </v-btn>
                 </v-col>
-                <v-col>
-                    <v-btn depressed @click="createQuestion(categoryID)">
-                        <v-icon color="primary" left>mdi-plus</v-icon>
-                        Frage
-                    </v-btn>
-                </v-col>
             </v-row>
             <draggable v-model="questions">
                 <v-list v-for="question in questions" :key="question.questionId" :style="backgroundColor">
                     <QuestionListElement
                         :poll-id="pollID"
-                        :category-id="category.categoryId"
+                        :category-id="categoryID"
                         :question-id="question.questionId"
                         :question-message="question.questionMessage"
                         :question-type="question.questionType"
@@ -66,37 +60,18 @@ export default {
         pollID: {
             type: Number,
         },
+        categoryName: {
+            type: String,
+        },
+        questions: {
+            type: Array,
+        },
     },
     computed: {
         ...mapGetters({ getCategory: 'pollOverview/getCategory', getPolls: 'navigation/getPolls' }),
         category() {
             return this.getCategory(this.categoryID)
         },
-        categoryName: {
-            get() {
-                return this.getCategory(this.categoryID).categoryName
-            },
-            set(data) {
-                const category = {
-                    categoryID: this.categoryID,
-                    name: data,
-                }
-                this.setName(category)
-            },
-        },
-        questions: {
-            get() {
-                return this.getCategory
-            },
-            set(newList) {
-                const payload = {
-                    questions: newList,
-                    categoryID: this.categoryID,
-                }
-                this.setQuestions(payload)
-            },
-        },
-
         // this needs to be computed, so we can get it from the nuxt Config
 
         backgroundColor() {
@@ -123,7 +98,6 @@ export default {
         },
         ...mapMutations({ setName: 'pollOverview/setCategoryName', setQuestions: 'pollOverview/updateQuestionOrder' }),
         ...mapActions({
-            createQuestion: 'pollOverview/createQuestion',
             removeCategory: 'pollOverview/deleteCategory',
         }),
     },

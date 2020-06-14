@@ -2,27 +2,30 @@
     <div>
         <AuthGate v-if="isAuthenticated !== true"></AuthGate>
         <v-container v-else-if="storeValid">
-            <v-card class="pa-2 ma-0"
-                ><v-text-field class="display-1" v-model="pollData.pollname"
-            /></v-card>
+            <v-card class="pa-2 ma-0"><v-text-field class="display-1" v-model="pollData.pollName" /></v-card>
 
             <v-container>
+                <v-row>
+                    <v-col>
+                        <v-btn depressed @click="createCategory()" class="ml-11">
+                            <v-icon color="primary">
+                                mdi-plus
+                            </v-icon>
+                            Kategorie
+                        </v-btn>
+                        <v-btn depressed @click="createQuestion(pollData.pollId)">
+                            <v-icon color="primary" left>mdi-plus</v-icon>
+                            Frage
+                        </v-btn>
+                    </v-col>
+                </v-row>
                 <v-row>
                     <v-col cols="12" lg="4" md="4" sm="4">
                         <v-row>
                             <v-card class="ma-0">
                                 <v-card-title>
                                     <h2 style="font-weight: normal;" class="ma-0">Kategorien</h2>
-
                                     <v-spacer></v-spacer>
-
-                                    <v-btn depressed @click="createCategory()" class="ml-11">
-                                        <v-icon color="primary">
-                                            mdi-plus
-                                        </v-icon>
-                                        <v-spacer></v-spacer>
-                                        Kategorie
-                                    </v-btn>
                                 </v-card-title>
                                 <v-divider></v-divider>
                                 <v-card-text>
@@ -30,15 +33,17 @@
                                         <!--                                        negative margin in order to cancel out the prior waste of space-->
                                         <v-col cols="12" lg="12" md="12" sm="12">
                                             <v-expansion-panels tile multiple :disabled="disableDrag" class="mt-n6">
-                                                <draggable v-model="categorys" :disabled="disableDrag">
+                                                <draggable v-model="categoryData" :disabled="disableDrag">
                                                     <v-list
-                                                        v-for="category in categorys"
+                                                        v-for="category in categoryData"
                                                         :key="category.categoryId"
                                                         two-line
                                                     >
                                                         <CategoryListElement
                                                             :categoryID="category.categoryId"
-                                                            :pollID="pollId"
+                                                            :pollID="pollData.pollId"
+                                                            :categoryName="category.categoryName"
+                                                            :questions="category.questionList"
                                                             @text-input="disableDraggable"
                                                         />
                                                     </v-list>
@@ -51,8 +56,9 @@
                         </v-row>
                     </v-col>
                     <v-col cols="12" lg="8" md="8" sm="8">
-                        <v-card class="pa-1" :style="frameColor">
-                            <QuestionBuildWidget></QuestionBuildWidget>
+                        <v-card v-show="buildIndex || editIndex" class="pa-1" :style="frameColor">
+                            <QuestionBuildWidget :pollData="pollData" :editIndex="editIndex"></QuestionBuildWidget>
+                            <QuestionBuildWidget2 :loadedIndex="buildIndex"></QuestionBuildWidget2>
                         </v-card>
                     </v-col>
                 </v-row>
@@ -76,14 +82,17 @@
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import draggable from 'vuedraggable'
-import QuestionBuildWidget from '../../components/QuestionBuildWidget'
+import QuestionBuildWidget from '../../components/QuestionEditWidget'
 import CategoryListElement from '../../components/CategoryListElement'
+import QuestionBuildWidget2 from '../../components/QuestionSaveWidget'
 
 export default {
     name: 'QuestionOverview',
-    components: { CategoryListElement, QuestionBuildWidget, draggable },
+    components: { CategoryListElement, QuestionBuildWidget2, QuestionBuildWidget, draggable },
     data() {
         return {
+            editIndex: false,
+            buildIndex: false,
             disableDrag: false,
             questionCreationIndex: false,
             pollData: [],
@@ -285,7 +294,8 @@ export default {
             this.questionCreationIndex = true
         },
         createQuestion(NewQuestionMessage, NewQuestionType) {
-            if (NewQuestionMessage === '' || NewQuestionType === '') {
+            this.buildIndex = true
+            /* if (NewQuestionMessage === '' || NewQuestionType === '') {
                 alert('Feld ausfüllen!')
             } else {
                 const question = {
@@ -301,7 +311,7 @@ export default {
                     question.questionId = response.data.questionId
                 })
                 this.categoryData[0].questionList.push(question)
-            }
+            } */
         },
         ...mapActions({
             sendData: 'pollOverview/sendData',

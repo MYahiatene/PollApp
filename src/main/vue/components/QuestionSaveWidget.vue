@@ -1,22 +1,22 @@
 <!--this widget enables the user to configure a general question, including all of its common features, to specify-->
 <!--the final question type and to preview (wysiwyg) the final question as it will be displayed to the participants-->
 <template>
-    <div>
-        <div v-if="questionToLoad !== 0">
+    <div v-if="loadedIndex === true">
+        <div>
             <v-card flat class="ma-0">
                 <v-container>
                     <v-row no-gutters>
                         <v-col>
-                            <h3>Frage bearbeiten</h3>
+                            <h3>Frage erstellen</h3>
                         </v-col>
                         <v-spacer></v-spacer>
                         <v-spacer></v-spacer>
                         <v-col>
-                            <v-btn @click="deleteQuestion">
+                            <v-btn @click="createQuestion">
                                 <v-icon color="primary" left>
-                                    mdi-delete
+                                    mdi-plus
                                 </v-icon>
-                                Löschen
+                                Speichern
                             </v-btn>
                         </v-col>
                     </v-row>
@@ -30,11 +30,7 @@
                         </v-textarea>
                     </v-row>
                     <v-row no-gutters>
-                        <v-overflow-btn
-                            v-model="questionTypeChoice"
-                            :items="questionWidgets"
-                            label="Fragenart"
-                        ></v-overflow-btn>
+                        <v-select v-model="questionTypeChoice" :items="questionWidgets" label="Fragenart"></v-select>
                     </v-row>
                     <v-row>
                         <component :is="questionTypeChoice"></component>
@@ -42,25 +38,28 @@
                 </v-container>
             </v-card>
         </div>
-        <div v-else>
-            <v-card flat class="mt-1 pa-1">
-                <p class="ma-2">(Wähle eine Frage aus einer Kategorie, um sie zu bearbeiten.)</p>
-            </v-card>
-        </div>
     </div>
 </template>
 
 <script>
-import { mapMutations, mapGetters, mapActions } from 'vuex'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
 import ChoiceQuestion from './ChoiceQuestion'
-import TextQuestion from './textQuestion'
+import TextQuestion from './SavetextQuestion'
 import RangeQuestion from './rangeQuestion'
 
 export default {
-    name: 'QuestionBuildWidget',
+    name: 'QuestionBuildWidget2',
     components: { ChoiceQuestion, TextQuestion, RangeQuestion },
+    props: {
+        pollData: { type: Array },
+        loadedIndex: {
+            type: Boolean,
+        },
+    },
     data() {
         return {
+            questionTypeChoice: '',
+            questionMessage: '',
             questionWidgets: [
                 {
                     text: 'Auswahlfrage',
@@ -82,33 +81,19 @@ export default {
             question: 'pollOverview/getQuestion',
             questionToLoad: 'pollOverview/questionToLoad',
         }),
-        questionMessage: {
-            get() {
-                return this.question.questionMessage
-            },
-            set(questionMessage) {
-                this.setQuestionMessage(questionMessage)
-            },
-        },
-        questionTypeChoice: {
-            get() {
-                switch (this.question.questionType) {
-                    case 'ChoiceQuestion':
-                        return 'ChoiceQuestion'
-                    case 'TextQuestion':
-                        return 'TextQuestion'
-                    case 'RangeQuestion':
-                        return 'RangeQuestion'
-                    default:
-                        return ''
-                }
-            },
-            set(questionType) {
-                this.setQuestionType(questionType)
-            },
-        },
     },
     methods: {
+        createQuestion(NewQuestionMessage, NewQuestionType) {
+            this.buildIndex = false
+            const question = {
+                pollId: '1',
+                questionMessage: 'testFrage7',
+                questionType: 'freitext',
+            }
+            this.$axios.post('/addquestion', question).then((response) => {
+                question.questionId = response.data.questionId
+            })
+        },
         ...mapMutations({
             setQuestionMessage: 'pollOverview/setQuestionMessage',
             setQuestionType: 'pollOverview/setQuestionType',

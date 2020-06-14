@@ -1,19 +1,14 @@
 package gpse.umfrato.web;
 
-
 import gpse.umfrato.domain.cmd.PollCmd;
 import gpse.umfrato.domain.poll.Poll;
 import gpse.umfrato.domain.poll.PollService;
-import gpse.umfrato.domain.question.Question;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -36,6 +31,7 @@ public class PollController {
 
     /**
      * This method creates the poll with the given settings from the PollCreation page.
+     *
      * @param pollCmd
      * @return String with PollID or Error
      */
@@ -80,14 +76,16 @@ public class PollController {
     public Poll getParticipant() {
         try {
             return pollService.getPoll("1");
-        } catch(EntityNotFoundException e) {
+        } catch (EntityNotFoundException e) {
             return null;
         }
+    }
+
     @GetMapping("/getonepoll")
     public Poll getPoll(@RequestParam long pollId) {
         return pollService.getPoll(String.valueOf(pollId));
     }
 
-    }
 
 }
+
