@@ -54,7 +54,7 @@ import TextQuestion from './TextQuestion'
 import RangeQuestion from './RangeQuestion'
 
 export default {
-    name: 'QuestionBuildWidget2',
+    name: 'QuestionBuildWidget',
     components: { ChoiceQuestion, TextQuestion, RangeQuestion },
     props: {
         categoryData: { type: Array },
@@ -125,11 +125,30 @@ export default {
                 userAnswers: this.getQuestion.userAnswers,
             })
             this.categoryData[0].questionList.push(this.getQuestion)
+            this.setQuestion({
+                categoryId: null,
+                questionMessage: '',
+                answerPossibilities: [],
+                questionType: '',
+                userAnswers: false,
+                numberOfPossibleAnswers: 1,
+                endValue: 10,
+                startValue: 0,
+                stepSize: 1,
+                belowMessage: '',
+                aboveMessage: '',
+                hideValues: false,
+                textMultiline: true,
+                textMinimum: 0,
+                textMaximum: 1000,
+                choiceType: '',
+            })
         },
         ...mapMutations({
             setQuestionMessage: 'pollOverview/setQuestionMessage',
             setQuestionType: 'questionOverview/setQuestionType',
             setBuildIndex: 'questionOverview/setBuildIndex',
+            setQuestion: 'questionOverview/setQuestion',
         }),
         ...mapActions({
             setQM: 'questionOverview/setQuestionMessage',

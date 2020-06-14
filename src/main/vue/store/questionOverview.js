@@ -44,6 +44,9 @@ export const mutations = {
     setBuildIndex(state, buildIndex) {
         state.buildIndex = buildIndex
     },
+    setQuestion(state, question) {
+        state.question = question
+    },
 }
 export const getters = {
     getQuestionMessage(state) {
