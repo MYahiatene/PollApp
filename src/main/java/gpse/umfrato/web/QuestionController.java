@@ -39,19 +39,17 @@ public class QuestionController {
      */
     @PostMapping("/addquestion")
     public Question addQuestion(final @RequestBody QuestionCmd questionCmd) {
-        return questionService.addQuestion(questionCmd.getPollId(), questionCmd.getQuestionMessage(),
-            questionCmd.getAnswerPossibilities(), questionCmd.getQuestionType());
+        return questionService.addQuestion(questionCmd.getPollId(), questionCmd.getQuestion());
     }
 
     /**
      * This method deletes a question.
      *
-     * @param pollId     has the poll id
-     * @param questionId has the question id
+     * @param questionCmd     the Cmd of the question
      */
     @PutMapping("/removeQuestion")
     public void deleteQuestion(final @RequestBody QuestionCmd questionCmd) {
-        questionService.removeQuestion(questionCmd.getCategoryId(), questionCmd.getQuestionId());
+        questionService.removeQuestion(String.valueOf(questionCmd.getCategoryId()), String.valueOf(questionCmd.getQuestionId()));
     }
 
     /**
