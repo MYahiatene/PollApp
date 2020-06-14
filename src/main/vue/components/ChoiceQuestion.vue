@@ -1,13 +1,12 @@
 <!--this widget enables the user to configure a choice question including all of its unique features-->
 <template>
     <v-container>
-        <v-row no-gutters>
+        <!--<v-row no-gutters>
             <v-overflow-btn v-model="questionChoiceType" :items="choiceType" label="Antwortart"></v-overflow-btn>
-        </v-row>
+        </v-row> -->
         <v-form>
-            <v-row v-for="(answer, index) in answerPossibilities" :key="index" no-gutters>
+            <v-row v-for="(answer, index) in answerPossibilities" :key="index" v-model="answerPossibilities" no-gutters>
                 <v-text-field
-                    v-model="answerPossibility"
                     :value="answer"
                     :label="'Antwortmöglichkeit ' + (index + 1)"
                     @input="
@@ -104,11 +103,6 @@ export default {
             },
         },
         answerPossibilities: {
-            get() {
-                return this.getQuestion.answerPossibilities
-            },
-        },
-        answerPossibility: {
             get() {
                 return this.getQuestion.answerPossibilities
             },
