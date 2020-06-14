@@ -16,7 +16,7 @@ export const state = () => ({
     category: ['Object'],
 })
 /**
- * Defines mapGetters for Usage in Participant.vue.
+ * Defines mapGetters for Usage in _id.vue.
  * @type {{getPoll: (function(*): [string]|null),
  *         getNumberOfQuestions: (function(*): number),
  *         getVisibility: (function(*): boolean),
@@ -81,7 +81,7 @@ export const actions = {
     /**
      * Defines mapAction showPoll and sets the global axios with the token saved in localstorage and the baseURL to get
      * the poll from the PollController in the backend. After it got the poll,it commits the poll,to save it in this
-     * store (setPoll), so the mapGetters can access the data and give it back to the Participant.vue page.
+     * store (setPoll), so the mapGetters can access the data and give it back to the _id.vue page.
      * @type {{showPoll({commit: *}): Promise<void>}}
      */
     async showPoll({ commit }) {

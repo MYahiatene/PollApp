@@ -109,7 +109,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import AuthGate from '../components/AuthGate'
+import AuthGate from '../../components/AuthGate'
 export default {
     name: 'Participant',
     layout: 'participant', // uses special layout/participant instead of default-layout
