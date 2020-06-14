@@ -128,38 +128,15 @@
                                     </v-list>
                                 </div>
                                 <div v-else-if="question.questionType === 'RadioButton'">
-                                    <v-radio-group>
+                                    <v-radio-group v-model="radioGroup">
                                         <v-radio
-                                            v-for="answer in question.answerPossibilites"
-                                            :key="answer.text"
-                                            class="ma-4"
-                                            :label="answer"
+                                            v-for="answer in question.answerPossibilities"
+                                            :key="answer"
+                                            :label="`${answer}`"
                                             :value="answer"
-                                            :color="fontColor"
                                             @change="saveAnswerCheckbox($event, question, answer)"
                                         ></v-radio>
                                     </v-radio-group>
-                                    <v-radio-group>
-                                        <v-radio label="Option 1" value="radio-1"></v-radio>
-                                        <v-radio label="Option 2" value="radio-2"></v-radio>
-                                    </v-radio-group>
-                                    <div v-for="answer in question.answerPossibilites" :key="answer">
-                                        <input name="myfield" type="radio" :value="item.val" />
-                                        <label>{{ answer }}</label>
-                                    </div>
-                                    <v-radio-group>
-                                        <div v-for="answer in question.answerPossibilites" :key="answer">
-                                            <v-radio
-                                                :label="answer"
-                                                :value="answer"
-                                                :color="fontColor"
-                                                @change="saveAnswerCheckbox($event, question, answer)"
-                                            ></v-radio>
-                                        </div>
-                                    </v-radio-group>
-                                    <div v-for="answer in question.answerPossibilites" :key="answer" class="column">
-                                        <input :value="answer" class="radio-custom" type="radio" />
-                                    </div>
                                 </div>
                             </v-card>
                         </v-list>
@@ -192,6 +169,7 @@ export default {
     layout: 'participant', // uses special layout/participant instead of default-layout
     data() {
         return {
+            radioGroup: 1,
             id: 0,
             poll: ['Object'],
             answer: ['Object'],
