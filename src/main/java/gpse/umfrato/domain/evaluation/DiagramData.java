@@ -22,7 +22,7 @@ public class DiagramData {
     @JsonIgnore
     private final Poll poll;
 
-    /* default */ interface QuestionData {
+    interface QuestionData {
         enum QuestionType { CHOICE_QUESTION, TEXT_QUESTION, RANGE_QUESTION, SLIDER_QUESTION }
 
         long getQuestionId();
@@ -37,15 +37,15 @@ public class DiagramData {
     @Getter
     @Setter
     protected static class ChoiceData implements QuestionData {
-        /* default */ long questionId;
-        /* default */ String questionTitle;
+        private long questionId;
+        private String questionTitle;
         private List<String> answerPossibilities;
         private List<Integer> data;
         private List<Double> relative;
         private String median;
         private String mode;
 
-        /* default */ ChoiceData(final long questionId, final String questionMessage,
+        ChoiceData(final long questionId, final String questionMessage,
                                  final List<String> answerPossibilities) {
             this.questionId = questionId;
             this.questionTitle = questionMessage;
@@ -132,14 +132,14 @@ public class DiagramData {
     @Getter
     @Setter
     protected static class TextData implements QuestionData {
-        /* default */ long questionId;
-        /* default */ String questionTitle;
+        private long questionId;
+        private String questionTitle;
         private List<Long> ids = new ArrayList<>();
         private List<String> texts = new ArrayList<>();
         private List<String> editedDates = new ArrayList<>();
         private List<String> creator = new ArrayList<>();
 
-        /* default */ TextData(final long questionId, final String questionMessage) {
+        TextData(final long questionId, final String questionMessage) {
             this.questionId = questionId;
             this.questionTitle = questionMessage;
         }
@@ -177,30 +177,6 @@ public class DiagramData {
         }
     }
 
-    @Getter
-    @Setter
-    protected static class SliderData implements QuestionData {
-        /* default */ long questionId;
-        /* default */ String questionTitle;
-
-        /* default */ SliderData(final long questionId, final String questionMessage) {
-            this.questionId = questionId;
-            this.questionTitle = questionMessage;
-        }
-
-        @Override public QuestionType getQuestionType() {
-            return QuestionType.SLIDER_QUESTION;
-        }
-
-        @Override public void statistics() {
-
-        }
-
-        @Override public String toJSON() {
-            return "{\"id\": " + questionId + ",\"type\":  \"slider\" ,\"title\": " + questionTitle + "}";
-        }
-    }
-
     public DiagramData(final Poll poll, final List<PollResult> results, final QuestionService questionService) {
         this.questionService = questionService;
         this.poll = poll;
@@ -234,7 +210,12 @@ public class DiagramData {
                     qd = new ChoiceData(q.getQuestionId(), q.getQuestionMessage(), answerPossibilities);
                     break;
                 case "SliderQuestion":
-                    qd = new SliderData(q.getQuestionId(), q.getQuestionMessage());
+                    List<String> answerPossibilities2 = new ArrayList<>();
+                    for(double i = q.getStartValue(); i < q.getEndValue();)
+                    {
+                        answerPossibilities2.add(i + " - " + (i += q.getStepSize()));
+                    }
+                    qd = new ChoiceData(q.getQuestionId(), q.getQuestionMessage(), answerPossibilities2);
                     break;
                 default:
                     break;
@@ -264,9 +245,6 @@ public class DiagramData {
                                     //vielleicht auch eine neue ID, aber ich wüsste nicht warum, da nur key für frontend
                                     td.getIds().add(pr.getPollResultId());
                                 }
-                                break;
-                            case SLIDER_QUESTION:
-                                final SliderData sd = (SliderData) qd;
                                 break;
                             default:
                                 break;
