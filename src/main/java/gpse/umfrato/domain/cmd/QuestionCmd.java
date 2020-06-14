@@ -3,7 +3,6 @@ package gpse.umfrato.domain.cmd;
 import gpse.umfrato.domain.question.Question;
 import lombok.Data;
 
-import javax.persistence.*;
 import java.util.List;
 
 @Data
@@ -69,11 +68,9 @@ public class QuestionCmd {
                 question.setCategoryId(categoryId);
                 return question;
             case "ChoiceQuestion":
-                question = new Question(questionMessage, answerPossibilities);
+                question = new Question(questionMessage, answerPossibilities, numberOfPossibleAnswers, userAnswers);
                 question.setQuestionId(questionId);
                 question.setCategoryId(categoryId);
-                question.setNumberOfPossibleAnswers(numberOfPossibleAnswers);
-                question.setUserAnswers(userAnswers);
                 question.setHasConsistencyRelationship(hasConsistencyRelationship);
                 return question;
             default: return null;

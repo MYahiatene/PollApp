@@ -2,6 +2,7 @@ package gpse.umfrato.domain.question;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
 import java.util.List;
 
@@ -49,6 +50,7 @@ public class Question {
     private Long questionId;
 
     private Long categoryId;
+
     /**
      * This attribute represents the question message.
      */
@@ -58,14 +60,14 @@ public class Question {
     @ElementCollection
     private List<String> answerPossibilities;
 
+    private boolean userAnswers = false;
+
+    private int numberOfPossibleAnswers = 1;
+
     /**
      * This attribute represents the type of question (dropdown, text field, ...).
      */
     private String questionType; //ChoiceQuestion, TextQuestion, RangeQuestion, SliderQuestion
-
-    private boolean userAnswers = false;
-
-    private int numberOfPossibleAnswers = 1;
 
     /**
      * This textQuestion question constructor receives a question message and saves in the question object.
@@ -88,9 +90,11 @@ public class Question {
      * @param question the question message
      * @param answerPossibilities a list with all possible answers to this question
      */
-    public Question(final String question, final List<String> answerPossibilities) {
+    public Question(final String question, final List<String> answerPossibilities, Integer numberOfPossibleAnswers, Boolean userAnswers) {
         this.questionMessage = question;
         this.answerPossibilities = answerPossibilities;
+        this.numberOfPossibleAnswers = numberOfPossibleAnswers;
+        this.userAnswers = userAnswers;
         this.questionType = "ChoiceQuestion";
     }
 
