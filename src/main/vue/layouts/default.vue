@@ -94,7 +94,7 @@ export default {
      */
     methods: {
         setTheme() {
-            this.goDark = !this.goDark;
+            this.goDark = !this.goDark
             if (this.goDark === true) {
                 return (this.$vuetify.theme.dark = true)
             } else {
