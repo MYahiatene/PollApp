@@ -11,7 +11,7 @@
                 </v-list-item-subtitle>
             </v-col>
             <v-col cols="12" lg="2" md="2" sm="2">
-                <v-btn icon @click="setIDs()" color="primary">
+                <v-btn icon @click="editQuestion(question)" color="primary">
                     <v-icon small>
                         mdi-pencil
                     </v-icon>
@@ -28,77 +28,77 @@ export default {
     name: 'QuestionListElement',
 
     props: {
+        question: { type: Object },
         pollData: { type: Object },
-        buildIndex: { type: Number },
         pollId: {
             type: Number,
         },
         categoryId: {
             type: Number,
         },
-        questionId: {
-            type: Number,
-        },
-        questionMessage: {
-            type: String,
-        },
-        questionType: {
-            type: String,
-        },
     },
     computed: {
-        ...mapGetters({
-            currentQuestion: 'pollOverview/getQuestion',
-        }),
-        choppedTitle() {
-            if (this.questionMessage.length > 30) {
-                return this.questionMessage.substr(0, 25) + '...?'
-            } else {
-                return this.questionMessage
-            }
-        },
-        translatedQuestionType() {
-            switch (this.questionType) {
-                case 'ChoiceQuestion':
-                    return 'Auswahlfrage'
-                case 'TextQuestion':
-                    return 'Freitextfrage'
-                case 'RangeQuestion':
-                    return 'Intervallfrage'
-                default:
-                    return ''
-            }
-        },
-
-        // the color is applied to the question when its the one being edited, so the user can see it more easily
-
-        color() {
-            if (this.currentQuestion !== null) {
-                if (
-                    this.currentQuestion.questionMessage === this.questionMessage &&
-                    this.currentQuestion.categoryId === this.categoryId &&
-                    this.currentQuestion.questionId === this.questionId
-                ) {
-                    return this.$vuetify.theme.currentTheme.softAccent
+        buildIndex: {
+            get() {
+                return this.getBuildIndex
+            },
+            set(value) {
+                this.setBuildIndex(value)
+            },
+            ...mapGetters({
+                currentQuestion: 'pollOverview/getQuestion',
+                getBuildIndex: 'questionOverview/getBuildIndex',
+            }),
+            choppedTitle() {
+                if (this.question.questionMessage.length > 30) {
+                    return this.question.questionMessage.substr(0, 25) + '...?'
                 } else {
-                    return ''
+                    return this.question.questionMessage
                 }
-            }
+            },
+            translatedQuestionType() {
+                switch (this.question.questionType) {
+                    case 'ChoiceQuestion':
+                        return 'Auswahlfrage'
+                    case 'TextQuestion':
+                        return 'Freitextfrage'
+                    case 'RangeQuestion':
+                        return 'Intervallfrage'
+                    default:
+                        return ''
+                }
+            },
 
-            return ''
+            // the color is applied to the question when its the one being edited, so the user can see it more easily
+
+            color() {
+                if (this.currentQuestion !== null) {
+                    if (
+                        this.currentQuestion.questionMessage === this.questionMessage &&
+                        this.currentQuestion.categoryId === this.categoryId &&
+                        this.currentQuestion.questionId === this.questionId
+                    ) {
+                        return this.$vuetify.theme.currentTheme.softAccent
+                    } else {
+                        return ''
+                    }
+                }
+
+                return ''
+            },
         },
     },
     methods: {
-        ...mapMutations({ setToLoad: 'pollOverview/setToLoad' }),
-        setIDs() {
+        editQuestion(question) {
+            this.setQuestion(question)
             this.buildIndex = 2
-            const IDs = {
-                pollID: this.pollId,
-                categoryID: this.categoryId,
-                questionID: this.questionId,
-            }
-            this.setToLoad(IDs)
         },
+
+        ...mapMutations({
+            setToLoad: 'pollOverview/setToLoad',
+            setBuildIndex: 'questionOverview/setBuildIndex',
+            setQuestion: 'questionOverview/setQuestion',
+        }),
     },
 }
 </script>

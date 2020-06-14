@@ -33,10 +33,7 @@
                         :pollData="pollData"
                         :poll-id="pollID"
                         :category-id="categoryID"
-                        :question-id="question.questionId"
-                        :question-message="question.questionMessage"
-                        :question-type="question.questionType"
-                        :buildIndex="buildIndex"
+                        :question="question"
                     ></QuestionListElement>
                     <v-spacer></v-spacer>
                     <v-spacer></v-spacer>
