@@ -74,15 +74,6 @@ public class InitializeDatabase implements InitializingBean {
             userService.loadUserByUsername(tbettmannUserName);
             pollService.createPoll(testPoll);
 
-            questionService.addQuestion("1", "testFrage", Arrays.asList("Ja", "Nein", "Vielleicht"), "ChoiceQuestion", 0, 0, 0, null, null, false, 1, false, 10, 100);
-            questionService.addQuestion("1", "testFrage2", Arrays.asList("Jein", "Fein", "Vielschwer"), "ChoiceQuestion",0, 0, 0, null, null, false, 2, false, 10, 100);
-            questionService.addQuestion("1", "testFrage3", new ArrayList<>(), "TextQuestion",0, 0, 0, null, null, false, 3, false, 10, 100);
-            questionService.addQuestion("1", "TestFrage 4", new ArrayList<>(), "RangeQuestion",100, 10, 10, "belowMessage", "aboveMessage", false, 4, false, 10, 100);
-            questionService.addQuestion("1", "TestFrage 5", new ArrayList<>(), "SliderQuestion",100, 0, 10, "small", "big", false, 5, false, 10, 100);
-            questionService.addQuestion("1", "TestFrage 5", new ArrayList<>(), "SliderQuestion",100, 0, 10, "small", "big", false, 6, false, 10, 100);
-            questionService.addQuestion("1", "testFrage 6", Arrays.asList("Ja", "Nein", "Vielleicht"), "RadioButton", 0, 0, 0, null, null, false, 7, false, 10, 100);
-
-            userService.loadUserByUsername(testUsername);
         } catch (UsernameNotFoundException e) {
             userService.createUser(tbettmannUserName, dummyPassword, "Tobias", "Bettmann",
                 "Admin", "tbettmann@reply.de");
@@ -95,37 +86,26 @@ public class InitializeDatabase implements InitializingBean {
                 "Teilnehmer", "mmueller@gmx.de");
         }
         pollService.createPoll(testPoll);
-        final Question q1 = questionService.addQuestion(testPoll.getPollId().toString(),
-                "Wie hat Ihnen die Veranstaltung insgesamt gefallen?", Arrays.asList("Sehr gut", "Gut",
-                        "Überwiegend gut", "Schlecht", "Ich weiß nicht"), "ChoiceQuestion");
-        final Question q2 = questionService.addQuestion(testPoll.getPollId().toString(),
-                "Welches Geschlecht haben Sie?", Arrays.asList("Weiblich", "Männlich", "Divers"),
-                "ChoiceQuestion");
-        final Question q3 = questionService.addQuestion(testPoll.getPollId().toString(),
-                "Wie geht es Ihnen heute?", Arrays.asList("Gut", "In Ordnung", "Schlecht"),
-                "ChoiceQuestion");
-        final Question q4 = questionService.addQuestion(testPoll.getPollId().toString(),
-                "Was hat Sie am Meisten überzeugt?", Arrays.asList("Die Vorträge",
-                        "Die Informationsstände", "Das Catering", "Ich kann mich nicht entscheiden"),
-                "ChoiceQuestion");
-        final Question q5 = questionService.addQuestion(testPoll.getPollId().toString(),
-                "Werden Sie uns nächstes Jahr wieder besuchen?", Arrays.asList("Ja", "Nein",
-                        "Vielleicht"), "ChoiceQuestion");
-        final Question q6 = questionService.addQuestion(testPoll.getPollId().toString(),
-                "Wie viel Zeit haben sie auf der Messe verbracht?", Arrays.asList("unter einer Stunde",
-                        "1-2 Stunden", "2-5 Stunden", "über 5 Stunden"), "ChoiceQuestion");
-        final Question q7 = questionService.addQuestion(testPoll.getPollId().toString(),
-                "Beschreiben Sie die Messe in ein bis 5 Wörtern", Collections.emptyList(),
-                "TextQuestion");
-        final Question q8 = new Question();
-        q8.setQuestionType("RangeQuestion");
-        q8.setQuestionMessage("Wie alt sind Sie?");
-        q8.setBelowMessage("Jünger");
-        q8.setStartValue(20f);
-        q8.setStepSize(10f);
-        q8.setEndValue(70);
-        q8.setAboveMessage("Älter");
-        questionService.addQuestion(testPoll.getPollId(), q8);
+        final Question q1 = questionService.addQuestion(testPoll.getPollId(),
+                new Question("Wie hat Ihnen die Veranstaltung insgesamt gefallen?", Arrays.asList("Sehr gut",
+                    "Gut", "Überwiegend gut", "Schlecht", "Ich weiß nicht")));
+        final Question q2 = questionService.addQuestion(testPoll.getPollId(),
+                new Question("Welches Geschlecht haben Sie?", Arrays.asList("Weiblich", "Männlich", "Divers")));
+        final Question q3 = questionService.addQuestion(testPoll.getPollId(),
+                new Question("Wie geht es Ihnen heute?", Arrays.asList("Gut", "In Ordnung", "Schlecht")));
+        final Question q4 = questionService.addQuestion(testPoll.getPollId(),
+                new Question("Was hat Sie am Meisten überzeugt?", Arrays.asList("Die Vorträge",
+                    "Die Informationsstände", "Das Catering", "Ich kann mich nicht entscheiden")));
+        final Question q5 = questionService.addQuestion(testPoll.getPollId(),
+                new Question("Werden Sie uns nächstes Jahr wieder besuchen?", Arrays.asList("Ja", "Nein",
+                        "Vielleicht")));
+        final Question q6 = questionService.addQuestion(testPoll.getPollId(),
+            new Question("Wie viel Zeit haben sie auf der Messe verbracht?", Arrays.asList("unter einer Stunde",
+                        "1-2 Stunden", "2-5 Stunden", "über 5 Stunden")));
+        final Question q7 = questionService.addQuestion(testPoll.getPollId(),
+            new Question("Beschreiben Sie die Messe in ein bis 5 Wörtern", true, 1,5));
+        final Question q8 = questionService.addQuestion(testPoll.getPollId(), new Question("Wie alt sind Sie?",
+            70f, 20f, 10f, "Jünger", "Älter"));
         final List<String> answers = Arrays.asList("Ich fand die Messe scheiße", "Die Messe war super",
                 "Eigentlich relativ ok", "Was weiß ich denn bitte?", "Stände waren gut, Catering nicht");
         for (int i = 0; i < 150; i++) {

@@ -68,43 +68,72 @@ public class Question {
     private int numberOfPossibleAnswers = 1;
 
     /**
-     * This attribute represents the index of the question inside a category.
+     * This textQuestion question constructor receives a question message and saves in the question object.
+     * @param question the question message
+     * @param textMultiline       if you can jump to the next line
+     * @param textMinimum         the minimal number of letters needed in a textfield
+     * @param textMaximum         the maximal number of letters possible in a textfield
      */
-    private int questionIndex;
+    public Question(final String question, final Boolean textMultiline, final int textMinimum,
+                    final int textMaximum) {
+        this.questionMessage = question;
+        this.questionType = "TextQuestion";
+        this.textMultiline = textMultiline;
+        this.textMinimum = textMinimum;
+        this.textMaximum = textMaximum;
+    }
 
     /**
-     * This constructor receives a question message and saves in the question object.
+     * This choiceQuestion constructor receives a question message and saves in the question object.
      * @param question the question message
      * @param answerPossibilities a list with all possible answers to this question
-     * @param questionType the type how the question should be answered
+     */
+    public Question(final String question, final List<String> answerPossibilities) {
+        this.questionMessage = question;
+        this.answerPossibilities = answerPossibilities;
+        this.questionType = "ChoiceQuestion";
+    }
+
+    /**
+     * This rangeQuestion constructor receives a question message and saves in the question object.
+     * @param question the question message
      * @param endValue            the end Value of a range, for rangeQuestions
      * @param startValue          the start Value of a range, for rangeQuestions
      * @param stepSize            the size of the steps between the start and end value of a rangeQuestion
      * @param belowMessage        the message for the meaning of the start value of a range Question
      * @param aboveMessage        the message for the meaning of the end value of a range Question
-     * @param hideValues
-     * @param questionIndex       the index of a question inside its category
-     * @param textMultiline
-     * @param textMinimum         the minimal number of letters needed in a textfield
-     * @param textMaximum         the maximal number of letters possible in a textfield
      */
-    public Question(final String question, final List<String> answerPossibilities, final String questionType,
-                    final int endValue, final int startValue, final int stepSize, final String belowMessage,
-                    final String aboveMessage, final Boolean hideValues, final int questionIndex,
-                    final Boolean textMultiline, final int textMinimum, final int textMaximum) {
+    public Question(final String question, final float endValue, final float startValue,
+                    final float stepSize, final String belowMessage, final String aboveMessage) {
         this.questionMessage = question;
-        this.answerPossibilities = answerPossibilities;
-        this.questionType = questionType;
+        this.questionType = "RangeQuestion";
+        this.endValue = endValue;
+        this.startValue = startValue;
+        this.stepSize = stepSize;
+        this.belowMessage = belowMessage;
+        this.aboveMessage = aboveMessage;
+    }
+
+    /**
+     * This sliderQuestion constructor receives a question message and saves in the question object.
+     * @param question the question message
+     * @param endValue            the end Value of a range, for rangeQuestions
+     * @param startValue          the start Value of a range, for rangeQuestions
+     * @param stepSize            the size of the steps between the start and end value of a rangeQuestion
+     * @param belowMessage        the message for the meaning of the start value of a range Question
+     * @param aboveMessage        the message for the meaning of the end value of a range Question
+     * @param hideValues          for the slide question,if it shows the chosen value
+     */
+    public Question(final String question, final float endValue, final float startValue, final float stepSize,
+                    final String belowMessage, final String aboveMessage, final Boolean hideValues) {
+        this.questionMessage = question;
+        this.questionType = "SliderQuestion";
         this.endValue = endValue;
         this.startValue = startValue;
         this.stepSize = stepSize;
         this.belowMessage = belowMessage;
         this.aboveMessage = aboveMessage;
         this.hideValues = hideValues;
-        this.questionIndex = questionIndex;
-        this.textMultiline = textMultiline;
-        this.textMinimum = textMinimum;
-        this.textMaximum = textMaximum;
     }
 }
 

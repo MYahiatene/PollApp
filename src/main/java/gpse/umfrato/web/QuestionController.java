@@ -32,9 +32,9 @@ public class QuestionController {
      * @param questionCmd has the question and the poll id
      */
     @PostMapping("/poll/{id:\\d+}/addquestion")
-    public Long addQuestion(/*@PathVariable("id") final String id*/ final @RequestBody QuestionCmd questionCmd) {
-        return questionService.addQuestion(questionCmd.getPollId(), questionCmd.getQuestionMessage(),
-            questionCmd.getAnswerPossibilities(), questionCmd.getQuestionType()).getQuestionId();
+    public Long addQuestion(@PathVariable("id") final Long id, final @RequestBody QuestionCmd questionCmd) {
+        // wollen wir lieber die PathVariable id benutzen oder die Id aus der QuestionCmd holen?
+        return questionService.addQuestion(id, questionCmd.getQuestion()).getQuestionId();
     }
 
     /**
@@ -52,11 +52,10 @@ public class QuestionController {
     /**
      * This method gets a requested question.
      *
-     * @param questionCmd has the poll id of the question
      * @return returns the requested question
      */
     @GetMapping("/poll/{pollId:\\d+}/getquestion/{questionId:\\d+}")
-    public Question getQuestion(final @RequestBody QuestionCmd questionCmd) {
-        return questionService.getQuestion(Long.valueOf(questionCmd.getPollId()));
+    public Question getQuestion(@PathVariable("questionId") final Long id) {
+        return questionService.getQuestion(id);
     }
 }
