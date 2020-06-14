@@ -1,7 +1,9 @@
 package gpse.umfrato.domain.cmd;
 
 import gpse.umfrato.domain.question.Question;
+import gpse.umfrato.domain.question.QuestionRepository;
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
@@ -69,11 +71,10 @@ public class QuestionCmd {
                 return question;
             case "ChoiceQuestion":
                 question = new Question(questionMessage, answerPossibilities, numberOfPossibleAnswers, userAnswers);
-                question.setQuestionId(questionId);
-                question.setCategoryId(categoryId);
                 question.setHasConsistencyRelationship(hasConsistencyRelationship);
                 return question;
-            default: return null;
+            default:
+                return null;
         }
 
     }

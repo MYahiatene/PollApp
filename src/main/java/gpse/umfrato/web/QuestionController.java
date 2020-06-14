@@ -39,7 +39,7 @@ public class QuestionController {
      */
     @PostMapping("/addquestion")
     public Question addQuestion(final @RequestBody QuestionCmd questionCmd) {
-        return questionService.addQuestion(questionCmd.getPollId(), questionCmd.getQuestion());
+        return questionService.addQuestion(questionCmd);
     }
 
     /**

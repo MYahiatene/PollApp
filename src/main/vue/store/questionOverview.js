@@ -25,6 +25,9 @@ export const mutations = {
     setChoiceType(state, choiceType) {
         state.question.choiceType = choiceType
     },
+    setQuestionType(state, questionType) {
+        state.question.questionType = questionType
+    },
     setUserAnswers(state, userAnswers) {
         state.question.userAnswers = userAnswers
     },

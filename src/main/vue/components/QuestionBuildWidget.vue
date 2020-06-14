@@ -20,13 +20,13 @@
                         </v-textarea>
                     </v-row>
                     <v-row no-gutters>
-                        <v-select v-model="questionTypeChoice" :items="questionWidgets" label="Fragenart"></v-select>
+                        <v-select v-model="questionType" :items="questionWidgets" label="Fragenart"></v-select>
                     </v-row>
                     <v-row>
                         <component
                             :questionData="questionData"
                             :pollData="pollData"
-                            :is="questionTypeChoice"
+                            :is="questionType"
                             :buildIndex:="buildIndex"
                         ></component>
                     </v-row>
@@ -65,7 +65,6 @@ export default {
     data() {
         return {
             questionData: { questionTypeChoice: this.questionTypeChoice },
-            questionTypeChoice: '',
             questionWidgets: [
                 {
                     text: 'Auswahlfrage',
@@ -99,15 +98,30 @@ export default {
                 this.setQM(value)
             },
         },
+        questionType: {
+            get() {
+                return this.getQuestion.questionType
+            },
+            set(value) {
+                this.setQuestionType(value)
+            },
+        },
     },
     methods: {
         createQuestion() {
             this.buildIndex = 0
-            this.$axios.post('/addquestion', this.getQuestion)
+            this.$axios.post('/addquestion', {
+                pollId: this.$route.params.QuestionOverview,
+                questionType: this.getQuestion.questionType,
+                questionMessage: this.getQuestion.questionMessage,
+                answerPossibilities: this.getQuestion.answerPossibilities,
+                numberOfPossibleAnswers: this.getQuestion.numberOfPossibleAnswers,
+                userAnswers: this.getQuestion.userAnswers,
+            })
         },
         ...mapMutations({
             setQuestionMessage: 'pollOverview/setQuestionMessage',
-            setQuestionType: 'pollOverview/setQuestionType',
+            setQuestionType: 'questionOverview/setQuestionType',
         }),
         ...mapActions({
             setQM: 'questionOverview/setQuestionMessage',

@@ -1,5 +1,7 @@
 package gpse.umfrato.domain.question;
 
+import gpse.umfrato.domain.cmd.QuestionCmd;
+
 import java.util.List;
 
 public interface QuestionService {
@@ -21,7 +23,7 @@ public interface QuestionService {
 
     Question getQuestion(Long questionId);
 
-    Question addQuestion(final Long pollId, final Question question);
+    Question addQuestion(final QuestionCmd questionCmd);
 
     List<Question> getAllQuestions(final long categoryId);
 

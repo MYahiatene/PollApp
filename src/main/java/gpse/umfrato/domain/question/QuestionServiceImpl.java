@@ -3,6 +3,7 @@ package gpse.umfrato.domain.question;
 import gpse.umfrato.domain.category.Category;
 import gpse.umfrato.domain.category.CategoryRepository;
 import gpse.umfrato.domain.category.CategoryService;
+import gpse.umfrato.domain.cmd.QuestionCmd;
 import gpse.umfrato.domain.poll.Poll;
 import gpse.umfrato.domain.poll.PollRepository;
 import gpse.umfrato.domain.poll.PollService;
@@ -59,15 +60,34 @@ public class QuestionServiceImpl implements QuestionService {
     /**
      * This method creates a question for a poll.
      *
-     * @param pollId th eId of the poll
-     * @param question the question
      * @return the question which is created
      */
     @Override
-    public Question addQuestion(final Long pollId, final Question question) {
-        question.setCategoryId(pollRepository.findById(Long.valueOf(pollId)).orElseThrow(EntityNotFoundException::new)
+    public Question addQuestion(final QuestionCmd questionCmd) {
+        Question question = null;
+        switch (questionCmd.getQuestionType()) {
+            case "TextQuestion":
+                question = new Question(questionCmd.getQuestionMessage(), questionCmd.isTextMultiline(), questionCmd.getTextMinimum(), questionCmd.getTextMaximum());
+                break;
+            case "RangeQuestion":
+                question = new Question(questionCmd.getQuestionMessage(), (questionCmd.getEndValue() == 0.0f ? 5.0f : questionCmd.getStepSize()), questionCmd.getStartValue(),
+                    (questionCmd.getStepSize() == 0.0f ? 1.0f : questionCmd.getStepSize()), (questionCmd.getBelowMessage() == null ? "" : questionCmd.getBelowMessage()),
+                    (questionCmd.getAboveMessage() == null ? "" : questionCmd.getAboveMessage()));
+                break;
+            case "SliderQuestion":
+                question = new Question(questionCmd.getQuestionMessage(), (questionCmd.getEndValue() == 0.0f ? 1.0f : questionCmd.getStepSize()), questionCmd.getStartValue(),
+                    (questionCmd.getStepSize() == 0.0f ? 0.1f : questionCmd.getStepSize()), (questionCmd.getBelowMessage() == null ? "" : questionCmd.getBelowMessage()),
+                    (questionCmd.getAboveMessage() == null ? "" : questionCmd.getAboveMessage()), questionCmd.isHideValues());
+                break;
+            case "ChoiceQuestion":
+                question = new Question(questionCmd.getQuestionMessage(), questionCmd.getAnswerPossibilities(), questionCmd.getNumberOfPossibleAnswers(), questionCmd.isUserAnswers());
+                break;
+            default:
+                return null;
+        }
+        question.setCategoryId(pollRepository.findById(Long.valueOf(questionCmd.getPollId())).orElseThrow(EntityNotFoundException::new)
             .getCategoryList().get(0).getCategoryId());
-        pollRepository.findById(Long.valueOf(pollId)).orElseThrow(EntityNotFoundException::new)
+        pollRepository.findById(Long.valueOf(questionCmd.getPollId())).orElseThrow(EntityNotFoundException::new)
             .getCategoryList().get(0).getQuestionList().add(question);
         questionRepository.save(question);
 
