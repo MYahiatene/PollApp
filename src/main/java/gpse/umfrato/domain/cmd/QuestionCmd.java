@@ -35,8 +35,6 @@ public class QuestionCmd {
 
     private long categoryId;
 
-    private String categoryId;
-
     private String questionMessage;
 
     private List<String> answerPossibilities;
@@ -50,7 +48,7 @@ public class QuestionCmd {
     private int numberOfPossibleAnswers;
 
     public Question getQuestion() {
-        final Question question = new Question(questionMessage, answerPossibilities, questionType);
+        final Question question = new Question(questionMessage, answerPossibilities, questionType,0, 0, 0, null, null, false, 1, false, 10, 100);
         question.setQuestionId(questionId);
         question.setCategoryId(categoryId);
         question.setQuestionIndex(questionIndex);
