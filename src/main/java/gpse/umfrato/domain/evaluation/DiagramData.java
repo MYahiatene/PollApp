@@ -179,43 +179,6 @@ public class DiagramData {
 
     @Getter
     @Setter
-    protected static class RangeData extends ChoiceData implements QuestionData {
-
-        RangeData(final long questionId, final String questionMessage ,
-                                final double startValue, final double endValue, final double stepSize,
-                                final String lowerText, final String upperText) {
-            super(questionId, questionMessage, new ArrayList<>());
-            super.setData(new ArrayList<>());
-            if(lowerText != null && !lowerText.isEmpty())
-            {
-                super.getAnswerPossibilities().add(lowerText);
-                super.getData().add(0);
-            }
-            for(double i = startValue; i < endValue;)
-            {
-                super.getAnswerPossibilities().add(i + " - " + (i += stepSize));
-                super.getData().add(0);
-            }
-            if(upperText != null && !upperText.isEmpty())
-            {
-                super.getAnswerPossibilities().add(upperText);
-                super.getData().add(0);
-            }
-        }
-
-        @Override
-        public void addAnswer(final int answerPossibility) {
-            super.getData().set(answerPossibility, super.getData().get(answerPossibility) + 1);
-        }
-
-        @Override
-        public QuestionType getQuestionType() {
-            return QuestionType.RANGE_QUESTION;
-        }
-    }
-
-    @Getter
-    @Setter
     protected static class SliderData implements QuestionData {
         /* default */ long questionId;
         /* default */ String questionTitle;
@@ -255,8 +218,20 @@ public class DiagramData {
                     qd = new TextData(q.getQuestionId(), q.getQuestionMessage());
                     break;
                 case "RangeQuestion":
-                    qd = new RangeData(q.getQuestionId(), q.getQuestionMessage(), q.getStartValue(), q.getEndValue(),
-                            q.getStepSize(), q.getBelowMessage(), q.getAboveMessage());
+                    List<String> answerPossibilities = new ArrayList<>();
+                    if(q.getBelowMessage() != null && !q.getBelowMessage().isEmpty())
+                    {
+                        answerPossibilities.add(q.getBelowMessage());
+                    }
+                    for(double i = q.getStartValue(); i < q.getEndValue();)
+                    {
+                        answerPossibilities.add(i + " - " + (i += q.getStepSize()));
+                    }
+                    if(q.getAboveMessage() != null && !q.getAboveMessage().isEmpty())
+                    {
+                        answerPossibilities.add(q.getAboveMessage());
+                    }
+                    qd = new ChoiceData(q.getQuestionId(), q.getQuestionMessage(), answerPossibilities);
                     break;
                 case "SliderQuestion":
                     qd = new SliderData(q.getQuestionId(), q.getQuestionMessage());
@@ -288,12 +263,6 @@ public class DiagramData {
                                     td.getEditedDates().add(pr.getLastEditAt());
                                     //vielleicht auch eine neue ID, aber ich wüsste nicht warum, da nur key für frontend
                                     td.getIds().add(pr.getPollResultId());
-                                }
-                                break;
-                            case RANGE_QUESTION:
-                                final RangeData rd = (RangeData) qd;
-                                for (final String s: a.getGivenAnswerList()) {
-                                    rd.addAnswer(Integer.parseInt(s));
                                 }
                                 break;
                             case SLIDER_QUESTION:
