@@ -41,6 +41,10 @@ public class Question {
 
     private int textMaximum;
 
+    private boolean textMinBool;
+
+    private boolean textMaxBool;
+
     private boolean hasConsistencyRelationship = false;
 
     /**

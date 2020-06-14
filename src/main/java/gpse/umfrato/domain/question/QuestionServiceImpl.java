@@ -68,6 +68,8 @@ public class QuestionServiceImpl implements QuestionService {
         switch (questionCmd.getQuestionType()) {
             case "TextQuestion":
                 question = new Question(questionCmd.getQuestionMessage(), questionCmd.isTextMultiline(), questionCmd.getTextMinimum(), questionCmd.getTextMaximum());
+                question.setTextMinBool(questionCmd.isTextMinBool());
+                question.setTextMaxBool(questionCmd.isTextMaxBool());
                 break;
             case "RangeQuestion":
                 question = new Question(questionCmd.getQuestionMessage(), (questionCmd.getEndValue() == 0.0f ? 5.0f : questionCmd.getStepSize()), questionCmd.getStartValue(),
@@ -142,6 +144,12 @@ public class QuestionServiceImpl implements QuestionService {
 
         switch (questionCmd.getQuestionType()) {
             case "TextQuestion":
+                question.setQuestionMessage(questionCmd.getQuestionMessage());
+                question.setTextMultiline(questionCmd.isTextMultiline());
+                question.setTextMinBool(questionCmd.isTextMinBool());
+                question.setTextMaxBool(questionCmd.isTextMaxBool());
+                question.setTextMinimum(questionCmd.getTextMinimum());
+                question.setTextMaximum(questionCmd.getTextMaximum());
                 break;
             case "RangeQuestion":
                 break;
@@ -153,12 +161,11 @@ public class QuestionServiceImpl implements QuestionService {
                 question.setQuestionMessage(questionCmd.getQuestionMessage());
                 question.setQuestionType(questionCmd.getQuestionType());
                 question.setUserAnswers(questionCmd.isUserAnswers());
-                questionRepository.save(question);
                 break;
             default:
                 return null;
         }
-
+        questionRepository.save(question);
         return question;
 
     }

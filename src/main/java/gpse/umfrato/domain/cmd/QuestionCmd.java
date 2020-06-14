@@ -30,6 +30,10 @@ public class QuestionCmd {
 
     private int textMaximum;
 
+    private boolean textMinBool;
+
+    private boolean textMaxBool;
+
     private boolean hasConsistencyRelationship;
 
     private long questionId;

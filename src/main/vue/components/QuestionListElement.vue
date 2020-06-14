@@ -2,7 +2,7 @@
     <!--    Here we need the negative margin in order to cancel out the margin applied by the v-cards-->
     <v-card outlined hover flat :color="color" class="my-n1">
         <v-row no-gutters class="ma-n2 my-n4 pa-4">
-            <v-col cols="12" lg="10" md="10" sm="10">
+            <v-col cols="9">
                 <v-list-item-title>
                     {{ question.questionMessage }}
                 </v-list-item-title>
@@ -10,14 +10,16 @@
                     {{ question.questionType }}
                 </v-list-item-subtitle>
             </v-col>
-            <v-col cols="12" lg="2" md="2" sm="2">
+            <v-col cols="1.5">
                 <v-btn icon @click="editQuestion(question)" color="primary">
-                    <v-icon small>
+                    <v-icon>
                         mdi-pencil
                     </v-icon>
                 </v-btn>
+            </v-col>
+            <v-col cols="1.5">
                 <v-btn icon @click="deleteQuestion(question)" color="primary">
-                    <v-icon small>
+                    <v-icon>
                         mdi-delete
                     </v-icon>
                 </v-btn>

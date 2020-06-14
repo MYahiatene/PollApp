@@ -118,15 +118,23 @@ export default {
             console.log('BuildIndex:\n')
             console.log(this.buildIndex)
             if (this.buildIndex === 1) {
-                this.$axios.post('/addquestion', {
-                    pollId: this.$route.params.QuestionOverview,
-                    questionType: this.getQuestion.questionType,
-                    questionMessage: this.getQuestion.questionMessage,
-                    answerPossibilities: this.getQuestion.answerPossibilities,
-                    numberOfPossibleAnswers: this.getQuestion.numberOfPossibleAnswers,
-                    userAnswers: this.getQuestion.userAnswers,
-                })
-                this.categoryData[0].questionList.push(this.getQuestion)
+                this.$axios
+                    .post('/addquestion', {
+                        pollId: this.$route.params.QuestionOverview,
+                        questionType: this.getQuestion.questionType,
+                        questionMessage: this.getQuestion.questionMessage,
+                        answerPossibilities: this.getQuestion.answerPossibilities,
+                        numberOfPossibleAnswers: this.getQuestion.numberOfPossibleAnswers,
+                        userAnswers: this.getQuestion.userAnswers,
+                        textMultiline: this.getQuestion.textMultiline,
+                        textMinimum: this.getQuestion.textMinimum,
+                        textMinBool: this.getQuestion.textMinBool,
+                        textMaximum: this.getQuestion.textMaximum,
+                        textMaxBool: this.getQuestion.textMaxBool,
+                    })
+                    .then((response) => {
+                        this.categoryData[0].questionList.push(response.data)
+                    })
             } else {
                 this.$axios.put('/editquestion', {
                     pollId: this.$route.params.QuestionOverview,
@@ -136,6 +144,11 @@ export default {
                     numberOfPossibleAnswers: this.getQuestion.numberOfPossibleAnswers,
                     userAnswers: this.getQuestion.userAnswers,
                     questionId: this.getQuestion.questionId,
+                    textMultiline: this.getQuestion.textMultiline,
+                    textMinimum: this.getQuestion.textMinimum,
+                    textMinBool: this.getQuestion.textMinBool,
+                    textMaximum: this.getQuestion.textMaximum,
+                    textMaxBool: this.getQuestion.textMaxBool,
                 })
             }
             console.log('BuildIndex:\n')

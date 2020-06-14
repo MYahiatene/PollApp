@@ -61,8 +61,6 @@ export default {
     props: { pollData: { type: Object }, questionData: { type: Object }, buildIndex: { type: Number } },
     data() {
         return {
-            minCharSwitch: false,
-            maxCharSwitch: false,
             valid: false,
             // rules that assert that the input in the textField must be positive (there can't be a negative number of chars on an answer
             minRules: [
@@ -77,9 +75,11 @@ export default {
     },
     methods: {
         ...mapMutations({
-            multiline: 'pollOverview/setTextMultiline',
-            setMin: 'pollOverview/setTextMin',
-            setMax: 'pollOverview/setTextMax',
+            multiline: 'questionOverview/setTextMultiline',
+            setMin: 'questionOverview/setTextMin',
+            setMax: 'questionOverview/setTextMax',
+            setMinCharSwitch: 'questionOverview/setTextMinBool',
+            setMaxCharSwitch: 'questionOverview/setTextMaxBool',
         }),
         clearMin() {
             if (!this.minCharSwitch) {
@@ -93,10 +93,10 @@ export default {
         },
     },
     computed: {
-        ...mapGetters({ getQuestion: 'pollOverview/getQuestion' }),
+        ...mapGetters({ getQuestion: 'questionOverview/getQuestion' }),
         newline: {
             get() {
-                return ''
+                return this.getQuestion.textMultiline
             },
             set(value) {
                 this.multiline(value)
@@ -104,7 +104,7 @@ export default {
         },
         minimum: {
             get() {
-                return ''
+                return this.getQuestion.textMinimum
             },
             set(value) {
                 this.setMin(parseInt(value))
@@ -112,10 +112,26 @@ export default {
         },
         maximum: {
             get() {
-                return ''
+                return this.getQuestion.textMaximum
             },
             set(value) {
                 this.setMax(parseInt(value))
+            },
+        },
+        minCharSwitch: {
+            get() {
+                return this.getQuestion.textMinBool
+            },
+            set(value) {
+                this.setMinCharSwitch(value)
+            },
+        },
+        maxCharSwitch: {
+            get() {
+                return this.getQuestion.textMaxBool
+            },
+            set(value) {
+                this.setMaxCharSwitch(value)
             },
         },
     },

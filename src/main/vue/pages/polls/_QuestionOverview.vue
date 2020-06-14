@@ -194,7 +194,9 @@ export default {
                 hideValues: false,
                 textMultiline: true,
                 textMinimum: 0,
+                textMinBool: false,
                 textMaximum: 1000,
+                textMaxBool: false,
                 choiceType: '',
                 questionId: null,
             })

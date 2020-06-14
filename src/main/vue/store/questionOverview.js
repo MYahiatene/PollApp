@@ -15,7 +15,9 @@ export const state = () => ({
         hideValues: false,
         textMultiline: true,
         textMinimum: 0,
+        textMinBool: false,
         textMaximum: 1000,
+        textMaxBool: false,
         choiceType: '',
         questionId: null,
     },
@@ -23,6 +25,21 @@ export const state = () => ({
 export const mutations = {
     setQuestionMes(state, questionMessage) {
         state.question.questionMessage = questionMessage
+    },
+    setTextMultiline(state, value) {
+        state.question.textMultiline = value
+    },
+    setTextMin(state, value) {
+        state.question.textMinimum = value
+    },
+    setTextMax(state, value) {
+        state.question.textMaximum = value
+    },
+    setTextMinBool(state, value) {
+        state.question.textMinBool = value
+    },
+    setTextMaxBool(state, value) {
+        state.question.textMaxBool = value
     },
     setChoiceType(state, choiceType) {
         state.question.choiceType = choiceType
