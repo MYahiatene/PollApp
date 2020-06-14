@@ -91,10 +91,10 @@ export default {
          * poll by the user. If they haven't choosen one, the color specified in the nuxt.config.js is used.
          */
         backgroundColor() {
-            if (this.goDark) {
-                return 'background:' + this.$vuetify.theme.themes.dark.background
-            } else if (this.getPoll[1].data.backgroundColor !== null) {
+            if (this.getPoll[1].data.backgroundColor !== null) {
                 return 'background:' + this.getPoll[1].data.backgroundColor // '#c42843' // insert picked color here
+            } else if (this.goDark) {
+                return 'background:' + this.$vuetify.theme.themes.dark.background
             } else {
                 return 'background:' + this.$vuetify.theme.themes.light.background
             }
