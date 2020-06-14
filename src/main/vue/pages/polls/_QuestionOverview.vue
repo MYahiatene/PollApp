@@ -48,6 +48,7 @@
                                                             :categoryName="category.categoryName"
                                                             :questions="category.questionList"
                                                             :pollData="pollData"
+                                                            :category="category"
                                                             @text-input="disableDraggable"
                                                         />
                                                     </v-list>

@@ -47,7 +47,7 @@ public class QuestionController {
      *
      * @param questionCmd     the Cmd of the question
      */
-    @PutMapping("/removeQuestion")
+    @PutMapping("/removequestion")
     public void deleteQuestion(final @RequestBody QuestionCmd questionCmd) {
         questionService.removeQuestion(String.valueOf(questionCmd.getCategoryId()), String.valueOf(questionCmd.getQuestionId()));
     }

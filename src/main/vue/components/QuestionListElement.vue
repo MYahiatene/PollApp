@@ -16,6 +16,11 @@
                         mdi-pencil
                     </v-icon>
                 </v-btn>
+                <v-btn icon @click="deleteQuestion(question)" color="primary">
+                    <v-icon small>
+                        mdi-delete
+                    </v-icon>
+                </v-btn>
             </v-col>
         </v-row>
     </v-card>
@@ -36,6 +41,7 @@ export default {
         categoryId: {
             type: Number,
         },
+        category: { type: Object },
     },
     computed: {
         buildIndex: {
@@ -92,6 +98,19 @@ export default {
         editQuestion(question) {
             this.setQuestion(question)
             this.buildIndex = 2
+        },
+        deleteQuestion(question) {
+            const index = this.category.questionList.forEach((element) => {
+                if (element.questionId === question.questionId) {
+                    return this.category.questionList.indexOf(element)
+                }
+            })
+            confirm('Sind sie sich sicher, dass sie diese Frage löschen möchten?') &&
+                this.category.questionList.splice(index, 1) &&
+                this.$axios.put('/removequestion', {
+                    categoryId: this.categoryId,
+                    questionId: this.question.questionId,
+                })
         },
 
         ...mapMutations({

@@ -34,6 +34,7 @@
                         :poll-id="pollID"
                         :category-id="categoryID"
                         :question="question"
+                        :category="category"
                     ></QuestionListElement>
                     <v-spacer></v-spacer>
                     <v-spacer></v-spacer>
@@ -69,12 +70,11 @@ export default {
             type: Array,
         },
         buildIndex: { type: Number },
+        category: { type: Object },
     },
     computed: {
         ...mapGetters({ getCategory: 'pollOverview/getCategory', getPolls: 'navigation/getPolls' }),
-        category() {
-            return this.getCategory(this.categoryID)
-        },
+
         // this needs to be computed, so we can get it from the nuxt Config
 
         backgroundColor() {
