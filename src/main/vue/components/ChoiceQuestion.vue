@@ -60,7 +60,7 @@ export default {
             obj: {},
             answerCountRules: [
                 (v) =>
-                    (parseFloat(v) >= 1 && parseFloat(v) < this.getQuestion.answerPossibilities.length) ||
+                    (parseFloat(v) >= 1 && parseFloat(v) <= this.getQuestion.answerPossibilities.length) ||
                     'Die maximale Anwortzahl kann sich nur zwischen 1 und ' +
                         (this.getQuestion.answerPossibilities.length - 1) +
                         ' Antworten befinden',

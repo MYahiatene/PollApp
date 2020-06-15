@@ -2,6 +2,7 @@ package gpse.umfrato.domain;
 
 import gpse.umfrato.domain.category.CategoryService;
 import gpse.umfrato.domain.answer.AnswerService;
+import gpse.umfrato.domain.cmd.QuestionCmd;
 import gpse.umfrato.domain.poll.Poll;
 import gpse.umfrato.domain.poll.PollService;
 import gpse.umfrato.domain.question.Question;
@@ -87,5 +88,6 @@ public class InitializeDatabase implements InitializingBean {
                 "Teilnehmer", "mmueller@gmx.de");
         }
         pollService.createPoll(testPoll);
+
     }
 }
