@@ -31,7 +31,7 @@
                         ></component>
                     </v-row>
                     <v-row>
-                        <v-col cols="10"></v-col>
+                        <v-col cols="9"></v-col>
                         <v-col cols="2">
                             <v-btn @click="createQuestion">
                                 <v-icon color="primary" left>

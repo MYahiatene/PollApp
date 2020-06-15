@@ -156,7 +156,7 @@
                         <v-col cols="12" md="4">
                             Logo hochladen
                             <input type="file" @change="showImage" />
-                            <img :src="logo" alt="Image" width="500" />
+                            <img :src="logo" alt="Image" width="350" />
                         </v-col>
                     </v-row>
                 </v-container>

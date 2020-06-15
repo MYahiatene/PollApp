@@ -22,6 +22,7 @@
                                                         <v-toolbar-title>Zuletzt angesehen: </v-toolbar-title>
                                                         <v-spacer></v-spacer>
                                                     </v-toolbar>
+                                                    <p class="pa-5">Es gibt noch nichts anzuzeigen.</p>
                                                     <v-list subheader cols="12" lg="5">
                                                         <v-list-item
                                                             v-for="item in umfragen"
@@ -90,7 +91,7 @@ export default {
     data() {
         return {
             umfragen: [
-                {
+                /* {
                     title: 'Meinungsbild Teambuilding',
                     id: '418',
                     subtitle: 'Fragen: 3 Bearbeiter: 1 Zuletzt: NHILLE (14.05.2020)',
@@ -113,7 +114,7 @@ export default {
                     iconAction: 'mdi-magnify',
                     actionLink: '/eval/1',
                     iconStatus: 'mdi-content-duplicate',
-                },
+                }, */
             ],
         }
     },
