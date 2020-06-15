@@ -1,6 +1,5 @@
 package gpse.umfrato.domain.poll;
 
-
 import java.util.List;
 
 public interface PollService {

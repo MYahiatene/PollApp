@@ -1,6 +1,8 @@
 package gpse.umfrato.web;
 
 import gpse.umfrato.domain.cmd.PollCmd;
+import gpse.umfrato.domain.participationLinks.ParticipationLink;
+import gpse.umfrato.domain.participationLinks.ParticipationLinkService;
 import gpse.umfrato.domain.poll.Poll;
 import gpse.umfrato.domain.poll.PollService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +10,8 @@ import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.EntityNotFoundException;
+import java.net.MalformedURLException;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -15,17 +19,20 @@ import java.util.logging.Logger;
 @RestController
 @CrossOrigin
 public class PollController {
-    private static final Logger LOGGER = Logger.getLogger("PollController");
+    static final Logger LOGGER = Logger.getLogger("PollController");
     private final PollService pollService;
+    private final ParticipationLinkService participationLinkService;
 
     /**
      * This class constructor initializes the poll service.
      *
      * @param pollService the poll service to work with the poll
+     * @param participationLinkService
      */
     @Autowired
-    public PollController(final PollService pollService) {
+    public PollController(final PollService pollService, ParticipationLinkService participationLinkService) {
         this.pollService = pollService;
+        this.participationLinkService = participationLinkService;
     }
 
     /**
@@ -39,8 +46,9 @@ public class PollController {
     public String createPoll(final @RequestBody PollCmd pollCmd) {
         try {
             final Poll poll = pollService.createPoll(pollCmd.getCmdPoll());
+            participationLinkService.createParticipationLink(poll.getPollId(), "allUsers");
             return "Poll created! with id: " + poll.getPollId().toString();
-        } catch (BadRequestException e) {
+        } catch (BadRequestException | MalformedURLException e) {
             return "Poll creation failed!";
         }
     }

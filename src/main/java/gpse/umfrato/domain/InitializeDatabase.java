@@ -1,6 +1,9 @@
 package gpse.umfrato.domain;
 
 import gpse.umfrato.domain.answer.AnswerService;
+import gpse.umfrato.domain.participationLinks.ParticipationLinkRepository;
+import gpse.umfrato.domain.participationLinks.ParticipationLinkService;
+import gpse.umfrato.domain.poll.Poll;
 import gpse.umfrato.domain.category.CategoryService;
 import gpse.umfrato.domain.poll.PollService;
 import gpse.umfrato.domain.question.QuestionService;
@@ -11,6 +14,13 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.net.MalformedURLException;
+import java.time.Instant;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.logging.Logger;
 
 @Service
 public class InitializeDatabase implements InitializingBean {
@@ -23,20 +33,23 @@ public class InitializeDatabase implements InitializingBean {
 
     private final PollService pollService;
 
+    private final ParticipationLinkService participationLinkService;
+
     private final CategoryService categoryService;
 
     /**
      * This method initializes the database.
      *
-     * @param userService     the object user service
-     * @param pollService     the object poll service
-     * @param questionService the object question service
-     * @param answerService   the object answer service
+     * @param userService              the object user service
+     * @param pollService              the object poll service
+     * @param questionService          the object question service
+     * @param answerService            the object answer service
+     * @param participationLinkService the object participationLink service
      */
 
     @Autowired
     public InitializeDatabase(final UserService userService, final PollService pollService,
-                              final QuestionService questionService, final AnswerService answerService,
+                              final QuestionService questionService, final AnswerService answerService, ParticipationLinkService participationLinkService,
                               final CategoryService categoryService) {
 
         this.userService = userService;
@@ -47,6 +60,8 @@ public class InitializeDatabase implements InitializingBean {
 
         this.answerService = answerService;
 
+        this.participationLinkService = participationLinkService;
+
         this.categoryService = categoryService;
     }
 
@@ -55,23 +70,27 @@ public class InitializeDatabase implements InitializingBean {
      */
     @Override
     @Transactional
-    public void afterPropertiesSet() {
+    public void afterPropertiesSet() throws MalformedURLException {
 
         final String tbettmannUserName = "tbettmann";
         final String dummyPassword = "{bcrypt}$2a$10$WoG5Z4YN9Z37EWyNCkltyeFr6PtrSXSLMeFWOeDUwcanht5CIJgPa";
-        // final String logoUrl = "https://picsum.photos/510/300?random";
-        /* final Poll testPoll = new Poll(tbettmannUserName, "anonym", "Umfrage IT-Messe 2020",
+        final String logoUrl = "https://picsum.photos/510/300?random";
+        final Poll testPoll = new Poll(tbettmannUserName, "anonym", "Umfrage IT-Messe 2020",
             Instant.now().toString(),
-            Instant.now().toString(), Instant.now().toString(), 0, "#FF9600", "#00FF00", logoUrl, true, true);*/
+            Instant.now().toString(), Instant.now().toString(), 0, "#FF9600", "#00FF00", logoUrl, true, true);
 
         try {
             userService.loadUserByUsername(tbettmannUserName);
-            //pollService.createPoll(testPoll);
+            pollService.createPoll(testPoll);
 
+            //questionService.addQuestion(one, "testFrage", Arrays.asList("Frage1", "Frage2", "Frage3"), "freitext");
+            //answerService.giveAnswer(testUsername, one, "3", Arrays.asList("Ja", "Nein"));
         } catch (UsernameNotFoundException e) {
             userService.createUser(tbettmannUserName, dummyPassword, "Tobias", "Bettmann",
                 "Admin", "tbettmann@reply.de");
         }
+
+        //participationLinkService.createParticipationLink(testPoll.getPollId(), tbettmannUserName);
 
         try {
             userService.loadUserByUsername("testnutzer");
@@ -79,7 +98,9 @@ public class InitializeDatabase implements InitializingBean {
             userService.createUser("testNutzer", dummyPassword, "Markus", "Mueller",
                 "Teilnehmer", "mmueller@gmx.de");
         }
-        //pollService.createPoll(testPoll);
+        pollService.createPoll(testPoll);
 
+        participationLinkService.createParticipationLink(01L, tbettmannUserName);
+        participationLinkService.createParticipationLink(02L, "mmustermann");
     }
 }

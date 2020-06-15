@@ -8,13 +8,12 @@ import org.springframework.stereotype.Service;
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import java.util.List;
-import java.util.logging.Logger;
 
 @Service
 class PollServiceImpl implements PollService {
 
-    private static final Logger LOGGER = Logger.getLogger("PollService");
     private final PollRepository pollRepository;
+    private final CategoryRepository categoryRepository;
     private final CategoryService categoryService;
 
     private int anonymUsername = 0;
@@ -22,15 +21,16 @@ class PollServiceImpl implements PollService {
     /**
      * This class constructor initializes the poll repository.
      *
+     * @param pollRepository     the poll repository
      * @param categoryService    the object category service
      * @param categoryRepository the repository where the categories are saved
-     * @param pollRepository     the poll repository
      */
     @Autowired
     public PollServiceImpl(final PollRepository pollRepository, final CategoryService categoryService,
                            final CategoryRepository categoryRepository) {
         this.pollRepository = pollRepository;
         this.categoryService = categoryService;
+        this.categoryRepository = categoryRepository;
     }
 
     /**
@@ -77,8 +77,6 @@ class PollServiceImpl implements PollService {
     @Override
     public String createAnonymUsername() {
         this.anonymUsername++;
-        LOGGER.info("anonymUsername = ");
-        LOGGER.info(String.valueOf(this.anonymUsername));
         return String.valueOf(this.anonymUsername);
     }
 }

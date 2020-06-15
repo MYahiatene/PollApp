@@ -95,6 +95,12 @@ public class Poll {
     private boolean categoryChange;
 
     /**
+     * This attribute represents a question list with all questions of this poll.
+     */
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<Question> questionList = new ArrayList<>();
+
+    /**
      * This attribute represents the link to reach the poll if it is activated.
      */
     private String participationLink;
