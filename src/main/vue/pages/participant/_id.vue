@@ -4,7 +4,7 @@
         <v-container>
             <!--When/After the PollData "arrived" show the logo-->
             <div v-if="getPoll[1].data.logo !== undefined">
-                <img :src="getPoll[1].data.logo" alt="failedToLoadLogo" />
+                <img :src="getPoll[1].data.logo" alt="failedToLoadLogo" height="275" />
             </div>
             <v-content>
                 <v-row> </v-row>
