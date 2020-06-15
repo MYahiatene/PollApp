@@ -62,7 +62,7 @@ export default {
                 (v) =>
                     (parseFloat(v) >= 1 && parseFloat(v) <= this.getQuestion.answerPossibilities.length) ||
                     'Die maximale Anwortzahl kann sich nur zwischen 1 und ' +
-                        (this.getQuestion.answerPossibilities.length - 1) +
+                        this.getQuestion.answerPossibilities.length +
                         ' Antworten befinden',
             ],
         }
