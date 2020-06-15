@@ -87,6 +87,7 @@ export default {
             filter: {},
             sortDesc: false,
             sortBy: '',
+            participationLinks: [],
             contextActions: [
                 { title: 'Beantworten', link: '/' },
                 { title: 'Bearbeiten', link: '/polls/' },
@@ -155,11 +156,19 @@ export default {
     },
     mounted() {
         this.initialize()
+        this.initializeLinks()
     },
 
     methods: {
         ...mapActions({ initialize: 'navigation/initialize' }),
         ...mapMutations({ setPollActive: 'navigation/setPollActive', setPollFinished: 'navigation/setPollFinished' }),
+
+        async initializeLinks() {
+            await this.$axios.get('/participationLinks').then((response) => {
+                this.participationLinks = response.data
+                console.log(response.data)
+            })
+        },
         activatePoll(item) {
             if (item.pollStatus === 0) {
                 if (confirm('Umfrage jetzt veröffentlichen?')) {
@@ -193,8 +202,12 @@ export default {
             )
         },
         setLink(item) {
-            navigator.clipboard.writeText(item.participationLink)
-            alert('Link kopiert: "' + item.participationLink + '"')
+            for (let i = 0; i < this.participationLinks.length; i++) {
+                if (this.participationLinks[i].pollId === item.pollId) {
+                    navigator.clipboard.writeText(this.participationLinks[i].participationLink)
+                    alert('Link kopiert: "' + this.participationLinks[i].participationLink + '"')
+                }
+            }
         },
     },
 }

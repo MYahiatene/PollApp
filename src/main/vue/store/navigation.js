@@ -1,5 +1,6 @@
 export const state = () => ({
     Polls: [{}],
+    ParticipationLinks: [{}],
 })
 export const getters = {
     getPolls(state) {
