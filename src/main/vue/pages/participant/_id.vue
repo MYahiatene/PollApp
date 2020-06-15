@@ -32,9 +32,8 @@
                                 </v-card-title>
                                 <div v-if="question.questionType === 'TextQuestion'">
                                     <v-card-text>
-                                        <!--<div v-if="question.textMultiline === true">-->
                                         <!--:rules="textQuestionRules"-->
-                                        <div v-if="true">
+                                        <div v-if="question.textMultiline === true">
                                             <v-textarea
                                                 label="Antwort"
                                                 auto-grow
@@ -425,6 +424,7 @@ export default {
          * @param question The question object, so it can get the QuestionID
          */
         saveAnswerField(e, question) {
+            console.log(e)
             this.answerObj.answerList = [e]
             this.answerObj.pollId = this.getPoll[1].data.pollId
             this.answerObj.questionId = question.questionId
@@ -509,7 +509,7 @@ export default {
          * Calls saveAnswers from the store with the answerobj (cmdAnswer with all given input)
          */
         saveAnswer() {
-            this.answerObj.username += this.getUsername
+            this.answerObj.username = this.getUsername
             this.$store.dispatch('participant/saveAnswer', this.answerObj)
         },
         /**
