@@ -1,5 +1,7 @@
 import Vue from 'vue'
+
 export const state = () => ({
+    status: 0,
     Poll: {},
     category: {},
     IDsToLoad: {
@@ -56,10 +58,15 @@ export const getters = {
 
 export const mutations = {
     initializeData(state, data) {
+        console.log(data)
+        state.status = data.status
         state.Poll = data.data
         while (state.Poll.categoryList.length > 1) {
             delete state.Poll.categoryList.pop()
         }
+    },
+    saveStatus(state, status) {
+        state.status = state
     },
     saveData(state, data) {
         state.Poll = data
@@ -255,7 +262,7 @@ export const mutations = {
 }
 export const actions = {
     async initialize({ state, commit }) {
-        const data = await this.$axios.get('/poll/' + state.IDsToLoad.pollID)
+        const data = await this.$axios.get('/poll/' + state.IDsToLoad.pollID).catch((reason) => {})
         commit('resetToLoad')
         commit('initializeData', data)
     },

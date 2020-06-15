@@ -1,11 +1,8 @@
 package gpse.umfrato.domain;
 
-import gpse.umfrato.domain.category.CategoryService;
 import gpse.umfrato.domain.answer.AnswerService;
-import gpse.umfrato.domain.cmd.QuestionCmd;
-import gpse.umfrato.domain.poll.Poll;
+import gpse.umfrato.domain.category.CategoryService;
 import gpse.umfrato.domain.poll.PollService;
-import gpse.umfrato.domain.question.Question;
 import gpse.umfrato.domain.question.QuestionService;
 import gpse.umfrato.domain.user.UserService;
 import org.springframework.beans.factory.InitializingBean;
@@ -14,11 +11,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.time.Instant;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 
 @Service
 public class InitializeDatabase implements InitializingBean {
@@ -67,14 +59,14 @@ public class InitializeDatabase implements InitializingBean {
 
         final String tbettmannUserName = "tbettmann";
         final String dummyPassword = "{bcrypt}$2a$10$WoG5Z4YN9Z37EWyNCkltyeFr6PtrSXSLMeFWOeDUwcanht5CIJgPa";
-        final String logoUrl = "https://picsum.photos/510/300?random";
-        final Poll testPoll = new Poll(tbettmannUserName, "anonym", "Umfrage IT-Messe 2020",
+        // final String logoUrl = "https://picsum.photos/510/300?random";
+        /* final Poll testPoll = new Poll(tbettmannUserName, "anonym", "Umfrage IT-Messe 2020",
             Instant.now().toString(),
-            Instant.now().toString(), Instant.now().toString(), 0, "#FF9600", "#00FF00", logoUrl, true, true);
+            Instant.now().toString(), Instant.now().toString(), 0, "#FF9600", "#00FF00", logoUrl, true, true);*/
 
         try {
             userService.loadUserByUsername(tbettmannUserName);
-            pollService.createPoll(testPoll);
+            //pollService.createPoll(testPoll);
 
         } catch (UsernameNotFoundException e) {
             userService.createUser(tbettmannUserName, dummyPassword, "Tobias", "Bettmann",
@@ -87,7 +79,7 @@ public class InitializeDatabase implements InitializingBean {
             userService.createUser("testNutzer", dummyPassword, "Markus", "Mueller",
                 "Teilnehmer", "mmueller@gmx.de");
         }
-        pollService.createPoll(testPoll);
+        //pollService.createPoll(testPoll);
 
     }
 }

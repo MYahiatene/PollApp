@@ -1,16 +1,14 @@
 package gpse.umfrato.domain.poll;
 
-import java.util.logging.Logger;
 import gpse.umfrato.domain.category.CategoryRepository;
 import gpse.umfrato.domain.category.CategoryService;
-import gpse.umfrato.web.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import java.util.List;
-import java.util.Optional;
+import java.util.logging.Logger;
 
 @Service
 class PollServiceImpl implements PollService {
@@ -57,11 +55,6 @@ class PollServiceImpl implements PollService {
     @Override
     public List<Poll> getAllPolls() {
         final List<Poll> poll = pollRepository.findAll();
-
-        if (poll.isEmpty()) {
-            throw new BadRequestException();
-        }
-
         return poll;
     }
 
