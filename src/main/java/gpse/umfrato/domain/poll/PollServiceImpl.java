@@ -10,13 +10,13 @@ import org.springframework.stereotype.Service;
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 class PollServiceImpl implements PollService {
 
     private static final Logger LOGGER = Logger.getLogger("PollService");
     private final PollRepository pollRepository;
-    private final CategoryRepository categoryRepository;
     private final CategoryService categoryService;
 
     private int anonymUsername = 0;
@@ -33,7 +33,6 @@ class PollServiceImpl implements PollService {
                            final CategoryRepository categoryRepository) {
         this.pollRepository = pollRepository;
         this.categoryService = categoryService;
-        this.categoryRepository = categoryRepository;
     }
 
     /**
@@ -44,9 +43,8 @@ class PollServiceImpl implements PollService {
     @Override
     @Transactional
     public Poll createPoll(final Poll poll) {
-        // final Poll newPoll = poll;
         pollRepository.save(poll);
-        categoryRepository.save(categoryService.createCategory("Standardkategorie", poll.getPollId()));
+        categoryService.createCategory("Standardkategorie", poll.getPollId());
 
         return poll;
     }

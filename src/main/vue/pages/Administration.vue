@@ -207,9 +207,7 @@ export default {
         },
         deleteUser(item) {
             const index = this.users.indexOf(item)
-            const userObj = {
-                username: item.username,
-            }
+
             const instance = this.$axios.create({
                 baseURL: 'http://127.0.0.1:8088/api',
                 timeout: 1000,
@@ -219,9 +217,13 @@ export default {
             })
             confirm('Sind sie sich sicher, dass sie diesen Nutzer löschen möchten?') &&
                 this.users.splice(index, 1) &&
-                instance.put('/deleteUser', userObj).catch((error) => {
-                    console.log(error)
-                })
+                instance
+                    .put('/deleteUser', {
+                        username: item.username,
+                    })
+                    .catch((error) => {
+                        console.log(error)
+                    })
         },
         close() {
             this.dialog = false

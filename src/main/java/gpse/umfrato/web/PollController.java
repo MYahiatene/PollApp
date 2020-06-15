@@ -1,6 +1,5 @@
 package gpse.umfrato.web;
 
-
 import gpse.umfrato.domain.cmd.PollCmd;
 import gpse.umfrato.domain.poll.Poll;
 import gpse.umfrato.domain.poll.PollService;
@@ -36,6 +35,7 @@ public class PollController {
 
     /**
      * This method creates the poll with the given settings from the PollCreation page.
+     *
      * @param pollCmd
      * @return String with PollID or Error
      */
@@ -94,7 +94,13 @@ public class PollController {
         } else {
             return "Nina";
         }
-
     }
 
+    @GetMapping("/getonepoll")
+    public Poll getPoll(@RequestParam long pollId) {
+        return pollService.getPoll(String.valueOf(pollId));
+    }
+
+
 }
+

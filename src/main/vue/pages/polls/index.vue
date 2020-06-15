@@ -22,7 +22,7 @@
                                     label="Suchen"
                                 ></v-text-field>
                                 <v-spacer />
-                                <v-btn large color="primary" to="/PollCreation">
+                                <v-btn large color="primary" to="./PollCreation">
                                     <v-icon>mdi-plus</v-icon>
                                 </v-btn>
                             </v-toolbar>

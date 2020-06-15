@@ -1,6 +1,7 @@
 import Vue from 'vue'
 export const state = () => ({
     Poll: {},
+    category: {},
     IDsToLoad: {
         pollID: 0,
         categoryID: 0,
@@ -49,13 +50,7 @@ export const getters = {
         return null
     },
     getCategory(state) {
-        return (categoryID) => {
-            for (let i = 0; i < state.Poll.categoryList.length; i++) {
-                if (state.Poll.categoryList[i].categoryId === categoryID) {
-                    return state.Poll.categoryList[i]
-                }
-            }
-        }
+        return state.category
     },
 }
 
@@ -264,9 +259,17 @@ export const actions = {
         commit('resetToLoad')
         commit('initializeData', data)
     },
+    setCategory({ commit }, data) {
+        state.category = data
+    },
     async createCategory({ state, commit }) {
         let error = ''
-        const newId = await this.$axios
+        state.poll.forEach((poll) => {
+            if (poll.pollId === 1) {
+                poll.categoryList.push({ test: 'test' })
+            }
+        })
+        let newId = await this.$axios
             .post('/poll/' + state.IDsToLoad.pollID + '/addcategory', {
                 pollId: state.IDsToLoad.pollID,
                 name: 'Neue Kategorie',
@@ -274,7 +277,8 @@ export const actions = {
             .catch((reason) => {
                 error = reason
             })
-        if (error.length === 0) {
+        newId = 600
+        if (error.length !== 0) {
             const newCategory = {
                 categoryId: newId,
                 categoryName: 'Neue Kategorie',
@@ -290,11 +294,9 @@ export const actions = {
         if (confirm('Soll diese Kategorie wirklich gelöscht werden?')) {
             commit('removeCategory')
             let error = ''
-            await this.$axios
-                .post('/poll/' + state.IDsToLoad.pollId + '/removecategory/' + categoryID)
-                .catch((reason) => {
-                    error = reason
-                })
+            await this.$axios.put('/deletecategory/', { categoryId: categoryID }).catch((reason) => {
+                error = reason
+            })
             if (error.length === 0) {
                 commit('removeCategory', categoryID)
             } else {

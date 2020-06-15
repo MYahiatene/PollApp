@@ -2,11 +2,11 @@ package gpse.umfrato.domain.poll;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import gpse.umfrato.domain.category.Category;
+import gpse.umfrato.domain.question.Question;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-// import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -107,6 +107,7 @@ public class Poll {
      * This constructor receives a poll name and saves in the poll object.
      *
      * @param pollCreator     the name of the user who creates the poll
+     * @param pollName        the name of the poll
      * @param anonymityStatus the anonymitystatus of the poll
      * @param pollName        the name of the poll
      * @param createdAt       the date when the poll is created

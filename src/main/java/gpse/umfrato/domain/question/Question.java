@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -40,6 +41,10 @@ public class Question {
 
     private int textMaximum;
 
+    private boolean textMinBool;
+
+    private boolean textMaxBool;
+
     private boolean hasConsistencyRelationship = false;
 
     /**
@@ -58,7 +63,7 @@ public class Question {
     private String questionMessage;
 
     @ElementCollection
-    private List<String> answerPossibilities;
+    private List<String> answerPossibilities = new ArrayList<>();
 
     private boolean userAnswers = false;
 
