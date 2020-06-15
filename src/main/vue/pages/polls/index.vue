@@ -1,7 +1,7 @@
 <template>
     <div>
         <AuthGate v-if="isAuthenticated !== true"></AuthGate>
-        <v-container v-else-if="items[0].pollId !== undefined">
+        <v-container v-else-if="getError === undefined">
             <v-layout row wrap>
                 <v-container fluid>
                     <v-data-iterator
@@ -22,7 +22,7 @@
                                     label="Suchen"
                                 ></v-text-field>
                                 <v-spacer />
-                                <v-btn large color="primary" to="/PollCreation">
+                                <v-btn large color="primary" to="./PollCreation">
                                     <v-icon>mdi-plus</v-icon>
                                 </v-btn>
                             </v-toolbar>
@@ -77,6 +77,7 @@
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import AuthGate from '../../components/AuthGate'
+
 export default {
     name: 'Navigation',
     components: { AuthGate },
@@ -87,6 +88,7 @@ export default {
             filter: {},
             sortDesc: false,
             sortBy: '',
+            participationLinks: [],
             contextActions: [
                 { title: 'Beantworten', link: '/' },
                 { title: 'Bearbeiten', link: '/polls/' },
@@ -118,9 +120,10 @@ export default {
         ...mapGetters({
             items: 'navigation/getPolls',
             isAuthenticated: 'login/isAuthenticated',
+            getError: 'navigation/getError',
         }),
         prepareItems() {
-            const data = Object.assign([{}], this.items)
+            const data = Object.assign([], this.items)
             for (let i = 0; i < data.length; i++) {
                 if (this.items[i].anonymityStatus === '1') {
                     data[i].anonymityString = 'Anonym'
@@ -155,15 +158,23 @@ export default {
     },
     mounted() {
         this.initialize()
+        this.initializeLinks()
     },
 
     methods: {
-        ...mapActions({ initialize: 'navigation/initialize' }),
+        ...mapActions({ initialize: 'navigation/initialize', activatePoll2: 'navigation/activatePoll' }),
         ...mapMutations({ setPollActive: 'navigation/setPollActive', setPollFinished: 'navigation/setPollFinished' }),
+
+        async initializeLinks() {
+            await this.$axios.get('/participationLinks').then((response) => {
+                this.participationLinks = response.data
+                console.log(response.data)
+            })
+        },
         activatePoll(item) {
             if (item.pollStatus === 0) {
                 if (confirm('Umfrage jetzt veröffentlichen?')) {
-                    this.setPollActive(item.pollId)
+                    this.activatePoll2(item.pollId)
                 }
             } else if (item.pollStatus === 1) {
                 if (confirm('Umfrage jetzt beenden?')) {
@@ -193,8 +204,18 @@ export default {
             )
         },
         setLink(item) {
-            navigator.clipboard.writeText(item.participationLink)
-            alert('Link kopiert: "' + item.participationLink + '"')
+            for (let i = 0; i < this.participationLinks.length; i++) {
+                if (this.participationLinks[i].pollId === item.pollId) {
+                    navigator.clipboard.writeText(
+                        'http://localhost:8080/participant/' + this.participationLinks[i].participationLink
+                    )
+                    alert(
+                        'Link kopiert: "localhost:8080/participant/' +
+                            this.participationLinks[i].participationLink +
+                            '"'
+                    )
+                }
+            }
         },
     },
 }

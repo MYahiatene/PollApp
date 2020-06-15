@@ -4,9 +4,10 @@
         <v-container>
             <!--When/After the PollData "arrived" show the logo-->
             <div v-if="getPoll[1].data.logo !== undefined">
-                <img :src="getPoll[1].data.logo" alt="failedToLoadLogo" />
+                <img :src="getPoll[1].data.logo" alt="failedToLoadLogo" height="275" />
             </div>
             <v-content>
+                <v-row> </v-row>
                 <v-row>
                     <v-col cols="8">
                         <v-card>
@@ -32,9 +33,8 @@
                                 </v-card-title>
                                 <div v-if="question.questionType === 'TextQuestion'">
                                     <v-card-text>
-                                        <!--<div v-if="question.textMultiline === true">-->
                                         <!--:rules="textQuestionRules"-->
-                                        <div v-if="true">
+                                        <div v-if="question.textMultiline === true">
                                             <v-textarea
                                                 label="Antwort"
                                                 auto-grow
@@ -56,16 +56,15 @@
                                 </div>
                                 <div v-else-if="question.questionType === 'ChoiceQuestion'">
                                     <!--Radio Button since only one answer possible-->
-                                    <div v-if="question.numberOfPossiblesAnswers === 1">
+                                    <div v-if="question.numberOfPossibleAnswers === 1">
                                         <v-card-text>
                                             <v-radio-group v-model="radioGroup">
                                                 <v-radio
                                                     v-for="answer in question.answerPossibilities"
-                                                    class="my-n2"
                                                     :key="answer"
                                                     :label="`${answer}`"
                                                     :value="answer"
-                                                    @change="saveAnswerCheckbox($event, question, answer)"
+                                                    @change="saveAnswerRadioButton(question, answer)"
                                                 ></v-radio>
                                             </v-radio-group>
                                         </v-card-text>
@@ -181,6 +180,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
+
 export default {
     name: 'Participant',
     layout: 'participant', // uses special layout/participant instead of default-layout
@@ -199,7 +199,7 @@ export default {
             value1: 0,
             value2: 0,
             answerObj: {
-                username: 'Nina',
+                username: 'Anonym',
                 anonymityStatus: 'anonym',
                 questionId: '1',
                 answerList: [],
@@ -308,6 +308,9 @@ export default {
          * @returns {backgroundColor}
          */
         backgroundColor() {
+            if (this.getPoll[1].data.backgroundColor === null) {
+                return this.$vuetify.theme.currentTheme.background
+            }
             return this.getPoll[1].data.backgroundColor
         },
         /**
@@ -374,7 +377,33 @@ export default {
          * @param question The question object, so it can get the QuestionID
          * @param answer The answer object, so it can get the answer possibilities.
          */
+        saveAnswerRadioButton(question, answer) {
+            console.log(question)
+            console.log(answer)
+            this.answerObj.answerList = []
+            for (let i = 0; i < question.answerPossibilities.length; i++) {
+                if (answer === question.answerPossibilities[i]) {
+                    this.answerObj.answerList.push(i) // index of true checkbox
+                }
+            }
+            this.answerObj.pollId = this.getPoll[1].data.pollId
+            this.answerObj.questionId = question.questionId
+
+            this.saveAnswer() // alternative: Button after every TextField
+
+            // this.showAnswer() // TODO: Fails with 405???
+        },
+        /**
+         * Get's the given answer of a checkbox question and calls saveAnswer() to persist it in the database. This
+         * happens after every change (check or uncheck) of a checkbox.
+         * @param e (Change-Event)
+         * @param question The question object, so it can get the QuestionID
+         * @param answer The answer object, so it can get the answer possibilities.
+         */
         saveAnswerCheckbox(e, question, answer) {
+            console.log(e)
+            console.log(question)
+            console.log(answer)
             this.answerObj.answerList = []
             let i
             // checks if checkBox was checked, not unchecked
@@ -400,6 +429,7 @@ export default {
          * @param question The question object, so it can get the QuestionID
          */
         saveAnswerField(e, question) {
+            console.log(e)
             this.answerObj.answerList = [e]
             this.answerObj.pollId = this.getPoll[1].data.pollId
             this.answerObj.questionId = question.questionId

@@ -6,10 +6,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.logging.Logger;
 
 @Service public class AnswerServiceImpl implements AnswerService {
 
+    private static final Logger LOGGER = Logger.getLogger("AnswerServiceImpl");
     private final AnswerRepository answerRepository;
     private final PollResultRepository pollResultRepository;
 
@@ -32,14 +37,34 @@ import java.util.List;
      * @param username   name of the user creating the answer
      * @return the given answer
      */
-    @Override public Answer giveAnswer(final String username, final String pollId, final String questionId,
+    @Override public Answer giveAnswer(final String username, final Long pollId, final String questionId,
                                        final List<String> answerList) {
         final Answer answer = new Answer(answerList, questionId);
-        PollResult pollResult = pollResultRepository.findPollResultByPollIdAndPollTaker(Long.valueOf(pollId), username);
+        LOGGER.info(answer.toString());
+        PollResult pollResult = pollResultRepository.findPollResultByPollIdAndPollTaker(pollId, username);
         if (pollResult == null) {
-            pollResult = new PollResult(Long.valueOf(pollId), username);
+            pollResult = new PollResult(pollId, username);
         }
-        pollResult.getAnswerList().add(answer);
+        int i = 0;
+        boolean answerDa = false;
+        for(Answer a:pollResult.getAnswerList())
+        {
+            if(a.getQuestionId().equals(answer.getQuestionId()))
+            {
+                pollResult.getAnswerList().set(i, answer);
+                answerDa = true;
+                break;
+            }
+            i++;
+        }
+        if(!answerDa)
+        {
+            pollResult.getAnswerList().add(answer);
+        }
+        DateFormat df = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+        Date dateobj = new Date();
+        pollResult.setLastEditAt(df.format(dateobj));
+        LOGGER.info(pollResult.toString());
         pollResultRepository.save(pollResult);
         return answer;
     }

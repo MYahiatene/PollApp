@@ -1,7 +1,9 @@
 package gpse.umfrato.domain.cmd;
 
 import gpse.umfrato.domain.question.Question;
+import gpse.umfrato.domain.question.QuestionRepository;
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
@@ -28,6 +30,10 @@ public class QuestionCmd {
 
     private int textMaximum;
 
+    private boolean textMinBool;
+
+    private boolean textMaxBool;
+
     private boolean hasConsistencyRelationship;
 
     private long questionId;
@@ -44,38 +50,25 @@ public class QuestionCmd {
 
     private int numberOfPossibleAnswers;
 
-    public Question getQuestion() {
-        Question question = null;
-        switch (questionType) {
-            case "TextQuestion":
-                question = new Question(questionMessage, textMultiline, textMinimum, textMaximum);
-                question.setQuestionId(questionId);
-                question.setCategoryId(categoryId);
-                return question;
-            case "RangeQuestion":
-                question = new Question(questionMessage, (endValue == 0.0f ? 5.0f : stepSize), startValue,
-                    (stepSize == 0.0f ? 1.0f : stepSize), (belowMessage == null ? "" : belowMessage),
-                    (aboveMessage == null ? "" : aboveMessage));
-                question.setQuestionId(questionId);
-                question.setCategoryId(categoryId);
-                question.setHasConsistencyRelationship(hasConsistencyRelationship);
-                return question;
-            case "SliderQuestion":
-                question = new Question(questionMessage, (endValue == 0.0f ? 1.0f : stepSize), startValue,
-                    (stepSize == 0.0f ? 0.1f : stepSize), (belowMessage == null ? "" : belowMessage),
-                    (aboveMessage == null ? "" : aboveMessage), hideValues);
-                question.setQuestionId(questionId);
-                question.setCategoryId(categoryId);
-                return question;
-            case "ChoiceQuestion":
-                question = new Question(questionMessage, answerPossibilities, numberOfPossibleAnswers, userAnswers);
-                question.setQuestionId(questionId);
-                question.setCategoryId(categoryId);
-                question.setHasConsistencyRelationship(hasConsistencyRelationship);
-                return question;
-            default: return null;
-        }
-
+    public QuestionCmd(Long pollId, float endValue, float startValue, float stepSize, String belowMessage, String aboveMessage, boolean hideValues, boolean textMultiline, int textMinimum, int textMaximum, boolean textMinBool, boolean textMaxBool, boolean hasConsistencyRelationship, long categoryId, String questionMessage, List<String> answerPossibilities, String questionType, boolean userAnswers, int numberOfPossibleAnswers) {
+        this.pollId = pollId;
+        this.endValue = endValue;
+        this.startValue = startValue;
+        this.stepSize = stepSize;
+        this.belowMessage = belowMessage;
+        this.aboveMessage = aboveMessage;
+        this.hideValues = hideValues;
+        this.textMultiline = textMultiline;
+        this.textMinimum = textMinimum;
+        this.textMaximum = textMaximum;
+        this.textMinBool = textMinBool;
+        this.textMaxBool = textMaxBool;
+        this.hasConsistencyRelationship = hasConsistencyRelationship;
+        this.categoryId = categoryId;
+        this.questionMessage = questionMessage;
+        this.answerPossibilities = answerPossibilities;
+        this.questionType = questionType;
+        this.userAnswers = userAnswers;
+        this.numberOfPossibleAnswers = numberOfPossibleAnswers;
     }
-
 }

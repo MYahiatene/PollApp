@@ -21,6 +21,8 @@ import java.util.stream.Collectors;
 
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
+    static final int EIGHT_HUNDRED_SIXTY_FOUR_MILLION = 864_000_000;
+
     private final AuthenticationManager authenticationManager;
 
     private final SecurityConstants securityConstants;
@@ -61,7 +63,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             .setIssuer(securityConstants.getTokenIssuer())
             .setAudience(securityConstants.getTokenAudience())
             .setSubject(user.getUsername())
-            .setExpiration(new Date(System.currentTimeMillis() + 864_000_000))
+            .setExpiration(new Date(System.currentTimeMillis() + EIGHT_HUNDRED_SIXTY_FOUR_MILLION))
             .claim("rol", roles)
             .compact();
         final ObjectMapper mapper = new ObjectMapper();

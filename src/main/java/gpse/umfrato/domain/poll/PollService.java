@@ -1,6 +1,5 @@
 package gpse.umfrato.domain.poll;
 
-
 import java.util.List;
 
 public interface PollService {
@@ -32,5 +31,7 @@ public interface PollService {
      * @return a number as an anonym Username
      */
     String createAnonymUsername();
+
+    Integer activatePoll(final Long pollId);
 
 }

@@ -1,15 +1,16 @@
 package gpse.umfrato.domain.evaluation;
 
-import gpse.umfrato.domain.evaluation.filterblocks.filterimpl.Filter;
-import gpse.umfrato.domain.evaluation.filterblocks.filterimpl.QuestionFilter;
-import gpse.umfrato.domain.question.Question;
 import gpse.umfrato.domain.answer.Answer;
 import gpse.umfrato.domain.answer.AnswerService;
+import gpse.umfrato.domain.category.Category;
 import gpse.umfrato.domain.category.CategoryService;
 import gpse.umfrato.domain.cmd.FilterCmd;
+import gpse.umfrato.domain.evaluation.filterblocks.filterimpl.Filter;
+import gpse.umfrato.domain.evaluation.filterblocks.filterimpl.QuestionFilter;
 import gpse.umfrato.domain.poll.PollService;
 import gpse.umfrato.domain.pollresult.PollResult;
 import gpse.umfrato.domain.pollresult.PollResultService;
+import gpse.umfrato.domain.question.Question;
 import gpse.umfrato.domain.question.QuestionService;
 import gpse.umfrato.domain.user.UserService;
 
@@ -19,7 +20,7 @@ import java.util.logging.Logger;
 public class Statistics {
 
     private static final double MEDIAN_QUANTILE = 0.5;
-    private static final Logger LOGGER = Logger.getLogger("EvaluationController");
+    private static final Logger LOGGER = Logger.getLogger("Statistics");
     private final AnswerService answerService;
     private final UserService userService;
     private final QuestionService questionService;
@@ -41,10 +42,14 @@ public class Statistics {
         this.pollResultService = pollResultService;
         this.categoryService = categoryService;
         pollId = Long.valueOf(data.getBasePollId());
+        List<Category> categories = categoryService.getAllCategories(pollId);
         if (data.getBaseQuestionIds().isEmpty()) {
-            for (final Question q: questionService.getAllQuestions(pollId)) {
-                questionIds.add(q.getQuestionId());
+            for (final Category c: categories) {
+                for (final Question q: questionService.getAllQuestions(c.getCategoryId())) {
+                    questionIds.add(q.getQuestionId());
+                }
             }
+            LOGGER.info(questionIds.toString());
         } else {
             for (final String qid: data.getBaseQuestionIds()) {
                 questionIds.add(Long.valueOf(qid));
@@ -53,7 +58,7 @@ public class Statistics {
     }
 
     public void loadFilter(final List<FilterCmd> input) {
-        for (final FilterCmd cmd:input) {
+        for (final FilterCmd cmd: input) {
             Filter filter = null;
             if (cmd.getFilterType().equals("questionAnswer")) {
                 filter = new QuestionFilter(Long.valueOf(cmd.getTargetPollId()),
@@ -71,25 +76,28 @@ public class Statistics {
         }
         List<PollResult> prs = pollResultService.getPollResults(pollId);
         if (prs.isEmpty()) {
+            LOGGER.warning("Leere Umfrage");
             return "{\"name\":\"" + pollService.getPoll(pollId.toString()).getPollName() + "\",\"questionList\": []}";
         }
-        for (final Filter f:filters) {
+        for (final Filter f: filters) {
             prs = f.filter(prs);
         }
+        LOGGER.info(prs.toString());
         final DiagramData dd = new DiagramData(pollService.getPoll(prs.get(0).getPollId().toString()), prs,
-                questionService);
+                categoryService, questionService);
         return "{\"name\":\"" + pollService.getPoll(pollId.toString()).getPollName() + "\",\"questionList\": "
                 + dd.toJSON() + "}";
     }
 
     /**
      * This method takes a absolute value and converts it to a relative value.
-     * @param value absolute value.
+     *
+     * @param value       absolute value.
      * @param totalNumber total number of values.
      * @return relative value.
      */
-    public static double getRelativeFrequencyOfOneValue(final double value,
-                                                        final double totalNumber) throws ArithmeticException {
+    public static double getRelativeFrequencyOfOneValue(final double value, final double totalNumber)
+            throws ArithmeticException {
         if (totalNumber < value) {
             throw new ArithmeticException("totalNumber must be larger than value!");
         }
@@ -97,14 +105,15 @@ public class Statistics {
     }
 
     // Maybe list<pollresult>, depends
-    public static double getRelativeFrequencyOfOneValue(final String value,
-                                                        final double totalNumber) throws ArithmeticException {
+    public static double getRelativeFrequencyOfOneValue(final String value, final double totalNumber)
+            throws ArithmeticException {
         return getRelativeFrequencyOfOneValue(Double.parseDouble(value), totalNumber);
     }
 
     /**
      * This method takes a List of double values that represent an absolute number
      * and converts each of them into the corresponding relative value.
+     *
      * @param values all absolute values that were given in a poll.
      * @return a list of relative values.
      */
@@ -128,7 +137,6 @@ public class Statistics {
 
         return listOfValues;
     }*/
-
     public static List<List<Double>> getRelativeFrequencyOfDoubleValues(final List<PollResult> values) {
 
         final List<Double> totalNumbers = new ArrayList<>();
@@ -183,6 +191,7 @@ public class Statistics {
 
     /**
      * This function returns the modus of a list of absolute values.
+     *
      * @param allValues absolute values.
      * @return the highest value.
      */
@@ -199,7 +208,6 @@ public class Statistics {
         return currentHighest;
 
     }*/
-
     public static List<Double> modus(final List<PollResult> allValues) {
         final List<Double> modi = new ArrayList<>();
         // Iterate over answers
@@ -219,6 +227,7 @@ public class Statistics {
     /**
      * This function casts the provided value to an integer and limits it to a range of zero to max minus one
      * to avoid out of range exceptions while accessing arrays or lists.
+     *
      * @param val the value to limit or the possibly out of bounds index to access.
      * @param max one above the biggest value val can be or the size of the array to access.
      * @return the constricted integer.
@@ -272,6 +281,7 @@ public class Statistics {
      * If the list is empty the function returns null.
      * If p is below zero or above one it will be set to zero or one respectively.
      * list of values to pick the quantile from. The values will be sorted inside the function.
+     *
      * @param p the parameter to calculate the quantile for example p=0.5 equals the median and p=1 equals the maximum.
      * @return the value corresponding to the p.
      **/
@@ -303,7 +313,6 @@ public class Statistics {
             return xnp1;
         }
     }*/
-
     private List<Double> pQuantile(final List<PollResult> allValues, double p) {
         if (allValues.isEmpty()) {
             return null;
@@ -338,15 +347,15 @@ public class Statistics {
     }
 
     /**
-    * This function returns the median of a given list of values, if the list is not empty.
-    * @param values list of values to calculate the median from.
-    * @return will return null for empty lists, otherwise will return the median of given list of values.
-    */
+     * This function returns the median of a given list of values, if the list is not empty.
+     *
+     * @param values list of values to calculate the median from.
+     * @return will return null for empty lists, otherwise will return the median of given list of values.
+     */
     /*private static Double median(List<Double> values)
     {
         return pQuantile(values, 0.5);
     }*/
-
     private List<Double> median(final List<PollResult> values) {
         return pQuantile(values, MEDIAN_QUANTILE);
     }
@@ -354,9 +363,10 @@ public class Statistics {
     /**
      * This function cumulates a list of generic types and returns the percentage of values being under the given
      * threshold.
-     * @param values list of values to cumulate.
+     *
+     * @param values    list of values to cumulate.
      * @param threshold to use in function.
-     * @param <T> generic type of items used in values.
+     * @param <T>       generic type of items used in values.
      * @return cumulated values
      */
     private <T extends Number> double cumulate(final List<T> values, final T threshold) { //Kumulierte Häufigkeit

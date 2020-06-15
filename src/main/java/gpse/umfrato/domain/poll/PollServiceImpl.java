@@ -1,9 +1,7 @@
 package gpse.umfrato.domain.poll;
 
-import java.util.logging.Logger;
 import gpse.umfrato.domain.category.CategoryRepository;
 import gpse.umfrato.domain.category.CategoryService;
-import gpse.umfrato.web.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +12,6 @@ import java.util.List;
 @Service
 class PollServiceImpl implements PollService {
 
-    private static final Logger LOGGER = Logger.getLogger("PollService");
     private final PollRepository pollRepository;
     private final CategoryRepository categoryRepository;
     private final CategoryService categoryService;
@@ -24,9 +21,9 @@ class PollServiceImpl implements PollService {
     /**
      * This class constructor initializes the poll repository.
      *
+     * @param pollRepository     the poll repository
      * @param categoryService    the object category service
      * @param categoryRepository the repository where the categories are saved
-     * @param pollRepository     the poll repository
      */
     @Autowired
     public PollServiceImpl(final PollRepository pollRepository, final CategoryService categoryService,
@@ -44,9 +41,8 @@ class PollServiceImpl implements PollService {
     @Override
     @Transactional
     public Poll createPoll(final Poll poll) {
-        // final Poll newPoll = poll;
         pollRepository.save(poll);
-        categoryRepository.save(categoryService.createCategory("Standardkategorie", poll.getPollId()));
+        categoryService.createCategory("Standardkategorie", poll.getPollId());
 
         return poll;
     }
@@ -59,11 +55,6 @@ class PollServiceImpl implements PollService {
     @Override
     public List<Poll> getAllPolls() {
         final List<Poll> poll = pollRepository.findAll();
-
-        if (poll.isEmpty()) {
-            throw new BadRequestException();
-        }
-
         return poll;
     }
 
@@ -86,8 +77,15 @@ class PollServiceImpl implements PollService {
     @Override
     public String createAnonymUsername() {
         this.anonymUsername++;
-        LOGGER.info("anonymUsername = ");
-        LOGGER.info(String.valueOf(this.anonymUsername));
         return String.valueOf(this.anonymUsername);
+    }
+
+    @Override
+    public Integer activatePoll(final Long pollId)
+    {
+        Poll p = pollRepository.getOne(pollId);
+        p.setPollStatus(p.getPollStatus() + 1);
+        pollRepository.save(p);
+        return p.getPollStatus();
     }
 }

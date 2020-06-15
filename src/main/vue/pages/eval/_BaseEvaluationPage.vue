@@ -10,175 +10,183 @@ that each display a basic evaluation of one specific question-->
         <!--        Here we check if we are authenticated and if we could load the data -->
         <AuthGate v-if="isAuthenticated !== true"></AuthGate>
         <v-container v-else-if="diagramData !== undefined">
-            <v-row>
-                <!--        the app bar is used to navigate the page.
+            <v-container v-if="diagramData.length === 0">
+                <v-card>
+                    <v-card-title>Die Umfrage wurde noch nicht beantwortet</v-card-title>
+                </v-card>
+            </v-container>
+            <v-container v-else>
+                <v-row>
+                    <!--        the app bar is used to navigate the page.
 
 
    All the buttons here apply to the entire poll, not one individual question-->
 
-                <v-toolbar>
-                    <!--                    button for refresh-->
+                    <v-toolbar>
+                        <!--                    button for refresh-->
 
-                    <!--                    <v-btn icon onClick="window.location.reload()" color="primary"><v-icon> mdi-refresh</v-icon></v-btn>-->
-                    <v-btn icon color="primary" @click="forceUpdate"><v-icon> mdi-refresh</v-icon></v-btn>
+                        <!--                    <v-btn icon onClick="window.location.reload()" color="primary"><v-icon> mdi-refresh</v-icon></v-btn>-->
+                        <v-btn icon color="primary" @click="forceUpdate"><v-icon> mdi-refresh</v-icon></v-btn>
 
-                    <!--                    title of the poll-->
-                    <v-card-title>{{ pollName }}</v-card-title>
+                        <!--                    title of the poll-->
+                        <v-card-title>{{ pollName }}</v-card-title>
 
-                    <v-dialog v-model="dialog">
-                        <!--             Here we open a setting window
+                        <v-dialog v-model="dialog">
+                            <!--             Here we open a setting window
         where the user can change the visual settings of every question at the same time-->
-                        <v-card
-                            ><visual-evaluation-settings :one-question="false" @update-all-Visuals="updateVisuals">
-                            </visual-evaluation-settings
-                        ></v-card>
-                    </v-dialog>
-                    <v-spacer></v-spacer>
+                            <v-card
+                                ><visual-evaluation-settings :one-question="false" @update-all-Visuals="updateVisuals">
+                                </visual-evaluation-settings
+                            ></v-card>
+                        </v-dialog>
+                        <v-spacer></v-spacer>
 
-                    <v-spacer></v-spacer>
+                        <v-spacer></v-spacer>
 
-                    <!--            This button will lead to the Page where we can filter and analyse the data-->
+                        <!--            This button will lead to the Page where we can filter and analyse the data-->
 
-                    <v-btn :to="'/filterForm'" color="primary">
-                        Analyse
-                    </v-btn>
+                        <v-btn :to="'/filterForm'" color="primary">
+                            Analyse
+                        </v-btn>
 
-                    <!--                   title of the poll-->
+                        <!--                   title of the poll-->
 
-                    <!--            here we have a sub menu, that can hold a list of different options or setings-->
-                    <v-menu bottom left>
-                        <template v-slot:activator="{ on }">
-                            <v-btn icon color="primary" v-on="on">
-                                <v-icon>mdi-dots-vertical</v-icon>
-                            </v-btn>
-                        </template>
+                        <!--            here we have a sub menu, that can hold a list of different options or setings-->
+                        <v-menu bottom left>
+                            <template v-slot:activator="{ on }">
+                                <v-btn icon color="primary" v-on="on">
+                                    <v-icon>mdi-dots-vertical</v-icon>
+                                </v-btn>
+                            </template>
 
-                        <v-list>
-                            <v-list-item v-for="(item, i) in menuItems" :key="i">
-                                <v-list-item-title @click="dialog = true">{{ item.title }}</v-list-item-title>
-                            </v-list-item>
-                        </v-list>
-                    </v-menu>
-                </v-toolbar>
-            </v-row>
+                            <v-list>
+                                <v-list-item v-for="(item, i) in menuItems" :key="i">
+                                    <v-list-item-title @click="dialog = true">{{ item.title }}</v-list-item-title>
+                                </v-list-item>
+                            </v-list>
+                        </v-menu>
+                    </v-toolbar>
+                </v-row>
 
-            <!--             Here the real content of the page starts -->
-            <v-row>
-                <v-col cols="12" lg="12">
-                    <v-data-iterator
-                        :items="items2"
-                        :items-per-page.sync="itemsPerPage"
-                        :page="page"
-                        :search="search"
-                        :sort-by="'id'"
-                        :sort-desc="sortDesc"
-                        hide-default-footer
-                    >
-                        <template v-slot:header>
-                            <!--                            in he toolbar we can search for items and set the number of items per page -->
-                            <v-toolbar class="mb-1">
-                                <v-text-field
-                                    v-model="search"
-                                    clearable
-                                    flat
-                                    hide-details
-                                    prepend-inner-icon="mdi-magnify"
-                                    label="Suche"
-                                ></v-text-field>
-                                <template v-if="$vuetify.breakpoint.mdAndUp">
-                                    <v-spacer></v-spacer>
-                                    <v-btn-toggle v-model="sortDesc" mandatory>
-                                        <v-btn depressed :value="false">
-                                            <v-icon>mdi-arrow-up</v-icon>
-                                        </v-btn>
-                                        <v-btn depressed :value="true">
-                                            <v-icon>mdi-arrow-down</v-icon>
-                                        </v-btn>
-                                    </v-btn-toggle>
-                                </template>
-                                <v-spacer></v-spacer>
-                                <template>
-                                    <v-row class="mt-2" align="center" justify="center">
-                                        <span class="black--text">Fragen pro Seite</span>
-                                        <v-menu offset-y>
-                                            <template v-slot:activator="{ on }">
-                                                <v-btn text class="ml-2" v-on="on">
-                                                    {{ itemsPerPage }}
-                                                    <v-icon>mdi-chevron-down</v-icon>
-                                                </v-btn>
-                                            </template>
-                                            <v-list>
-                                                <v-list-item
-                                                    v-for="(number, index) in itemsPerPageArray"
-                                                    :key="index"
-                                                    @click="updateItemsPerPage(number)"
-                                                >
-                                                    <v-list-item-title>{{ number }}</v-list-item-title>
-                                                </v-list-item>
-                                            </v-list>
-                                        </v-menu>
-
+                <!--             Here the real content of the page starts -->
+                <v-row>
+                    <v-col cols="12" lg="12">
+                        <v-data-iterator
+                            :items="items2"
+                            :items-per-page.sync="itemsPerPage"
+                            :page="page"
+                            :search="search"
+                            :sort-by="'id'"
+                            :sort-desc="sortDesc"
+                            hide-default-footer
+                        >
+                            <template v-slot:header>
+                                <!--                            in he toolbar we can search for items and set the number of items per page -->
+                                <v-toolbar class="mb-1">
+                                    <v-text-field
+                                        v-model="search"
+                                        clearable
+                                        flat
+                                        hide-details
+                                        prepend-inner-icon="mdi-magnify"
+                                        label="Suche"
+                                    ></v-text-field>
+                                    <template v-if="$vuetify.breakpoint.mdAndUp">
                                         <v-spacer></v-spacer>
-
-                                        <span class="mr-4 black--text"> Seite {{ page }} von {{ numberOfPages }} </span>
-                                        <v-btn dark color="secondary" class="mr-1" @click="formerPage">
-                                            <v-icon>mdi-chevron-left</v-icon>
-                                        </v-btn>
-                                        <v-btn dark color="secondary" class="ml-1" @click="nextPage">
-                                            <v-icon>mdi-chevron-right</v-icon>
-                                        </v-btn>
-                                    </v-row>
-                                </template>
-                            </v-toolbar>
-                        </template>
-
-                        <template v-slot:default="props">
-                            <v-row>
-                                <v-col
-                                    v-for="question in props.items"
-                                    :key="question.id"
-                                    cols="12"
-                                    lg="12"
-                                    md="12"
-                                    sm="12"
-                                >
-                                    <div v-if="question.type === 'choice'">
-                                        <!--                                 Here we have the ChoiceQuestionEvaluationWidgets    -->
-                                        <ChoiceQuestionEvaluationWidget
-                                            :key="widgetKey"
-                                            :show-table="showTable"
-                                            :show-diagram="showDiagram"
-                                            :question-id="question.id"
-                                            :question-title="question.title"
-                                            :answer-possibilities="question.answerPossibilities"
-                                            :data="question.data"
-                                            :calculated="question.calculated"
-                                            :background-colors="defaultColors"
-                                            :background-color="defaultColor"
-                                            :multiple-colors="multipleColors"
-                                            :diagram-type="defaultDiagramType"
-                                        ></ChoiceQuestionEvaluationWidget>
-                                    </div>
-
-                                    <div v-else-if="question.type === 'text'">
-                                        <textQuestionEvaluationWidget
-                                            :question-i-d="question.questionID"
-                                            :question-title="question.title"
-                                        >
-                                        </textQuestionEvaluationWidget>
-                                    </div>
+                                        <v-btn-toggle v-model="sortDesc" mandatory>
+                                            <v-btn depressed :value="false">
+                                                <v-icon>mdi-arrow-up</v-icon>
+                                            </v-btn>
+                                            <v-btn depressed :value="true">
+                                                <v-icon>mdi-arrow-down</v-icon>
+                                            </v-btn>
+                                        </v-btn-toggle>
+                                    </template>
                                     <v-spacer></v-spacer>
-                                </v-col>
-                            </v-row>
-                        </template>
-                    </v-data-iterator>
-                </v-col>
-            </v-row>
+                                    <template>
+                                        <v-row class="mt-2" align="center" justify="center">
+                                            <span class="black--text">Fragen pro Seite</span>
+                                            <v-menu offset-y>
+                                                <template v-slot:activator="{ on }">
+                                                    <v-btn text class="ml-2" v-on="on">
+                                                        {{ itemsPerPage }}
+                                                        <v-icon>mdi-chevron-down</v-icon>
+                                                    </v-btn>
+                                                </template>
+                                                <v-list>
+                                                    <v-list-item
+                                                        v-for="(number, index) in itemsPerPageArray"
+                                                        :key="index"
+                                                        @click="updateItemsPerPage(number)"
+                                                    >
+                                                        <v-list-item-title>{{ number }}</v-list-item-title>
+                                                    </v-list-item>
+                                                </v-list>
+                                            </v-menu>
+
+                                            <v-spacer></v-spacer>
+
+                                            <span class="mr-4 black--text">
+                                                Seite {{ page }} von {{ numberOfPages }}
+                                            </span>
+                                            <v-btn dark color="secondary" class="mr-1" @click="formerPage">
+                                                <v-icon>mdi-chevron-left</v-icon>
+                                            </v-btn>
+                                            <v-btn dark color="secondary" class="ml-1" @click="nextPage">
+                                                <v-icon>mdi-chevron-right</v-icon>
+                                            </v-btn>
+                                        </v-row>
+                                    </template>
+                                </v-toolbar>
+                            </template>
+
+                            <template v-slot:default="props">
+                                <v-row>
+                                    <v-col
+                                        v-for="question in props.items"
+                                        :key="question.id"
+                                        cols="12"
+                                        lg="12"
+                                        md="12"
+                                        sm="12"
+                                    >
+                                        <div v-if="question.type === 'choice'">
+                                            <!--                                 Here we have the ChoiceQuestionEvaluationWidgets    -->
+                                            <ChoiceQuestionEvaluationWidget
+                                                :key="widgetKey"
+                                                :show-table="showTable"
+                                                :show-diagram="showDiagram"
+                                                :question-id="question.id"
+                                                :question-title="question.title"
+                                                :answer-possibilities="question.answerPossibilities"
+                                                :data="question.data"
+                                                :calculated="question.calculated"
+                                                :background-colors="defaultColors"
+                                                :background-color="defaultColor"
+                                                :multiple-colors="multipleColors"
+                                                :diagram-type="defaultDiagramType"
+                                            ></ChoiceQuestionEvaluationWidget>
+                                        </div>
+
+                                        <div v-else-if="question.type === 'text'">
+                                            <textQuestionEvaluationWidget
+                                                :questionID="question.questionID"
+                                                :questionTitle="question.title"
+                                            >
+                                            </textQuestionEvaluationWidget>
+                                        </div>
+                                        <v-spacer></v-spacer>
+                                    </v-col>
+                                </v-row>
+                            </template>
+                        </v-data-iterator>
+                    </v-col>
+                </v-row>
+            </v-container>
         </v-container>
         <v-container v-else>
-            <!--             this is displayed, if -->
             <v-card>
-                <v-card-title>Der Server antwortet nicht</v-card-title>
+                <v-card-title>Der Server hat noch nicht geantwortet</v-card-title>
             </v-card>
         </v-container>
     </v-container>

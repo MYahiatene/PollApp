@@ -1,19 +1,17 @@
 package gpse.umfrato.web;
 
-
 import gpse.umfrato.domain.cmd.PollCmd;
+import gpse.umfrato.domain.participationLinks.ParticipationLink;
+import gpse.umfrato.domain.participationLinks.ParticipationLinkService;
 import gpse.umfrato.domain.poll.Poll;
 import gpse.umfrato.domain.poll.PollService;
-import gpse.umfrato.domain.question.Question;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.ArrayList;
+import java.net.MalformedURLException;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -21,21 +19,25 @@ import java.util.logging.Logger;
 @RestController
 @CrossOrigin
 public class PollController {
-    private static final Logger LOGGER = Logger.getLogger("PollController");
+    static final Logger LOGGER = Logger.getLogger("PollController");
     private final PollService pollService;
+    private final ParticipationLinkService participationLinkService;
 
     /**
      * This class constructor initializes the poll service.
      *
      * @param pollService the poll service to work with the poll
+     * @param participationLinkService
      */
     @Autowired
-    public PollController(final PollService pollService) {
+    public PollController(final PollService pollService, ParticipationLinkService participationLinkService) {
         this.pollService = pollService;
+        this.participationLinkService = participationLinkService;
     }
 
     /**
      * This method creates the poll with the given settings from the PollCreation page.
+     *
      * @param pollCmd
      * @return String with PollID or Error
      */
@@ -44,8 +46,9 @@ public class PollController {
     public String createPoll(final @RequestBody PollCmd pollCmd) {
         try {
             final Poll poll = pollService.createPoll(pollCmd.getCmdPoll());
+            participationLinkService.createParticipationLink(poll.getPollId(), "allUsers");
             return "Poll created! with id: " + poll.getPollId().toString();
-        } catch (BadRequestException e) {
+        } catch (BadRequestException | MalformedURLException e) {
             return "Poll creation failed!";
         }
     }
@@ -57,22 +60,23 @@ public class PollController {
      */
     @GetMapping("/poll")
     public List<Poll> getPolls() {
-        if (pollService.getAllPolls().isEmpty()) {
-            throw new BadRequestException();
-        } else {
-            return pollService.getAllPolls();
-        }
+        return pollService.getAllPolls();
+    }
+
+    @PostMapping("/activatePoll/{pollId:\\d+}")
+    public Integer activatePoll(final @PathVariable Long pollId) {
+        return pollService.activatePoll(pollId);
     }
 
     /**
      * This method returns the poll (questions, settings etc).
      *
-     * @param id repreents the pollId
+     * @param link represents the pollLink
      * @return a poll with the pollId given in the PathVariable
      */
-    @GetMapping("/participant/{id:\\d+}")
-    public Poll getPoll(@PathVariable("id") final String id) {
-        Poll poll = pollService.getPoll(id);
+    @GetMapping("/participant/{link}")
+    public Poll getPoll(@PathVariable("link") final String link) {
+        Poll poll = pollService.getPoll(String.valueOf(participationLinkService.getPollIdFromParticipationLink(link)));
         if (poll != null) {
             return poll;
         } else {
@@ -89,12 +93,18 @@ public class PollController {
     // @GetMapping("/getUsername")
     @RequestMapping(value = "/getUsername", method = RequestMethod.POST)
     public String getUsername(final @RequestBody PollCmd pollCmd) {
-        if (pollCmd.getAnonymityStatus().equals("anonym")) {
+        if (pollCmd.getAnonymityStatus().equals("1")) {
             return pollService.createAnonymUsername();
         } else {
             return "Nina";
         }
-
     }
 
+    @GetMapping("/getonepoll")
+    public Poll getPoll(@RequestParam long pollId) {
+        return pollService.getPoll(String.valueOf(pollId));
+    }
+
+
 }
+

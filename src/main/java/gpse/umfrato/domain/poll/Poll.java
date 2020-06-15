@@ -2,11 +2,11 @@ package gpse.umfrato.domain.poll;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import gpse.umfrato.domain.category.Category;
+import gpse.umfrato.domain.question.Question;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-// import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,7 +56,7 @@ public class Poll {
      * This attribute represents the status of the anonymity if it is anonymous, part-anonymous
      * or not anonymous.
      */
-    private String anonymityStatus;
+    private String anonymityStatus; // Anonym = 1, andere KA
 
     /**
      * This attribute represents the chosen background color as hexa.
@@ -71,6 +71,7 @@ public class Poll {
     /**
      * This attribute represents the uploades logo.
      */
+    @Lob
     private String logo;
 
 
@@ -95,6 +96,12 @@ public class Poll {
     private boolean categoryChange;
 
     /**
+     * This attribute represents a question list with all questions of this poll.
+     */
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<Question> questionList = new ArrayList<>();
+
+    /**
      * This attribute represents the link to reach the poll if it is activated.
      */
     private String participationLink;
@@ -107,6 +114,7 @@ public class Poll {
      * This constructor receives a poll name and saves in the poll object.
      *
      * @param pollCreator     the name of the user who creates the poll
+     * @param pollName        the name of the poll
      * @param anonymityStatus the anonymitystatus of the poll
      * @param pollName        the name of the poll
      * @param createdAt       the date when the poll is created

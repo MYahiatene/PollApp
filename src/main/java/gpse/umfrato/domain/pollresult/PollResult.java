@@ -20,7 +20,7 @@ public class PollResult {
 
     private String pollTaker;
 
-    private String lastEditAt = "13.06.2020";
+    private String lastEditAt;
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Answer> answerList = new ArrayList<>();

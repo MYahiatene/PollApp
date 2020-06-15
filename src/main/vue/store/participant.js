@@ -38,6 +38,7 @@ export const getters = {
         return state.numberOfQuestions
     },
     getPoll: (state) => {
+        console.log(state.poll)
         return state.poll
     },
     getCategory: (state) => {
@@ -166,7 +167,7 @@ export const actions = {
     saveAnswer(state, answerObj) {
         this.$axios.defaults.baseURL = 'http://localhost:8088/api/'
         this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('user-token')
-        return this.$axios.post('/poll/pollId:1/addanswer', answerObj)
+        return this.$axios.post('/poll/' + answerObj.pollId + '/addanswer', answerObj)
         // api.saveAnswers(answerObj)
     },
 }
