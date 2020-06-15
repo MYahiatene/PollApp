@@ -6,6 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -40,13 +43,13 @@ import java.util.logging.Logger;
         LOGGER.info(answer.toString());
         PollResult pollResult = pollResultRepository.findPollResultByPollIdAndPollTaker(pollId, username);
         if (pollResult == null) {
-            pollResult = new PollResult(Long.valueOf(pollId), username);
+            pollResult = new PollResult(pollId, username);
         }
         int i = 0;
         boolean answerDa = false;
         for(Answer a:pollResult.getAnswerList())
         {
-            if(a.getQuestionId() == answer.getQuestionId())
+            if(a.getQuestionId().equals(answer.getQuestionId()))
             {
                 pollResult.getAnswerList().set(i, answer);
                 answerDa = true;
@@ -58,6 +61,9 @@ import java.util.logging.Logger;
         {
             pollResult.getAnswerList().add(answer);
         }
+        DateFormat df = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+        Date dateobj = new Date();
+        pollResult.setLastEditAt(df.format(dateobj));
         LOGGER.info(pollResult.toString());
         pollResultRepository.save(pollResult);
         return answer;

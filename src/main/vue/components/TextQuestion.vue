@@ -3,7 +3,7 @@
     <v-container>
         <v-form v-model="valid">
             <v-row no-gutters>
-                <v-switch v-model="newline" label="Mehrzeilige Antworten erlauben"></v-switch>
+                <v-switch label="Mehrzeilige Antworten erlauben"></v-switch>
             </v-row>
             <v-row no-gutters>
                 <v-switch

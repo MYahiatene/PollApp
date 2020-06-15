@@ -146,6 +146,8 @@ export default {
             ],
             positiveWords: [
                 'gut',
+                'super',
+                'großartig',
                 'fesch',
                 'schnafte',
                 'töfte',
