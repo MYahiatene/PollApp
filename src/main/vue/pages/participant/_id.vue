@@ -509,7 +509,7 @@ export default {
          * Calls saveAnswers from the store with the answerobj (cmdAnswer with all given input)
          */
         saveAnswer() {
-            this.answerObj.username = this.getUsername
+            this.answerObj.username += this.getUsername
             this.$store.dispatch('participant/saveAnswer', this.answerObj)
         },
         /**

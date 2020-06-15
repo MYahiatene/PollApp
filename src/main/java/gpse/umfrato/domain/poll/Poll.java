@@ -56,7 +56,7 @@ public class Poll {
      * This attribute represents the status of the anonymity if it is anonymous, part-anonymous
      * or not anonymous.
      */
-    private String anonymityStatus;
+    private String anonymityStatus; // Anonym = 1, andere KA
 
     /**
      * This attribute represents the chosen background color as hexa.
