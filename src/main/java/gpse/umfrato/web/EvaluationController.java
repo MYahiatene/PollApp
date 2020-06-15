@@ -55,7 +55,7 @@ public class EvaluationController {
         if (input.isEmpty()) {
             return "?";
         }
-        Statistics calculation = new Statistics(answerService, userService, questionService, pollService,
+        final Statistics calculation = new Statistics(answerService, userService, questionService, pollService,
                 pollResultService, categoryService, input.get(0));
         calculation.loadFilter(input);
         return calculation.generateDiagram();

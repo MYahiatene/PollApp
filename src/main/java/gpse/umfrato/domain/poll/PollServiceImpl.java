@@ -1,25 +1,23 @@
 package gpse.umfrato.domain.poll;
 
-import java.util.logging.Logger;
-
 import gpse.umfrato.domain.category.CategoryRepository;
 import gpse.umfrato.domain.category.CategoryService;
-import gpse.umfrato.web.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.logging.Logger;
 
 @Service
 class PollServiceImpl implements PollService {
 
-    static final Logger LOGGER = Logger.getLogger("PollService");
-
     private final PollRepository pollRepository;
     private final CategoryRepository categoryRepository;
     private final CategoryService categoryService;
+
+    private int anonymUsername = 0;
 
     /**
      * This class constructor initializes the poll repository.
@@ -33,7 +31,6 @@ class PollServiceImpl implements PollService {
                            final CategoryRepository categoryRepository) {
         this.pollRepository = pollRepository;
         this.categoryService = categoryService;
-        this.categoryRepository = categoryRepository;
     }
 
     /**
@@ -44,9 +41,8 @@ class PollServiceImpl implements PollService {
     @Override
     @Transactional
     public Poll createPoll(final Poll poll) {
-        // final Poll newPoll = poll;
         pollRepository.save(poll);
-        categoryRepository.save(categoryService.createCategory("Standardkategorie", poll.getPollId()));
+        categoryService.createCategory("Standardkategorie", poll.getPollId());
 
         return poll;
     }
@@ -59,11 +55,6 @@ class PollServiceImpl implements PollService {
     @Override
     public List<Poll> getAllPolls() {
         final List<Poll> poll = pollRepository.findAll();
-
-        if (poll.isEmpty()) {
-            throw new BadRequestException();
-        }
-
         return poll;
     }
 
@@ -77,5 +68,17 @@ class PollServiceImpl implements PollService {
     public Poll getPoll(final String id) {
         final Long pollId = Long.valueOf(id);
         return pollRepository.findById(pollId).orElseThrow(EntityNotFoundException::new);
+    }
+
+    /**
+     * This method creates a unique username for anonym polls.
+     * @return a number as an anonym Username
+     */
+    @Override
+    public String createAnonymUsername() {
+        this.anonymUsername++;
+        LOGGER.info("anonymUsername = ");
+        LOGGER.info(String.valueOf(this.anonymUsername));
+        return String.valueOf(this.anonymUsername);
     }
 }

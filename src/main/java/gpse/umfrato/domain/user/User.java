@@ -63,7 +63,7 @@ public class User implements UserDetails {
      * @param lastName  the last name of user
      * @param password  the password of user
      * @param role      user roles
-     * @param email     the email of user
+     * @param email     users email
      */
     public User(final String username, final String password, final String firstName,
                 final String lastName, final String role, final String email) {

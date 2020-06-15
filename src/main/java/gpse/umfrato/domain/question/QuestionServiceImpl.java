@@ -2,6 +2,8 @@ package gpse.umfrato.domain.question;
 
 import gpse.umfrato.domain.category.Category;
 import gpse.umfrato.domain.category.CategoryRepository;
+import gpse.umfrato.domain.category.CategoryService;
+import gpse.umfrato.domain.cmd.QuestionCmd;
 import gpse.umfrato.domain.poll.Poll;
 import gpse.umfrato.domain.poll.PollRepository;
 import gpse.umfrato.domain.poll.PollService;
@@ -20,6 +22,8 @@ public class QuestionServiceImpl implements QuestionService {
      * Initializes the poll service.
      */
     /*default*/ final PollService pollService;
+
+    private final CategoryService categoryService;
 
     /*default*/ final CategoryRepository categoryRepository;
 
@@ -43,43 +47,66 @@ public class QuestionServiceImpl implements QuestionService {
      */
     @Autowired
     public QuestionServiceImpl(final PollRepository pollRepository, final QuestionRepository questionRepository,
-                               final PollService pollService, final CategoryRepository categoryRepository) {
+                               final PollService pollService, final CategoryRepository categoryRepository,
+                               final CategoryService categoryService) {
         this.pollRepository = pollRepository;
         this.questionRepository = questionRepository;
         this.pollService = pollService;
         this.categoryRepository = categoryRepository;
+        this.categoryService = categoryService;
     }
 
 
     /**
      * This method creates a question for a poll.
      *
-     * @param questionMessage the given question
      * @return the question which is created
      */
     @Override
-    public Question addQuestion(final String pollId,
-                                final String questionMessage,
-                                final List<String> answerPossibilities,
-                                final String questionType) {
-        final Question question = new Question(questionMessage, answerPossibilities, questionType);
-        final Category category = categoryRepository.findCategoryByPollId(Long.valueOf(pollId));
-        category.getQuestionList().add(question);
-        question.setCategoryId(category.getCategoryId());
+    public Question addQuestion(final QuestionCmd questionCmd) {
+        Question question = null;
+        switch (questionCmd.getQuestionType()) {
+            case "TextQuestion":
+                question = new Question(questionCmd.getQuestionMessage(), questionCmd.isTextMultiline(), questionCmd.getTextMinimum(), questionCmd.getTextMaximum());
+                question.setTextMinBool(questionCmd.isTextMinBool());
+                question.setTextMaxBool(questionCmd.isTextMaxBool());
+                break;
+            case "RangeQuestion":
+                question = new Question(questionCmd.getQuestionMessage(), (questionCmd.getEndValue() == 0.0f ? 5.0f : questionCmd.getStepSize()), questionCmd.getStartValue(),
+                    (questionCmd.getStepSize() == 0.0f ? 1.0f : questionCmd.getStepSize()), (questionCmd.getBelowMessage() == null ? "" : questionCmd.getBelowMessage()),
+                    (questionCmd.getAboveMessage() == null ? "" : questionCmd.getAboveMessage()));
+                break;
+            case "SliderQuestion":
+                question = new Question(questionCmd.getQuestionMessage(), (questionCmd.getEndValue() == 0.0f ? 1.0f : questionCmd.getStepSize()), questionCmd.getStartValue(),
+                    (questionCmd.getStepSize() == 0.0f ? 0.1f : questionCmd.getStepSize()), (questionCmd.getBelowMessage() == null ? "" : questionCmd.getBelowMessage()),
+                    (questionCmd.getAboveMessage() == null ? "" : questionCmd.getAboveMessage()), questionCmd.isHideValues());
+                break;
+            case "ChoiceQuestion":
+                question = new Question(questionCmd.getQuestionMessage(), questionCmd.getAnswerPossibilities(), questionCmd.getNumberOfPossibleAnswers(), questionCmd.isUserAnswers());
+                break;
+            default:
+                return null;
+        }
+        question.setCategoryId(pollRepository.findById(Long.valueOf(questionCmd.getPollId())).orElseThrow(EntityNotFoundException::new)
+            .getCategoryList().get(0).getCategoryId());
+        pollRepository.findById(Long.valueOf(questionCmd.getPollId())).orElseThrow(EntityNotFoundException::new)
+            .getCategoryList().get(0).getQuestionList().add(question);
         questionRepository.save(question);
-        categoryRepository.save(category);
+
         return question;
     }
 
     /**
      * This method removes a selected question.
      *
-     * @param pollId     the id of the poll where the question is setted
-     * @param questionId the id of the selectes question
+     * @param categoryId the id of the category where the question is set
+     * @param questionId the id of the selected question
      */
     @Override
-    public void removeQuestion(final String pollId, final String questionId) {
+    public void removeQuestion(final String categoryId, final String questionId) {
         try {
+            categoryRepository.findById(Long.valueOf(categoryId))
+                .orElseThrow(EntityNotFoundException::new).getQuestionList().remove(questionRepository.getOne(Long.valueOf(questionId)));
             questionRepository.deleteById(Long.valueOf(questionId));
 
         } catch (EntityNotFoundException e) {
@@ -100,29 +127,59 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     /**
-     * This method returns all questions from a poll.
+     * This method returns all questions with the categoryId
      *
-     * @return all questions from a poll
+     * @param categoryId the id of the category
+     * @return All the questions
      */
     @Override
-    public List<Question> getAllQuestions(final long pollId) {
-        final Poll poll = pollRepository.findById(pollId).orElseThrow(EntityNotFoundException::new);
-        final List<Category> categories = poll.getCategoryList();
-        final List<Question> allQuestions = new ArrayList<>();
-
-        for (final Category g : categories) {
-            allQuestions.addAll(g.getQuestionList());
-        }
-        if (allQuestions.isEmpty()) {
-            throw new BadRequestException();
-        }
-
-        return allQuestions;
+    public List<Question> getAllQuestions(final long categoryId) {
+        return questionRepository.findQuestionsByCategoryId(categoryId);
     }
 
     @Override
-    public List<Question> getQuestionsFromCategory(final long categoryId) {
-        return questionRepository.findQuestionByCategoryId(categoryId);
+    public Question editQuestion(QuestionCmd questionCmd) {
+        Question question = questionRepository.
+            findById(questionCmd.getQuestionId()).orElseThrow(EntityNotFoundException::new);
+
+        switch (questionCmd.getQuestionType()) {
+            case "TextQuestion":
+                question.setQuestionMessage(questionCmd.getQuestionMessage());
+                question.setTextMultiline(questionCmd.isTextMultiline());
+                question.setTextMinBool(questionCmd.isTextMinBool());
+                question.setTextMaxBool(questionCmd.isTextMaxBool());
+                question.setTextMinimum(questionCmd.getTextMinimum());
+                question.setTextMaximum(questionCmd.getTextMaximum());
+                break;
+            case "RangeQuestion":
+                break;
+            case "SliderQuestion":
+                break;
+            case "ChoiceQuestion":
+                question.setAnswerPossibilities(questionCmd.getAnswerPossibilities());
+                question.setNumberOfPossibleAnswers(questionCmd.getNumberOfPossibleAnswers());
+                question.setQuestionMessage(questionCmd.getQuestionMessage());
+                question.setQuestionType(questionCmd.getQuestionType());
+                question.setUserAnswers(questionCmd.isUserAnswers());
+                break;
+            default:
+                return null;
+        }
+        questionRepository.save(question);
+        return question;
+
+    }
+
+    @Override
+    public Question changeCategory(final Long questionId, final Long oldCategoryId, final Long newCategoryId) {
+        Question question = questionRepository.findById(questionId).orElseThrow(EntityNotFoundException::new);
+        Category oldCategory = categoryRepository.findById(oldCategoryId).orElseThrow(EntityNotFoundException::new);
+        oldCategory.getQuestionList()
+            .remove(question);
+        Category newCategory = categoryRepository.findById(newCategoryId).orElseThrow(EntityNotFoundException::new);
+        newCategory.getQuestionList().add(question);
+        question.setCategoryId(newCategoryId);
+        return question;
     }
 
 

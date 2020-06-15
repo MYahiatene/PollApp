@@ -4,8 +4,8 @@ import gpse.umfrato.domain.answer.AnswerService;
 import gpse.umfrato.domain.participationLinks.ParticipationLinkRepository;
 import gpse.umfrato.domain.participationLinks.ParticipationLinkService;
 import gpse.umfrato.domain.poll.Poll;
+import gpse.umfrato.domain.category.CategoryService;
 import gpse.umfrato.domain.poll.PollService;
-import gpse.umfrato.domain.question.Question;
 import gpse.umfrato.domain.question.QuestionService;
 import gpse.umfrato.domain.user.UserService;
 import org.springframework.beans.factory.InitializingBean;
@@ -35,6 +35,8 @@ public class InitializeDatabase implements InitializingBean {
 
     private final ParticipationLinkService participationLinkService;
 
+    private final CategoryService categoryService;
+
     /**
      * This method initializes the database.
      *
@@ -48,6 +50,8 @@ public class InitializeDatabase implements InitializingBean {
     @Autowired
     public InitializeDatabase(final UserService userService, final PollService pollService,
                               final QuestionService questionService, final AnswerService answerService, ParticipationLinkService participationLinkService) {
+                              final QuestionService questionService, final AnswerService answerService,
+                              final CategoryService categoryService) {
 
         this.userService = userService;
 
@@ -58,6 +62,8 @@ public class InitializeDatabase implements InitializingBean {
         this.answerService = answerService;
 
         this.participationLinkService = participationLinkService;
+
+        this.categoryService = categoryService;
     }
 
     /**

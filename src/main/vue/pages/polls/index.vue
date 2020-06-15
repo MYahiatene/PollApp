@@ -1,7 +1,7 @@
 <template>
     <div>
         <AuthGate v-if="isAuthenticated !== true"></AuthGate>
-        <v-container v-else-if="items[0].pollId !== undefined">
+        <v-container v-else-if="getError === undefined">
             <v-layout row wrap>
                 <v-container fluid>
                     <v-data-iterator
@@ -22,7 +22,7 @@
                                     label="Suchen"
                                 ></v-text-field>
                                 <v-spacer />
-                                <v-btn large color="primary" to="/PollCreation">
+                                <v-btn large color="primary" to="./PollCreation">
                                     <v-icon>mdi-plus</v-icon>
                                 </v-btn>
                             </v-toolbar>
@@ -77,6 +77,7 @@
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import AuthGate from '../../components/AuthGate'
+
 export default {
     name: 'Navigation',
     components: { AuthGate },
@@ -119,9 +120,10 @@ export default {
         ...mapGetters({
             items: 'navigation/getPolls',
             isAuthenticated: 'login/isAuthenticated',
+            getError: 'navigation/getError',
         }),
         prepareItems() {
-            const data = Object.assign([{}], this.items)
+            const data = Object.assign([], this.items)
             for (let i = 0; i < data.length; i++) {
                 if (this.items[i].anonymityStatus === '1') {
                     data[i].anonymityString = 'Anonym'

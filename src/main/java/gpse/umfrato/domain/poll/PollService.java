@@ -26,5 +26,10 @@ public interface PollService {
      */
     Poll getPoll(String id);
 
+    /**
+     * This method creates a unique username for anonym polls.
+     * @return a number as an anonym Username
+     */
+    String createAnonymUsername();
 
 }

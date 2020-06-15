@@ -1,4 +1,4 @@
-package gpse.umfrato.domain.evaluation.FilterBlocks.FilterImpl;
+package gpse.umfrato.domain.evaluation.filterblocks.filterimpl;
 
 
 import gpse.umfrato.domain.pollresult.PollResult;

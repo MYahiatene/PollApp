@@ -13,16 +13,13 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.logging.Logger;
 
-@RequestMapping(value = "/api")
+@RequestMapping("/api")
 @RestController
 @CrossOrigin
 public class UserController {
-
-    static final String CALLED_HTTP_POST = "HTTP POST was called";
     private static final Logger LOGGER = Logger.getLogger("UserController");
-
-    final UserRepository userRepository;
     private final UserService userService;
+    private final UserRepository userRepository;
 
     /**
      * This class constructor initializes the user service and user repository.
@@ -53,7 +50,7 @@ public class UserController {
         } catch (BadRequestException e) {
             LOGGER.info("Could not create user");
         }
-        return CALLED_HTTP_POST;
+        return "HTTP POST was called";
     }
 
     @PreAuthorize("hasAuthority('Admin')")
@@ -65,7 +62,7 @@ public class UserController {
         } catch (BadRequestException e) {
             LOGGER.info("Could not edit user");
         }
-        return CALLED_HTTP_POST;
+        return "HTTP POST was called";
     }
 
     /**
@@ -102,8 +99,7 @@ public class UserController {
 
     /**
      * Deletes a user in the data base.
-     *
-     * @param deleteUserCmd the User who has to be deleted
+     * @param deleteUserCmd the user to delete
      */
     @PreAuthorize("hasAuthority('Admin')")
     @PutMapping("/deleteUser")

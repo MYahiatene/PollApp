@@ -1,6 +1,5 @@
 package gpse.umfrato.web;
 
-
 import gpse.umfrato.domain.cmd.PollCmd;
 import gpse.umfrato.domain.participationLinks.ParticipationLink;
 import gpse.umfrato.domain.participationLinks.ParticipationLinkService;
@@ -38,6 +37,7 @@ public class PollController {
 
     /**
      * This method creates the poll with the given settings from the PollCreation page.
+     *
      * @param pollCmd
      * @return String with PollID or Error
      */
@@ -60,32 +60,46 @@ public class PollController {
      */
     @GetMapping("/poll")
     public List<Poll> getPolls() {
-        if (pollService.getAllPolls().isEmpty()) {
-            throw new BadRequestException();
-        } else {
-            return pollService.getAllPolls();
-        }
+        return pollService.getAllPolls();
     }
-
-    @GetMapping("/poll/{id:\\d+}")
-    public Poll getPoll(final @PathVariable String id) {
-        return pollService.getPoll(id);
-    }
-
 
     /**
      * This method returns the poll (questions, settings etc).
      *
-     * @return a selected poll
+     * @param id repreents the pollId
+     * @return a poll with the pollId given in the PathVariable
      */
-    @GetMapping("/participant")
-    public Poll getParticipant() {
-        try {
-            return pollService.getPoll("1");
-        } catch (EntityNotFoundException e) {
-            return null;
+    @GetMapping("/participant/{id:\\d+}")
+    public Poll getPoll(@PathVariable("id") final String id) {
+        Poll poll = pollService.getPoll(id);
+        if (poll != null) {
+            return poll;
+        } else {
+            throw new BadRequestException();
         }
-
     }
 
+    /**
+     * This method returns the username or creates an anonym one if the poll is anonym.
+     *
+     * @param pollCmd represents the given Poll
+     * @return a username
+     */
+    // @GetMapping("/getUsername")
+    @RequestMapping(value = "/getUsername", method = RequestMethod.POST)
+    public String getUsername(final @RequestBody PollCmd pollCmd) {
+        if (pollCmd.getAnonymityStatus().equals("anonym")) {
+            return pollService.createAnonymUsername();
+        } else {
+            return "Nina";
+        }
+    }
+
+    @GetMapping("/getonepoll")
+    public Poll getPoll(@RequestParam long pollId) {
+        return pollService.getPoll(String.valueOf(pollId));
+    }
+
+
 }
+

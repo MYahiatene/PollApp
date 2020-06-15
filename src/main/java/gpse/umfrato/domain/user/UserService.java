@@ -13,8 +13,8 @@ public interface UserService extends UserDetailsService {
      * @param password  the passwor of the user
      * @param firstName first name of the user
      * @param lastName  last name of the user
-     * @param role      the roles from user
-     * @param email the email of the user
+     * @param role      the roles of the user
+     * @param email     the email of the user
      * @return created user
      */
     User createUser(final String username, final String password, final String firstName,

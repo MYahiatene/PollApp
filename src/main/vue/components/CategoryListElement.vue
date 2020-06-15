@@ -21,26 +21,20 @@
         <v-expansion-panel-content :style="backgroundColor">
             <v-row>
                 <v-col>
-                    <v-btn depressed @click="removeCategory(categoryID)">
+                    <v-btn depressed @click="checkCategoryList()">
                         <v-icon color="primary" left>mdi-delete</v-icon>
                         Kategorie
-                    </v-btn>
-                </v-col>
-                <v-col>
-                    <v-btn depressed @click="createQuestion(categoryID)">
-                        <v-icon color="primary" left>mdi-plus</v-icon>
-                        Frage
                     </v-btn>
                 </v-col>
             </v-row>
             <draggable v-model="questions">
                 <v-list v-for="question in questions" :key="question.questionId" :style="backgroundColor">
                     <QuestionListElement
+                        :pollData="pollData"
                         :poll-id="pollID"
-                        :category-id="category.categoryId"
-                        :question-id="question.questionId"
-                        :question-message="question.questionMessage"
-                        :question-type="question.questionType"
+                        :category-id="categoryID"
+                        :question="question"
+                        :category="category"
                     ></QuestionListElement>
                     <v-spacer></v-spacer>
                     <v-spacer></v-spacer>
@@ -60,42 +54,26 @@ export default {
     name: 'CategoryListElement',
     components: { QuestionListElement, draggable },
     props: {
+        pollData: {
+            type: Object,
+        },
         categoryID: {
             type: Number,
         },
         pollID: {
             type: Number,
         },
-    },
-    computed: {
-        ...mapGetters({ getCategory: 'pollOverview/getCategory' }),
-        category() {
-            return this.getCategory(this.categoryID)
-        },
         categoryName: {
-            get() {
-                return this.getCategory(this.categoryID).categoryName
-            },
-            set(data) {
-                const category = {
-                    categoryID: this.categoryID,
-                    name: data,
-                }
-                this.setName(category)
-            },
+            type: String,
         },
         questions: {
-            get() {
-                return this.getCategory(this.categoryID).questionList
-            },
-            set(newList) {
-                const payload = {
-                    questions: newList,
-                    categoryID: this.categoryID,
-                }
-                this.setQuestions(payload)
-            },
+            type: Array,
         },
+        buildIndex: { type: Number },
+        category: { type: Object },
+    },
+    computed: {
+        ...mapGetters({ getCategory: 'pollOverview/getCategory', getPolls: 'navigation/getPolls' }),
 
         // this needs to be computed, so we can get it from the nuxt Config
 
@@ -108,9 +86,21 @@ export default {
         },
     },
     methods: {
+        checkCategoryList() {
+            const polls = this.getPolls
+            polls.forEach((poll) => {
+                if (poll.pollId === this.pollID) {
+                    console.log(poll.categoryList)
+                    if (poll.categoryList.length <= 1) {
+                        alert('Löschen nicht möglich')
+                    } else {
+                        this.removeCategory(this.categoryID)
+                    }
+                }
+            })
+        },
         ...mapMutations({ setName: 'pollOverview/setCategoryName', setQuestions: 'pollOverview/updateQuestionOrder' }),
         ...mapActions({
-            createQuestion: 'pollOverview/createQuestion',
             removeCategory: 'pollOverview/deleteCategory',
         }),
     },

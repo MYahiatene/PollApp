@@ -1,28 +1,18 @@
 <!--this widget enables the user to configure a general question, including all of its common features, to specify-->
 <!--the final question type and to preview (wysiwyg) the final question as it will be displayed to the participants-->
 <template>
-    <div>
-        <div v-if="questionToLoad !== 0">
+    <div v-if="buildIndex > 0">
+        <div>
             <v-card flat class="ma-0">
                 <v-container>
                     <v-row no-gutters>
                         <v-col>
-                            <h3>Frage bearbeiten</h3>
-                        </v-col>
-                        <v-spacer></v-spacer>
-                        <v-spacer></v-spacer>
-                        <v-col>
-                            <v-btn @click="deleteQuestion">
-                                <v-icon color="primary" left>
-                                    mdi-delete
-                                </v-icon>
-                                Löschen
-                            </v-btn>
+                            <h3>{{ header }}</h3>
                         </v-col>
                     </v-row>
                     <v-row no-gutters>
                         <v-textarea
-                            v-model="questionMessage"
+                            v-model="questionMessageModel"
                             label="Fragentext"
                             hint="Was soll den Umfrageteilnehmer gefragt werden?"
                             rows="1"
@@ -30,37 +20,48 @@
                         </v-textarea>
                     </v-row>
                     <v-row no-gutters>
-                        <v-overflow-btn
-                            v-model="questionTypeChoice"
-                            :items="questionWidgets"
-                            label="Fragenart"
-                        ></v-overflow-btn>
+                        <v-select v-model="questionType" :items="questionWidgets" label="Fragenart"></v-select>
                     </v-row>
                     <v-row>
-                        <component :is="questionTypeChoice"></component>
+                        <component
+                            :questionData="questionData"
+                            :categoryData="categoryData"
+                            :is="questionType"
+                            :buildIndex:="buildIndex"
+                        ></component>
+                    </v-row>
+                    <v-row>
+                        <v-col cols="10"></v-col>
+                        <v-col cols="2">
+                            <v-btn @click="createQuestion">
+                                <v-icon color="primary" left>
+                                    mdi-plus
+                                </v-icon>
+                                Speichern
+                            </v-btn>
+                        </v-col>
                     </v-row>
                 </v-container>
-            </v-card>
-        </div>
-        <div v-else>
-            <v-card flat class="mt-1 pa-1">
-                <p class="ma-2">(Wähle eine Frage aus einer Kategorie, um sie zu bearbeiten.)</p>
             </v-card>
         </div>
     </div>
 </template>
 
 <script>
-import { mapMutations, mapGetters, mapActions } from 'vuex'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
 import ChoiceQuestion from './ChoiceQuestion'
-import TextQuestion from './textQuestion'
-import RangeQuestion from './rangeQuestion'
+import TextQuestion from './TextQuestion'
+import RangeQuestion from './RangeQuestion'
 
 export default {
     name: 'QuestionBuildWidget',
     components: { ChoiceQuestion, TextQuestion, RangeQuestion },
+    props: {
+        categoryData: { type: Array },
+    },
     data() {
         return {
+            questionData: { questionTypeChoice: this.questionTypeChoice },
             questionWidgets: [
                 {
                     text: 'Auswahlfrage',
@@ -70,50 +71,96 @@ export default {
                     text: 'Freitextfrage',
                     value: 'TextQuestion',
                 },
-                {
-                    text: 'Intervallfrage',
-                    value: 'RangeQuestion',
-                },
             ],
         }
     },
     computed: {
         ...mapGetters({
-            question: 'pollOverview/getQuestion',
+            getQuestion: 'questionOverview/getQuestion',
             questionToLoad: 'pollOverview/questionToLoad',
+            getQuestionMessage: 'questionOverview/getQuestionMessage',
+            getBuildIndex: 'questionOverview/getBuildIndex',
         }),
-        questionMessage: {
+        buildIndex: {
             get() {
-                return this.question.questionMessage
+                return this.getBuildIndex
             },
-            set(questionMessage) {
-                this.setQuestionMessage(questionMessage)
+            set(value) {
+                this.setBuildIndex(value)
             },
         },
-        questionTypeChoice: {
+        header() {
+            return this.buildIndex === 1 ? 'Frage erstellen' : 'Frage editieren'
+        },
+        questionMessageModel: {
             get() {
-                switch (this.question.questionType) {
-                    case 'ChoiceQuestion':
-                        return 'ChoiceQuestion'
-                    case 'TextQuestion':
-                        return 'TextQuestion'
-                    case 'RangeQuestion':
-                        return 'RangeQuestion'
-                    default:
-                        return ''
-                }
+                return this.getQuestionMessage
             },
-            set(questionType) {
-                this.setQuestionType(questionType)
+            set(value) {
+                this.setQM(value)
+            },
+        },
+        questionType: {
+            get() {
+                return this.getQuestion.questionType
+            },
+            set(value) {
+                this.setQuestionType(value)
             },
         },
     },
     methods: {
+        createQuestion() {
+            console.log('BuildIndex:\n')
+            console.log(this.buildIndex)
+            if (this.buildIndex === 1) {
+                this.$axios
+                    .post('/addquestion', {
+                        pollId: this.$route.params.QuestionOverview,
+                        questionType: this.getQuestion.questionType,
+                        questionMessage: this.getQuestion.questionMessage,
+                        answerPossibilities: this.getQuestion.answerPossibilities,
+                        numberOfPossibleAnswers: this.getQuestion.numberOfPossibleAnswers,
+                        userAnswers: this.getQuestion.userAnswers,
+                        textMultiline: this.getQuestion.textMultiline,
+                        textMinimum: this.getQuestion.textMinimum,
+                        textMinBool: this.getQuestion.textMinBool,
+                        textMaximum: this.getQuestion.textMaximum,
+                        textMaxBool: this.getQuestion.textMaxBool,
+                    })
+                    .then((response) => {
+                        this.categoryData[0].questionList.push(response.data)
+                    })
+            } else {
+                this.$axios.put('/editquestion', {
+                    pollId: this.$route.params.QuestionOverview,
+                    questionType: this.getQuestion.questionType,
+                    questionMessage: this.getQuestion.questionMessage,
+                    answerPossibilities: this.getQuestion.answerPossibilities,
+                    numberOfPossibleAnswers: this.getQuestion.numberOfPossibleAnswers,
+                    userAnswers: this.getQuestion.userAnswers,
+                    questionId: this.getQuestion.questionId,
+                    textMultiline: this.getQuestion.textMultiline,
+                    textMinimum: this.getQuestion.textMinimum,
+                    textMinBool: this.getQuestion.textMinBool,
+                    textMaximum: this.getQuestion.textMaximum,
+                    textMaxBool: this.getQuestion.textMaxBool,
+                })
+            }
+            console.log('BuildIndex:\n')
+            console.log(this.buildIndex)
+            console.log('QuestionMessage:\n' + this.getQuestion.questionMessage)
+            console.log('QuestionId:\n' + this.getQuestion.questionId)
+            this.setBuildIndex(0)
+        },
         ...mapMutations({
             setQuestionMessage: 'pollOverview/setQuestionMessage',
-            setQuestionType: 'pollOverview/setQuestionType',
+            setQuestionType: 'questionOverview/setQuestionType',
+            setBuildIndex: 'questionOverview/setBuildIndex',
+            setQuestion: 'questionOverview/setQuestion',
         }),
         ...mapActions({
+            setQM: 'questionOverview/setQuestionMessage',
             deleteQuestion: 'pollOverview/deleteQuestion',
         }),
     },

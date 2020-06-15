@@ -162,8 +162,8 @@ that each display a basic evaluation of one specific question-->
 
                                     <div v-else-if="question.type === 'text'">
                                         <textQuestionEvaluationWidget
-                                            :question-i-d="question.questionID"
-                                            :question-title="question.title"
+                                            :questionID="question.questionID"
+                                            :questionTitle="question.title"
                                         >
                                         </textQuestionEvaluationWidget>
                                     </div>
@@ -322,8 +322,11 @@ export default {
             this.itemsPerPage = number
         },
 
+        // updates the page
         async forceUpdate() {
+            // gets the stuff from the database
             await this.initialize(this.$route.params.BaseEvaluationPage)
+            // forces the diagrams to update
             this.widgetKey += 1
         },
     },

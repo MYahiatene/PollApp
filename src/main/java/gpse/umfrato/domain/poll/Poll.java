@@ -115,15 +115,16 @@ public class Poll {
      * @param pollCreator     the name of the user who creates the poll
      * @param pollName        the name of the poll
      * @param anonymityStatus the anonymitystatus of the poll
-     * @param pollStatus      the status (activated/deactivated) of the poll
+     * @param pollName        the name of the poll
      * @param createdAt       the date when the poll is created
      * @param activatedAt     the date when the poll activated
      * @param deactivatedAt   the date when the poll deactivates
-     * @param backgroundColor the background color
-     * @param categoryChange  the category change
-     * @param fontColor       the font color
-     * @param logo            the logo
-     * @param visibility      the visibility
+     * @param pollStatus      the status (activated/deactivated) of the poll
+     * @param backgroundColor the background color displayed on the website
+     * @param fontColor       the color used for all questions
+     * @param logo            the logo displayed on the website
+     * @param visibility      whether or not a rolling question number should be displayed
+     * @param categoryChange  whether or not it is possible to go to an already answered category
      */
     public Poll(final String pollCreator, final String anonymityStatus, final String pollName, final String createdAt,
                 final String activatedAt, final String deactivatedAt, final int pollStatus,

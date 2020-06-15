@@ -2,6 +2,8 @@ package gpse.umfrato.domain.evaluation;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import gpse.umfrato.domain.answer.Answer;
+import gpse.umfrato.domain.category.Category;
+import gpse.umfrato.domain.category.CategoryService;
 import gpse.umfrato.domain.poll.Poll;
 import gpse.umfrato.domain.pollresult.PollResult;
 import gpse.umfrato.domain.question.Question;
@@ -15,6 +17,13 @@ import java.util.List;
 public class DiagramData {
 
     public static final String DIVIDER_STRING = " / ";
+
+    private final List<QuestionData> questions = new ArrayList<>();
+    @JsonIgnore
+    private final QuestionService questionService;
+    private final CategoryService categoryService;
+    @JsonIgnore
+    private final Poll poll;
 
     interface QuestionData {
         enum QuestionType { CHOICE_QUESTION, TEXT_QUESTION, RANGE_QUESTION, SLIDER_QUESTION }
@@ -30,26 +39,27 @@ public class DiagramData {
 
     @Getter
     @Setter
-    private class ChoiceData implements QuestionData {
-        long questionId;
-        String questionTitle;
+    protected static class ChoiceData implements QuestionData {
+        private long questionId;
+        private String questionTitle;
         private List<String> answerPossibilities;
         private List<Integer> data;
         private List<Double> relative;
         private String median;
         private String mode;
 
-        ChoiceData(long questionId, String questionMessage, List<String> answerPossibilities) {
+        ChoiceData(final long questionId, final String questionMessage,
+                                 final List<String> answerPossibilities) {
             this.questionId = questionId;
             this.questionTitle = questionMessage;
             this.answerPossibilities = answerPossibilities;
             data = new ArrayList<>();
-            for (String ignored: answerPossibilities) {
+            for (final String ignored: answerPossibilities) {
                 data.add(0);
             }
         }
 
-        public void addAnswer(int answerPossibility) {
+        public void addAnswer(final int answerPossibility) {
             data.set(answerPossibility, data.get(answerPossibility) + 1);
         }
 
@@ -61,7 +71,7 @@ public class DiagramData {
         @Override
         public void statistics() {
             int size = 0;
-            List<Integer> maxima = new ArrayList<>();
+            final List<Integer> maxima = new ArrayList<>();
             int max = 0;
             //Häufigste Antwort und Menge der Antworten raussuchen
             for (int i = 0; i < data.size(); i++) {
@@ -74,8 +84,8 @@ public class DiagramData {
                     maxima.add(i);
                 }
             }
-            StringBuilder modeText = new StringBuilder();
-            for (Integer i: maxima) {
+            final StringBuilder modeText = new StringBuilder();
+            for (final Integer i: maxima) {
                 modeText.append(answerPossibilities.get(i)).append(DIVIDER_STRING);
             }
             modeText.replace(modeText.lastIndexOf(DIVIDER_STRING), modeText.length(), "");
@@ -101,15 +111,15 @@ public class DiagramData {
 
         @Override
         public String toJSON() {
-            StringBuilder json = new StringBuilder();
+            final StringBuilder json = new StringBuilder();
             json.append("{\"id\": ").append(questionId)
                     .append(",\"type\": ").append("\"choice\"")
                     .append(",\"title\": \"").append(questionTitle)
                     .append("\",\"answerPossibilities\": [");
             for (int i = 0; i < answerPossibilities.size(); i++) {
-                json.append("\"").append(answerPossibilities.get(i)).append("\"");
+                json.append('\"').append(answerPossibilities.get(i)).append('\"');
                 if (i < answerPossibilities.size() - 1) {
-                    json.append(",");
+                    json.append(',');
                 }
             }
             json.append("],\"data\": ").append(data)
@@ -124,15 +134,15 @@ public class DiagramData {
 
     @Getter
     @Setter
-    private class TextData implements QuestionData {
-        long questionId;
-        String questionTitle;
+    protected static class TextData implements QuestionData {
+        private long questionId;
+        private String questionTitle;
         private List<Long> ids = new ArrayList<>();
         private List<String> texts = new ArrayList<>();
         private List<String> editedDates = new ArrayList<>();
         private List<String> creator = new ArrayList<>();
 
-        TextData(long questionId, String questionMessage) {
+        TextData(final long questionId, final String questionMessage) {
             this.questionId = questionId;
             this.questionTitle = questionMessage;
         }
@@ -149,20 +159,20 @@ public class DiagramData {
 
         @Override
         public String toJSON() {
-            StringBuilder json = new StringBuilder();
+            final StringBuilder json = new StringBuilder();
             json.append("{\"id\": ").append(questionId)
                     .append(",\"type\": ").append("\"text\"")
                     .append(",\"title\": \"").append(questionTitle)
                     .append("\",\"answers\": [");
             for (int i = 0; i < ids.size(); i++) {
-                json.append("{")
+                json.append('{')
                         .append("\"id\": ").append(ids.get(i))
                         .append(",\"text\": \"").append(texts.get(i))
                         .append("\",\"answered\": \"").append(editedDates.get(i))
                         .append("\",\"creator\": \"").append(creator.get(i))
                         .append("\"}");
                 if (i + 1 < ids.size()) {
-                    json.append(",");
+                    json.append(',');
                 }
             }
             json.append("]}");
@@ -170,146 +180,98 @@ public class DiagramData {
         }
     }
 
-    @Getter
-    @Setter
-    private static class RangeData implements QuestionData {
-        long questionId;
-        String questionTitle;
-
-        RangeData(long questionId, String questionMessage) {
-            this.questionId = questionId;
-            this.questionTitle = questionMessage;
-        }
-
-        @Override public QuestionType getQuestionType() {
-            return QuestionType.RANGE_QUESTION;
-        }
-
-        @Override public void statistics() {
-
-        }
-
-        @Override public String toJSON() {
-            return "{\"id\": " + questionId + ",\"type\": " + "\"text\"" + ",\"title\": " + questionTitle + "}";
-        }
-    }
-
-    @Getter
-    @Setter
-    private static class SliderData implements QuestionData {
-        long questionId;
-        String questionTitle;
-
-        SliderData(long questionId, String questionMessage) {
-            this.questionId = questionId;
-            this.questionTitle = questionMessage;
-        }
-
-        @Override public QuestionType getQuestionType() {
-            return QuestionType.SLIDER_QUESTION;
-        }
-
-        @Override public void statistics() {
-
-        }
-
-        @Override public String toJSON() {
-            return "{\"id\": " + questionId + ",\"type\": " + "\"text\"" + ",\"title\": " + questionTitle + "}";
-        }
-    }
-
-    private final List<QuestionData> questions = new ArrayList<>();
-    @JsonIgnore
-    private final QuestionService questionService;
-    @JsonIgnore
-    private final Poll poll;
-
-    public DiagramData(Poll poll, List<PollResult> results, QuestionService questionService) {
+    public DiagramData(final Poll poll, final List<PollResult> results, final CategoryService categoryService, final QuestionService questionService) {
+        this.categoryService = categoryService;
         this.questionService = questionService;
         this.poll = poll;
         loadData(results);
     }
 
-    private void loadData(List<PollResult> results) {
-        for (Question q: questionService.getAllQuestions(poll.getPollId())) {
-            QuestionData qd = null;
-            switch (q.getQuestionType()) {
-                case "ChoiceQuestion": {
-                    qd = new ChoiceData(q.getQuestionId(), q.getQuestionMessage(), q.getAnswerPossibilities());
-                    break;
+    private void loadData(final List<PollResult> results) {
+        List<Category> categories = categoryService.getAllCategories(poll.getPollId());
+        for(final Category c:categories) {
+            for (final Question q: questionService.getAllQuestions(c.getCategoryId())) {
+                QuestionData qd = null;
+                switch (q.getQuestionType()) {
+                    case "ChoiceQuestion":
+                        qd = new ChoiceData(q.getQuestionId(), q.getQuestionMessage(), q.getAnswerPossibilities());
+                        break;
+                    case "TextQuestion":
+                        qd = new TextData(q.getQuestionId(), q.getQuestionMessage());
+                        break;
+                    case "RangeQuestion":
+                        List<String> answerPossibilities = new ArrayList<>();
+                        if (q.getBelowMessage() != null && !q.getBelowMessage().isEmpty()) {
+                            answerPossibilities.add(q.getBelowMessage());
+                        }
+                        for (double i = q.getStartValue(); i < q.getEndValue(); ) {
+                            answerPossibilities.add(i + " - " + (i += q.getStepSize()));
+                        }
+                        if (q.getAboveMessage() != null && !q.getAboveMessage().isEmpty()) {
+                            answerPossibilities.add(q.getAboveMessage());
+                        }
+                        qd = new ChoiceData(q.getQuestionId(), q.getQuestionMessage(), answerPossibilities);
+                        break;
+                    case "SliderQuestion":
+                        List<String> answerPossibilities2 = new ArrayList<>();
+                        for (double i = q.getStartValue(); i < q.getEndValue(); ) {
+                            answerPossibilities2.add(i + " - " + (i += q.getStepSize()));
+                        }
+                        qd = new ChoiceData(q.getQuestionId(), q.getQuestionMessage(), answerPossibilities2);
+                        break;
+                    default:
+                        break;
                 }
-                case "TextQuestion": {
-                    qd = new TextData(q.getQuestionId(), q.getQuestionMessage());
-                    break;
+                if (qd != null) {
+                    questions.add(qd);
                 }
-                case "RangeQuestion": {
-                    qd = new RangeData(q.getQuestionId(), q.getQuestionMessage());
-                    break;
-                }
-                case "SliderQuestion": {
-                    qd = new SliderData(q.getQuestionId(), q.getQuestionMessage());
-                    break;
-                }
-                default: {
-
-                }
-            }
-            if (qd != null) {
-                questions.add(qd);
             }
         }
-        for (PollResult pr: results) {
-            for (Answer a: pr.getAnswerList()) {
-                for (QuestionData qd: questions) {
+        for (final PollResult pr: results) {
+            System.out.println(pr.toString());
+            for (final Answer a: pr.getAnswerList()) {
+                for (final QuestionData qd: questions) {
                     if (qd.getQuestionId() == a.getQuestionId()) {
                         switch (qd.getQuestionType()) {
-                            case CHOICE_QUESTION: {
-                                ChoiceData cd = (ChoiceData) qd;
-                                for (String s: a.getGivenAnswerList()) {
-                                    cd.addAnswer(Integer.parseInt(s));
-                                }
+                            case CHOICE_QUESTION:
+                                final ChoiceData cd = (ChoiceData) qd;
+                                cd.addAnswer(Integer.parseInt(a.getGivenAnswerList().get(a.getGivenAnswerList().size()-1)));
+                                /*for (final String s: a.getGivenAnswerList()) {
+                                }*/
                                 break;
-                            }
-                            case TEXT_QUESTION: {
+                            case TEXT_QUESTION:
                                 if (!a.getGivenAnswerList().isEmpty()) {
-                                    TextData td = (TextData) qd;
+                                    final TextData td = (TextData) qd;
                                     td.getCreator().add(pr.getPollTaker());
                                     //nur die neuste (letzte) Antwort
                                     td.getTexts().add(a.getGivenAnswerList().get(a.getGivenAnswerList().size() - 1));
                                     td.getEditedDates().add(pr.getLastEditAt());
-                                    //vielleicht auch eine neue ID, aber ich wüsste nciht warum
+                                    //vielleicht auch eine neue ID, aber ich wüsste nicht warum, da nur key für frontend
                                     td.getIds().add(pr.getPollResultId());
                                 }
                                 break;
-                            }
-                            case RANGE_QUESTION: {
-                                RangeData rd = (RangeData) qd;
+                            default:
                                 break;
-                            }
-                            case SLIDER_QUESTION: {
-                                SliderData sd = (SliderData) qd;
-                                break;
-                            }
                         }
                     }
                 }
             }
         }
-        for (QuestionData qd: questions) {
+        for (final QuestionData qd: questions) {
             qd.statistics();
         }
     }
 
     public String toJSON() {
-        StringBuilder json = new StringBuilder();
-        json.append("[");
+        final StringBuilder json = new StringBuilder();
+        json.append('[');
         for (int i = 0; i < questions.size(); i++) {
             json.append(questions.get(i).toJSON());
             if (i + 1 < questions.size()) {
-                json.append(",");
+                json.append(',');
             }
         }
-        json.append("]");
+        json.append(']');
         return json.toString();
     }
 

@@ -49,20 +49,16 @@
 
 <script>
 import { mdiBrightness4 } from '@mdi/js'
-import { mapGetters, mapActions } from 'vuex'
+import { mapGetters } from 'vuex'
 export default {
     data() {
         return {
+            id: 0,
             poll: null,
             goDark: false,
             fixed: false,
             modeIcon: mdiBrightness4,
             items: [
-                {
-                    icon: 'mdi-pencil',
-                    title: 'Teilnahme',
-                    to: '/participant',
-                },
                 {
                     icon: 'mdi-pencil',
                     title: 'Umfragen',
@@ -86,6 +82,7 @@ export default {
      * Calls showPoll (below mapAction) to get PollData for background color.
      */
     mounted() {
+        this.id = this.$route.params.id
         this.showPoll()
     },
     computed: {
@@ -94,10 +91,10 @@ export default {
          * poll by the user. If they haven't choosen one, the color specified in the nuxt.config.js is used.
          */
         backgroundColor() {
-            if (this.goDark) {
-                return 'background:' + this.$vuetify.theme.themes.dark.background
-            } else if (this.getPoll[1].data.backgroundColor !== null) {
+            if (this.getPoll[1].data.backgroundColor !== null) {
                 return 'background:' + this.getPoll[1].data.backgroundColor // '#c42843' // insert picked color here
+            } else if (this.goDark) {
+                return 'background:' + this.$vuetify.theme.themes.dark.background
             } else {
                 return 'background:' + this.$vuetify.theme.themes.light.background
             }
@@ -122,9 +119,13 @@ export default {
             }
         },
         /**
+
          * Calls showPoll in store/participant to get PollData for the background color.
+
          */
-        ...mapActions({ showPoll: 'participant/showPoll' }),
+        showPoll() {
+            this.$store.dispatch('participant/showPoll', this.id)
+        },
     },
 }
 </script>

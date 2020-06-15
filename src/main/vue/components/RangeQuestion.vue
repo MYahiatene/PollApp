@@ -49,8 +49,10 @@
 <script>
 // TODO: Forms vollenden (keine Priorität)
 import { mapGetters, mapMutations } from 'vuex'
+
 export default {
     name: 'RangeQuestion',
+    props: { pollData: { type: Array }, questionData: { type: Object }, buildIndex: { type: Number } },
     data() {
         return {
             openLower: false,

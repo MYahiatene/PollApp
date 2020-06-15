@@ -32,9 +32,9 @@ public class AnswerController {
      *
      * @param answerCmd the answerCmd which has the requested data
      */
-    @PostMapping("/poll/pollId:1/addanswer") // {pollId:\d+}
-    public void addAnswer(final @RequestBody AnswerCmd answerCmd) {
-        answerService.giveAnswer(answerCmd.getUsername(), answerCmd.getPollId(),
+    @PostMapping("/poll/{pollId:\\d+}/addanswer") // {pollId:\d+}
+    public void addAnswer(final @PathVariable Long pollId, final @RequestBody AnswerCmd answerCmd) {
+        answerService.giveAnswer(answerCmd.getUsername(), pollId,
             answerCmd.getQuestionId(), answerCmd.getAnswerList());
     }
 

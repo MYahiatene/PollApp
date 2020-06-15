@@ -1,4 +1,4 @@
-package gpse.umfrato.domain.evaluation.FilterBlocks.FilterImpl;
+package gpse.umfrato.domain.evaluation.filterblocks.filterimpl;
 
 import gpse.umfrato.domain.answer.Answer;
 import gpse.umfrato.domain.pollresult.PollResult;
@@ -17,24 +17,23 @@ private final List<String> targetAnswerPossibilities;
 
 private final boolean absoluteMatch;
 
-@Override public List<PollResult> filter(List<PollResult> input) {
-    int index = 0;
-    List<PollResult> filteredList = new ArrayList<>();
-    for(PollResult pr: input)
-    {
+@Override public List<PollResult> filter(final List<PollResult> input) {
+    final List<PollResult> filteredList = new ArrayList<>();
+    for (final PollResult pr: input) {
         boolean match = false;
-        if(pr.getPollId().equals(targetPollId)) {
-            for (Answer a: pr.getAnswerList()) {
+        if (pr.getPollId().equals(targetPollId)) {
+            for (final Answer a: pr.getAnswerList()) {
                 if (a.getQuestionId().equals(targetQuestionId)) {
                     if (absoluteMatch) {
                         match = true;
-                        for (String ga: a.getGivenAnswerList()) {
+                        for (final String ga: a.getGivenAnswerList()) {
                             if (!targetAnswerPossibilities.contains(ga)) {
                                 match = false;
+                                break;
                             }
                         }
                     } else {
-                        for (String ga: a.getGivenAnswerList()) {
+                        for (final String ga: a.getGivenAnswerList()) {
                             if (targetAnswerPossibilities.contains(ga)) {
                                 match = true;
                                 break;
@@ -45,16 +44,14 @@ private final boolean absoluteMatch;
                 }
             }
         }
-        if(match)
-        {
+        if (match) {
             filteredList.add(pr);
         }
-        index++;
     }
     return filteredList;
 }
 
-@Override public List<Double> compute(List<PollResult> input) {
+@Override public List<Double> compute(final List<PollResult> input) {
     return null;
 }
 }

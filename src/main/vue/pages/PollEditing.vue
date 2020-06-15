@@ -39,7 +39,7 @@
 
 <script>
 import draggable from 'vuedraggable'
-import QuestionBuildWidget from '../components/QuestionBuildWidget'
+import QuestionBuildWidget from '../components/QuestionEditWidget'
 
 const axios = require('axios')
 const instance = axios.create({
