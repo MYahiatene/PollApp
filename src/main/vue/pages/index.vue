@@ -104,7 +104,7 @@ export default {
                     subtitle: 'Teilgenommen: 52% (18/34) Tage übrig: 5 (26.05.2020)',
                     iconAction: 'mdi-magnify',
                     actionLink: '/eval/1',
-                    iconStatus: 'mdi-pause',
+                    iconStatus: 'mdi-stop',
                 },
                 {
                     title: 'Weihnachtsfeier 2019 Rückblick',

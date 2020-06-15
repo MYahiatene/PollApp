@@ -79,4 +79,13 @@ class PollServiceImpl implements PollService {
         this.anonymUsername++;
         return String.valueOf(this.anonymUsername);
     }
+
+    @Override
+    public Integer activatePoll(final Long pollId)
+    {
+        Poll p = pollRepository.getOne(pollId);
+        p.setPollStatus(p.getPollStatus() + 1);
+        pollRepository.save(p);
+        return p.getPollStatus();
+    }
 }

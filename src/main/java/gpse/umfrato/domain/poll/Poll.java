@@ -71,6 +71,7 @@ public class Poll {
     /**
      * This attribute represents the uploades logo.
      */
+    @Lob
     private String logo;
 
 

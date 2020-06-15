@@ -145,12 +145,12 @@
                         <!--Pick own backgroundColor and save it-->
                         <v-col cols="12" md="4">
                             Hintergrundfarbe
-                            <v-color-picker @change="getBackgroundColor" />
+                            <v-color-picker @update:color="getBackgroundColor" />
                         </v-col>
                         <!--Pick own backgroundColor and save it-->
                         <v-col cols="12" md="4">
                             Schriftfarbe
-                            <v-color-picker @change="getFontColor" />
+                            <v-color-picker @update:color="getFontColor" />
                         </v-col>
                         <!--Pick a file for upload and logo is shown for verification-->
                         <v-col cols="12" md="4">
@@ -242,6 +242,7 @@ export default {
                 fontColor: this.fontColor,
                 logo: this.logo,
             }
+            console.log(obj)
             this.$axios.post('/createpoll', obj).catch()
             this.$router.push('/polls')
         },
@@ -301,14 +302,14 @@ export default {
          * @param e Change-Event
          */
         getBackgroundColor(e) {
-            this.backgroundColor = e.payload[0].hexa
+            this.backgroundColor = e.hexa
         },
         /**
          * Get's picked font color and saves it as this.fontColor.
          * @param e Change-Event
          */
         getFontColor(e) {
-            this.fontColor = e.payload[0].hexa
+            this.fontColor = e.hexa
         },
     },
 }

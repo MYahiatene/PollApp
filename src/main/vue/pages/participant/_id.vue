@@ -7,6 +7,7 @@
                 <img :src="getPoll[1].data.logo" alt="failedToLoadLogo" />
             </div>
             <v-content>
+                <v-row> </v-row>
                 <v-row>
                     <v-col cols="8">
                         <v-card>
@@ -307,6 +308,9 @@ export default {
          * @returns {backgroundColor}
          */
         backgroundColor() {
+            if (this.getPoll[1].data.backgroundColor === null) {
+                return this.$vuetify.theme.currentTheme.background
+            }
             return this.getPoll[1].data.backgroundColor
         },
         /**

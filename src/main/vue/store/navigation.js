@@ -18,17 +18,10 @@ export const mutations = {
     saveError(state, error) {
         state.error = error
     },
-    setPollActive(state, pollId) {
+    setPollStatus(state, { pollId, data }) {
         for (let i = 0; i < state.Polls.length; i++) {
             if (state.Polls[i].pollId === pollId) {
-                state.Polls[i].pollStatus = 1
-            }
-        }
-    },
-    setPollFinished(state, pollId) {
-        for (let i = 0; i < state.Polls.length; i++) {
-            if (state.Polls[i].pollId === pollId) {
-                state.Polls[i].pollStatus = 2
+                state.Polls[i].pollStatus = data.data
             }
         }
     },
@@ -42,6 +35,18 @@ export const actions = {
         })
         if (error.length === 0) {
             commit('setPolls', data)
+        } else {
+            commit('saveError', error)
+        }
+    },
+    async activatePoll({ commit }, pollId) {
+        let error = ''
+        const data = await this.$axios.post('/activatePoll/' + pollId).catch((reason) => {
+            console.log(reason)
+            error = reason
+        })
+        if (error.length === 0) {
+            commit('setPollStatus', { pollId, data })
         } else {
             commit('saveError', error)
         }

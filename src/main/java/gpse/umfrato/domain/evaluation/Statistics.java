@@ -20,7 +20,7 @@ import java.util.logging.Logger;
 public class Statistics {
 
     private static final double MEDIAN_QUANTILE = 0.5;
-    private static final Logger LOGGER = Logger.getLogger("EvaluationController");
+    private static final Logger LOGGER = Logger.getLogger("Statistics");
     private final AnswerService answerService;
     private final UserService userService;
     private final QuestionService questionService;
@@ -49,6 +49,7 @@ public class Statistics {
                     questionIds.add(q.getQuestionId());
                 }
             }
+            LOGGER.info(questionIds.toString());
         } else {
             for (final String qid: data.getBaseQuestionIds()) {
                 questionIds.add(Long.valueOf(qid));
@@ -75,6 +76,7 @@ public class Statistics {
         }
         List<PollResult> prs = pollResultService.getPollResults(pollId);
         if (prs.isEmpty()) {
+            LOGGER.warning("Leere Umfrage");
             return "{\"name\":\"" + pollService.getPoll(pollId.toString()).getPollName() + "\",\"questionList\": []}";
         }
         for (final Filter f: filters) {

@@ -58,6 +58,7 @@ import java.util.logging.Logger;
         {
             pollResult.getAnswerList().add(answer);
         }
+        LOGGER.info(pollResult.toString());
         pollResultRepository.save(pollResult);
         return answer;
     }

@@ -63,10 +63,15 @@ public class PollController {
         return pollService.getAllPolls();
     }
 
+    @PostMapping("/activatePoll/{pollId:\\d+}")
+    public Integer activatePoll(final @PathVariable Long pollId) {
+        return pollService.activatePoll(pollId);
+    }
+
     /**
      * This method returns the poll (questions, settings etc).
      *
-     * @param id repreents the pollId
+     * @param link represents the pollLink
      * @return a poll with the pollId given in the PathVariable
      */
     @GetMapping("/participant/{link}")

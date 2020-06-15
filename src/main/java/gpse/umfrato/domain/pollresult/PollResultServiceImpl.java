@@ -6,10 +6,12 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.ListIterator;
+import java.util.logging.Logger;
 
 @Service
 public class PollResultServiceImpl implements PollResultService {
 
+    private static final Logger LOGGER = Logger.getLogger("PollResultServiceImpl");;
     private final PollResultRepository pollResultRepository;
 
     /**
@@ -46,6 +48,7 @@ public class PollResultServiceImpl implements PollResultService {
 
     @Override
     public List<PollResult> getPollResults(final Long pollId) {
+        LOGGER.info(pollId.toString());
         return pollResultRepository.findPollResultsByPollId(pollId);
     }
 
