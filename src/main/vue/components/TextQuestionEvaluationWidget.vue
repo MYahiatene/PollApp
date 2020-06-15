@@ -64,9 +64,9 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+    import {mapActions, mapGetters} from 'vuex'
 
-export default {
+    export default {
     name: 'TextQuestionEvaluationWidget',
     props: {
         questionID: {
@@ -521,9 +521,7 @@ export default {
         }),
 
         answers() {
-            console.log('Fuck this')
-            console.log(this.diagramData)
-            return this.diagramData[6].answers
+            return this.diagramData[this.questionID].answers
         },
 
         prepareAnswers() {

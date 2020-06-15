@@ -80,8 +80,9 @@ public class Statistics {
         for (final Filter f: filters) {
             prs = f.filter(prs);
         }
+        LOGGER.info(prs.toString());
         final DiagramData dd = new DiagramData(pollService.getPoll(prs.get(0).getPollId().toString()), prs,
-                questionService);
+                categoryService, questionService);
         return "{\"name\":\"" + pollService.getPoll(pollId.toString()).getPollName() + "\",\"questionList\": "
                 + dd.toJSON() + "}";
     }

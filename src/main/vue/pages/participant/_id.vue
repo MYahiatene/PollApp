@@ -56,16 +56,15 @@
                                 </div>
                                 <div v-else-if="question.questionType === 'ChoiceQuestion'">
                                     <!--Radio Button since only one answer possible-->
-                                    <div v-if="question.numberOfPossiblesAnswers === 1">
+                                    <div v-if="question.numberOfPossibleAnswers === 1">
                                         <v-card-text>
                                             <v-radio-group v-model="radioGroup">
                                                 <v-radio
                                                     v-for="answer in question.answerPossibilities"
-                                                    class="my-n2"
                                                     :key="answer"
                                                     :label="`${answer}`"
                                                     :value="answer"
-                                                    @change="saveAnswerCheckbox($event, question, answer)"
+                                                    @change="saveAnswerRadioButton(question, answer)"
                                                 ></v-radio>
                                             </v-radio-group>
                                         </v-card-text>
@@ -180,8 +179,9 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
-export default {
+    import {mapGetters} from 'vuex'
+
+    export default {
     name: 'Participant',
     layout: 'participant', // uses special layout/participant instead of default-layout
     data() {
@@ -199,7 +199,7 @@ export default {
             value1: 0,
             value2: 0,
             answerObj: {
-                username: 'Nina',
+                username: 'Anonym',
                 anonymityStatus: 'anonym',
                 questionId: '1',
                 answerList: [],
@@ -374,7 +374,33 @@ export default {
          * @param question The question object, so it can get the QuestionID
          * @param answer The answer object, so it can get the answer possibilities.
          */
+        saveAnswerRadioButton(question, answer) {
+            console.log(question)
+            console.log(answer)
+            this.answerObj.answerList = []
+            for (let i = 0; i < question.answerPossibilities.length; i++) {
+                if (answer === question.answerPossibilities[i]) {
+                    this.answerObj.answerList.push(i) // index of true checkbox
+                }
+            }
+            this.answerObj.pollId = this.getPoll[1].data.pollId
+            this.answerObj.questionId = question.questionId
+
+            this.saveAnswer() // alternative: Button after every TextField
+
+            // this.showAnswer() // TODO: Fails with 405???
+        },
+        /**
+         * Get's the given answer of a checkbox question and calls saveAnswer() to persist it in the database. This
+         * happens after every change (check or uncheck) of a checkbox.
+         * @param e (Change-Event)
+         * @param question The question object, so it can get the QuestionID
+         * @param answer The answer object, so it can get the answer possibilities.
+         */
         saveAnswerCheckbox(e, question, answer) {
+            console.log(e)
+            console.log(question)
+            console.log(answer)
             this.answerObj.answerList = []
             let i
             // checks if checkBox was checked, not unchecked

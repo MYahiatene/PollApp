@@ -162,8 +162,8 @@ that each display a basic evaluation of one specific question-->
 
                                     <div v-else-if="question.type === 'text'">
                                         <textQuestionEvaluationWidget
-                                            :question-i-d="question.questionID"
-                                            :question-title="question.title"
+                                            :questionID="question.questionID"
+                                            :questionTitle="question.title"
                                         >
                                         </textQuestionEvaluationWidget>
                                     </div>
@@ -185,13 +185,13 @@ that each display a basic evaluation of one specific question-->
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
-import AuthGate from '../../components/AuthGate'
-import ChoiceQuestionEvaluationWidget from '../../components/ChoiceQuestionEvaluationWidget'
-import visualEvaluationSettings from '../../components/visualEvaluationSettings'
-import TextQuestionEvaluationWidget from '../../components/TextQuestionEvaluationWidget'
+    import {mapActions, mapGetters} from 'vuex'
+    import AuthGate from '../../components/AuthGate'
+    import ChoiceQuestionEvaluationWidget from '../../components/ChoiceQuestionEvaluationWidget'
+    import visualEvaluationSettings from '../../components/visualEvaluationSettings'
+    import TextQuestionEvaluationWidget from '../../components/TextQuestionEvaluationWidget'
 
-export default {
+    export default {
     name: 'BaseEvaluationPage',
     components: {
         AuthGate,

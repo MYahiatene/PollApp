@@ -166,7 +166,7 @@ export const actions = {
     saveAnswer(state, answerObj) {
         this.$axios.defaults.baseURL = 'http://localhost:8088/api/'
         this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('user-token')
-        return this.$axios.post('/poll/pollId:1/addanswer', answerObj)
+        return this.$axios.post('/poll/1/addanswer', answerObj)
         // api.saveAnswers(answerObj)
     },
 }

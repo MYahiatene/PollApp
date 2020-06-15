@@ -2,6 +2,8 @@ package gpse.umfrato.domain.evaluation;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import gpse.umfrato.domain.answer.Answer;
+import gpse.umfrato.domain.category.Category;
+import gpse.umfrato.domain.category.CategoryService;
 import gpse.umfrato.domain.poll.Poll;
 import gpse.umfrato.domain.pollresult.PollResult;
 import gpse.umfrato.domain.question.Question;
@@ -19,6 +21,7 @@ public class DiagramData {
     private final List<QuestionData> questions = new ArrayList<>();
     @JsonIgnore
     private final QuestionService questionService;
+    private final CategoryService categoryService;
     @JsonIgnore
     private final Poll poll;
 
@@ -177,63 +180,64 @@ public class DiagramData {
         }
     }
 
-    public DiagramData(final Poll poll, final List<PollResult> results, final QuestionService questionService) {
+    public DiagramData(final Poll poll, final List<PollResult> results, final CategoryService categoryService, final QuestionService questionService) {
+        this.categoryService = categoryService;
         this.questionService = questionService;
         this.poll = poll;
         loadData(results);
     }
 
     private void loadData(final List<PollResult> results) {
-        for (final Question q: questionService.getAllQuestions(poll.getPollId())) {
-            QuestionData qd = null;
-            switch (q.getQuestionType()) {
-                case "ChoiceQuestion":
-                    qd = new ChoiceData(q.getQuestionId(), q.getQuestionMessage(), q.getAnswerPossibilities());
-                    break;
-                case "TextQuestion":
-                    qd = new TextData(q.getQuestionId(), q.getQuestionMessage());
-                    break;
-                case "RangeQuestion":
-                    List<String> answerPossibilities = new ArrayList<>();
-                    if(q.getBelowMessage() != null && !q.getBelowMessage().isEmpty())
-                    {
-                        answerPossibilities.add(q.getBelowMessage());
-                    }
-                    for(double i = q.getStartValue(); i < q.getEndValue();)
-                    {
-                        answerPossibilities.add(i + " - " + (i += q.getStepSize()));
-                    }
-                    if(q.getAboveMessage() != null && !q.getAboveMessage().isEmpty())
-                    {
-                        answerPossibilities.add(q.getAboveMessage());
-                    }
-                    qd = new ChoiceData(q.getQuestionId(), q.getQuestionMessage(), answerPossibilities);
-                    break;
-                case "SliderQuestion":
-                    List<String> answerPossibilities2 = new ArrayList<>();
-                    for(double i = q.getStartValue(); i < q.getEndValue();)
-                    {
-                        answerPossibilities2.add(i + " - " + (i += q.getStepSize()));
-                    }
-                    qd = new ChoiceData(q.getQuestionId(), q.getQuestionMessage(), answerPossibilities2);
-                    break;
-                default:
-                    break;
-            }
-            if (qd != null) {
-                questions.add(qd);
+        List<Category> categories = categoryService.getAllCategories(poll.getPollId());
+        for(final Category c:categories) {
+            for (final Question q: questionService.getAllQuestions(c.getCategoryId())) {
+                QuestionData qd = null;
+                switch (q.getQuestionType()) {
+                    case "ChoiceQuestion":
+                        qd = new ChoiceData(q.getQuestionId(), q.getQuestionMessage(), q.getAnswerPossibilities());
+                        break;
+                    case "TextQuestion":
+                        qd = new TextData(q.getQuestionId(), q.getQuestionMessage());
+                        break;
+                    case "RangeQuestion":
+                        List<String> answerPossibilities = new ArrayList<>();
+                        if (q.getBelowMessage() != null && !q.getBelowMessage().isEmpty()) {
+                            answerPossibilities.add(q.getBelowMessage());
+                        }
+                        for (double i = q.getStartValue(); i < q.getEndValue(); ) {
+                            answerPossibilities.add(i + " - " + (i += q.getStepSize()));
+                        }
+                        if (q.getAboveMessage() != null && !q.getAboveMessage().isEmpty()) {
+                            answerPossibilities.add(q.getAboveMessage());
+                        }
+                        qd = new ChoiceData(q.getQuestionId(), q.getQuestionMessage(), answerPossibilities);
+                        break;
+                    case "SliderQuestion":
+                        List<String> answerPossibilities2 = new ArrayList<>();
+                        for (double i = q.getStartValue(); i < q.getEndValue(); ) {
+                            answerPossibilities2.add(i + " - " + (i += q.getStepSize()));
+                        }
+                        qd = new ChoiceData(q.getQuestionId(), q.getQuestionMessage(), answerPossibilities2);
+                        break;
+                    default:
+                        break;
+                }
+                if (qd != null) {
+                    questions.add(qd);
+                }
             }
         }
         for (final PollResult pr: results) {
+            System.out.println(pr.toString());
             for (final Answer a: pr.getAnswerList()) {
                 for (final QuestionData qd: questions) {
                     if (qd.getQuestionId() == a.getQuestionId()) {
                         switch (qd.getQuestionType()) {
                             case CHOICE_QUESTION:
                                 final ChoiceData cd = (ChoiceData) qd;
-                                for (final String s: a.getGivenAnswerList()) {
-                                    cd.addAnswer(Integer.parseInt(s));
-                                }
+                                cd.addAnswer(Integer.parseInt(a.getGivenAnswerList().get(a.getGivenAnswerList().size()-1)));
+                                /*for (final String s: a.getGivenAnswerList()) {
+                                }*/
                                 break;
                             case TEXT_QUESTION:
                                 if (!a.getGivenAnswerList().isEmpty()) {
