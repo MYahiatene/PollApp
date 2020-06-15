@@ -1,6 +1,6 @@
 export const state = () => ({
-    Polls: [{}],
-    ParticipationLinks: [{}],
+    Polls: [],
+    ParticipationLinks: [],
     error: '',
 })
 export const getters = {
@@ -41,10 +41,8 @@ export const actions = {
             error = reason
         })
         if (error.length === 0) {
-            console.log('alles gut')
             commit('setPolls', data)
         } else {
-            console.log('nix gut')
             commit('saveError', error)
         }
     },

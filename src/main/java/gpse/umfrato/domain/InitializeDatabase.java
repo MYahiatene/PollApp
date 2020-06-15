@@ -74,14 +74,8 @@ public class InitializeDatabase implements InitializingBean {
 
         final String tbettmannUserName = "tbettmann";
         final String dummyPassword = "{bcrypt}$2a$10$WoG5Z4YN9Z37EWyNCkltyeFr6PtrSXSLMeFWOeDUwcanht5CIJgPa";
-        final String logoUrl = "https://picsum.photos/510/300?random";
-        final Poll testPoll = new Poll(tbettmannUserName, "anonym", "Umfrage IT-Messe 2020",
-            Instant.now().toString(),
-            Instant.now().toString(), Instant.now().toString(), 0, "#FF9600", "#00FF00", logoUrl, true, true);
-
         try {
             userService.loadUserByUsername(tbettmannUserName);
-            pollService.createPoll(testPoll);
 
             //questionService.addQuestion(one, "testFrage", Arrays.asList("Frage1", "Frage2", "Frage3"), "freitext");
             //answerService.giveAnswer(testUsername, one, "3", Arrays.asList("Ja", "Nein"));
@@ -98,9 +92,5 @@ public class InitializeDatabase implements InitializingBean {
             userService.createUser("testNutzer", dummyPassword, "Markus", "Mueller",
                 "Teilnehmer", "mmueller@gmx.de");
         }
-        pollService.createPoll(testPoll);
-
-        participationLinkService.createParticipationLink(01L, tbettmannUserName);
-        participationLinkService.createParticipationLink(02L, "mmustermann");
     }
 }

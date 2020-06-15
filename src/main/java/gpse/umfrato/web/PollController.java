@@ -69,9 +69,9 @@ public class PollController {
      * @param id repreents the pollId
      * @return a poll with the pollId given in the PathVariable
      */
-    @GetMapping("/participant/{id:\\d+}")
-    public Poll getPoll(@PathVariable("id") final String id) {
-        Poll poll = pollService.getPoll(id);
+    @GetMapping("/participant/{link}")
+    public Poll getPoll(@PathVariable("link") final String link) {
+        Poll poll = pollService.getPoll(String.valueOf(participationLinkService.getPollIdFromParticipationLink(link)));
         if (poll != null) {
             return poll;
         } else {

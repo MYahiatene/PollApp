@@ -206,8 +206,14 @@ export default {
         setLink(item) {
             for (let i = 0; i < this.participationLinks.length; i++) {
                 if (this.participationLinks[i].pollId === item.pollId) {
-                    navigator.clipboard.writeText(this.participationLinks[i].participationLink)
-                    alert('Link kopiert: "' + this.participationLinks[i].participationLink + '"')
+                    navigator.clipboard.writeText(
+                        'http://localhost:8080/participant/' + this.participationLinks[i].participationLink
+                    )
+                    alert(
+                        'Link kopiert: "localhost:8080/participant/' +
+                            this.participationLinks[i].participationLink +
+                            '"'
+                    )
                 }
             }
         },
