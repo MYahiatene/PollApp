@@ -75,10 +75,10 @@
     </div>
 </template>
 <script>
-    import {mapActions, mapGetters, mapMutations} from 'vuex'
-    import AuthGate from '../../components/AuthGate'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
+import AuthGate from '../../components/AuthGate'
 
-    export default {
+export default {
     name: 'Navigation',
     components: { AuthGate },
     data() {

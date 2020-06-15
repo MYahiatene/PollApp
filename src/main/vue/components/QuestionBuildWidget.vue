@@ -48,12 +48,12 @@
 </template>
 
 <script>
-    import {mapActions, mapGetters, mapMutations} from 'vuex'
-    import ChoiceQuestion from './ChoiceQuestion'
-    import TextQuestion from './TextQuestion'
-    import RangeQuestion from './RangeQuestion'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
+import ChoiceQuestion from './ChoiceQuestion'
+import TextQuestion from './TextQuestion'
+import RangeQuestion from './RangeQuestion'
 
-    export default {
+export default {
     name: 'QuestionBuildWidget',
     components: { ChoiceQuestion, TextQuestion, RangeQuestion },
     props: {
