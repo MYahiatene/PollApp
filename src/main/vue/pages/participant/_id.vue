@@ -378,6 +378,7 @@ export default {
             this.answerObj.answerList = []
             let i
             // checks if checkBox was checked, not unchecked
+            console.log(e)
             if (e === true) {
                 for (i = 0; i < question.answerPossibilities.length; i++) {
                     if (answer === question.answerPossibilities[i]) {
