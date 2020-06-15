@@ -228,7 +228,6 @@ public class DiagramData {
             }
         }
         for (final PollResult pr: results) {
-            System.out.println(pr.toString());
             for (final Answer a: pr.getAnswerList()) {
                 for (final QuestionData qd: questions) {
                     if (qd.getQuestionId() == a.getQuestionId()) {
