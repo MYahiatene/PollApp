@@ -1,48 +1,77 @@
 <template>
-    <v-expansion-panel>
-        <v-expansion-panel-header class="my-0" min-width="400" :style="headerColor">
-            <template v-slot:default="{ open }">
-                <div v-if="open">
-                    <!--                    In class we apply negative margin, so that the header is dense-->
-                    <v-text-field
-                        v-model="category.categoryName"
-                        class="headline my-n4"
-                        placeholder="Name der Kategorie"
-                        @focusin="$emit('text-input', true)"
-                        @focusout="editCat(category)"
-                    />
-                </div>
-                <div v-else>
-                    <h2 style="font-weight: normal;">{{ category.categoryName }}</h2>
-                    <v-spacer></v-spacer>
-                </div>
-            </template>
-        </v-expansion-panel-header>
-        <v-expansion-panel-content :style="backgroundColor">
-            <v-row>
-                <v-col>
-                    <v-btn depressed @click="deleteCategory(category)">
-                        <v-icon color="primary" left>mdi-delete</v-icon>
-                        Kategorie
-                    </v-btn>
-                </v-col>
-            </v-row>
-            <draggable v-model="questions">
-                <v-list v-for="question in questions" :key="question.questionId" :style="backgroundColor">
-                    <QuestionListElement
-                        :pollData="pollData"
-                        :poll-id="pollID"
-                        :category-id="categoryID"
-                        :question="question"
-                        :category="category"
-                    ></QuestionListElement>
-                    <v-spacer></v-spacer>
-                    <v-spacer></v-spacer>
-                </v-list>
-                <p v-if="questions.length === 0">Es wurden noch keine Fragen in dieser Kategorie erstellt.</p>
-            </draggable>
-        </v-expansion-panel-content>
-    </v-expansion-panel>
+    <div>
+        <v-expansion-panel>
+            <v-expansion-panel-header class="my-0" min-width="400" :style="headerColor">
+                <template v-slot:default="{ open }">
+                    <div v-if="open">
+                        <!--                    In class we apply negative margin, so that the header is dense-->
+                        <v-text-field
+                            v-model="category.categoryName"
+                            class="headline my-n4"
+                            placeholder="Name der Kategorie"
+                            @focusin="$emit('text-input', true)"
+                            @focusout="editCat(category)"
+                        />
+                    </div>
+                    <div v-else>
+                        <h2 style="font-weight: normal;">{{ category.categoryName }}</h2>
+                        <v-spacer></v-spacer>
+                    </div>
+                </template>
+            </v-expansion-panel-header>
+            <v-expansion-panel-content :style="backgroundColor">
+                <v-row justify="center">
+                    <v-col>
+                        <v-dialog v-model="dialog" persistent max-width="290">
+                            <template v-slot:activator="{ on, attrs }">
+                                <v-btn v-bind="attrs" v-on="on">
+                                    <v-icon color="primary" left>mdi-delete</v-icon> Kategorie
+                                </v-btn>
+                            </template>
+                            <v-card v-if="category.questionList.length">
+                                <v-card-title class="headline">Warnung</v-card-title>
+                                <v-card-text
+                                    >In der Kategorie befinden sich noch Fragen. Fragen mitlöschen?</v-card-text
+                                >
+                                <v-card-actions>
+                                    <v-spacer></v-spacer>
+                                    <v-btn color="green darken-1" text @click="dialog = false">Abbrechen</v-btn>
+                                    <v-btn color="green darken-1" text @click="setDeleteIndex(category, '1')"
+                                        >Nein</v-btn
+                                    >
+                                    <v-btn color="green darken-1" text @click="setDeleteIndex(category, '2')">Ja</v-btn>
+                                </v-card-actions>
+                            </v-card>
+                            <v-card v-else>
+                                <v-card-title class="headline">Warnung</v-card-title>
+                                <v-card-text>Sind Sie sicher, dass die Kategorie gelöscht werden soll?</v-card-text>
+                                <v-card-actions>
+                                    <v-spacer></v-spacer>
+                                    <v-btn color="green darken-1" text @click="dialog = false">Nein</v-btn>
+                                    <v-btn color="green darken-1" text @click="deleteCategory(category)">Ja</v-btn>
+                                </v-card-actions>
+                            </v-card>
+                        </v-dialog>
+                    </v-col>
+                </v-row>
+                <v-row> </v-row>
+                <draggable v-model="questions">
+                    <v-list v-for="question in questions" :key="question.questionId" :style="backgroundColor">
+                        <QuestionListElement
+                            :pollData="pollData"
+                            :poll-id="pollID"
+                            :category-id="categoryID"
+                            :question="question"
+                            :category="category"
+                        ></QuestionListElement>
+                        <v-spacer></v-spacer>
+                        <v-spacer></v-spacer>
+                    </v-list>
+                    <p v-if="questions.length === 0">Es wurden noch keine Fragen in dieser Kategorie erstellt.</p>
+                </draggable>
+            </v-expansion-panel-content>
+        </v-expansion-panel>
+    </div>
 </template>
 
 <script>
@@ -75,6 +104,12 @@ export default {
         buildIndex: { type: Number },
         category: { type: Object },
     },
+    data() {
+        return {
+            dialog: false,
+            deleteIndex: '0',
+        }
+    },
     computed: {
         ...mapGetters({ getCategory: 'pollOverview/getCategory', getPolls: 'navigation/getPolls' }),
 
@@ -89,24 +124,33 @@ export default {
         },
     },
     methods: {
+        setDeleteIndex(category, deleteIndex) {
+            this.deleteIndex = deleteIndex
+            this.dialog = false
+            this.deleteCategory(category)
+        },
         editCat(category) {
             this.$axios.put('/editcategory', { categoryId: category.categoryId, categoryName: category.categoryName })
             this.$emit('text-input', false)
         },
         deleteCategory(category) {
-            if (this.categoryData.length === 1) {
-                alert('Löschen nicht möglich, da es mindestens eine Kategorie geben muss')
+            const index = this.categoryData.indexOf(category)
+            if (!index) {
+                alert('Löschen nicht möglich, da es die Standardkategorie geben muss')
             } else {
-                const index = this.categoryData.indexOf(category)
-                confirm('Sind sie sich sicher, dass sie diese Kategorie löschen möchten?') &&
-                    this.categoryData.splice(index, 1) &&
-                    this.$axios
-                        .put('/deletecategory', {
-                            categoryId: category.categoryId,
-                        })
-                        .catch((error) => {
-                            console.log(error)
-                        })
+                console.log('DeleteIndexSetted')
+                console.log(this.deleteIndex)
+                this.categoryData.splice(index, 1)
+                this.$axios
+                    .put('/deletecategory', {
+                        categoryId: category.categoryId,
+                        questionState: this.deleteIndex,
+                    })
+                    .catch((error) => {
+                        console.log(error)
+                    })
+
+                this.deleteIndex = '0'
             }
         },
         ...mapMutations({ setName: 'pollOverview/setCategoryName', setQuestions: 'pollOverview/updateQuestionOrder' }),

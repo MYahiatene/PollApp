@@ -1,10 +1,12 @@
 package gpse.umfrato.domain.category;
 
 import gpse.umfrato.domain.poll.PollRepository;
+import gpse.umfrato.domain.question.QuestionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -18,10 +20,14 @@ public class CategoryServiceImpl implements CategoryService {
      */
     private final CategoryRepository categoryRepository;
 
+    private final QuestionRepository questionRepository;
+
     @Autowired
-    public CategoryServiceImpl(final CategoryRepository categoryRepository, final PollRepository pollRepository) {
+    public CategoryServiceImpl(final CategoryRepository categoryRepository, final PollRepository pollRepository,
+                               final QuestionRepository questionRepository) {
         this.categoryRepository = categoryRepository;
         this.pollRepository = pollRepository;
+        this.questionRepository = questionRepository;
     }
 
     @Override
@@ -34,25 +40,28 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public void deleteCategory(final long categoryId) {
+    public String deleteCategory(Long categoryId, String questionState) {
         final long pollId = categoryRepository.findById(categoryId).
             orElseThrow(EntityNotFoundException::new).getPollId();
 
-        final long standardCategoryId = pollRepository.findById(pollId).orElseThrow(EntityNotFoundException::new)
-            .getCategoryList().get(0).getCategoryId();
+        if (questionState.equals("1")) {
+            final long standardCategoryId = pollRepository.findById(pollId).orElseThrow(EntityNotFoundException::new)
+                .getCategoryList().get(0).getCategoryId();
 
-        categoryRepository.findById(categoryId).orElseThrow(EntityNotFoundException::new).getQuestionList()
-            .forEach(question -> question.setCategoryId(standardCategoryId));
-
+            categoryRepository.findById(categoryId).orElseThrow(EntityNotFoundException::new).getQuestionList()
+                .forEach(question -> question.setCategoryId(standardCategoryId));
+        }
+        if (questionState.equals("2")) {
+            categoryRepository.findById(categoryId).orElseThrow(EntityNotFoundException::new).getQuestionList()
+                .forEach(question -> questionRepository.deleteById(question.getQuestionId()));
+            categoryRepository.findById(categoryId).orElseThrow(EntityNotFoundException::new).
+                setQuestionList(new ArrayList<>());
+        }
         pollRepository.findById(pollId).orElseThrow(EntityNotFoundException::new).getCategoryList().
             remove(categoryRepository.findById(categoryId).orElseThrow(EntityNotFoundException::new));
         categoryRepository.deleteById(categoryId);
 
-    }
-
-    @Override
-    public void deleteCategoryAndQuestions(final long categoryId) {
-        categoryRepository.deleteById(categoryId);
+        return ("Kategorie gelöscht");
     }
 
     @Override

@@ -4,8 +4,7 @@ import java.util.List;
 
 public interface CategoryService {
     Category createCategory(final String name, final long pollId);
-    void deleteCategory(final long categoryId);
-    void deleteCategoryAndQuestions(final long categoryId);
+    String deleteCategory(final Long categoryId, final String questionState);
     List<Category> getAllCategories(final long pollId);
     void editCategory(final long categoryId, final String name);
 }

@@ -40,24 +40,11 @@ public class CategoryController {
     @PreAuthorize("hasAuthority('Admin')")
     @PutMapping("/deletecategory")
     public String deleteCategory(final @RequestBody CategoryCmd categoryCmd) {
-        categoryService.deleteCategory(Long.parseLong(categoryCmd.getCategoryId()));
-        return TEST;
+        return categoryService.deleteCategory(Long.parseLong(categoryCmd.getCategoryId()), categoryCmd.getQuestionState());
     }
 
     @PutMapping("/editcategory")
     public void editCategory(final @RequestBody CategoryCmd categoryCmd) {
         categoryService.editCategory(Long.parseLong(categoryCmd.getCategoryId()), categoryCmd.getCategoryName());
-    }
-
-    /**
-     * Deletes a category in the data base.
-     *
-     * @param categoryCmd the Cmd of Category
-     */
-    @PreAuthorize("hasAuthority('Admin')")
-    @PutMapping("/deletecategoryandquestions")
-    public String deleteCategoryAndQuestions(final @RequestBody CategoryCmd categoryCmd) {
-        categoryService.deleteCategoryAndQuestions(Long.parseLong(categoryCmd.getCategoryId()));
-        return TEST;
     }
 }
