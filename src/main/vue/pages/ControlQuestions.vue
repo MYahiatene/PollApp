@@ -172,7 +172,7 @@
                 <v-card-title class="headline"> Sicher? </v-card-title>
 
                 <v-card-text>
-                    Wollen Sie diese Konsistenzfrage wirklich entgültig löschen?
+                    Wollen Sie diese Konsistenzfrage wirklich endgültig löschen?
                 </v-card-text>
 
                 <v-card-actions>
@@ -197,14 +197,16 @@
             <div v-for="(cq, index) in listOfControlQuestions" :key="index">
                 <v-row>
                     <v-chip @click="openCq(index)" class="ma-1" :outlined="index === currentId">
-                        {{ index }}: Frage {{ cq.q1 }} : {{ cq.a1.length }} Antwort(en) mit Frage {{ cq.q2 }} :
-                        {{ cq.a2.length }} Antwort(en)
+                        Konsistenzbeziehung {{ index + 1 }}: Zwischen {{ cq.a1.length }} Antwort(en) von Frage
+                        {{ cq.q1 + 1 }} und {{ cq.a2.length }} Antwort(en) von Frage {{ cq.q2 }}
 
                         <v-icon class="ml-1" @click="copyQcQuestion(index)"> mdi-content-duplicate</v-icon>
                         <v-icon right @click="deleteDialog = true"> mdi-minus-circle-outline</v-icon>
                     </v-chip>
 
-                    <div v-if="index === currentId" style="font-style: italic;">(geöffnet)</div>
+                    <div v-if="index === currentId">
+                        <p style="font-style: italic;">(geöffnet)</p>
+                    </div>
                 </v-row>
             </div>
         </v-card>
