@@ -49,12 +49,12 @@ public class DiagramData {
         private String mode;
 
         ChoiceData(final long questionId, final String questionMessage,
-                                 final List<String> answerPossibilities) {
+                   final List<String> answerPossibilities) {
             this.questionId = questionId;
             this.questionTitle = questionMessage;
             this.answerPossibilities = answerPossibilities;
             data = new ArrayList<>();
-            for (final String ignored: answerPossibilities) {
+            for (final String ignored : answerPossibilities) {
                 data.add(0);
             }
         }
@@ -85,7 +85,7 @@ public class DiagramData {
                 }
             }
             final StringBuilder modeText = new StringBuilder();
-            for (final Integer i: maxima) {
+            for (final Integer i : maxima) {
                 modeText.append(answerPossibilities.get(i)).append(DIVIDER_STRING);
             }
             modeText.replace(modeText.lastIndexOf(DIVIDER_STRING), modeText.length(), "");
@@ -113,9 +113,9 @@ public class DiagramData {
         public String toJSON() {
             final StringBuilder json = new StringBuilder();
             json.append("{\"id\": ").append(questionId)
-                    .append(",\"type\": ").append("\"choice\"")
-                    .append(",\"title\": \"").append(questionTitle)
-                    .append("\",\"answerPossibilities\": [");
+                .append(",\"type\": ").append("\"choice\"")
+                .append(",\"title\": \"").append(questionTitle)
+                .append("\",\"answerPossibilities\": [");
             for (int i = 0; i < answerPossibilities.size(); i++) {
                 json.append('\"').append(answerPossibilities.get(i)).append('\"');
                 if (i < answerPossibilities.size() - 1) {
@@ -123,11 +123,11 @@ public class DiagramData {
                 }
             }
             json.append("],\"data\": ").append(data)
-                    .append(",\"calculated\": {")
-                    .append("\"relative\": ").append(relative)
-                    .append(",\"median\": \"").append(median)
-                    .append("\",\"mode\": \"").append(mode)
-                    .append("\"}}");
+                .append(",\"calculated\": {")
+                .append("\"relative\": ").append(relative)
+                .append(",\"median\": \"").append(median)
+                .append("\",\"mode\": \"").append(mode)
+                .append("\"}}");
             return json.toString();
         }
     }
@@ -161,16 +161,16 @@ public class DiagramData {
         public String toJSON() {
             final StringBuilder json = new StringBuilder();
             json.append("{\"id\": ").append(questionId)
-                    .append(",\"type\": ").append("\"text\"")
-                    .append(",\"title\": \"").append(questionTitle)
-                    .append("\",\"answers\": [");
+                .append(",\"type\": ").append("\"text\"")
+                .append(",\"title\": \"").append(questionTitle)
+                .append("\",\"answers\": [");
             for (int i = 0; i < ids.size(); i++) {
                 json.append('{')
-                        .append("\"id\": ").append(ids.get(i))
-                        .append(",\"text\": \"").append(texts.get(i))
-                        .append("\",\"answered\": \"").append(editedDates.get(i))
-                        .append("\",\"creator\": \"").append(creator.get(i))
-                        .append("\"}");
+                    .append("\"id\": ").append(ids.get(i))
+                    .append(",\"text\": \"").append(texts.get(i))
+                    .append("\",\"answered\": \"").append(editedDates.get(i))
+                    .append("\",\"creator\": \"").append(creator.get(i))
+                    .append("\"}");
                 if (i + 1 < ids.size()) {
                     json.append(',');
                 }
@@ -180,7 +180,8 @@ public class DiagramData {
         }
     }
 
-    public DiagramData(final Poll poll, final List<PollResult> results, final CategoryService categoryService, final QuestionService questionService) {
+    public DiagramData(final Poll poll, final List<PollResult> results, final CategoryService categoryService,
+                       final QuestionService questionService) {
         this.categoryService = categoryService;
         this.questionService = questionService;
         this.poll = poll;
@@ -189,8 +190,8 @@ public class DiagramData {
 
     private void loadData(final List<PollResult> results) {
         List<Category> categories = categoryService.getAllCategories(poll.getPollId());
-        for(final Category c:categories) {
-            for (final Question q: questionService.getAllQuestions(c.getCategoryId())) {
+        for (final Category c : categories) {
+            for (final Question q : questionService.getAllQuestions(c.getCategoryId())) {
                 QuestionData qd = null;
                 switch (q.getQuestionType()) {
                     case "ChoiceQuestion":
@@ -204,7 +205,7 @@ public class DiagramData {
                         if (q.getBelowMessage() != null && !q.getBelowMessage().isEmpty()) {
                             answerPossibilities.add(q.getBelowMessage());
                         }
-                        for (double i = q.getStartValue(); i < q.getEndValue(); ) {
+                        for (double i = q.getStartValue(); i < q.getEndValue();) {
                             answerPossibilities.add(i + " - " + (i += q.getStepSize()));
                         }
                         if (q.getAboveMessage() != null && !q.getAboveMessage().isEmpty()) {
@@ -214,7 +215,7 @@ public class DiagramData {
                         break;
                     case "SliderQuestion":
                         List<String> answerPossibilities2 = new ArrayList<>();
-                        for (double i = q.getStartValue(); i < q.getEndValue(); ) {
+                        for (double i = q.getStartValue(); i < q.getEndValue();) {
                             answerPossibilities2.add(i + " - " + (i += q.getStepSize()));
                         }
                         qd = new ChoiceData(q.getQuestionId(), q.getQuestionMessage(), answerPossibilities2);
@@ -227,14 +228,14 @@ public class DiagramData {
                 }
             }
         }
-        for (final PollResult pr: results) {
-            for (final Answer a: pr.getAnswerList()) {
-                for (final QuestionData qd: questions) {
+        for (final PollResult pr : results) {
+            for (final Answer a : pr.getAnswerList()) {
+                for (final QuestionData qd : questions) {
                     if (qd.getQuestionId() == a.getQuestionId()) {
                         switch (qd.getQuestionType()) {
                             case CHOICE_QUESTION:
                                 final ChoiceData cd = (ChoiceData) qd;
-                                cd.addAnswer(Integer.parseInt(a.getGivenAnswerList().get(a.getGivenAnswerList().size()-1)));
+                                cd.addAnswer(Integer.parseInt(a.getGivenAnswerList().get(a.getGivenAnswerList().size() - 1)));
                                 /*for (final String s: a.getGivenAnswerList()) {
                                 }*/
                                 break;
@@ -256,7 +257,7 @@ public class DiagramData {
                 }
             }
         }
-        for (final QuestionData qd: questions) {
+        for (final QuestionData qd : questions) {
             qd.statistics();
         }
     }

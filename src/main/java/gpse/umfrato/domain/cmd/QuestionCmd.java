@@ -1,9 +1,6 @@
 package gpse.umfrato.domain.cmd;
 
-import gpse.umfrato.domain.question.Question;
-import gpse.umfrato.domain.question.QuestionRepository;
 import lombok.Data;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
@@ -50,7 +47,11 @@ public class QuestionCmd {
 
     private int numberOfPossibleAnswers;
 
-    public QuestionCmd(Long pollId, float endValue, float startValue, float stepSize, String belowMessage, String aboveMessage, boolean hideValues, boolean textMultiline, int textMinimum, int textMaximum, boolean textMinBool, boolean textMaxBool, boolean hasConsistencyRelationship, long categoryId, String questionMessage, List<String> answerPossibilities, String questionType, boolean userAnswers, int numberOfPossibleAnswers) {
+    public QuestionCmd(Long pollId, float endValue, float startValue, float stepSize, String belowMessage,
+                       String aboveMessage, boolean hideValues, boolean textMultiline, int textMinimum, int textMaximum,
+                       boolean textMinBool, boolean textMaxBool, boolean hasConsistencyRelationship, long categoryId,
+                       String questionMessage, List<String> answerPossibilities, String questionType,
+                       boolean userAnswers, int numberOfPossibleAnswers) {
         this.pollId = pollId;
         this.endValue = endValue;
         this.startValue = startValue;

@@ -1,15 +1,10 @@
 package gpse.umfrato.domain.category;
 
-import gpse.umfrato.domain.poll.Poll;
 import gpse.umfrato.domain.poll.PollRepository;
-import gpse.umfrato.domain.question.Question;
-import gpse.umfrato.domain.user.User;
-import gpse.umfrato.web.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service

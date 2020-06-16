@@ -1,4 +1,4 @@
-package gpse.umfrato.domain.participationLinks;
+package gpse.umfrato.domain.participationlinks;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

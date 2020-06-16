@@ -19,6 +19,7 @@ import java.util.logging.Logger;
 
 public class Statistics {
 
+    private static final String NAME_STRING = "{\"name\":\"";
     private static final double MEDIAN_QUANTILE = 0.5;
     private static final Logger LOGGER = Logger.getLogger("Statistics");
     private final AnswerService answerService;
@@ -44,25 +45,25 @@ public class Statistics {
         pollId = Long.valueOf(data.getBasePollId());
         List<Category> categories = categoryService.getAllCategories(pollId);
         if (data.getBaseQuestionIds().isEmpty()) {
-            for (final Category c: categories) {
-                for (final Question q: questionService.getAllQuestions(c.getCategoryId())) {
+            for (final Category c : categories) {
+                for (final Question q : questionService.getAllQuestions(c.getCategoryId())) {
                     questionIds.add(q.getQuestionId());
                 }
             }
             LOGGER.info(questionIds.toString());
         } else {
-            for (final String qid: data.getBaseQuestionIds()) {
+            for (final String qid : data.getBaseQuestionIds()) {
                 questionIds.add(Long.valueOf(qid));
             }
         }
     }
 
     public void loadFilter(final List<FilterCmd> input) {
-        for (final FilterCmd cmd: input) {
+        for (final FilterCmd cmd : input) {
             Filter filter = null;
             if (cmd.getFilterType().equals("questionAnswer")) {
                 filter = new QuestionFilter(Long.valueOf(cmd.getTargetPollId()),
-                        Long.valueOf(cmd.getTargetQuestionId()), cmd.getTargetAnswerPossibilities(), false);
+                    Long.valueOf(cmd.getTargetQuestionId()), cmd.getTargetAnswerPossibilities(), false);
             }
             if (filter != null) {
                 filters.add(filter);
@@ -77,16 +78,16 @@ public class Statistics {
         List<PollResult> prs = pollResultService.getPollResults(pollId);
         if (prs.isEmpty()) {
             LOGGER.warning("Leere Umfrage");
-            return "{\"name\":\"" + pollService.getPoll(pollId.toString()).getPollName() + "\",\"questionList\": []}";
+            return NAME_STRING + pollService.getPoll(pollId.toString()).getPollName() + "\",\"questionList\": []}";
         }
-        for (final Filter f: filters) {
+        for (final Filter f : filters) {
             prs = f.filter(prs);
         }
         LOGGER.info(prs.toString());
         final DiagramData dd = new DiagramData(pollService.getPoll(prs.get(0).getPollId().toString()), prs,
-                categoryService, questionService);
-        return "{\"name\":\"" + pollService.getPoll(pollId.toString()).getPollName() + "\",\"questionList\": "
-                + dd.toJSON() + "}";
+            categoryService, questionService);
+        return NAME_STRING + pollService.getPoll(pollId.toString()).getPollName() + "\",\"questionList\": "
+            + dd.toJSON() + "}";
     }
 
     /**
@@ -97,7 +98,7 @@ public class Statistics {
      * @return relative value.
      */
     public static double getRelativeFrequencyOfOneValue(final double value, final double totalNumber)
-            throws ArithmeticException {
+        throws ArithmeticException {
         if (totalNumber < value) {
             throw new ArithmeticException("totalNumber must be larger than value!");
         }
@@ -106,7 +107,7 @@ public class Statistics {
 
     // Maybe list<pollresult>, depends
     public static double getRelativeFrequencyOfOneValue(final String value, final double totalNumber)
-            throws ArithmeticException {
+        throws ArithmeticException {
         return getRelativeFrequencyOfOneValue(Double.parseDouble(value), totalNumber);
     }
 
@@ -163,7 +164,7 @@ public class Statistics {
                 final Answer nextAnswer = answersForOneUser.next();
                 for (int i = 0; i < nextAnswer.getGivenAnswerList().size(); i++) {
                     innerValues.add(getRelativeFrequencyOfOneValue(nextAnswer.getGivenAnswerList().get(i),
-                            totalNumber));
+                        totalNumber));
                 }
                 listOfValues.add(innerValues);
             }
@@ -211,7 +212,7 @@ public class Statistics {
     public static List<Double> modus(final List<PollResult> allValues) {
         final List<Double> modi = new ArrayList<>();
         // Iterate over answers
-        for (final PollResult allValue: allValues) {
+        for (final PollResult allValue : allValues) {
             // Iterate over questions for answer i
             for (int j = 0; j < allValue.getAnswerList().size(); j++) {
                 // If Question j from answer i is higher than the current highest set that element
@@ -269,7 +270,7 @@ public class Statistics {
 
     private List<Double> toFirstValuesList(final List<Answer> input) {
         final List<Double> allFirstValues = new ArrayList<>();
-        for (final Answer answer: input) {
+        for (final Answer answer : input) {
             final Double next = Double.parseDouble(answer.getGivenAnswerList().get(0));
             allFirstValues.add(next);
         }

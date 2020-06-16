@@ -81,8 +81,7 @@ class PollServiceImpl implements PollService {
     }
 
     @Override
-    public Integer activatePoll(final Long pollId)
-    {
+    public Integer activatePoll(final Long pollId) {
         Poll p = pollRepository.getOne(pollId);
         p.setPollStatus(p.getPollStatus() + 1);
         pollRepository.save(p);

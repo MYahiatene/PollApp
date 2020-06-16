@@ -18,6 +18,7 @@ import java.util.logging.Logger;
 @CrossOrigin
 public class UserController {
     private static final Logger LOGGER = Logger.getLogger("UserController");
+    private static final String HTTP_POST = "HTTP POST was called";
     private final UserService userService;
     private final UserRepository userRepository;
 
@@ -50,7 +51,7 @@ public class UserController {
         } catch (BadRequestException e) {
             LOGGER.info("Could not create user");
         }
-        return "HTTP POST was called";
+        return HTTP_POST;
     }
 
     @PreAuthorize("hasAuthority('Admin')")
@@ -62,7 +63,7 @@ public class UserController {
         } catch (BadRequestException e) {
             LOGGER.info("Could not edit user");
         }
-        return "HTTP POST was called";
+        return HTTP_POST;
     }
 
     /**

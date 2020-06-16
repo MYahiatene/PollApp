@@ -1,7 +1,5 @@
-package gpse.umfrato.domain.participationLinks;
+package gpse.umfrato.domain.participationlinks;
 
-import gpse.umfrato.domain.cmd.PollCmd;
-import gpse.umfrato.web.BadRequestException;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;

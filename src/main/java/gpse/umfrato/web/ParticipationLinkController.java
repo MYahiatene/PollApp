@@ -1,8 +1,7 @@
 package gpse.umfrato.web;
 
-import gpse.umfrato.domain.cmd.PollCmd;
-import gpse.umfrato.domain.participationLinks.ParticipationLink;
-import gpse.umfrato.domain.participationLinks.ParticipationLinkService;
+import gpse.umfrato.domain.participationlinks.ParticipationLink;
+import gpse.umfrato.domain.participationlinks.ParticipationLinkService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

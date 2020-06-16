@@ -31,6 +31,7 @@ public class AnswerController {
      * This method adds an answer.
      *
      * @param answerCmd the answerCmd which has the requested data
+     * @param pollId the id from the poll
      */
     @PostMapping("/poll/{pollId:\\d+}/addanswer") // {pollId:\d+}
     public void addAnswer(final @PathVariable Long pollId, final @RequestBody AnswerCmd answerCmd) {

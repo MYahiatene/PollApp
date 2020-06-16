@@ -1,7 +1,5 @@
 package gpse.umfrato.domain.category;
 
-import gpse.umfrato.domain.question.Question;
-
 import java.util.List;
 
 public interface CategoryService {

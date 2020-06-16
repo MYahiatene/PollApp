@@ -1,6 +1,5 @@
-package gpse.umfrato.domain.participationLinks;
+package gpse.umfrato.domain.participationlinks;
 
-import gpse.umfrato.domain.user.User;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

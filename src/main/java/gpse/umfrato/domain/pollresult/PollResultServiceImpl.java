@@ -11,7 +11,7 @@ import java.util.logging.Logger;
 @Service
 public class PollResultServiceImpl implements PollResultService {
 
-    private static final Logger LOGGER = Logger.getLogger("PollResultServiceImpl");;
+    private static final Logger LOGGER = Logger.getLogger("PollResultServiceImpl");
     private final PollResultRepository pollResultRepository;
 
     /**

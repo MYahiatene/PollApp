@@ -47,18 +47,15 @@ import java.util.logging.Logger;
         }
         int i = 0;
         boolean answerDa = false;
-        for(Answer a:pollResult.getAnswerList())
-        {
-            if(a.getQuestionId().equals(answer.getQuestionId()))
-            {
+        for (Answer a:pollResult.getAnswerList()) {
+            if (a.getQuestionId().equals(answer.getQuestionId())) {
                 pollResult.getAnswerList().set(i, answer);
                 answerDa = true;
                 break;
             }
             i++;
         }
-        if(!answerDa)
-        {
+        if (!answerDa) {
             pollResult.getAnswerList().add(answer);
         }
         DateFormat df = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
