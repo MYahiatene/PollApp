@@ -1,5 +1,7 @@
 package gpse.umfrato.domain.question;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -62,7 +64,7 @@ public class Question {
     @Lob
     private String questionMessage;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     private List<String> answerPossibilities = new ArrayList<>();
 
     private boolean userAnswers = false;

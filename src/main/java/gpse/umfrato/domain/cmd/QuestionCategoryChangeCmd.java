@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 public class QuestionCategoryChangeCmd {
 
-    private Long questionId;
-    private Long oldCategoryId;
-    private Long newCategoryId;
+    private String questionId;
+    private String newIndex;
+    private String newCategoryId;
 }

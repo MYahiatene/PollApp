@@ -14,8 +14,10 @@
                         />
                     </div>
                     <div v-else>
-                        <h2 style="font-weight: normal;">{{ category.categoryName }}</h2>
-                        <v-spacer></v-spacer>
+                        <draggable :group="{ name: 'g1' }">
+                            <h2 slot="header" style="font-weight: normal;">{{ category.categoryName }}</h2>
+                            <v-spacer></v-spacer>
+                        </draggable>
                     </div>
                 </template>
             </v-expansion-panel-header>
@@ -25,20 +27,21 @@
                         <v-dialog v-model="dialog" persistent max-width="290">
                             <template v-slot:activator="{ on, attrs }">
                                 <v-btn v-bind="attrs" v-on="on">
-                                    <v-icon color="primary" left>mdi-delete</v-icon> Kategorie
+                                    <v-icon color="primary" left>mdi-delete</v-icon>
+                                    Kategorie
                                 </v-btn>
                             </template>
                             <v-card v-if="category.questionList.length">
                                 <v-card-title class="headline">Warnung</v-card-title>
                                 <v-card-text
-                                    >In der Kategorie befinden sich noch Fragen. Fragen mitlöschen?</v-card-text
-                                >
+                                    >In der Kategorie befinden sich noch Fragen. Fragen mitlöschen?
+                                </v-card-text>
                                 <v-card-actions>
                                     <v-spacer></v-spacer>
                                     <v-btn color="green darken-1" text @click="dialog = false">Abbrechen</v-btn>
                                     <v-btn color="green darken-1" text @click="setDeleteIndex(category, '1')"
-                                        >Nein</v-btn
-                                    >
+                                        >Nein
+                                    </v-btn>
                                     <v-btn color="green darken-1" text @click="setDeleteIndex(category, '2')">Ja</v-btn>
                                 </v-card-actions>
                             </v-card>
@@ -54,8 +57,8 @@
                         </v-dialog>
                     </v-col>
                 </v-row>
-                <v-row> </v-row>
-                <draggable v-model="questions">
+                <v-row></v-row>
+                <draggable @end="onEnd" :move="onMove" :list="questions" :group="{ name: 'g1' }">
                     <v-list v-for="question in questions" :key="question.questionId" :style="backgroundColor">
                         <QuestionListElement
                             :pollData="pollData"
@@ -67,8 +70,8 @@
                         <v-spacer></v-spacer>
                         <v-spacer></v-spacer>
                     </v-list>
-                    <p v-if="questions.length === 0">Es wurden noch keine Fragen in dieser Kategorie erstellt.</p>
                 </draggable>
+                <p v-if="questions.length === 0">Es wurden noch keine Fragen in dieser Kategorie erstellt.</p>
             </v-expansion-panel-content>
         </v-expansion-panel>
     </div>
@@ -106,6 +109,7 @@ export default {
     },
     data() {
         return {
+            draggedQuestionId: -1,
             dialog: false,
             deleteIndex: '0',
         }
@@ -124,13 +128,40 @@ export default {
         },
     },
     methods: {
+        onMove(evt) {
+            this.draggedQuestionId = evt.draggedContext.element.questionId
+            console.log(this.draggedQuestionId)
+        },
+        onEnd(evt) {
+            const newIndex2 = evt.newIndex
+            let newCategoryId2 = null
+            this.categoryData.forEach((c) => {
+                c.questionList.forEach((question) => {
+                    if (question.questionId === this.draggedQuestionId) {
+                        newCategoryId2 = c.categoryId
+                    }
+                })
+            })
+            console.log('newIndex: ' + newIndex2)
+            console.log('newCategoryId2: ' + newCategoryId2)
+            console.log('QuestionId: ' + this.draggedQuestionId)
+
+            this.$axios.post('/changequestioncategory', {
+                newIndex: newIndex2,
+                newCategoryId: newCategoryId2,
+                questionId: this.draggedQuestionId,
+            })
+        },
         setDeleteIndex(category, deleteIndex) {
             this.deleteIndex = deleteIndex
             this.dialog = false
             this.deleteCategory(category)
         },
         editCat(category) {
-            this.$axios.put('/editcategory', { categoryId: category.categoryId, categoryName: category.categoryName })
+            this.$axios.put('/editcategory', {
+                categoryId: category.categoryId,
+                categoryName: category.categoryName,
+            })
             this.$emit('text-input', false)
         },
         deleteCategory(category) {
@@ -153,7 +184,10 @@ export default {
                 this.deleteIndex = '0'
             }
         },
-        ...mapMutations({ setName: 'pollOverview/setCategoryName', setQuestions: 'pollOverview/updateQuestionOrder' }),
+        ...mapMutations({
+            setName: 'pollOverview/setCategoryName',
+            setQuestions: 'pollOverview/updateQuestionOrder',
+        }),
         ...mapActions({
             removeCategory: 'pollOverview/deleteCategory',
         }),

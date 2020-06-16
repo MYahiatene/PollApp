@@ -39,33 +39,44 @@
                                     </v-col>
                                 </v-row>
                                 <v-divider></v-divider>
-                                <v-card-text>
+                                <v-container>
                                     <v-row>
-                                        <!--                                        negative margin in order to cancel out the prior waste of space-->
-                                        <v-col cols="12" lg="12" md="12" sm="12">
-                                            <v-expansion-panels tile multiple :disabled="disableDrag" class="mt-n6">
-                                                <draggable v-model="categoryData" :disabled="disableDrag">
-                                                    <v-list
-                                                        v-for="category in categoryData"
-                                                        :key="category.categoryId"
-                                                        two-line
-                                                    >
-                                                        <CategoryListElement
-                                                            :buildIndex="buildIndex"
-                                                            :categoryID="category.categoryId"
-                                                            :pollID="pollData.pollId"
-                                                            :questions="category.questionList"
-                                                            :pollData="pollData"
-                                                            :category="category"
-                                                            :categoryData="categoryData"
-                                                            @text-input="disableDraggable"
-                                                        />
-                                                    </v-list>
-                                                </draggable>
-                                            </v-expansion-panels>
+                                        <v-col cols="12">
+                                            <v-card-text>
+                                                <v-row>
+                                                    <!--                                        negative margin in order to cancel out the prior waste of space-->
+                                                    <v-col cols="12" lg="12" md="12" sm="12">
+                                                        <v-expansion-panels
+                                                            tile
+                                                            multiple
+                                                            :disabled="disableDrag"
+                                                            class="mt-n6"
+                                                        >
+                                                            <v-list
+                                                                v-for="category in categoryData"
+                                                                :key="category.categoryId"
+                                                                two-line
+                                                            >
+                                                                <v-col cols="13">
+                                                                    <CategoryListElement
+                                                                        :buildIndex="buildIndex"
+                                                                        :categoryID="category.categoryId"
+                                                                        :pollID="pollData.pollId"
+                                                                        :questions="category.questionList"
+                                                                        :pollData="pollData"
+                                                                        :category="category"
+                                                                        :categoryData="categoryData"
+                                                                        @text-input="disableDraggable"
+                                                                    />
+                                                                </v-col>
+                                                            </v-list>
+                                                        </v-expansion-panels>
+                                                    </v-col>
+                                                </v-row>
+                                            </v-card-text>
                                         </v-col>
                                     </v-row>
-                                </v-card-text>
+                                </v-container>
                             </v-card>
                         </v-row>
                     </v-col>
@@ -94,13 +105,12 @@
 
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
-import draggable from 'vuedraggable'
 import CategoryListElement from '../../components/CategoryListElement'
 import QuestionBuildWidget from '../../components/QuestionBuildWidget'
 
 export default {
     name: 'QuestionOverview',
-    components: { CategoryListElement, QuestionBuildWidget, draggable },
+    components: { CategoryListElement, QuestionBuildWidget },
     data() {
         return {
             editIndex: false,

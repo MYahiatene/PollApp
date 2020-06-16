@@ -33,7 +33,7 @@ import { mapGetters, mapMutations } from 'vuex'
 
 export default {
     name: 'QuestionListElement',
-
+    components: {},
     props: {
         question: { type: Object },
         pollData: { type: Object },

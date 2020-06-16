@@ -5,7 +5,6 @@ import gpse.umfrato.domain.category.CategoryRepository;
 import gpse.umfrato.domain.category.CategoryService;
 import gpse.umfrato.domain.cmd.QuestionCmd;
 import gpse.umfrato.domain.poll.PollRepository;
-import gpse.umfrato.domain.poll.PollService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,7 +28,6 @@ public class QuestionServiceImpl implements QuestionService {
     /**
      * Initializes the poll service.
      */
-    /*default*/ final PollService pollService;
 
     /*default*/ final CategoryRepository categoryRepository;
 
@@ -50,17 +48,15 @@ public class QuestionServiceImpl implements QuestionService {
      *
      * @param pollRepository     the repository for the polls
      * @param questionRepository the repository for the questions
-     * @param pollService        the class to work with polls
      * @param categoryRepository the repository for the groups
      * @param categoryService    the category service
      */
     @Autowired
     public QuestionServiceImpl(final PollRepository pollRepository, final QuestionRepository questionRepository,
-                               final PollService pollService, final CategoryRepository categoryRepository,
+                               final CategoryRepository categoryRepository,
                                final CategoryService categoryService) {
         this.pollRepository = pollRepository;
         this.questionRepository = questionRepository;
-        this.pollService = pollService;
         this.categoryRepository = categoryRepository;
         this.categoryService = categoryService;
     }
@@ -188,16 +184,17 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public Question changeCategory(final Long questionId, final Long oldCategoryId, final Long newCategoryId) {
-        final Question question = questionRepository.findById(questionId).orElseThrow(EntityNotFoundException::new);
-        final Category oldCategory = categoryRepository.findById(oldCategoryId)
-            .orElseThrow(EntityNotFoundException::new);
-        oldCategory.getQuestionList()
-            .remove(question);
-        final Category newCategory = categoryRepository.findById(newCategoryId)
-            .orElseThrow(EntityNotFoundException::new);
-        newCategory.getQuestionList().add(question);
+    public Question changeCategory(final Long questionId, final Long newCategoryId, final Long newIndex) {
+        Question question = questionRepository.findById(questionId).get();
+        long oldCategoryId = questionRepository.findById(questionId).orElseThrow(EntityNotFoundException::new)
+            .getCategoryId();
+        Category oldCategory = categoryRepository.getOne(oldCategoryId);
+        Category newCategory = categoryRepository.getOne(newCategoryId);
+        oldCategory.getQuestionList().remove(question);
         question.setCategoryId(newCategoryId);
+        newCategory.getQuestionList().add(newIndex.intValue(), question);
+        categoryRepository.save(oldCategory);
+        categoryRepository.save(newCategory);
         return question;
     }
 

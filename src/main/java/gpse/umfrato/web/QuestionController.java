@@ -74,8 +74,9 @@ public class QuestionController {
     }
 
     @PostMapping("/changequestioncategory")
-    public Question changequestioncategory(final @RequestBody QuestionCategoryChangeCmd questionCategoryChangeCmd) {
-        return questionService.changeCategory(questionCategoryChangeCmd.getQuestionId(),
-            questionCategoryChangeCmd.getOldCategoryId(), questionCategoryChangeCmd.getNewCategoryId());
+    public Question changeQuestionCategory(final @RequestBody QuestionCategoryChangeCmd questionCategoryChangeCmd) {
+        return questionService.changeCategory(Long.parseLong(questionCategoryChangeCmd.getQuestionId()),
+            Long.parseLong(questionCategoryChangeCmd.getNewCategoryId()),
+            Long.parseLong(questionCategoryChangeCmd.getNewIndex()));
     }
 }

@@ -9,7 +9,7 @@ public interface QuestionService {
     /**
      * This method removes a selected question.
      *
-     * @param categoryId     the id of the category where the question is setted
+     * @param categoryId the id of the category where the question is setted
      * @param questionId the id of the selectes question
      */
     void removeQuestion(String categoryId, String questionId);
@@ -30,6 +30,6 @@ public interface QuestionService {
     Question editQuestion(QuestionCmd questionCmd);
 
 
-    Question changeCategory(final Long questionId, final Long oldCategoryId, final Long newCategoryId);
+    Question changeCategory(final Long questionId, final Long newCategoryId, final Long newIndex);
 
 }
