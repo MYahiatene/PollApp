@@ -34,4 +34,6 @@ public interface PollService {
 
     Integer activatePoll(final Long pollId);
 
+    void editPollName(final Long pollId, final String pollName);
+
 }

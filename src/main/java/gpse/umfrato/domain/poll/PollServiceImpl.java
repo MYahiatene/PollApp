@@ -1,5 +1,6 @@
 package gpse.umfrato.domain.poll;
 
+import gpse.umfrato.domain.category.Category;
 import gpse.umfrato.domain.category.CategoryRepository;
 import gpse.umfrato.domain.category.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,5 +87,12 @@ class PollServiceImpl implements PollService {
         poll.setPollStatus(poll.getPollStatus() + 1);
         pollRepository.save(poll);
         return poll.getPollStatus();
+    }
+
+    @Override
+    public void editPollName(Long pollId, String pollName) {
+        final Poll poll = pollRepository.getOne(pollId);
+        poll.setPollName(pollName);
+        pollRepository.save(poll);
     }
 }

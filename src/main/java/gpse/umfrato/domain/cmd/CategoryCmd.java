@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class CategoryCmd {
-    private String name;
+    private String categoryName;
     private String pollId;
     private String categoryId;
 }

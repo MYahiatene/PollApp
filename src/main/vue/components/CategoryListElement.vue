@@ -5,15 +5,15 @@
                 <div v-if="open">
                     <!--                    In class we apply negative margin, so that the header is dense-->
                     <v-text-field
-                        v-model="categoryName"
+                        v-model="category.categoryName"
                         class="headline my-n4"
                         placeholder="Name der Kategorie"
                         @focusin="$emit('text-input', true)"
-                        @focusout="$emit('text-input', false)"
+                        @focusout="editCat(category)"
                     />
                 </div>
                 <div v-else>
-                    <h2 style="font-weight: normal;">{{ categoryName }}</h2>
+                    <h2 style="font-weight: normal;">{{ category.categoryName }}</h2>
                     <v-spacer></v-spacer>
                 </div>
             </template>
@@ -86,6 +86,10 @@ export default {
         },
     },
     methods: {
+        editCat(category) {
+            this.$axios.put('/editcategory', { categoryId: category.categoryId, categoryName: category.categoryName })
+            this.$emit('text-input', false)
+        },
         checkCategoryList() {
             const polls = this.getPolls
             polls.forEach((poll) => {

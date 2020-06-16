@@ -1,5 +1,6 @@
 package gpse.umfrato.web;
 
+import gpse.umfrato.domain.cmd.CategoryCmd;
 import gpse.umfrato.domain.cmd.PollCmd;
 import gpse.umfrato.domain.participationlinks.ParticipationLinkService;
 import gpse.umfrato.domain.poll.Poll;
@@ -104,6 +105,10 @@ public class PollController {
         return pollService.getPoll(String.valueOf(pollId));
     }
 
+    @PutMapping("/editpollname")
+    public void editPollName(final @RequestBody PollCmd pollCmd) {
+        pollService.editPollName(Long.parseLong(pollCmd.getPollId()), pollCmd.getPollName());
+    }
 
 }
 

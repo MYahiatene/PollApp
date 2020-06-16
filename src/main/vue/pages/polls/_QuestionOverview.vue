@@ -3,7 +3,7 @@
         <AuthGate v-if="isAuthenticated !== true"></AuthGate>
         <v-container v-else-if="storeValid">
             <v-card class="pa-2 ma-0">
-                <v-text-field class="display-1" v-model="pollData.pollName" />
+                <v-text-field class="display-1" v-model="pollData.pollName" @focusout="editPollName(pollData)" />
             </v-card>
 
             <v-container>
@@ -45,7 +45,6 @@
                                                             :buildIndex="buildIndex"
                                                             :categoryID="category.categoryId"
                                                             :pollID="pollData.pollId"
-                                                            :categoryName="category.categoryName"
                                                             :questions="category.questionList"
                                                             :pollData="pollData"
                                                             :category="category"
@@ -178,6 +177,9 @@ export default {
         },
     },
     methods: {
+        editPollName(pollData) {
+            this.$axios.put('/editpollname', { pollId: pollData.pollId, pollName: pollData.pollName })
+        },
         addQuestion() {
             this.setQuestion({
                 categoryId: null,
