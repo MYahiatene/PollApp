@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface QuestionRepository extends JpaRepository<Question, Long> {
     List<Question> findQuestionsByCategoryId(final long categoryId);
+    void deleteQuestionsByCategoryId(final long categoryId);
 }

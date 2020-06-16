@@ -36,4 +36,6 @@ public interface PollService {
 
     void editPollName(final Long pollId, final String pollName);
 
+    String deletePoll(final String pollId);
+
 }
