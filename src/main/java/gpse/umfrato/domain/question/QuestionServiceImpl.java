@@ -15,6 +15,12 @@ import java.util.List;
 @Service
 public class QuestionServiceImpl implements QuestionService {
 
+    private static final float FIVE = 5.0f;
+    private static final float ZERO_DOT_ONE = 0.1f;
+    private static final float ZERO = 0.0f;
+    private static final float ONE = 1.0f;
+
+
     private static final String TEXT_QUESTION = "TextQuestion";
     private static final String RANGE_QUESTION = "RangeQuestion";
     private static final String SLIDER_QUESTION = "SliderQuestion";
@@ -77,15 +83,15 @@ public class QuestionServiceImpl implements QuestionService {
                 break;
             case RANGE_QUESTION:
                 question = new Question(questionCmd.getQuestionMessage(),
-                    (questionCmd.getEndValue() == 0.0f ? 5.0f : questionCmd.getStepSize()),
-                    questionCmd.getStartValue(), (questionCmd.getStepSize() == 0.0f ? 1.0f : questionCmd.getStepSize()),
+                    (questionCmd.getEndValue() == ZERO ? FIVE : questionCmd.getStepSize()),
+                    questionCmd.getStartValue(), (questionCmd.getStepSize() == ZERO ? ONE : questionCmd.getStepSize()),
                     (questionCmd.getBelowMessage() == null ? "" : questionCmd.getBelowMessage()),
                     (questionCmd.getAboveMessage() == null ? "" : questionCmd.getAboveMessage()));
                 break;
             case SLIDER_QUESTION:
                 question = new Question(questionCmd.getQuestionMessage(),
-                    (questionCmd.getEndValue() == 0.0f ? 1.0f : questionCmd.getStepSize()), questionCmd.getStartValue(),
-                    (questionCmd.getStepSize() == 0.0f ? 0.1f : questionCmd.getStepSize()),
+                    (questionCmd.getEndValue() == ZERO ? ONE : questionCmd.getStepSize()), questionCmd.getStartValue(),
+                    (questionCmd.getStepSize() == ZERO ? ZERO_DOT_ONE : questionCmd.getStepSize()),
                     (questionCmd.getBelowMessage() == null ? "" : questionCmd.getBelowMessage()),
                     (questionCmd.getAboveMessage() == null ? "" : questionCmd.getAboveMessage()),
                     questionCmd.isHideValues());
@@ -116,7 +122,8 @@ public class QuestionServiceImpl implements QuestionService {
     public void removeQuestion(final String categoryId, final String questionId) {
         try {
             categoryRepository.findById(Long.valueOf(categoryId))
-                .orElseThrow(EntityNotFoundException::new).getQuestionList().remove(questionRepository.getOne(Long.valueOf(questionId)));
+                .orElseThrow(EntityNotFoundException::new).getQuestionList().remove(questionRepository
+                .getOne(Long.valueOf(questionId)));
             questionRepository.deleteById(Long.valueOf(questionId));
 
         } catch (EntityNotFoundException e) {

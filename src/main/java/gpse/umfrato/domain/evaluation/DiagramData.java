@@ -17,6 +17,10 @@ import java.util.List;
 public class DiagramData {
 
     public static final String DIVIDER_STRING = " / ";
+    private static final String JSON_ID = "{\"id\": ";
+    private static final String JSON_TYPE = ",\"type\": ";
+    private static final String JSON_TITLE = ",\"title\": \"";
+    private static final String HYPHEN = " - ";
 
     private final List<QuestionData> questions = new ArrayList<>();
     @JsonIgnore
@@ -112,9 +116,9 @@ public class DiagramData {
         @Override
         public String toJSON() {
             final StringBuilder json = new StringBuilder();
-            json.append("{\"id\": ").append(questionId)
-                .append(",\"type\": ").append("\"choice\"")
-                .append(",\"title\": \"").append(questionTitle)
+            json.append(JSON_ID).append(questionId)
+                .append(JSON_TYPE).append("\"choice\"")
+                .append(JSON_TITLE).append(questionTitle)
                 .append("\",\"answerPossibilities\": [");
             for (int i = 0; i < answerPossibilities.size(); i++) {
                 json.append('\"').append(answerPossibilities.get(i)).append('\"');
@@ -160,13 +164,13 @@ public class DiagramData {
         @Override
         public String toJSON() {
             final StringBuilder json = new StringBuilder();
-            json.append("{\"id\": ").append(questionId)
-                .append(",\"type\": ").append("\"text\"")
-                .append(",\"title\": \"").append(questionTitle)
+            json.append(JSON_ID).append(questionId)
+                .append(JSON_TYPE).append("\"text\"")
+                .append(JSON_TITLE).append(questionTitle)
                 .append("\",\"answers\": [");
             for (int i = 0; i < ids.size(); i++) {
                 json.append('{')
-                    .append("\"id\": ").append(ids.get(i))
+                    .append(JSON_ID).append(ids.get(i))
                     .append(",\"text\": \"").append(texts.get(i))
                     .append("\",\"answered\": \"").append(editedDates.get(i))
                     .append("\",\"creator\": \"").append(creator.get(i))
@@ -206,7 +210,7 @@ public class DiagramData {
                             answerPossibilities.add(q.getBelowMessage());
                         }
                         for (double i = q.getStartValue(); i < q.getEndValue();) {
-                            answerPossibilities.add(i + " - " + (i += q.getStepSize()));
+                            answerPossibilities.add(i + HYPHEN + (i += q.getStepSize()));
                         }
                         if (q.getAboveMessage() != null && !q.getAboveMessage().isEmpty()) {
                             answerPossibilities.add(q.getAboveMessage());
@@ -216,7 +220,7 @@ public class DiagramData {
                     case "SliderQuestion":
                         List<String> answerPossibilities2 = new ArrayList<>();
                         for (double i = q.getStartValue(); i < q.getEndValue();) {
-                            answerPossibilities2.add(i + " - " + (i += q.getStepSize()));
+                            answerPossibilities2.add(i + HYPHEN + (i += q.getStepSize()));
                         }
                         qd = new ChoiceData(q.getQuestionId(), q.getQuestionMessage(), answerPossibilities2);
                         break;
@@ -235,7 +239,8 @@ public class DiagramData {
                         switch (qd.getQuestionType()) {
                             case CHOICE_QUESTION:
                                 final ChoiceData cd = (ChoiceData) qd;
-                                cd.addAnswer(Integer.parseInt(a.getGivenAnswerList().get(a.getGivenAnswerList().size() - 1)));
+                                cd.addAnswer(Integer.parseInt(a.getGivenAnswerList()
+                                    .get(a.getGivenAnswerList().size() - 1)));
                                 /*for (final String s: a.getGivenAnswerList()) {
                                 }*/
                                 break;
