@@ -1,8 +1,7 @@
 package gpse.umfrato.web;
 
 import gpse.umfrato.domain.cmd.PollCmd;
-import gpse.umfrato.domain.participationLinks.ParticipationLink;
-import gpse.umfrato.domain.participationLinks.ParticipationLinkService;
+import gpse.umfrato.domain.participationlinks.ParticipationLinkService;
 import gpse.umfrato.domain.poll.Poll;
 import gpse.umfrato.domain.poll.PollService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +9,6 @@ import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import javax.persistence.EntityNotFoundException;
 import java.net.MalformedURLException;
 import java.util.List;
 import java.util.logging.Logger;
@@ -19,18 +17,18 @@ import java.util.logging.Logger;
 @RestController
 @CrossOrigin
 public class PollController {
-    static final Logger LOGGER = Logger.getLogger("PollController");
+    /* default */ static final Logger LOGGER = Logger.getLogger("PollController");
     private final PollService pollService;
     private final ParticipationLinkService participationLinkService;
 
     /**
      * This class constructor initializes the poll service.
      *
-     * @param pollService the poll service to work with the poll
+     * @param pollService              the poll service to work with the poll
      * @param participationLinkService
      */
     @Autowired
-    public PollController(final PollService pollService, ParticipationLinkService participationLinkService) {
+    public PollController(final PollService pollService, final ParticipationLinkService participationLinkService) {
         this.pollService = pollService;
         this.participationLinkService = participationLinkService;
     }
@@ -63,15 +61,21 @@ public class PollController {
         return pollService.getAllPolls();
     }
 
+    @PostMapping("/activatePoll/{pollId:\\d+}")
+    public Integer activatePoll(final @PathVariable Long pollId) {
+        return pollService.activatePoll(pollId);
+    }
+
     /**
      * This method returns the poll (questions, settings etc).
      *
-     * @param id repreents the pollId
+     * @param link represents the pollLink
      * @return a poll with the pollId given in the PathVariable
      */
     @GetMapping("/participant/{link}")
     public Poll getPoll(@PathVariable("link") final String link) {
-        Poll poll = pollService.getPoll(String.valueOf(participationLinkService.getPollIdFromParticipationLink(link)));
+        final Poll poll = pollService.getPoll(String.valueOf(participationLinkService
+            .getPollIdFromParticipationLink(link)));
         if (poll != null) {
             return poll;
         } else {
@@ -96,7 +100,7 @@ public class PollController {
     }
 
     @GetMapping("/getonepoll")
-    public Poll getPoll(@RequestParam long pollId) {
+    public Poll getPoll(final @RequestParam long pollId) {
         return pollService.getPoll(String.valueOf(pollId));
     }
 

@@ -15,7 +15,7 @@ import java.util.UUID;
 @Controller
 public class MailController {
 
-    static final int DEFAULT_PORT = 8080;
+    /* default */ static final int DEFAULT_PORT = 8080;
 
     @Autowired
     private JavaMailSender mailSender;

@@ -1,9 +1,7 @@
 package gpse.umfrato.domain;
 
 import gpse.umfrato.domain.answer.AnswerService;
-import gpse.umfrato.domain.participationLinks.ParticipationLinkRepository;
-import gpse.umfrato.domain.participationLinks.ParticipationLinkService;
-import gpse.umfrato.domain.poll.Poll;
+import gpse.umfrato.domain.participationlinks.ParticipationLinkService;
 import gpse.umfrato.domain.category.CategoryService;
 import gpse.umfrato.domain.poll.PollService;
 import gpse.umfrato.domain.question.QuestionService;
@@ -15,27 +13,39 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.net.MalformedURLException;
-import java.time.Instant;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.logging.Logger;
 
 @Service
 public class InitializeDatabase implements InitializingBean {
 
+    /**
+     * The question service.
+     */
     /* default */ final QuestionService questionService;
 
+    /**
+     * The answer service.
+     */
     /* default */ final AnswerService answerService;
 
-    private final UserService userService;
+    /**
+     * The poll service.
+     */
+    /* default */ final PollService pollService;
 
-    private final PollService pollService;
+    /**
+     * The ParticipationLink service.
+     */
+    /* default */ final ParticipationLinkService participationLinkService;
 
-    private final ParticipationLinkService participationLinkService;
+    /**
+     * The category service.
+     */
+    /* default */ final CategoryService categoryService;
 
-    private final CategoryService categoryService;
+    /**
+     * The user service.
+     */
+    /* default */ private final UserService userService;
 
     /**
      * This method initializes the database.
@@ -45,11 +55,13 @@ public class InitializeDatabase implements InitializingBean {
      * @param questionService          the object question service
      * @param answerService            the object answer service
      * @param participationLinkService the object participationLink service
+     * @param categoryService          the object category service
      */
 
     @Autowired
     public InitializeDatabase(final UserService userService, final PollService pollService,
-                              final QuestionService questionService, final AnswerService answerService, ParticipationLinkService participationLinkService,
+                              final QuestionService questionService, final AnswerService answerService,
+                              final ParticipationLinkService participationLinkService,
                               final CategoryService categoryService) {
 
         this.userService = userService;

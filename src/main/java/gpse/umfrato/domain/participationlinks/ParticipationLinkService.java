@@ -1,4 +1,4 @@
-package gpse.umfrato.domain.participationLinks;
+package gpse.umfrato.domain.participationlinks;
 
 import java.net.MalformedURLException;
 import java.util.List;

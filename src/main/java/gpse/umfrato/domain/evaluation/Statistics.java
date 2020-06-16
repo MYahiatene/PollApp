@@ -19,10 +19,11 @@ import java.util.logging.Logger;
 
 public class Statistics {
 
+    private static final String NAME_STRING = "{\"name\":\"";
     private static final double MEDIAN_QUANTILE = 0.5;
-    private static final Logger LOGGER = Logger.getLogger("EvaluationController");
-    private final AnswerService answerService;
-    private final UserService userService;
+    private static final Logger LOGGER = Logger.getLogger("Statistics");
+    /* default */ final AnswerService answerService;
+    /* default */ final UserService userService;
     private final QuestionService questionService;
     private final PollService pollService;
     private final PollResultService pollResultService;
@@ -42,26 +43,27 @@ public class Statistics {
         this.pollResultService = pollResultService;
         this.categoryService = categoryService;
         pollId = Long.valueOf(data.getBasePollId());
-        List<Category> categories = categoryService.getAllCategories(pollId);
+        final List<Category> categories = categoryService.getAllCategories(pollId);
         if (data.getBaseQuestionIds().isEmpty()) {
-            for (final Category c: categories) {
-                for (final Question q: questionService.getAllQuestions(c.getCategoryId())) {
+            for (final Category c : categories) {
+                for (final Question q : questionService.getAllQuestions(c.getCategoryId())) {
                     questionIds.add(q.getQuestionId());
                 }
             }
+            LOGGER.info(questionIds.toString());
         } else {
-            for (final String qid: data.getBaseQuestionIds()) {
+            for (final String qid : data.getBaseQuestionIds()) {
                 questionIds.add(Long.valueOf(qid));
             }
         }
     }
 
     public void loadFilter(final List<FilterCmd> input) {
-        for (final FilterCmd cmd: input) {
+        for (final FilterCmd cmd : input) {
             Filter filter = null;
             if (cmd.getFilterType().equals("questionAnswer")) {
                 filter = new QuestionFilter(Long.valueOf(cmd.getTargetPollId()),
-                        Long.valueOf(cmd.getTargetQuestionId()), cmd.getTargetAnswerPossibilities(), false);
+                    Long.valueOf(cmd.getTargetQuestionId()), cmd.getTargetAnswerPossibilities(), false);
             }
             if (filter != null) {
                 filters.add(filter);
@@ -75,16 +77,17 @@ public class Statistics {
         }
         List<PollResult> prs = pollResultService.getPollResults(pollId);
         if (prs.isEmpty()) {
-            return "{\"name\":\"" + pollService.getPoll(pollId.toString()).getPollName() + "\",\"questionList\": []}";
+            LOGGER.warning("Leere Umfrage");
+            return NAME_STRING + pollService.getPoll(pollId.toString()).getPollName() + "\",\"questionList\": []}";
         }
-        for (final Filter f: filters) {
+        for (final Filter f : filters) {
             prs = f.filter(prs);
         }
         LOGGER.info(prs.toString());
         final DiagramData dd = new DiagramData(pollService.getPoll(prs.get(0).getPollId().toString()), prs,
-                categoryService, questionService);
-        return "{\"name\":\"" + pollService.getPoll(pollId.toString()).getPollName() + "\",\"questionList\": "
-                + dd.toJSON() + "}";
+            categoryService, questionService);
+        return NAME_STRING + pollService.getPoll(pollId.toString()).getPollName() + "\",\"questionList\": "
+            + dd.toJSON() + "}";
     }
 
     /**
@@ -95,7 +98,7 @@ public class Statistics {
      * @return relative value.
      */
     public static double getRelativeFrequencyOfOneValue(final double value, final double totalNumber)
-            throws ArithmeticException {
+        throws ArithmeticException {
         if (totalNumber < value) {
             throw new ArithmeticException("totalNumber must be larger than value!");
         }
@@ -104,7 +107,7 @@ public class Statistics {
 
     // Maybe list<pollresult>, depends
     public static double getRelativeFrequencyOfOneValue(final String value, final double totalNumber)
-            throws ArithmeticException {
+        throws ArithmeticException {
         return getRelativeFrequencyOfOneValue(Double.parseDouble(value), totalNumber);
     }
 
@@ -161,7 +164,7 @@ public class Statistics {
                 final Answer nextAnswer = answersForOneUser.next();
                 for (int i = 0; i < nextAnswer.getGivenAnswerList().size(); i++) {
                     innerValues.add(getRelativeFrequencyOfOneValue(nextAnswer.getGivenAnswerList().get(i),
-                            totalNumber));
+                        totalNumber));
                 }
                 listOfValues.add(innerValues);
             }
@@ -209,7 +212,7 @@ public class Statistics {
     public static List<Double> modus(final List<PollResult> allValues) {
         final List<Double> modi = new ArrayList<>();
         // Iterate over answers
-        for (final PollResult allValue: allValues) {
+        for (final PollResult allValue : allValues) {
             // Iterate over questions for answer i
             for (int j = 0; j < allValue.getAnswerList().size(); j++) {
                 // If Question j from answer i is higher than the current highest set that element
@@ -267,7 +270,7 @@ public class Statistics {
 
     private List<Double> toFirstValuesList(final List<Answer> input) {
         final List<Double> allFirstValues = new ArrayList<>();
-        for (final Answer answer: input) {
+        for (final Answer answer : input) {
             final Double next = Double.parseDouble(answer.getGivenAnswerList().get(0));
             allFirstValues.add(next);
         }
@@ -280,7 +283,8 @@ public class Statistics {
      * If p is below zero or above one it will be set to zero or one respectively.
      * list of values to pick the quantile from. The values will be sorted inside the function.
      *
-     * @param p the parameter to calculate the quantile for example p=0.5 equals the median and p=1 equals the maximum.
+     * @param pVal the parameter to calculate the quantile for example p=0.5 equals the median and p=1 equals
+     *             the maximum.
      * @return the value corresponding to the p.
      **/
     /*private static Double pQuantile(List<Double> values, double p)
@@ -311,14 +315,14 @@ public class Statistics {
             return xnp1;
         }
     }*/
-    private List<Double> pQuantile(final List<PollResult> allValues, double p) {
+    private List<Double> pQuantile(final List<PollResult> allValues, double pVal) {
         if (allValues.isEmpty()) {
             return null;
         }
-        if (p < (double) 0) {
-            p = 0;
-        } else if (p > (double) 1) {
-            p = 1;
+        if (pVal < (double) 0) {
+            pVal = 0;
+        } else if (pVal > (double) 1) {
+            pVal = 1;
         }
 
         final List<List<Answer>> answers = toNormalList(allValues);
@@ -333,9 +337,9 @@ public class Statistics {
             Collections.sort(allFirstValues);
             final int size = allFirstValues.size();
             double xnp;
-            final double xnp1 = allFirstValues.get(constrict(size * p, allFirstValues.size()));
-            if (size * p % 1.0 == (double) 0) {
-                xnp = allFirstValues.get(constrict(size * p - 1, allFirstValues.size()));
+            final double xnp1 = allFirstValues.get(constrict(size * pVal, allFirstValues.size()));
+            if (size * pVal % 1.0 == (double) 0) {
+                xnp = allFirstValues.get(constrict(size * pVal - 1, allFirstValues.size()));
                 quantiles.add((xnp + xnp1) / 2);
             } else {
                 quantiles.add(xnp1);
@@ -354,7 +358,7 @@ public class Statistics {
     {
         return pQuantile(values, 0.5);
     }*/
-    private List<Double> median(final List<PollResult> values) {
+    /* default */ List<Double> median(final List<PollResult> values) {
         return pQuantile(values, MEDIAN_QUANTILE);
     }
 
@@ -367,7 +371,7 @@ public class Statistics {
      * @param <T>       generic type of items used in values.
      * @return cumulated values
      */
-    private <T extends Number> double cumulate(final List<T> values, final T threshold) { //Kumulierte Häufigkeit
+    /* default */ <T extends Number> double cumulate(final List<T> values, final T threshold) { //Kumulierte Häufigkeit
         double cumulated = 0;
         final Iterator<T> listIterator = values.listIterator();
         while (listIterator.hasNext()) {

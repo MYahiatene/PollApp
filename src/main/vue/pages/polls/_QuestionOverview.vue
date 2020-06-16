@@ -9,16 +9,12 @@
             <v-container>
                 <v-row>
                     <v-col>
-                        <v-btn depressed @click="createCategory()" class="ml-11">
+                        <!--<v-btn depressed @click="createCategory()" class="ml-11">
                             <v-icon color="primary">
                                 mdi-plus
                             </v-icon>
                             Kategorie
-                        </v-btn>
-                        <v-btn depressed @click="addQuestion()">
-                            <v-icon color="primary" left>mdi-plus</v-icon>
-                            Frage
-                        </v-btn>
+                        </v-btn>-->
                     </v-col>
                 </v-row>
                 <v-row>
@@ -28,6 +24,10 @@
                                 <v-card-title>
                                     <h2 style="font-weight: normal;" class="ma-0">Kategorien</h2>
                                     <v-spacer></v-spacer>
+                                    <v-btn @click="addQuestion()">
+                                        <v-icon color="primary" left>mdi-plus</v-icon>
+                                        Frage
+                                    </v-btn>
                                 </v-card-title>
                                 <v-divider></v-divider>
                                 <v-card-text>
@@ -192,7 +192,7 @@ export default {
                 belowMessage: '',
                 aboveMessage: '',
                 hideValues: false,
-                textMultiline: true,
+                textMultiline: false,
                 textMinimum: 0,
                 textMinBool: false,
                 textMaximum: 1000,

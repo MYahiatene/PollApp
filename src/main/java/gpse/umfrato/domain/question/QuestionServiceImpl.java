@@ -4,28 +4,36 @@ import gpse.umfrato.domain.category.Category;
 import gpse.umfrato.domain.category.CategoryRepository;
 import gpse.umfrato.domain.category.CategoryService;
 import gpse.umfrato.domain.cmd.QuestionCmd;
-import gpse.umfrato.domain.poll.Poll;
 import gpse.umfrato.domain.poll.PollRepository;
 import gpse.umfrato.domain.poll.PollService;
-import gpse.umfrato.web.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class QuestionServiceImpl implements QuestionService {
+
+    private static final float FIVE = 5.0f;
+    private static final float ZERO_DOT_ONE = 0.1f;
+    private static final float ZERO = 0.0f;
+    private static final float ONE = 1.0f;
+
+
+    private static final String TEXT_QUESTION = "TextQuestion";
+    private static final String RANGE_QUESTION = "RangeQuestion";
+    private static final String SLIDER_QUESTION = "SliderQuestion";
+    private static final String CHOICE_QUESTION = "ChoiceQuestion";
 
     /**
      * Initializes the poll service.
      */
     /*default*/ final PollService pollService;
 
-    private final CategoryService categoryService;
-
     /*default*/ final CategoryRepository categoryRepository;
+
+    /* default */ final CategoryService categoryService;
 
     /**
      * Initializes the poll repository.
@@ -44,6 +52,7 @@ public class QuestionServiceImpl implements QuestionService {
      * @param questionRepository the repository for the questions
      * @param pollService        the class to work with polls
      * @param categoryRepository the repository for the groups
+     * @param categoryService    the category service
      */
     @Autowired
     public QuestionServiceImpl(final PollRepository pollRepository, final QuestionRepository questionRepository,
@@ -66,29 +75,36 @@ public class QuestionServiceImpl implements QuestionService {
     public Question addQuestion(final QuestionCmd questionCmd) {
         Question question = null;
         switch (questionCmd.getQuestionType()) {
-            case "TextQuestion":
-                question = new Question(questionCmd.getQuestionMessage(), questionCmd.isTextMultiline(), questionCmd.getTextMinimum(), questionCmd.getTextMaximum());
+            case TEXT_QUESTION:
+                question = new Question(questionCmd.getQuestionMessage(), questionCmd.isTextMultiline(),
+                    questionCmd.getTextMinimum(), questionCmd.getTextMaximum());
                 question.setTextMinBool(questionCmd.isTextMinBool());
                 question.setTextMaxBool(questionCmd.isTextMaxBool());
                 break;
-            case "RangeQuestion":
-                question = new Question(questionCmd.getQuestionMessage(), (questionCmd.getEndValue() == 0.0f ? 5.0f : questionCmd.getStepSize()), questionCmd.getStartValue(),
-                    (questionCmd.getStepSize() == 0.0f ? 1.0f : questionCmd.getStepSize()), (questionCmd.getBelowMessage() == null ? "" : questionCmd.getBelowMessage()),
-                    (questionCmd.getAboveMessage() == null ? "" : questionCmd.getAboveMessage()));
+            case RANGE_QUESTION:
+                question = new Question(questionCmd.getQuestionMessage(),
+                    questionCmd.getEndValue() == ZERO ? FIVE : questionCmd.getStepSize(),
+                    questionCmd.getStartValue(), questionCmd.getStepSize() == ZERO ? ONE : questionCmd.getStepSize(),
+                    questionCmd.getBelowMessage() == null ? "" : questionCmd.getBelowMessage(),
+                    questionCmd.getAboveMessage() == null ? "" : questionCmd.getAboveMessage());
                 break;
-            case "SliderQuestion":
-                question = new Question(questionCmd.getQuestionMessage(), (questionCmd.getEndValue() == 0.0f ? 1.0f : questionCmd.getStepSize()), questionCmd.getStartValue(),
-                    (questionCmd.getStepSize() == 0.0f ? 0.1f : questionCmd.getStepSize()), (questionCmd.getBelowMessage() == null ? "" : questionCmd.getBelowMessage()),
-                    (questionCmd.getAboveMessage() == null ? "" : questionCmd.getAboveMessage()), questionCmd.isHideValues());
+            case SLIDER_QUESTION:
+                question = new Question(questionCmd.getQuestionMessage(),
+                    questionCmd.getEndValue() == ZERO ? ONE : questionCmd.getStepSize(), questionCmd.getStartValue(),
+                    questionCmd.getStepSize() == ZERO ? ZERO_DOT_ONE : questionCmd.getStepSize(),
+                    questionCmd.getBelowMessage() == null ? "" : questionCmd.getBelowMessage(),
+                    questionCmd.getAboveMessage() == null ? "" : questionCmd.getAboveMessage(),
+                    questionCmd.isHideValues());
                 break;
-            case "ChoiceQuestion":
-                question = new Question(questionCmd.getQuestionMessage(), questionCmd.getAnswerPossibilities(), questionCmd.getNumberOfPossibleAnswers(), questionCmd.isUserAnswers());
+            case CHOICE_QUESTION:
+                question = new Question(questionCmd.getQuestionMessage(), questionCmd.getAnswerPossibilities(),
+                    questionCmd.getNumberOfPossibleAnswers(), questionCmd.isUserAnswers());
                 break;
             default:
                 return null;
         }
-        question.setCategoryId(pollRepository.findById(Long.valueOf(questionCmd.getPollId())).orElseThrow(EntityNotFoundException::new)
-            .getCategoryList().get(0).getCategoryId());
+        question.setCategoryId(pollRepository.findById(Long.valueOf(questionCmd.getPollId()))
+            .orElseThrow(EntityNotFoundException::new).getCategoryList().get(0).getCategoryId());
         pollRepository.findById(Long.valueOf(questionCmd.getPollId())).orElseThrow(EntityNotFoundException::new)
             .getCategoryList().get(0).getQuestionList().add(question);
         questionRepository.save(question);
@@ -106,7 +122,8 @@ public class QuestionServiceImpl implements QuestionService {
     public void removeQuestion(final String categoryId, final String questionId) {
         try {
             categoryRepository.findById(Long.valueOf(categoryId))
-                .orElseThrow(EntityNotFoundException::new).getQuestionList().remove(questionRepository.getOne(Long.valueOf(questionId)));
+                .orElseThrow(EntityNotFoundException::new).getQuestionList().remove(questionRepository
+                .getOne(Long.valueOf(questionId)));
             questionRepository.deleteById(Long.valueOf(questionId));
 
         } catch (EntityNotFoundException e) {
@@ -127,7 +144,7 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     /**
-     * This method returns all questions with the categoryId
+     * This method returns all questions with the categoryId.
      *
      * @param categoryId the id of the category
      * @return All the questions
@@ -138,12 +155,12 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public Question editQuestion(QuestionCmd questionCmd) {
-        Question question = questionRepository.
+    public Question editQuestion(final QuestionCmd questionCmd) {
+        final Question question = questionRepository.
             findById(questionCmd.getQuestionId()).orElseThrow(EntityNotFoundException::new);
 
         switch (questionCmd.getQuestionType()) {
-            case "TextQuestion":
+            case TEXT_QUESTION:
                 question.setQuestionMessage(questionCmd.getQuestionMessage());
                 question.setTextMultiline(questionCmd.isTextMultiline());
                 question.setTextMinBool(questionCmd.isTextMinBool());
@@ -151,11 +168,11 @@ public class QuestionServiceImpl implements QuestionService {
                 question.setTextMinimum(questionCmd.getTextMinimum());
                 question.setTextMaximum(questionCmd.getTextMaximum());
                 break;
-            case "RangeQuestion":
+            case RANGE_QUESTION:
                 break;
-            case "SliderQuestion":
+            case SLIDER_QUESTION:
                 break;
-            case "ChoiceQuestion":
+            case CHOICE_QUESTION:
                 question.setAnswerPossibilities(questionCmd.getAnswerPossibilities());
                 question.setNumberOfPossibleAnswers(questionCmd.getNumberOfPossibleAnswers());
                 question.setQuestionMessage(questionCmd.getQuestionMessage());
@@ -172,11 +189,13 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     public Question changeCategory(final Long questionId, final Long oldCategoryId, final Long newCategoryId) {
-        Question question = questionRepository.findById(questionId).orElseThrow(EntityNotFoundException::new);
-        Category oldCategory = categoryRepository.findById(oldCategoryId).orElseThrow(EntityNotFoundException::new);
+        final Question question = questionRepository.findById(questionId).orElseThrow(EntityNotFoundException::new);
+        final Category oldCategory = categoryRepository.findById(oldCategoryId)
+            .orElseThrow(EntityNotFoundException::new);
         oldCategory.getQuestionList()
             .remove(question);
-        Category newCategory = categoryRepository.findById(newCategoryId).orElseThrow(EntityNotFoundException::new);
+        final Category newCategory = categoryRepository.findById(newCategoryId)
+            .orElseThrow(EntityNotFoundException::new);
         newCategory.getQuestionList().add(question);
         question.setCategoryId(newCategoryId);
         return question;

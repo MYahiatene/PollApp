@@ -1,15 +1,10 @@
 package gpse.umfrato.domain.category;
 
-import gpse.umfrato.domain.poll.Poll;
 import gpse.umfrato.domain.poll.PollRepository;
-import gpse.umfrato.domain.question.Question;
-import gpse.umfrato.domain.user.User;
-import gpse.umfrato.web.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -39,7 +34,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public void deleteCategory(long categoryId) {
+    public void deleteCategory(final long categoryId) {
         final long pollId = categoryRepository.findById(categoryId).
             orElseThrow(EntityNotFoundException::new).getPollId();
 
@@ -56,17 +51,17 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public void deleteCategoryAndQuestions(long categoryId) {
+    public void deleteCategoryAndQuestions(final long categoryId) {
         categoryRepository.deleteById(categoryId);
     }
 
     @Override
-    public List<Category> getAllCategories(long pollId) {
+    public List<Category> getAllCategories(final long pollId) {
         return categoryRepository.findCategoriesByPollId(pollId);
     }
 
     @Override
-    public void editCategory(long categoryId, String name) {
+    public void editCategory(final long categoryId, final String name) {
         final Category category = categoryRepository.getOne(categoryId);
         category.setCategoryName(name);
         categoryRepository.save(category);

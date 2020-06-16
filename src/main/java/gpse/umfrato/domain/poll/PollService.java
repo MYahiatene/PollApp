@@ -32,4 +32,6 @@ public interface PollService {
      */
     String createAnonymUsername();
 
+    Integer activatePoll(final Long pollId);
+
 }

@@ -7,15 +7,16 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class AbstractFilter {
+
     /**
-     *     First two lines are there for server side parsing
+     * That's the actual filter.
      */
-    public int xIndex;
+    private String jsonString;
+
+    /**
+     * First two lines are there for server side parsing.
+     */
+    private int xIndex;
     //public enum filterTypes {questionFilter, userFilter, statisticsFilter, logicFilter}
-    /**That's the actual filter*/
-    public String jsonString;
-
-
-
 
 }

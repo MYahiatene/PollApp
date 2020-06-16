@@ -21,22 +21,26 @@ import java.util.logging.Logger;
 public class EvaluationController {
 
     private static final Logger LOGGER = Logger.getLogger("EvaluationController");
+
+    @Autowired
+    /* default */ ObjectMapper objectMapper;
+
     private final AnswerService answerService;
     private final UserService userService;
     private final QuestionService questionService;
     private final PollService pollService;
     private final PollResultService pollResultService;
     private final CategoryService categoryService;
+
     enum Filter {
         ANSWER_FILTER, USER_FILTER
     }
-    @Autowired
-    private ObjectMapper objectMapper;
+
 
     @Autowired
     public EvaluationController(final AnswerService answerService, final UserService userService,
                                 final QuestionService questionService, final PollService pollService,
-                                final PollResultService pollResultService,  final CategoryService categoryService) {
+                                final PollResultService pollResultService, final CategoryService categoryService) {
         this.answerService = answerService;
         this.userService = userService;
         this.questionService = questionService;
@@ -47,16 +51,18 @@ public class EvaluationController {
 
     /**
      * generates Data to display in Diagrams pased of of filters provided in input.
+     *
      * @param input first filter must be of type DataFilter containing the Poll to analyse
      * @return a string in json format with all the data to display
      */
     @PostMapping("/generateDiagram")
     public String populateDiagram(final @RequestBody List<FilterCmd> input) {
+        LOGGER.info(input.toString());
         if (input.isEmpty()) {
             return "?";
         }
         final Statistics calculation = new Statistics(answerService, userService, questionService, pollService,
-                pollResultService, categoryService, input.get(0));
+            pollResultService, categoryService, input.get(0));
         calculation.loadFilter(input);
         return calculation.generateDiagram();
     }

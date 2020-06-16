@@ -76,10 +76,11 @@ public class Question {
 
     /**
      * This textQuestion question constructor receives a question message and saves in the question object.
-     * @param question the question message
-     * @param textMultiline       if you can jump to the next line
-     * @param textMinimum         the minimal number of letters needed in a textfield
-     * @param textMaximum         the maximal number of letters possible in a textfield
+     *
+     * @param question      the question message
+     * @param textMultiline if you can jump to the next line
+     * @param textMinimum   the minimal number of letters needed in a textfield
+     * @param textMaximum   the maximal number of letters possible in a textfield
      */
     public Question(final String question, final Boolean textMultiline, final int textMinimum,
                     final int textMaximum) {
@@ -92,10 +93,14 @@ public class Question {
 
     /**
      * This choiceQuestion constructor receives a question message and saves in the question object.
-     * @param question the question message
-     * @param answerPossibilities a list with all possible answers to this question
+     *
+     * @param question                the question message
+     * @param answerPossibilities     a list with all possible answers to this question
+     * @param numberOfPossibleAnswers the number of possible answers
+     * @param userAnswers             the answers from user
      */
-    public Question(final String question, final List<String> answerPossibilities, Integer numberOfPossibleAnswers, Boolean userAnswers) {
+    public Question(final String question, final List<String> answerPossibilities,
+                    final Integer numberOfPossibleAnswers, final Boolean userAnswers) {
         this.questionMessage = question;
         this.answerPossibilities = answerPossibilities;
         this.numberOfPossibleAnswers = numberOfPossibleAnswers;
@@ -105,12 +110,13 @@ public class Question {
 
     /**
      * This rangeQuestion constructor receives a question message and saves in the question object.
-     * @param question the question message
-     * @param endValue            the end Value of a range, for rangeQuestions
-     * @param startValue          the start Value of a range, for rangeQuestions
-     * @param stepSize            the size of the steps between the start and end value of a rangeQuestion
-     * @param belowMessage        the message for the meaning of the start value of a range Question
-     * @param aboveMessage        the message for the meaning of the end value of a range Question
+     *
+     * @param question     the question message
+     * @param endValue     the end Value of a range, for rangeQuestions
+     * @param startValue   the start Value of a range, for rangeQuestions
+     * @param stepSize     the size of the steps between the start and end value of a rangeQuestion
+     * @param belowMessage the message for the meaning of the start value of a range Question
+     * @param aboveMessage the message for the meaning of the end value of a range Question
      */
     public Question(final String question, final float endValue, final float startValue,
                     final float stepSize, final String belowMessage, final String aboveMessage) {
@@ -125,13 +131,14 @@ public class Question {
 
     /**
      * This sliderQuestion constructor receives a question message and saves in the question object.
-     * @param question the question message
-     * @param endValue            the end Value of a range, for rangeQuestions
-     * @param startValue          the start Value of a range, for rangeQuestions
-     * @param stepSize            the size of the steps between the start and end value of a rangeQuestion
-     * @param belowMessage        the message for the meaning of the start value of a range Question
-     * @param aboveMessage        the message for the meaning of the end value of a range Question
-     * @param hideValues          for the slide question,if it shows the chosen value
+     *
+     * @param question     the question message
+     * @param endValue     the end Value of a range, for rangeQuestions
+     * @param startValue   the start Value of a range, for rangeQuestions
+     * @param stepSize     the size of the steps between the start and end value of a rangeQuestion
+     * @param belowMessage the message for the meaning of the start value of a range Question
+     * @param aboveMessage the message for the meaning of the end value of a range Question
+     * @param hideValues   for the slide question,if it shows the chosen value
      */
     public Question(final String question, final float endValue, final float startValue, final float stepSize,
                     final String belowMessage, final String aboveMessage, final Boolean hideValues) {

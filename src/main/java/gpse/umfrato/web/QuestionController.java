@@ -1,7 +1,5 @@
 package gpse.umfrato.web;
 
-import gpse.umfrato.domain.category.Category;
-import gpse.umfrato.domain.cmd.CategoryCmd;
 import gpse.umfrato.domain.cmd.QuestionCategoryChangeCmd;
 import gpse.umfrato.domain.cmd.QuestionCmd;
 import gpse.umfrato.domain.question.Question;
@@ -11,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.logging.Logger;
 
-import javax.transaction.Transactional;
 import java.util.List;
 
 @RequestMapping(value = "/api", method = RequestMethod.GET)
@@ -19,7 +16,7 @@ import java.util.List;
 @CrossOrigin(origins = "http://127.0.0.1:8080")
 public class QuestionController {
 
-    static final Logger LOGGER = Logger.getLogger("QuestionController");
+    /* default */ static final Logger LOGGER = Logger.getLogger("QuestionController");
     private final QuestionService questionService;
 
     /**
@@ -45,11 +42,12 @@ public class QuestionController {
     /**
      * This method deletes a question.
      *
-     * @param questionCmd     the Cmd of the question
+     * @param questionCmd the Cmd of the question
      */
     @PutMapping("/removequestion")
     public void deleteQuestion(final @RequestBody QuestionCmd questionCmd) {
-        questionService.removeQuestion(String.valueOf(questionCmd.getCategoryId()), String.valueOf(questionCmd.getQuestionId()));
+        questionService.removeQuestion(String.valueOf(questionCmd.getCategoryId()),
+            String.valueOf(questionCmd.getQuestionId()));
     }
 
     /**

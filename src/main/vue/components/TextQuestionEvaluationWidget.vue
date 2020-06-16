@@ -105,7 +105,7 @@ export default {
                 { text: 'Antwort', value: 'text', sortable: false },
                 { text: 'Länge', value: 'wordLength', sortable: true },
                 { text: 'Beantwortet', value: 'answered', sortable: true },
-                { text: 'Benutzer', value: 'creator', sortable: true },
+                { text: 'Benutzer', value: 'creatorasdasd', sortable: true },
                 { text: 'Tendenzindex', value: 'tendency', sortable: true },
             ],
             freqHeaders: [
@@ -146,6 +146,8 @@ export default {
             ],
             positiveWords: [
                 'gut',
+                'super',
+                'großartig',
                 'fesch',
                 'schnafte',
                 'töfte',

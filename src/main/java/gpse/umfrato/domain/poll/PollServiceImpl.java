@@ -12,10 +12,9 @@ import java.util.List;
 @Service
 class PollServiceImpl implements PollService {
 
+    /* default */ final CategoryRepository categoryRepository;
     private final PollRepository pollRepository;
-    private final CategoryRepository categoryRepository;
     private final CategoryService categoryService;
-
     private int anonymUsername = 0;
 
     /**
@@ -72,11 +71,20 @@ class PollServiceImpl implements PollService {
 
     /**
      * This method creates a unique username for anonym polls.
+     *
      * @return a number as an anonym Username
      */
     @Override
     public String createAnonymUsername() {
         this.anonymUsername++;
         return String.valueOf(this.anonymUsername);
+    }
+
+    @Override
+    public Integer activatePoll(final Long pollId) {
+        final Poll poll = pollRepository.getOne(pollId);
+        poll.setPollStatus(poll.getPollStatus() + 1);
+        pollRepository.save(poll);
+        return poll.getPollStatus();
     }
 }

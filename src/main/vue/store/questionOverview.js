@@ -13,7 +13,7 @@ export const state = () => ({
         belowMessage: '',
         aboveMessage: '',
         hideValues: false,
-        textMultiline: true,
+        textMultiline: false,
         textMinimum: 0,
         textMinBool: false,
         textMaximum: 1000,
@@ -51,7 +51,7 @@ export const mutations = {
         state.question.userAnswers = userAnswers
     },
     addAnswer(state) {
-        state.question.answerPossibilities.push(' ')
+        state.question.answerPossibilities.push('')
     },
     setAnswerP(state, obj) {
         state.question.answerPossibilities[obj.index] = obj.answer

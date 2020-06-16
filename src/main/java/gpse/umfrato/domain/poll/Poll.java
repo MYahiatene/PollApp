@@ -71,6 +71,7 @@ public class Poll {
     /**
      * This attribute represents the uploades logo.
      */
+    @Lob
     private String logo;
 
 
@@ -115,7 +116,6 @@ public class Poll {
      * @param pollCreator     the name of the user who creates the poll
      * @param pollName        the name of the poll
      * @param anonymityStatus the anonymitystatus of the poll
-     * @param pollName        the name of the poll
      * @param createdAt       the date when the poll is created
      * @param activatedAt     the date when the poll activated
      * @param deactivatedAt   the date when the poll deactivates

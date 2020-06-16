@@ -162,7 +162,7 @@ export default {
     },
 
     methods: {
-        ...mapActions({ initialize: 'navigation/initialize' }),
+        ...mapActions({ initialize: 'navigation/initialize', activatePoll2: 'navigation/activatePoll' }),
         ...mapMutations({ setPollActive: 'navigation/setPollActive', setPollFinished: 'navigation/setPollFinished' }),
 
         async initializeLinks() {
@@ -174,7 +174,7 @@ export default {
         activatePoll(item) {
             if (item.pollStatus === 0) {
                 if (confirm('Umfrage jetzt veröffentlichen?')) {
-                    this.setPollActive(item.pollId)
+                    this.activatePoll2(item.pollId)
                 }
             } else if (item.pollStatus === 1) {
                 if (confirm('Umfrage jetzt beenden?')) {
