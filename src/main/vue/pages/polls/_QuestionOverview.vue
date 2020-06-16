@@ -192,7 +192,7 @@ export default {
                 belowMessage: '',
                 aboveMessage: '',
                 hideValues: false,
-                textMultiline: true,
+                textMultiline: false,
                 textMinimum: 0,
                 textMinBool: false,
                 textMaximum: 1000,
