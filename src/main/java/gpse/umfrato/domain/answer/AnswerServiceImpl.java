@@ -45,15 +45,15 @@ import java.util.logging.Logger;
         if (pollResult == null) {
             pollResult = new PollResult(pollId, username);
         }
-        int i = 0;
+        int idx = 0;
         boolean answerDa = false;
         for (final Answer a:pollResult.getAnswerList()) {
             if (a.getQuestionId().equals(answer.getQuestionId())) {
-                pollResult.getAnswerList().set(i, answer);
+                pollResult.getAnswerList().set(idx, answer);
                 answerDa = true;
                 break;
             }
-            i++;
+            idx++;
         }
         if (!answerDa) {
             pollResult.getAnswerList().add(answer);

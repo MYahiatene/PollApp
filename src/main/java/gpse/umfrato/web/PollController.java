@@ -17,18 +17,18 @@ import java.util.logging.Logger;
 @RestController
 @CrossOrigin
 public class PollController {
-    static final Logger LOGGER = Logger.getLogger("PollController");
+    /* default */ static final Logger LOGGER = Logger.getLogger("PollController");
     private final PollService pollService;
     private final ParticipationLinkService participationLinkService;
 
     /**
      * This class constructor initializes the poll service.
      *
-     * @param pollService the poll service to work with the poll
+     * @param pollService              the poll service to work with the poll
      * @param participationLinkService
      */
     @Autowired
-    public PollController(final PollService pollService, ParticipationLinkService participationLinkService) {
+    public PollController(final PollService pollService, final ParticipationLinkService participationLinkService) {
         this.pollService = pollService;
         this.participationLinkService = participationLinkService;
     }
@@ -74,7 +74,8 @@ public class PollController {
      */
     @GetMapping("/participant/{link}")
     public Poll getPoll(@PathVariable("link") final String link) {
-        final Poll poll = pollService.getPoll(String.valueOf(participationLinkService.getPollIdFromParticipationLink(link)));
+        final Poll poll = pollService.getPoll(String.valueOf(participationLinkService
+            .getPollIdFromParticipationLink(link)));
         if (poll != null) {
             return poll;
         } else {
@@ -99,7 +100,7 @@ public class PollController {
     }
 
     @GetMapping("/getonepoll")
-    public Poll getPoll(@RequestParam long pollId) {
+    public Poll getPoll(final @RequestParam long pollId) {
         return pollService.getPoll(String.valueOf(pollId));
     }
 

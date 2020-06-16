@@ -17,17 +17,35 @@ import java.net.MalformedURLException;
 @Service
 public class InitializeDatabase implements InitializingBean {
 
+    /**
+     * The question service.
+     */
     /* default */ final QuestionService questionService;
 
+    /**
+     * The answer service.
+     */
     /* default */ final AnswerService answerService;
 
-    private final UserService userService;
+    /**
+     * The poll service.
+     */
+    /* default */ final PollService pollService;
 
-    final PollService pollService;
+    /**
+     * The ParticipationLink service.
+     */
+    /* default */ final ParticipationLinkService participationLinkService;
 
-    final ParticipationLinkService participationLinkService;
+    /**
+     * The category service.
+     */
+    /* default */ final CategoryService categoryService;
 
-    final CategoryService categoryService;
+    /**
+     * The user service.
+     */
+    /* default */ private final UserService userService;
 
     /**
      * This method initializes the database.

@@ -29,7 +29,7 @@ public class DiagramData {
     @JsonIgnore
     private final Poll poll;
 
-    interface QuestionData {
+    /* default */ interface QuestionData {
         enum QuestionType { CHOICE_QUESTION, TEXT_QUESTION, RANGE_QUESTION, SLIDER_QUESTION }
 
         long getQuestionId();
@@ -52,7 +52,7 @@ public class DiagramData {
         private String median;
         private String mode;
 
-        ChoiceData(final long questionId, final String questionMessage,
+        /* default */ ChoiceData(final long questionId, final String questionMessage,
                    final List<String> answerPossibilities) {
             this.questionId = questionId;
             this.questionTitle = questionMessage;
@@ -146,7 +146,7 @@ public class DiagramData {
         private List<String> editedDates = new ArrayList<>();
         private List<String> creator = new ArrayList<>();
 
-        TextData(final long questionId, final String questionMessage) {
+        /* default */ TextData(final long questionId, final String questionMessage) {
             this.questionId = questionId;
             this.questionTitle = questionMessage;
         }

@@ -22,8 +22,8 @@ public class Statistics {
     private static final String NAME_STRING = "{\"name\":\"";
     private static final double MEDIAN_QUANTILE = 0.5;
     private static final Logger LOGGER = Logger.getLogger("Statistics");
-    final AnswerService answerService;
-    final UserService userService;
+    /* default */ final AnswerService answerService;
+    /* default */ final UserService userService;
     private final QuestionService questionService;
     private final PollService pollService;
     private final PollResultService pollResultService;
@@ -283,7 +283,8 @@ public class Statistics {
      * If p is below zero or above one it will be set to zero or one respectively.
      * list of values to pick the quantile from. The values will be sorted inside the function.
      *
-     * @param p the parameter to calculate the quantile for example p=0.5 equals the median and p=1 equals the maximum.
+     * @param pVal the parameter to calculate the quantile for example p=0.5 equals the median and p=1 equals
+     *             the maximum.
      * @return the value corresponding to the p.
      **/
     /*private static Double pQuantile(List<Double> values, double p)
@@ -314,14 +315,14 @@ public class Statistics {
             return xnp1;
         }
     }*/
-    private List<Double> pQuantile(final List<PollResult> allValues, double p) {
+    private List<Double> pQuantile(final List<PollResult> allValues, double pVal) {
         if (allValues.isEmpty()) {
             return null;
         }
-        if (p < (double) 0) {
-            p = 0;
-        } else if (p > (double) 1) {
-            p = 1;
+        if (pVal < (double) 0) {
+            pVal = 0;
+        } else if (pVal > (double) 1) {
+            pVal = 1;
         }
 
         final List<List<Answer>> answers = toNormalList(allValues);
@@ -336,9 +337,9 @@ public class Statistics {
             Collections.sort(allFirstValues);
             final int size = allFirstValues.size();
             double xnp;
-            final double xnp1 = allFirstValues.get(constrict(size * p, allFirstValues.size()));
-            if (size * p % 1.0 == (double) 0) {
-                xnp = allFirstValues.get(constrict(size * p - 1, allFirstValues.size()));
+            final double xnp1 = allFirstValues.get(constrict(size * pVal, allFirstValues.size()));
+            if (size * pVal % 1.0 == (double) 0) {
+                xnp = allFirstValues.get(constrict(size * pVal - 1, allFirstValues.size()));
                 quantiles.add((xnp + xnp1) / 2);
             } else {
                 quantiles.add(xnp1);
@@ -357,7 +358,7 @@ public class Statistics {
     {
         return pQuantile(values, 0.5);
     }*/
-    private List<Double> median(final List<PollResult> values) {
+    /* default */ List<Double> median(final List<PollResult> values) {
         return pQuantile(values, MEDIAN_QUANTILE);
     }
 
@@ -370,7 +371,7 @@ public class Statistics {
      * @param <T>       generic type of items used in values.
      * @return cumulated values
      */
-    private <T extends Number> double cumulate(final List<T> values, final T threshold) { //Kumulierte Häufigkeit
+    /* default */ <T extends Number> double cumulate(final List<T> values, final T threshold) { //Kumulierte Häufigkeit
         double cumulated = 0;
         final Iterator<T> listIterator = values.listIterator();
         while (listIterator.hasNext()) {

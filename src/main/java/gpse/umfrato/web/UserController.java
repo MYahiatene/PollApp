@@ -19,8 +19,8 @@ import java.util.logging.Logger;
 public class UserController {
     private static final Logger LOGGER = Logger.getLogger("UserController");
     private static final String HTTP_POST = "HTTP POST was called";
+    /* default */ final UserRepository userRepository;
     private final UserService userService;
-    final UserRepository userRepository;
 
     /**
      * This class constructor initializes the user service and user repository.
@@ -100,6 +100,7 @@ public class UserController {
 
     /**
      * Deletes a user in the data base.
+     *
      * @param deleteUserCmd the user to delete
      */
     @PreAuthorize("hasAuthority('Admin')")

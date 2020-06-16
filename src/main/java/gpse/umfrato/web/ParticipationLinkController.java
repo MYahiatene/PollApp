@@ -12,11 +12,11 @@ import java.util.logging.Logger;
 @RestController
 @CrossOrigin
 public class ParticipationLinkController {
-    static final Logger LOGGER = Logger.getLogger("ParticipationLinkController");
+    /* default */ static final Logger LOGGER = Logger.getLogger("ParticipationLinkController");
     private final ParticipationLinkService participationLinkService;
 
     @Autowired
-    public ParticipationLinkController(ParticipationLinkService participationLinkService) {
+    public ParticipationLinkController(final ParticipationLinkService participationLinkService) {
         this.participationLinkService = participationLinkService;
     }
 

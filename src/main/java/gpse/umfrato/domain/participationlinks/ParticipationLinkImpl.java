@@ -9,28 +9,28 @@ import java.util.UUID;
 @Service
 public class ParticipationLinkImpl implements ParticipationLinkService {
 
-    final ParticipationLinkRepository participationLinkRepository;
+    /* default */ final ParticipationLinkRepository participationLinkRepository;
 
     public ParticipationLinkImpl(final ParticipationLinkRepository participationLinkRepository) {
         this.participationLinkRepository = participationLinkRepository;
     }
 
     @Override
-    public ParticipationLink createParticipationLink(Long pollId, String username) {
+    public ParticipationLink createParticipationLink(final Long pollId, final String username) {
 
         final UUID uuid = UUID.randomUUID();
         //final String urlUuid = "/" + uuid.toString();
         //final URL invitationLink = new URL("http", "localhost", 8080, urlUuid);
 
-        final ParticipationLink p = new ParticipationLink(pollId, username, uuid.toString());
+        final ParticipationLink participationLink = new ParticipationLink(pollId, username, uuid.toString());
 
-        participationLinkRepository.save(p);
+        participationLinkRepository.save(participationLink);
 
-        return p;
+        return participationLink;
     }
 
     @Override
-    public Long getPollIdFromParticipationLink(String participationLink) {
+    public Long getPollIdFromParticipationLink(final String participationLink) {
         final List<ParticipationLink> participationLinks = participationLinkRepository.findAll();
 
         for (final ParticipationLink p : participationLinks) {
@@ -42,7 +42,7 @@ public class ParticipationLinkImpl implements ParticipationLinkService {
     }
 
     @Override
-    public String getUserFromParticipationLink(String participationLink) {
+    public String getUserFromParticipationLink(final String participationLink) {
         final List<ParticipationLink> participationLinks = participationLinkRepository.findAll();
 
         for (final ParticipationLink p : participationLinks) {

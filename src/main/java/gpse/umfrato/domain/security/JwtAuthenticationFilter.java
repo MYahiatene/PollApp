@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
-    static final int EIGHT_HUNDRED_SIXTY_FOUR_MILLION = 864_000_000;
+    /* default */ static final int EIGHT_HUNDRED_SIXTY_FOUR_MILLION = 864_000_000;
 
     private final AuthenticationManager authenticationManager;
 

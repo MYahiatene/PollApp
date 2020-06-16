@@ -28,7 +28,7 @@ public class CategoryController {
     }
 
     @GetMapping("/getallcategories")
-    public List<Category> getCategories(@RequestParam long pollId) {
+    public List<Category> getCategories(final @RequestParam long pollId) {
         return categoryService.getAllCategories(pollId);
     }
 

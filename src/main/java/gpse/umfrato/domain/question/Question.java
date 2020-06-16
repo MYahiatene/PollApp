@@ -99,8 +99,8 @@ public class Question {
      * @param numberOfPossibleAnswers the number of possible answers
      * @param userAnswers             the answers from user
      */
-    public Question(final String question, final List<String> answerPossibilities, Integer numberOfPossibleAnswers,
-                    Boolean userAnswers) {
+    public Question(final String question, final List<String> answerPossibilities,
+                    final Integer numberOfPossibleAnswers, final Boolean userAnswers) {
         this.questionMessage = question;
         this.answerPossibilities = answerPossibilities;
         this.numberOfPossibleAnswers = numberOfPossibleAnswers;

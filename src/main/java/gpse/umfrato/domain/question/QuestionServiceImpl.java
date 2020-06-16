@@ -33,7 +33,7 @@ public class QuestionServiceImpl implements QuestionService {
 
     /*default*/ final CategoryRepository categoryRepository;
 
-    final CategoryService categoryService;
+    /* default */ final CategoryService categoryService;
 
     /**
      * Initializes the poll repository.
@@ -83,17 +83,17 @@ public class QuestionServiceImpl implements QuestionService {
                 break;
             case RANGE_QUESTION:
                 question = new Question(questionCmd.getQuestionMessage(),
-                    (questionCmd.getEndValue() == ZERO ? FIVE : questionCmd.getStepSize()),
-                    questionCmd.getStartValue(), (questionCmd.getStepSize() == ZERO ? ONE : questionCmd.getStepSize()),
-                    (questionCmd.getBelowMessage() == null ? "" : questionCmd.getBelowMessage()),
-                    (questionCmd.getAboveMessage() == null ? "" : questionCmd.getAboveMessage()));
+                    questionCmd.getEndValue() == ZERO ? FIVE : questionCmd.getStepSize(),
+                    questionCmd.getStartValue(), questionCmd.getStepSize() == ZERO ? ONE : questionCmd.getStepSize(),
+                    questionCmd.getBelowMessage() == null ? "" : questionCmd.getBelowMessage(),
+                    questionCmd.getAboveMessage() == null ? "" : questionCmd.getAboveMessage());
                 break;
             case SLIDER_QUESTION:
                 question = new Question(questionCmd.getQuestionMessage(),
-                    (questionCmd.getEndValue() == ZERO ? ONE : questionCmd.getStepSize()), questionCmd.getStartValue(),
-                    (questionCmd.getStepSize() == ZERO ? ZERO_DOT_ONE : questionCmd.getStepSize()),
-                    (questionCmd.getBelowMessage() == null ? "" : questionCmd.getBelowMessage()),
-                    (questionCmd.getAboveMessage() == null ? "" : questionCmd.getAboveMessage()),
+                    questionCmd.getEndValue() == ZERO ? ONE : questionCmd.getStepSize(), questionCmd.getStartValue(),
+                    questionCmd.getStepSize() == ZERO ? ZERO_DOT_ONE : questionCmd.getStepSize(),
+                    questionCmd.getBelowMessage() == null ? "" : questionCmd.getBelowMessage(),
+                    questionCmd.getAboveMessage() == null ? "" : questionCmd.getAboveMessage(),
                     questionCmd.isHideValues());
                 break;
             case CHOICE_QUESTION:
@@ -155,7 +155,7 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public Question editQuestion(QuestionCmd questionCmd) {
+    public Question editQuestion(final QuestionCmd questionCmd) {
         final Question question = questionRepository.
             findById(questionCmd.getQuestionId()).orElseThrow(EntityNotFoundException::new);
 
@@ -190,10 +190,12 @@ public class QuestionServiceImpl implements QuestionService {
     @Override
     public Question changeCategory(final Long questionId, final Long oldCategoryId, final Long newCategoryId) {
         final Question question = questionRepository.findById(questionId).orElseThrow(EntityNotFoundException::new);
-        final Category oldCategory = categoryRepository.findById(oldCategoryId).orElseThrow(EntityNotFoundException::new);
+        final Category oldCategory = categoryRepository.findById(oldCategoryId)
+            .orElseThrow(EntityNotFoundException::new);
         oldCategory.getQuestionList()
             .remove(question);
-        final Category newCategory = categoryRepository.findById(newCategoryId).orElseThrow(EntityNotFoundException::new);
+        final Category newCategory = categoryRepository.findById(newCategoryId)
+            .orElseThrow(EntityNotFoundException::new);
         newCategory.getQuestionList().add(question);
         question.setCategoryId(newCategoryId);
         return question;

@@ -16,7 +16,7 @@ import java.util.List;
 @CrossOrigin(origins = "http://127.0.0.1:8080")
 public class QuestionController {
 
-    static final Logger LOGGER = Logger.getLogger("QuestionController");
+    /* default */ static final Logger LOGGER = Logger.getLogger("QuestionController");
     private final QuestionService questionService;
 
     /**
