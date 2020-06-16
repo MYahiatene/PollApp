@@ -1,5 +1,3 @@
-
-
 export default {
     mode: 'universal',
 
@@ -87,17 +85,17 @@ export default {
                     //
                     background2: '#a0b4b8',
                     softAccent: '#8dc4c3',
-                    header: '#698f96'
+                    header: '#698f96',
                 },
             },
         },
     },
-// added to allow devtools
+    // added to allow devtools
     vue: {
         config: {
             productionTip: false,
-            devtools: true
-        }
+            devtools: true,
+        },
     },
     /*
      ** Build configuration

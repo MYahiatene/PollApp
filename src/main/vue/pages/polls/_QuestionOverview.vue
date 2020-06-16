@@ -8,27 +8,36 @@
 
             <v-container>
                 <v-row>
-                    <v-col>
-                        <!--<v-btn depressed @click="createCategory()" class="ml-11">
-                            <v-icon color="primary">
-                                mdi-plus
-                            </v-icon>
-                            Kategorie
-                        </v-btn>-->
-                    </v-col>
-                </v-row>
-                <v-row>
                     <v-col cols="12" lg="4" md="4" sm="4">
                         <v-row>
-                            <v-card class="ma-0">
-                                <v-card-title>
-                                    <h2 style="font-weight: normal;" class="ma-0">Kategorien</h2>
+                            <v-card class="ma-0" min-width="400" max-width="600">
+                                <v-row>
                                     <v-spacer></v-spacer>
-                                    <v-btn @click="addQuestion()">
-                                        <v-icon color="primary" left>mdi-plus</v-icon>
-                                        Frage
-                                    </v-btn>
-                                </v-card-title>
+                                    <v-col cols="6"
+                                        ><v-card-title>
+                                            <h2 style="font-weight: normal; text-align: center;" class="ma-0">
+                                                Kategorien
+                                            </h2>
+                                        </v-card-title></v-col
+                                    >
+                                    <v-spacer></v-spacer
+                                ></v-row>
+                                <v-row>
+                                    <v-col cols="6">
+                                        <v-btn depressed @click="createCategory()" class="ml-11">
+                                            <v-icon color="primary">
+                                                mdi-plus
+                                            </v-icon>
+                                            Kategorie
+                                        </v-btn>
+                                    </v-col>
+                                    <v-col cols="6">
+                                        <v-btn @click="addQuestion()">
+                                            <v-icon color="primary" left>mdi-plus</v-icon>
+                                            Frage
+                                        </v-btn>
+                                    </v-col>
+                                </v-row>
                                 <v-divider></v-divider>
                                 <v-card-text>
                                     <v-row>
@@ -48,6 +57,7 @@
                                                             :questions="category.questionList"
                                                             :pollData="pollData"
                                                             :category="category"
+                                                            :categoryData="categoryData"
                                                             @text-input="disableDraggable"
                                                         />
                                                     </v-list>
@@ -290,7 +300,7 @@ export default {
             this.$axios
                 .post('/addcategory', {
                     pollId: this.$route.params.QuestionOverview,
-                    name: this.editCategory.categoryName,
+                    categoryName: this.editCategory.categoryName,
                 })
                 .then((response) => {
                     this.editCategory = response.data
@@ -312,18 +322,6 @@ export default {
                 name: category.categoryName,
             })
             this.categoryIndex = false
-        },
-        deleteCategory(category) {
-            const index = this.categoryData.indexOf(category)
-            confirm('Sind sie sich sicher, dass sie diese Kategorie löschen möchten?') &&
-                this.categoryData.splice(index, 1) &&
-                this.$axios
-                    .put('/deletecategory', {
-                        categoryId: category.categoryId,
-                    })
-                    .catch((error) => {
-                        console.log(error)
-                    })
         },
         activateCreateQuestion() {
             this.questionIndex = 0

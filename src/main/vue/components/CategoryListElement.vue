@@ -1,6 +1,6 @@
 <template>
     <v-expansion-panel>
-        <v-expansion-panel-header class="my-0" :style="headerColor">
+        <v-expansion-panel-header class="my-0" min-width="400" :style="headerColor">
             <template v-slot:default="{ open }">
                 <div v-if="open">
                     <!--                    In class we apply negative margin, so that the header is dense-->
@@ -21,7 +21,7 @@
         <v-expansion-panel-content :style="backgroundColor">
             <v-row>
                 <v-col>
-                    <v-btn depressed @click="checkCategoryList()">
+                    <v-btn depressed @click="deleteCategory(category)">
                         <v-icon color="primary" left>mdi-delete</v-icon>
                         Kategorie
                     </v-btn>
@@ -57,6 +57,9 @@ export default {
         pollData: {
             type: Object,
         },
+        categoryData: {
+            type: Array,
+        },
         categoryID: {
             type: Number,
         },
@@ -90,18 +93,21 @@ export default {
             this.$axios.put('/editcategory', { categoryId: category.categoryId, categoryName: category.categoryName })
             this.$emit('text-input', false)
         },
-        checkCategoryList() {
-            const polls = this.getPolls
-            polls.forEach((poll) => {
-                if (poll.pollId === this.pollID) {
-                    console.log(poll.categoryList)
-                    if (poll.categoryList.length <= 1) {
-                        alert('Löschen nicht möglich')
-                    } else {
-                        this.removeCategory(this.categoryID)
-                    }
-                }
-            })
+        deleteCategory(category) {
+            if (this.categoryData.length === 1) {
+                alert('Löschen nicht möglich, da es mindestens eine Kategorie geben muss')
+            } else {
+                const index = this.categoryData.indexOf(category)
+                confirm('Sind sie sich sicher, dass sie diese Kategorie löschen möchten?') &&
+                    this.categoryData.splice(index, 1) &&
+                    this.$axios
+                        .put('/deletecategory', {
+                            categoryId: category.categoryId,
+                        })
+                        .catch((error) => {
+                            console.log(error)
+                        })
+            }
         },
         ...mapMutations({ setName: 'pollOverview/setCategoryName', setQuestions: 'pollOverview/updateQuestionOrder' }),
         ...mapActions({
