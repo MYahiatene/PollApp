@@ -22,8 +22,8 @@ public class Statistics {
     private static final String NAME_STRING = "{\"name\":\"";
     private static final double MEDIAN_QUANTILE = 0.5;
     private static final Logger LOGGER = Logger.getLogger("Statistics");
-    private final AnswerService answerService;
-    private final UserService userService;
+    final AnswerService answerService;
+    final UserService userService;
     private final QuestionService questionService;
     private final PollService pollService;
     private final PollResultService pollResultService;
@@ -43,7 +43,7 @@ public class Statistics {
         this.pollResultService = pollResultService;
         this.categoryService = categoryService;
         pollId = Long.valueOf(data.getBasePollId());
-        List<Category> categories = categoryService.getAllCategories(pollId);
+        final List<Category> categories = categoryService.getAllCategories(pollId);
         if (data.getBaseQuestionIds().isEmpty()) {
             for (final Category c : categories) {
                 for (final Question q : questionService.getAllQuestions(c.getCategoryId())) {

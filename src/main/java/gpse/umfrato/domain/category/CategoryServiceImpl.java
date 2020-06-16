@@ -34,7 +34,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public void deleteCategory(long categoryId) {
+    public void deleteCategory(final long categoryId) {
         final long pollId = categoryRepository.findById(categoryId).
             orElseThrow(EntityNotFoundException::new).getPollId();
 
@@ -51,17 +51,17 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public void deleteCategoryAndQuestions(long categoryId) {
+    public void deleteCategoryAndQuestions(final long categoryId) {
         categoryRepository.deleteById(categoryId);
     }
 
     @Override
-    public List<Category> getAllCategories(long pollId) {
+    public List<Category> getAllCategories(final long pollId) {
         return categoryRepository.findCategoriesByPollId(pollId);
     }
 
     @Override
-    public void editCategory(long categoryId, String name) {
+    public void editCategory(final long categoryId, final String name) {
         final Category category = categoryRepository.getOne(categoryId);
         category.setCategoryName(name);
         categoryRepository.save(category);

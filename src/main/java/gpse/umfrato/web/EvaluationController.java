@@ -31,7 +31,7 @@ public class EvaluationController {
         ANSWER_FILTER, USER_FILTER
     }
     @Autowired
-    private ObjectMapper objectMapper;
+    ObjectMapper objectMapper;
 
     @Autowired
     public EvaluationController(final AnswerService answerService, final UserService userService,

@@ -23,11 +23,11 @@ public class InitializeDatabase implements InitializingBean {
 
     private final UserService userService;
 
-    private final PollService pollService;
+    final PollService pollService;
 
-    private final ParticipationLinkService participationLinkService;
+    final ParticipationLinkService participationLinkService;
 
-    private final CategoryService categoryService;
+    final CategoryService categoryService;
 
     /**
      * This method initializes the database.
@@ -43,7 +43,7 @@ public class InitializeDatabase implements InitializingBean {
     @Autowired
     public InitializeDatabase(final UserService userService, final PollService pollService,
                               final QuestionService questionService, final AnswerService answerService,
-                              ParticipationLinkService participationLinkService,
+                              final ParticipationLinkService participationLinkService,
                               final CategoryService categoryService) {
 
         this.userService = userService;

@@ -74,7 +74,7 @@ public class PollController {
      */
     @GetMapping("/participant/{link}")
     public Poll getPoll(@PathVariable("link") final String link) {
-        Poll poll = pollService.getPoll(String.valueOf(participationLinkService.getPollIdFromParticipationLink(link)));
+        final Poll poll = pollService.getPoll(String.valueOf(participationLinkService.getPollIdFromParticipationLink(link)));
         if (poll != null) {
             return poll;
         } else {

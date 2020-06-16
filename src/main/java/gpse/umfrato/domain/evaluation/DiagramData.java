@@ -193,7 +193,7 @@ public class DiagramData {
     }
 
     private void loadData(final List<PollResult> results) {
-        List<Category> categories = categoryService.getAllCategories(poll.getPollId());
+        final List<Category> categories = categoryService.getAllCategories(poll.getPollId());
         for (final Category c : categories) {
             for (final Question q : questionService.getAllQuestions(c.getCategoryId())) {
                 QuestionData qd = null;
@@ -205,7 +205,7 @@ public class DiagramData {
                         qd = new TextData(q.getQuestionId(), q.getQuestionMessage());
                         break;
                     case "RangeQuestion":
-                        List<String> answerPossibilities = new ArrayList<>();
+                        final List<String> answerPossibilities = new ArrayList<>();
                         if (q.getBelowMessage() != null && !q.getBelowMessage().isEmpty()) {
                             answerPossibilities.add(q.getBelowMessage());
                         }
@@ -218,7 +218,7 @@ public class DiagramData {
                         qd = new ChoiceData(q.getQuestionId(), q.getQuestionMessage(), answerPossibilities);
                         break;
                     case "SliderQuestion":
-                        List<String> answerPossibilities2 = new ArrayList<>();
+                        final List<String> answerPossibilities2 = new ArrayList<>();
                         for (double i = q.getStartValue(); i < q.getEndValue();) {
                             answerPossibilities2.add(i + HYPHEN + (i += q.getStepSize()));
                         }

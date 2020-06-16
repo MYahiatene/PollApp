@@ -22,7 +22,7 @@ public class ParticipationLinkImpl implements ParticipationLinkService {
         //final String urlUuid = "/" + uuid.toString();
         //final URL invitationLink = new URL("http", "localhost", 8080, urlUuid);
 
-        ParticipationLink p = new ParticipationLink(pollId, username, uuid.toString());
+        final ParticipationLink p = new ParticipationLink(pollId, username, uuid.toString());
 
         participationLinkRepository.save(p);
 
@@ -31,9 +31,9 @@ public class ParticipationLinkImpl implements ParticipationLinkService {
 
     @Override
     public Long getPollIdFromParticipationLink(String participationLink) {
-        List<ParticipationLink> participationLinks = participationLinkRepository.findAll();
+        final List<ParticipationLink> participationLinks = participationLinkRepository.findAll();
 
-        for (ParticipationLink p : participationLinks) {
+        for (final ParticipationLink p : participationLinks) {
             if (p.getParticipationLink().equals(participationLink)) {
                 return p.getPollId();
             }
@@ -43,9 +43,9 @@ public class ParticipationLinkImpl implements ParticipationLinkService {
 
     @Override
     public String getUserFromParticipationLink(String participationLink) {
-        List<ParticipationLink> participationLinks = participationLinkRepository.findAll();
+        final List<ParticipationLink> participationLinks = participationLinkRepository.findAll();
 
-        for (ParticipationLink p : participationLinks) {
+        for (final ParticipationLink p : participationLinks) {
             if (p.getParticipationLink().equals(participationLink)) {
                 return p.getUsername();
             }

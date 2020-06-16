@@ -47,7 +47,7 @@ import java.util.logging.Logger;
         }
         int i = 0;
         boolean answerDa = false;
-        for (Answer a:pollResult.getAnswerList()) {
+        for (final Answer a:pollResult.getAnswerList()) {
             if (a.getQuestionId().equals(answer.getQuestionId())) {
                 pollResult.getAnswerList().set(i, answer);
                 answerDa = true;
@@ -58,8 +58,8 @@ import java.util.logging.Logger;
         if (!answerDa) {
             pollResult.getAnswerList().add(answer);
         }
-        DateFormat df = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
-        Date dateobj = new Date();
+        final DateFormat df = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+        final Date dateobj = new Date();
         pollResult.setLastEditAt(df.format(dateobj));
         LOGGER.info(pollResult.toString());
         pollResultRepository.save(pollResult);

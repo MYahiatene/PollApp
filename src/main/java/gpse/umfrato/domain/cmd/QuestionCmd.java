@@ -47,7 +47,7 @@ public class QuestionCmd {
 
     private int numberOfPossibleAnswers;
 
-    public QuestionCmd(Long pollId, float endValue, float startValue, float stepSize, String belowMessage,
+    public QuestionCmd(final Long pollId, final float endValue, final float startValue, float stepSize, final String belowMessage,
                        String aboveMessage, boolean hideValues, boolean textMultiline, int textMinimum, int textMaximum,
                        boolean textMinBool, boolean textMaxBool, boolean hasConsistencyRelationship, long categoryId,
                        String questionMessage, List<String> answerPossibilities, String questionType,

@@ -33,7 +33,7 @@ public class QuestionServiceImpl implements QuestionService {
 
     /*default*/ final CategoryRepository categoryRepository;
 
-    private final CategoryService categoryService;
+    final CategoryService categoryService;
 
     /**
      * Initializes the poll repository.
@@ -156,7 +156,7 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     public Question editQuestion(QuestionCmd questionCmd) {
-        Question question = questionRepository.
+        final Question question = questionRepository.
             findById(questionCmd.getQuestionId()).orElseThrow(EntityNotFoundException::new);
 
         switch (questionCmd.getQuestionType()) {
@@ -189,11 +189,11 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     public Question changeCategory(final Long questionId, final Long oldCategoryId, final Long newCategoryId) {
-        Question question = questionRepository.findById(questionId).orElseThrow(EntityNotFoundException::new);
-        Category oldCategory = categoryRepository.findById(oldCategoryId).orElseThrow(EntityNotFoundException::new);
+        final Question question = questionRepository.findById(questionId).orElseThrow(EntityNotFoundException::new);
+        final Category oldCategory = categoryRepository.findById(oldCategoryId).orElseThrow(EntityNotFoundException::new);
         oldCategory.getQuestionList()
             .remove(question);
-        Category newCategory = categoryRepository.findById(newCategoryId).orElseThrow(EntityNotFoundException::new);
+        final Category newCategory = categoryRepository.findById(newCategoryId).orElseThrow(EntityNotFoundException::new);
         newCategory.getQuestionList().add(question);
         question.setCategoryId(newCategoryId);
         return question;

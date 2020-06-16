@@ -13,7 +13,7 @@ import java.util.List;
 class PollServiceImpl implements PollService {
 
     private final PollRepository pollRepository;
-    private final CategoryRepository categoryRepository;
+    final CategoryRepository categoryRepository;
     private final CategoryService categoryService;
 
     private int anonymUsername = 0;
@@ -82,7 +82,7 @@ class PollServiceImpl implements PollService {
 
     @Override
     public Integer activatePoll(final Long pollId) {
-        Poll p = pollRepository.getOne(pollId);
+        final Poll p = pollRepository.getOne(pollId);
         p.setPollStatus(p.getPollStatus() + 1);
         pollRepository.save(p);
         return p.getPollStatus();

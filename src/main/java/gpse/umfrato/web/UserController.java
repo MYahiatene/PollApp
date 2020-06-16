@@ -20,7 +20,7 @@ public class UserController {
     private static final Logger LOGGER = Logger.getLogger("UserController");
     private static final String HTTP_POST = "HTTP POST was called";
     private final UserService userService;
-    private final UserRepository userRepository;
+    final UserRepository userRepository;
 
     /**
      * This class constructor initializes the user service and user repository.
