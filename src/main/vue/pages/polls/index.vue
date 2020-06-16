@@ -53,6 +53,11 @@
                                             mdi-link-variant
                                         </v-icon>
                                     </template>
+                                    <template v-slot:item.delete="{ item }">
+                                        <v-icon @click="deletePoll(item)">
+                                            mdi-delete
+                                        </v-icon>
+                                    </template>
                                 </v-data-table>
                             </template>
                         </v-container>
@@ -99,6 +104,7 @@ export default {
                 { text: '', value: 'status', sortable: false },
                 { text: '', value: 'action', sortable: false },
                 { text: '', value: 'link', sortable: false },
+                { text: '', value: 'delete', sortable: false },
                 { text: 'Umfrage', value: 'pollName' },
                 { text: 'Erstellt von', value: 'pollCreator' },
                 { text: 'Status', value: 'pollStatusString' },
@@ -136,14 +142,17 @@ export default {
                     data[i].pollStatusString = 'Inaktiv'
                     data[i].actionIcon = 'mdi-pencil'
                     data[i].statusIcon = 'mdi-play'
+                    data[i].deleteIcon = 'mdi-delete'
                 } else if (this.items[i].pollStatus === 1) {
                     data[i].pollStatusString = 'Aktiv'
                     data[i].actionIcon = 'mdi-magnify'
                     data[i].statusIcon = 'mdi-stop'
+                    data[i].deleteIcon = 'mdi-delete'
                 } else if (this.items[i].pollStatus === 2) {
                     data[i].pollStatusString = 'Beendet'
                     data[i].actionIcon = 'mdi-magnify'
                     data[i].statusIcon = 'mdi-content-duplicate'
+                    data[i].deleteIcon = 'mdi-delete'
                 }
                 const categories = this.items[i].categoryList
                 data[i].categoryCount = categories.length
@@ -163,7 +172,11 @@ export default {
 
     methods: {
         ...mapActions({ initialize: 'navigation/initialize', activatePoll2: 'navigation/activatePoll' }),
-        ...mapMutations({ setPollActive: 'navigation/setPollActive', setPollFinished: 'navigation/setPollFinished' }),
+        ...mapMutations({
+            setPollActive: 'navigation/setPollActive',
+            setPollFinished: 'navigation/setPollFinished',
+            splicePolls: 'navigation/splicePolls',
+        }),
 
         async initializeLinks() {
             await this.$axios.get('/participationLinks').then((response) => {
@@ -216,6 +229,12 @@ export default {
                     )
                 }
             }
+        },
+        deletePoll(item) {
+            const index = this.items.indexOf(item)
+            confirm('Sind sie sich sicher, dass sie diese Umfrage löschen möchten?') &&
+                this.splicePolls(index) &&
+                this.$axios.put('/deletepoll', { pollId: item.pollId })
         },
     },
 }

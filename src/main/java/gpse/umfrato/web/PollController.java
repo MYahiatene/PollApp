@@ -110,5 +110,9 @@ public class PollController {
         pollService.editPollName(Long.parseLong(pollCmd.getPollId()), pollCmd.getPollName());
     }
 
+    @PutMapping("/deletepoll")
+    public String deletePoll(final @RequestBody PollCmd pollCmd){
+        return pollService.deletePoll(pollCmd.getPollId());
+    }
 }
 

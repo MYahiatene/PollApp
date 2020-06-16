@@ -98,7 +98,7 @@ public class Poll {
     /**
      * This attribute represents a question list with all questions of this poll.
      */
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Question> questionList = new ArrayList<>();
 
     /**
@@ -106,7 +106,7 @@ public class Poll {
      */
     private String participationLink;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     private List<Category> categoryList = new ArrayList<>();
 
 
