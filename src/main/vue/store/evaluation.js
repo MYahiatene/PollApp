@@ -53,4 +53,9 @@ export const actions = {
         console.log(response)
         commit('initializeData', response)
     },
+    async exportAnswers({ state, commit }) {
+        console.log('export start!')
+        const response = await this.$axios.post('/export/answers' + 1)
+        console.log('response: ', response)
+    },
 }

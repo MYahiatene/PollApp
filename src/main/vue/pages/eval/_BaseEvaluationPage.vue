@@ -170,8 +170,8 @@ that each display a basic evaluation of one specific question-->
 
                                         <div v-else-if="question.type === 'text'">
                                             <textQuestionEvaluationWidget
-                                                :questionID="question.questionID"
-                                                :questionTitle="question.title"
+                                                :question-i-d="question.questionID"
+                                                :question-title="question.title"
                                             >
                                             </textQuestionEvaluationWidget>
                                         </div>
@@ -188,6 +188,9 @@ that each display a basic evaluation of one specific question-->
             <v-card>
                 <v-card-title>Der Server hat noch nicht geantwortet</v-card-title>
             </v-card>
+        </v-container>
+        <v-container>
+            <v-btn class="pl-4" @click="exportAnswers()">Antworten exportieren </v-btn>
         </v-container>
     </v-container>
 </template>
@@ -284,6 +287,9 @@ export default {
     methods: {
         ...mapActions({ initialize: 'evaluation/initialize' }),
 
+        exportAnswers() {
+            this.$store.dispatch('evaluation/exportAnswers')
+        },
         /*
 
       this method is emitted by the settings window.

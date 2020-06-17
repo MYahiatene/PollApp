@@ -7,16 +7,22 @@ import gpse.umfrato.domain.poll.PollService;
 import gpse.umfrato.domain.pollresult.PollResult;
 import gpse.umfrato.domain.pollresult.PollResultService;
 import gpse.umfrato.domain.question.Question;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@RequestMapping(value = "/api/export/", method = RequestMethod.POST)
+@RestController
+@CrossOrigin
 public class ExportController {
+    static final Logger LOGGER = Logger.getLogger("ExportController");
     private final PollService pollService;
     private final PollResultService pollResultService;
 
@@ -25,8 +31,9 @@ public class ExportController {
         this.pollResultService = pollResultService;
     }
 
-    public String convertPollWithResultsToCSV(String pollID){
-        Poll pollToConvert = pollService.getPoll(pollID);
+    @PostMapping("/answers/{pollId:\\d+}")
+    public String convertPollWithResultsToCSV(final @PathVariable String pollId) {
+        Poll pollToConvert = pollService.getPoll(pollId);
         List<Category> categories = pollToConvert.getCategoryList();
         ListIterator<Category> categoryIterator = categories.listIterator();
 
@@ -54,7 +61,7 @@ public class ExportController {
 
         // No need give the headers Like: id, Name on builder.append
         builder.append(columnNamesList +"\n");
-        List<PollResult> results = pollResultService.getPollResults(Long.parseLong(pollID));
+        List<PollResult> results = pollResultService.getPollResults(Long.parseLong(pollId));
         ListIterator<PollResult> resultIterator = results.listIterator();
         while(resultIterator.hasNext()) {
             PollResult singularResult = resultIterator.next();
@@ -71,15 +78,15 @@ public class ExportController {
         builder.append('\n');*/
         pw.write(builder.toString());
         pw.close();
-        System.out.println("done!");
+        LOGGER.info("done!");
 
         return builder.toString();
     }
 
-    public String answerToCSV(Answer input){
+    public String answerToCSV(Answer input) {
         ListIterator<String> answerIterator = input.getGivenAnswerList().listIterator();
         String output = "";
-        while(answerIterator.hasNext()){
+        while(answerIterator.hasNext()) {
             String answerForSingularQuestion = answerIterator.next();
             output += answerForSingularQuestion + ",";
         }
