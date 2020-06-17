@@ -73,7 +73,7 @@ public class ExportController {
         pw.close();
         System.out.println("done!");
 
-        return "";
+        return builder.toString();
     }
 
     public String answerToCSV(Answer input){
