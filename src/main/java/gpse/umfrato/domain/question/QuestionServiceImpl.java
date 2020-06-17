@@ -100,7 +100,7 @@ public class QuestionServiceImpl implements QuestionService {
                 return null;
         }
         question.setCategoryId(pollRepository.getOne(Long.valueOf(questionCmd.getPollId())).getCategoryList().get(0).getCategoryId());
-        pollRepository.getOne(Long.valueOf(questionCmd.getPollId())).getCategoryList().get(0).getQuestionList().add(question);
+        pollRepository.findById(Long.valueOf(questionCmd.getPollId())).get().getCategoryList().get(0).getQuestionList().add(question);
         questionRepository.save(question);
 
 

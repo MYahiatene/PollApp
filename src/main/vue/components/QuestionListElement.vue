@@ -7,7 +7,7 @@
                     {{ question.questionMessage }}
                 </v-list-item-title>
                 <v-list-item-subtitle>
-                    {{ question.questionType }}
+                    {{ showType(question.questionType) }}
                 </v-list-item-subtitle>
             </v-col>
             <v-col cols="1">
@@ -97,6 +97,16 @@ export default {
         },
     },
     methods: {
+        showType(questionType) {
+            if (questionType === 'ChoiceQuestion') {
+                if (this.question.numberOfPossibleAnswers > 1) {
+                    return 'Multiple Choice Question'
+                } else {
+                    return 'Single Choice Question'
+                }
+            }
+            return questionType
+        },
         editQuestion(question) {
             this.setQuestion(question)
             this.buildIndex = 2
