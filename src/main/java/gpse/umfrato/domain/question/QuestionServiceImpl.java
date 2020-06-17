@@ -99,11 +99,10 @@ public class QuestionServiceImpl implements QuestionService {
             default:
                 return null;
         }
-        question.setCategoryId(pollRepository.findById(Long.valueOf(questionCmd.getPollId()))
-            .orElseThrow(EntityNotFoundException::new).getCategoryList().get(0).getCategoryId());
-        pollRepository.findById(Long.valueOf(questionCmd.getPollId())).orElseThrow(EntityNotFoundException::new)
-            .getCategoryList().get(0).getQuestionList().add(question);
+        question.setCategoryId(pollRepository.getOne(Long.valueOf(questionCmd.getPollId())).getCategoryList().get(0).getCategoryId());
+        pollRepository.getOne(Long.valueOf(questionCmd.getPollId())).getCategoryList().get(0).getQuestionList().add(question);
         questionRepository.save(question);
+
 
         return question;
     }

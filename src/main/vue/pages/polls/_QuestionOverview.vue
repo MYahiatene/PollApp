@@ -10,7 +10,7 @@
                 <v-row>
                     <v-col cols="12" lg="4" md="4" sm="4">
                         <v-row>
-                            <v-card class="ma-0" min-width="400" max-width="600">
+                            <v-card class="ma-0" min-width="400" max-width="500">
                                 <v-row>
                                     <v-spacer></v-spacer>
                                     <v-col cols="6"
