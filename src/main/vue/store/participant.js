@@ -165,6 +165,8 @@ export const actions = {
      * @param answerObj object with (username, questionId, answerList, pollId)
      */
     saveAnswer(state, answerObj) {
+        console.log('answer in store')
+        console.log(answerObj)
         this.$axios.defaults.baseURL = 'http://localhost:8088/api/'
         this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('user-token')
         return this.$axios.post('/poll/' + answerObj.pollId + '/addanswer', answerObj)
