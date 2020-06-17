@@ -114,6 +114,7 @@ export default {
             console.log('BuildIndex:\n')
             console.log(this.buildIndex)
             if (this.buildIndex === 1) {
+                console.log(this.getQuestion.answerPossibilities)
                 this.$axios
                     .post('/addquestion', {
                         pollId: this.$route.params.QuestionOverview,

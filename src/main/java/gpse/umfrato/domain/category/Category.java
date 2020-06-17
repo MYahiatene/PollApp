@@ -31,6 +31,7 @@ public class Category {
     /**
      * This attribute represents a question list with all questions of this poll.
      */
+    @Column(unique = true)
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Question> questionList = new ArrayList<>();
 
