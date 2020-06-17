@@ -34,15 +34,6 @@
 
                 <v-expansion-panel>
                     <v-expansion-panel-header>
-                        Teilnehmerfilter
-                    </v-expansion-panel-header>
-                    <v-expansion-panel-content>
-                        Hier können Sie die Teilnehmer, deren Ergebnisse betrachtet werden filtern.
-                    </v-expansion-panel-content>
-                </v-expansion-panel>
-
-                <v-expansion-panel>
-                    <v-expansion-panel-header>
                         Antwortenfilter
                     </v-expansion-panel-header>
                     <v-expansion-panel-content dense>
@@ -88,7 +79,7 @@
                                             </v-btn>
                                         </v-row>
                                         <v-row>
-                                            <v-col align="right" colls="12" lg="11">
+                                            <v-col cols="12" lg="11">
                                                 <base-q-a-filter
                                                     :poll-index="pollIndex"
                                                     :filter-id="filter.filterId"
@@ -108,7 +99,7 @@
             </v-expansion-panels>
         </template>
         <v-card-actions>
-            <v-col align="right">
+            <v-col>
                 <v-btn color="primary" @click="saveToStore()"> Anwenden </v-btn>
             </v-col>
         </v-card-actions>
@@ -116,7 +107,7 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import baseQAFilter from '../components/Filter/baseQAFilter'
 
 export default {
@@ -132,31 +123,49 @@ export default {
             qafilterList: [
                 { active: true, filterId: 0, filterType: 'qaFilter', categoryId: -1, questionId: -1, answerIds: [] },
             ],
-            initialPollIndex: 0,
+            initialPollIndex: 5,
             chosenPoll: '',
             selectedQuestions: [],
             questionTitlesDisplayedInSelect: 3,
+
+            filterData: {
+                pollId: 1,
+                chosenQuestions: [11, 12, 32, 4, 50, 8], // these are questionIDs
+                chosenQuestionTypes: ['singleChoice', 'multiChoice', 'range', 'slide', 'sort', 'text'],
+                applyConsistency: false,
+                qafilters: [
+                    {
+                        categoryIndex: 1, // these are the indices, they indicate the position within a poll
+                        questionIndex: 3, // within a category
+                        answers: [2, 3, 5], // or within an answerlist of a question
+                    },
+                ],
+            },
         }
     },
 
     methods: {
-        ...mapMutations({ sendFilter: 'evaluation/sendFilter' }),
+        ...mapActions({ sendFilter: 'evaluation/sendFilter' }),
 
         saveToStore() {
-            const filterData = []
-            for (let f = 0; f < this.qafilterList.length; f++) {
-                if (this.qafilterList[f].active) {
-                    filterData.push({
-                        filterType: 'qaFilter',
-                        invertFilter: false,
-                        targetPollId: this.pollIndex,
-                        targetCategoryId: this.qafilterList[f].categoryId,
-                        targetQuestionId: this.qafilterList[f].questionId,
-                        targetAnswerPossibilities: this.qafilterList[f].answerIds,
-                    })
-                }
-            }
-            this.sendFilter(filterData)
+            // const filterData = []
+            // for (let f = 0; f < this.qafilterList.length; f++) {
+            //     if (this.qafilterList[f].active) {
+            //         filterData.push({
+            //             filterType: 'qaFilter',
+            //             invertFilter: false,
+            //             targetPollId: this.pollIndex,
+            //             targetCategoryId: this.qafilterList[f].categoryId,
+            //             targetQuestionId: this.qafilterList[f].questionId,
+            //             targetAnswerPossibilities: this.qafilterList[f].answerIds,
+            //         })
+            //     }
+            // }
+            // this.sendFilter(filterData)
+
+            console.log('save filter was called')
+
+            this.sendFilter(this.filterData)
         },
 
         addQAFilter() {
@@ -204,7 +213,7 @@ export default {
         },
 
         pollIndex() {
-            return this.pollTitles.indexOf(this.pollTitles[0])
+            return this.pollTitles.indexOf(this.chosenPoll)
         },
 
         questionTitles() {
