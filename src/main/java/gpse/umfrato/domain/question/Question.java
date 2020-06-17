@@ -64,7 +64,8 @@ public class Question {
     @Lob
     private String questionMessage;
 
-    @ElementCollection(fetch = FetchType.EAGER)
+    @OrderColumn
+    @ElementCollection
     private List<String> answerPossibilities = new ArrayList<>();
 
     private boolean userAnswers = false;
