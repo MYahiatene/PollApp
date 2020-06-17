@@ -29,7 +29,7 @@ public class DiagramData {
     @JsonIgnore
     private final Poll poll;
 
-    /* default */ interface QuestionData {
+    interface QuestionData {
         enum QuestionType { CHOICE_QUESTION, TEXT_QUESTION, RANGE_QUESTION, SLIDER_QUESTION }
 
         long getQuestionId();
@@ -52,8 +52,8 @@ public class DiagramData {
         private String median;
         private String mode;
 
-        /* default */ ChoiceData(final long questionId, final String questionMessage,
-                   final List<String> answerPossibilities) {
+        ChoiceData(final long questionId, final String questionMessage,
+                                 final List<String> answerPossibilities) {
             this.questionId = questionId;
             this.questionTitle = questionMessage;
             this.answerPossibilities = answerPossibilities;
@@ -146,7 +146,7 @@ public class DiagramData {
         private List<String> editedDates = new ArrayList<>();
         private List<String> creator = new ArrayList<>();
 
-        /* default */ TextData(final long questionId, final String questionMessage) {
+        TextData(final long questionId, final String questionMessage) {
             this.questionId = questionId;
             this.questionTitle = questionMessage;
         }
@@ -239,10 +239,9 @@ public class DiagramData {
                         switch (qd.getQuestionType()) {
                             case CHOICE_QUESTION:
                                 final ChoiceData cd = (ChoiceData) qd;
-                                cd.addAnswer(Integer.parseInt(a.getGivenAnswerList()
-                                    .get(a.getGivenAnswerList().size() - 1)));
-                                /*for (final String s: a.getGivenAnswerList()) {
-                                }*/
+                                for (final String s: a.getGivenAnswerList()) {
+                                    cd.addAnswer(Integer.parseInt(s));
+                                }
                                 break;
                             case TEXT_QUESTION:
                                 if (!a.getGivenAnswerList().isEmpty()) {
