@@ -11,9 +11,7 @@ import gpse.umfrato.domain.pollresult.PollResultService;
 import gpse.umfrato.domain.question.Question;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.logging.Logger;
@@ -21,8 +19,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import com.opencsv.*;
 
-import java.io.IOException;
-import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -43,7 +39,7 @@ public class ExportController {
 
     private static final String OBJECT_LIST_SAMPLE = "./object-list-sample.csv";
 
-    public void pollToCSV(String[] args) throws IOException,
+    /* public void pollToCSV(String[] args) throws IOException,
         CsvDataTypeMismatchException,
         CsvRequiredFieldEmptyException {
 
@@ -57,7 +53,60 @@ public class ExportController {
             List<PollResult> results = this.pollResultService.getAllPollResults();
             beanToCsv.write(results.get(0));
         }
+    } */
+
+
+    public static void pollToCSV(String filePath, Poll poll) {
+        // create fle with given filePath
+        File file = new File(filePath);
+        try {
+            // create FileWriter object with file as parameter
+            FileWriter outputfile = new FileWriter(file);
+
+            // create CSVWriter object filewriter object as parameter
+            CSVWriter writer = new CSVWriter(outputfile);
+
+            // adding header to csv
+            // is hideValue, textMultiline, textMInBool, textMaxBool, hasConsistencyRelationship, userAnswers important,
+            // there are no getters for them available
+            String[] header = { "questionId", "categoryId", "questionMessage", "questionType", "answerPossibilities",
+                "numberOfPossibleAnswers", "endValue", "startValue", "stepSize", "belowMessage", "aboveMessage",
+                "textMinimum", "textMaximum"};
+            writer.writeNext(header);
+
+            // add questions of the poll to csv
+            for (Question question : poll.getQuestionList()) {
+                List<String> list = new ArrayList<>();
+                list.add(question.getQuestionId().toString());
+                list.add(question.getCategoryId().toString());
+                list.add(question.getQuestionMessage());
+                list.add(question.getQuestionType());
+                list.add(question.getAnswerPossibilities().toString());
+                list.add(String.valueOf(question.getNumberOfPossibleAnswers()));
+                list.add(String.valueOf(question.getEndValue()));
+                list.add(String.valueOf(question.getStartValue()));
+                list.add(String.valueOf(question.getStepSize()));
+                list.add(question.getBelowMessage());
+                list.add(question.getAboveMessage());
+                list.add(String.valueOf(question.getTextMinimum()));
+                list.add(String.valueOf(question.getTextMaximum()));
+
+                String[] endData = new String[list.size()];
+                for (int i = 0; i < list.size(); i++) {
+
+                    // Assign each value to String array
+                    endData[i] = list.get(i);
+                }
+                writer.writeNext(endData);
+            }
+
+            // closing writer connection
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
+
 
 
 
