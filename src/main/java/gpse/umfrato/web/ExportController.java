@@ -83,6 +83,42 @@ public class ExportController {
         return builder.toString();
     }
 
+    public String convertReadableQuestionsToCSV(final @PathVariable String pollId) {
+        Poll pollToConvert = pollService.getPoll(pollId);
+        List<Category> categories = pollToConvert.getCategoryList();
+        ListIterator<Category> categoryIterator = categories.listIterator();
+
+        String columnNamesList = pollToConvert.getPollName(); /**Table headers*/
+        while(categoryIterator.hasNext()) {
+            Category singularCategory = categoryIterator.next(); //Page
+            ListIterator<Question> questionIterator = singularCategory.getQuestionList().listIterator();
+            while(questionIterator.hasNext()) {
+                Question singularQuestion = questionIterator.next();
+                String singularQuestionMessage = singularQuestion.getQuestionMessage();
+                columnNamesList += '\n' + singularQuestionMessage; /**I think it works that way, should give out "PollID, Frage1, Frage2, Frage3, ... regardless of category"*/
+            }
+        }
+
+        /**This is what does the work I guess*/
+
+        PrintWriter pw = null;
+        try {
+            pw = new PrintWriter(new File("PollData.csv"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        StringBuilder builder = new StringBuilder();
+
+
+        // No need give the headers Like: id, Name on builder.append
+        builder.append(columnNamesList +"\n");
+        pw.write(builder.toString());
+        pw.close();
+        LOGGER.info("done!");
+
+        return builder.toString();
+    }
+
     public String answerToCSV(Answer input) {
         ListIterator<String> answerIterator = input.getGivenAnswerList().listIterator();
         String output = "";
