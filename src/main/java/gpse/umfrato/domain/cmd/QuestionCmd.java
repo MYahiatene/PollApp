@@ -7,7 +7,11 @@ import java.util.List;
 @Data
 public class QuestionCmd {
 
-    private Long pollId;
+    private long pollId;
+
+    private long categoryId;
+
+    private long questionId;
 
     private float endValue;
 
@@ -32,10 +36,6 @@ public class QuestionCmd {
     private boolean textMaxBool;
 
     private boolean hasConsistencyRelationship;
-
-    private long questionId;
-
-    private long categoryId;
 
     private String questionMessage;
 

@@ -46,8 +46,7 @@ public class QuestionController {
      */
     @PutMapping("/removequestion")
     public void deleteQuestion(final @RequestBody QuestionCmd questionCmd) {
-        questionService.removeQuestion(String.valueOf(questionCmd.getCategoryId()),
-            String.valueOf(questionCmd.getQuestionId()));
+        questionService.removeQuestion(questionCmd.getCategoryId(), questionCmd.getQuestionId());
     }
 
     /**
@@ -59,7 +58,7 @@ public class QuestionController {
     @GetMapping("/getOneQuestion")
     public Question getQuestion(final @RequestBody QuestionCmd questionCmd) {
 
-        return questionService.getQuestion(Long.valueOf(questionCmd.getPollId()));
+        return questionService.getQuestion(questionCmd.getPollId());
     }
 
     @GetMapping("/getallquestions")

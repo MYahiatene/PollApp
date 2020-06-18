@@ -5,6 +5,6 @@ import lombok.Data;
 @Data
 public class CategoryCmd {
     private String name;
-    private String pollId;
-    private String categoryId;
+    private Long pollId;
+    private Long categoryId;
 }
