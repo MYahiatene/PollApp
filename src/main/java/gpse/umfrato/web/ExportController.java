@@ -1,5 +1,7 @@
 package gpse.umfrato.web;
 
+import com.opencsv.exceptions.CsvDataTypeMismatchException;
+import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 import gpse.umfrato.domain.answer.Answer;
 import gpse.umfrato.domain.category.Category;
 import gpse.umfrato.domain.poll.Poll;
@@ -17,6 +19,14 @@ import java.util.ListIterator;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import com.opencsv.*;
+
+import java.io.IOException;
+import java.io.Writer;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 @RequestMapping(value = "/api/export/", method = RequestMethod.POST)
 @RestController
@@ -31,24 +41,46 @@ public class ExportController {
         this.pollResultService = pollResultService;
     }
 
+    private static final String OBJECT_LIST_SAMPLE = "./object-list-sample.csv";
+
+    public void pollToCSV(String[] args) throws IOException,
+        CsvDataTypeMismatchException,
+        CsvRequiredFieldEmptyException {
+
+        try (
+            Writer writer = Files.newBufferedWriter(Paths.get("."));
+        ) {
+            StatefulBeanToCsv<PollResult> beanToCsv = new StatefulBeanToCsvBuilder(writer)
+                .withQuotechar(CSVWriter.NO_QUOTE_CHARACTER)
+                .build();
+
+            List<PollResult> results = this.pollResultService.getAllPollResults();
+            beanToCsv.write(results.get(0));
+        }
+    }
+
+
+
+
+/*
     @PostMapping("/answers/{pollId:\\d+}")
     public String convertPollWithResultsToCSV(final @PathVariable String pollId) {
         Poll pollToConvert = pollService.getPoll(pollId);
         List<Category> categories = pollToConvert.getCategoryList();
         ListIterator<Category> categoryIterator = categories.listIterator();
 
-        String columnNamesList = pollToConvert.getPollName(); /**Table headers*/
+        String columnNamesList = pollToConvert.getPollName(); *//**Table headers*//*
         while(categoryIterator.hasNext()) {
             Category singularCategory = categoryIterator.next(); //Page
             ListIterator<Question> questionIterator = singularCategory.getQuestionList().listIterator();
             while(questionIterator.hasNext()) {
                 Question singularQuestion = questionIterator.next();
                 String singularQuestionMessage = singularQuestion.getQuestionMessage();
-                columnNamesList += "," + singularQuestionMessage; /**I think it works that way, should give out "PollID, Frage1, Frage2, Frage3, ... regardless of category"*/
+                columnNamesList += "," + singularQuestionMessage; *//**I think it works that way, should give out "PollID, Frage1, Frage2, Frage3, ... regardless of category"*//*
             }
         }
 
-        /**This is what does the work I guess*/
+        *//**This is what does the work I guess*//*
 
         PrintWriter pw = null;
         try {
@@ -68,14 +100,14 @@ public class ExportController {
             ListIterator<Answer> answerIterator = singularResult.getAnswerList().listIterator();
             while(answerIterator.hasNext()) {
                 Answer singularAnswer = answerIterator.next();
-                /**Iterate over list to make every Answer one column in the csv table*/
+                *//**Iterate over list to make every Answer one column in the csv table*//*
                 builder.append(answerToCSV(singularAnswer));
             }
         }
 
-        /*builder.append("1"+",");
+        *//*builder.append("1"+",");
         builder.append("Chola");
-        builder.append('\n');*/
+        builder.append('\n');*//*
         pw.write(builder.toString());
         pw.close();
         LOGGER.info("done!");
@@ -88,18 +120,18 @@ public class ExportController {
         List<Category> categories = pollToConvert.getCategoryList();
         ListIterator<Category> categoryIterator = categories.listIterator();
 
-        String columnNamesList = pollToConvert.getPollName(); /**Table headers*/
+        String columnNamesList = pollToConvert.getPollName(); *//**Table headers*//*
         while(categoryIterator.hasNext()) {
             Category singularCategory = categoryIterator.next(); //Page
             ListIterator<Question> questionIterator = singularCategory.getQuestionList().listIterator();
             while(questionIterator.hasNext()) {
                 Question singularQuestion = questionIterator.next();
                 String singularQuestionMessage = singularQuestion.getQuestionMessage();
-                columnNamesList += '\n' + singularQuestionMessage; /**I think it works that way, should give out "PollID, Frage1, Frage2, Frage3, ... regardless of category"*/
+                columnNamesList += '\n' + singularQuestionMessage; *//**I think it works that way, should give out "PollID, Frage1, Frage2, Frage3, ... regardless of category"*//*
             }
         }
 
-        /**This is what does the work I guess*/
+        *//**This is what does the work I guess*//*
 
         PrintWriter pw = null;
         try {
@@ -143,5 +175,5 @@ public class ExportController {
         return Stream.of(data)
             .map(this::escapeSpecialCharacters)
             .collect(Collectors.joining(","));
-    }
+    }*/
 }
