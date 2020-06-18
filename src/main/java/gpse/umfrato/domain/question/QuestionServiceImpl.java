@@ -73,6 +73,7 @@ public class QuestionServiceImpl implements QuestionService {
      */
     @Override
     public Question addQuestion(final QuestionCmd questionCmd) {
+        System.out.println(questionCmd.toString());
         Question question = null;
         switch (questionCmd.getQuestionType()) {
             case TEXT_QUESTION:
@@ -103,11 +104,12 @@ public class QuestionServiceImpl implements QuestionService {
             default:
                 return null;
         }
-        question.setCategoryId(pollRepository.findById(questionCmd.getPollId())
-            .orElseThrow(EntityNotFoundException::new).getCategoryList().get(0).getCategoryId());
-        pollRepository.findById(questionCmd.getPollId()).orElseThrow(EntityNotFoundException::new)
-            .getCategoryList().get(0).getQuestionList().add(question);
-        questionRepository.save(question);
+        if(question != null)
+        {
+            question.setCategoryId(categoryRepository.findCategoriesByPollId(questionCmd.getPollId()).get(0).getCategoryId());
+            categoryRepository.findCategoriesByPollId(questionCmd.getPollId()).get(0).getQuestionList().add(question);
+            questionRepository.save(question);
+        }
         return question;
     }
 
@@ -118,6 +120,7 @@ public class QuestionServiceImpl implements QuestionService {
      */
     @Override
     public Question addQuestion(final Long pollId, final Question question) {
+        System.out.println("Scheiße");
         question.setCategoryId(categoryRepository.findCategoriesByPollId(pollId).get(0).getCategoryId());
         Category category = categoryRepository.findCategoriesByPollId(pollId).get(0);
         category.getQuestionList().add(question);
