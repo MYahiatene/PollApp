@@ -24,7 +24,7 @@ public class CategoryController {
 
     @PostMapping("/addcategory")
     public Category addCategory(final @RequestBody CategoryCmd categoryCmd) {
-        return categoryService.createCategory(categoryCmd.getName(), Long.parseLong(categoryCmd.getPollId()));
+        return categoryService.createCategory(categoryCmd.getName(), categoryCmd.getPollId());
     }
 
     @GetMapping("/getallcategories")
@@ -40,13 +40,13 @@ public class CategoryController {
     @PreAuthorize("hasAuthority('Admin')")
     @PutMapping("/deletecategory")
     public String deleteCategory(final @RequestBody CategoryCmd categoryCmd) {
-        categoryService.deleteCategory(Long.parseLong(categoryCmd.getCategoryId()));
+        categoryService.deleteCategory(categoryCmd.getCategoryId());
         return TEST;
     }
 
     @PutMapping("/editcategory")
     public void editCategory(final @RequestBody CategoryCmd categoryCmd) {
-        categoryService.editCategory(Long.valueOf(categoryCmd.getCategoryId()), categoryCmd.getName());
+        categoryService.editCategory(categoryCmd.getCategoryId(), categoryCmd.getName());
     }
 
     /**
@@ -57,7 +57,7 @@ public class CategoryController {
     @PreAuthorize("hasAuthority('Admin')")
     @PutMapping("/deletecategoryandquestions")
     public String deleteCategoryAndQuestions(final @RequestBody CategoryCmd categoryCmd) {
-        categoryService.deleteCategoryAndQuestions(Long.valueOf(categoryCmd.getCategoryId()));
+        categoryService.deleteCategoryAndQuestions(categoryCmd.getCategoryId());
         return TEST;
     }
 }

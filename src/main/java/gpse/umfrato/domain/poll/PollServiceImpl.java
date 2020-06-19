@@ -64,8 +64,7 @@ class PollServiceImpl implements PollService {
      * @return the requested poll
      */
     @Override
-    public Poll getPoll(final String id) {
-        final Long pollId = Long.valueOf(id);
+    public Poll getPoll(final Long pollId) {
         return pollRepository.findById(pollId).orElseThrow(EntityNotFoundException::new);
     }
 

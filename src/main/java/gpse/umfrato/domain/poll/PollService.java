@@ -24,7 +24,7 @@ public interface PollService {
      * @param id the id of the requested poll
      * @return the requested poll
      */
-    Poll getPoll(String id);
+    Poll getPoll(Long id);
 
     /**
      * This method creates a unique username for anonym polls.

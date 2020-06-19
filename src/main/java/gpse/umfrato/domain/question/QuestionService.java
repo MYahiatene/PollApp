@@ -12,7 +12,7 @@ public interface QuestionService {
      * @param categoryId     the id of the category where the question is setted
      * @param questionId the id of the selectes question
      */
-    void removeQuestion(String categoryId, String questionId);
+    void removeQuestion(Long categoryId, Long questionId);
 
     /**
      * This method returns the requested question.
@@ -25,10 +25,11 @@ public interface QuestionService {
 
     Question addQuestion(final QuestionCmd questionCmd);
 
+    Question addQuestion(final Long pollId, final Question question);
+
     List<Question> getAllQuestions(final long categoryId);
 
     Question editQuestion(QuestionCmd questionCmd);
-
 
     Question changeCategory(final Long questionId, final Long oldCategoryId, final Long newCategoryId);
 
