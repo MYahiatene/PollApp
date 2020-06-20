@@ -1,5 +1,9 @@
 package gpse.umfrato.web;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.opencsv.CSVWriter;
 import gpse.umfrato.domain.answer.Answer;
 import gpse.umfrato.domain.category.Category;
 import gpse.umfrato.domain.poll.Poll;
@@ -9,20 +13,14 @@ import gpse.umfrato.domain.pollresult.PollResultService;
 import gpse.umfrato.domain.question.Question;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
-import java.util.List;
-import java.util.ListIterator;
+import java.io.*;
+import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import java.io.IOException;
-import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 
 @RequestMapping(value = "/api/export/", method = RequestMethod.POST)
@@ -38,9 +36,29 @@ public class ExportController {
         this.pollResultService = pollResultService;
     }
 
+    /**New Idea: Convert to JSON first and then to CSV, it sure ain't pretty but if it works it's fine*/
 
 
-    public String addHeaders(String pollId){
+    public static String toJSON(Poll result) throws Exception {
+        ObjectMapper objectMapper = new ObjectMapper()
+            .findAndRegisterModules();
+        try {
+            return objectMapper.writeValueAsString(result);
+        } catch (JsonProcessingException e) {
+            throw new Exception("Serialisierung fehlgeschlagen");
+        }
+    }
+
+    private String FormatCSVField(String data)
+    {
+        return String.format("\"{0}\"",
+            data.replace("\"", "\"\"\"")
+                .replace("\n", "")
+                .replace("\r", "")
+        );
+    }
+
+    public String addHeaders(Long pollId){
         Poll pollToConvert = pollService.getPoll(pollId);
         List<Category> categories = pollToConvert.getCategoryList();
         ListIterator<Category> categoryIterator = categories.listIterator();
@@ -66,7 +84,7 @@ public class ExportController {
     /**TODO: Implement way to know what kind of question this was*/
 
     @PostMapping("/answers/{pollId:\\d+}")
-    public String convertPollWithResultsToCSV(final @PathVariable String pollId) {
+    public String convertPollWithResultsToCSV(final @PathVariable Long pollId) {
         Poll pollToConvert = pollService.getPoll(pollId);
         List<Category> categories = pollToConvert.getCategoryList();
         ListIterator<Category> categoryIterator = categories.listIterator();
@@ -84,7 +102,7 @@ public class ExportController {
         /**IMPORTANT: Structure: PollID; PollTaker; PollResultID; LastEditAt; List of Answers*/
         // No need give the headers Like: id, Name on builder.append
         builder.append(columnNamesList +"\n");
-        List<PollResult> results = pollResultService.getPollResults(Long.parseLong(pollId));
+        List<PollResult> results = pollResultService.getPollResults(pollId); /**TODO: WICHTIG KEINE LISTE VON POLLRESULTS*/
         ListIterator<PollResult> resultIterator = results.listIterator();
         while(resultIterator.hasNext()) {
             PollResult singularResult = resultIterator.next();
@@ -104,7 +122,7 @@ public class ExportController {
         return builder.toString();
     }
 
-    public String convertReadableQuestionsToCSV(final @PathVariable String pollId) {
+    public String convertReadableQuestionsToCSV(final @PathVariable Long pollId) {
         Poll pollToConvert = pollService.getPoll(pollId);
         List<Category> categories = pollToConvert.getCategoryList();
         ListIterator<Category> categoryIterator = categories.listIterator();
