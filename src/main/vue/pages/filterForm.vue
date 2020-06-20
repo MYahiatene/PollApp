@@ -96,6 +96,43 @@
                         </div>
                     </v-expansion-panel-content>
                 </v-expansion-panel>
+
+                <v-expansion-panel>
+                    <v-expansion-panel-header>
+                        Zeitraumfilter
+                    </v-expansion-panel-header>
+                    <v-expansion-panel-content>
+                        Hier können Sie den Antwortzeitpunkt der Teilnehmer, die Sie betrachten wollen festlegen.
+
+                        <div v-for="filter in dateFilterList" :key="filter.filterId">
+                            <div v-if="filter.active">
+                                <v-card class="pa-3 ma-2">
+                                    <v-row align="right">
+                                        <v-spacer></v-spacer>
+                                        <v-btn icon @click="addQAFilter()">
+                                            <v-icon> mdi-plus </v-icon>
+                                        </v-btn>
+                                        <v-btn icon @click="deleteQAFilter(filter.filterId)">
+                                            <v-icon> mdi-delete </v-icon>
+                                        </v-btn>
+                                    </v-row>
+                                    <v-row>
+                                        <v-col cols="12" lg="11">
+                                            <base-q-a-filter
+                                                :poll-index="pollIndex"
+                                                :filter-id="filter.filterId"
+                                                :initial-category-index="qafilterList[filter.filterId].categoryId"
+                                                :initial-question-index="qafilterList[filter.filterId].questionId"
+                                                :initial-answer-indices="qafilterList[filter.filterId].answerIds"
+                                                @updateData="updateQaFilter"
+                                            ></base-q-a-filter>
+                                        </v-col>
+                                    </v-row>
+                                </v-card>
+                            </div>
+                        </div>
+                    </v-expansion-panel-content>
+                </v-expansion-panel>
             </v-expansion-panels>
         </template>
         <v-card-actions>
@@ -123,7 +160,12 @@ export default {
             qafilterList: [
                 { active: true, filterId: 0, filterType: 'qaFilter', categoryId: -1, questionId: -1, answerIds: [] },
             ],
-            initialPollIndex: 5,
+
+            dateFilterList: [
+                { active: true, filterId: 0, filterType: 'dateFilter', endDate: '', startDate: '', negated: false },
+            ],
+
+            initialPollIndex: 0,
             chosenPoll: '',
             selectedQuestions: [],
             questionTitlesDisplayedInSelect: 3,
@@ -218,6 +260,8 @@ export default {
 
         questionTitles() {
             const questionTitles = []
+            console.log(this.polls)
+            console.log(this.pollIndex)
             for (let i = 0; i < this.polls[this.pollIndex].categoryList.length; i++) {
                 for (let j = 0; j < this.polls[this.pollIndex].categoryList[i].questionList.length; j++) {
                     questionTitles.push(this.polls[this.pollIndex].categoryList[i].questionList[j].questionMessage)
