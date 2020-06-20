@@ -106,7 +106,7 @@ public class Poll {
      */
     private String participationLink;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany/*(cascade = CascadeType.ALL, fetch = FetchType.EAGER)*/
     private List<Category> categoryList = new ArrayList<>();
 
 

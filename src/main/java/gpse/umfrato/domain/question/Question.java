@@ -62,7 +62,7 @@ public class Question {
     @Lob
     private String questionMessage;
 
-    @ElementCollection(fetch = FetchType.EAGER)
+    @ElementCollection/*(fetch = FetchType.EAGER)*/
     private List<String> answerPossibilities = new ArrayList<>();
 
     private boolean userAnswers = false;

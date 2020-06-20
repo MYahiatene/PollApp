@@ -42,18 +42,18 @@
                                     :footer-props="footerProps"
                                 >
                                     <template v-slot:item.status="{ item }">
-                                        <v-icon @click="activatePoll(item)">
+                                        <v-icon @click="changePollStatus(item)">
                                             {{ item.statusIcon }}
                                         </v-icon>
                                     </template>
-                                    <template v-slot:item.action="{ item }">
-                                        <v-icon @click="itemAction(item)">
-                                            {{ item.actionIcon }}
+                                    <template v-slot:item.action1="{ item }">
+                                        <v-icon @click="itemAction1(item)">
+                                            {{ item.action1Icon }}
                                         </v-icon>
                                     </template>
-                                    <template v-slot:item.link="{ item }">
-                                        <v-icon v-if="item.pollStatus === 1" @click="setLink(item)">
-                                            mdi-link-variant
+                                    <template v-slot:item.action2="{ item }">
+                                        <v-icon @click="itemAction2(item)">
+                                            {{ item.action2Icon }}
                                         </v-icon>
                                     </template>
                                 </v-data-table>
@@ -101,11 +101,12 @@ export default {
             ],
             headers: [
                 { text: '', value: 'status', sortable: false },
-                { text: '', value: 'action', sortable: false },
-                { text: '', value: 'link', sortable: false },
+                { text: '', value: 'action1', sortable: false },
+                { text: '', value: 'action2', sortable: false },
                 { text: 'Umfrage', value: 'pollName' },
                 { text: 'Erstellt von', value: 'pollCreator' },
                 { text: 'Status', value: 'pollStatusString' },
+                { text: 'Beantwortet von', value: 'paticipantCount' },
                 { text: 'Kategorienanzahl', value: 'categoryCount' },
                 { text: 'Fragenanzahl', value: 'questionCount' },
                 { text: 'Anonymitätsgrad', value: 'anonymityString' },
@@ -141,15 +142,18 @@ export default {
                 }
                 if (this.items[i].pollStatus === 0) {
                     data[i].pollStatusString = 'Inaktiv'
-                    data[i].actionIcon = 'mdi-pencil'
+                    data[i].action1Icon = 'mdi-pencil'
+                    data[i].action2Icon = 'mdi-delete'
                     data[i].statusIcon = 'mdi-play'
                 } else if (this.items[i].pollStatus === 1) {
                     data[i].pollStatusString = 'Aktiv'
-                    data[i].actionIcon = 'mdi-magnify'
+                    data[i].action1Icon = 'mdi-magnify'
+                    data[i].action2Icon = 'mdi-link-variant'
                     data[i].statusIcon = 'mdi-stop'
                 } else if (this.items[i].pollStatus === 2) {
                     data[i].pollStatusString = 'Beendet'
-                    data[i].actionIcon = 'mdi-magnify'
+                    data[i].action1Icon = 'mdi-magnify'
+                    data[i].action2Icon = 'mdi-delete'
                     data[i].statusIcon = 'mdi-content-duplicate'
                 }
                 const categories = this.items[i].categoryList
@@ -169,7 +173,7 @@ export default {
     },
 
     methods: {
-        ...mapActions({ initialize: 'navigation/initialize', activatePoll2: 'navigation/activatePoll' }),
+        ...mapActions({ initialize: 'navigation/initialize', updatePollStatus: 'navigation/updatePollStatus' }),
         ...mapMutations({ setPollActive: 'navigation/setPollActive', setPollFinished: 'navigation/setPollFinished' }),
 
         async initializeLinks() {
@@ -178,24 +182,31 @@ export default {
                 console.log(response.data)
             })
         },
-        activatePoll(item) {
+        changePollStatus(item) {
             if (item.pollStatus === 0) {
                 if (confirm('Umfrage jetzt veröffentlichen?')) {
-                    this.activatePoll2(item.pollId)
+                    this.updatePollStatus(item.pollId)
                 }
             } else if (item.pollStatus === 1) {
                 if (confirm('Umfrage jetzt beenden?')) {
-                    this.setPollFinished(item.pollId)
+                    this.updatePollStatus(item.pollId)
                 }
             } else if (confirm('Umfrage kopieren?')) {
                 alert('Tja, das geht noch nicht...')
             }
         },
-        itemAction(item) {
+        itemAction1(item) {
             if (item.pollStatus === 0) {
                 this.$router.push('/polls/' + item.pollId)
             } else {
                 this.$router.push('/eval/' + item.pollId)
+            }
+        },
+        itemAction2(item) {
+            if (item.pollStatus === 1) {
+                this.setLink(item)
+            } else if (confirm('Umfrage entgültig löschen?')) {
+                alert('Jetzt wäre sie gelöscht')
             }
         },
         showValue(item, key) {

@@ -73,7 +73,7 @@ public class QuestionServiceImpl implements QuestionService {
      */
     @Override
     public Question addQuestion(final QuestionCmd questionCmd) {
-        System.out.println(questionCmd.toString());
+        // System.out.println(questionCmd.toString());
         Question question = null;
         switch (questionCmd.getQuestionType()) {
             case TEXT_QUESTION:
@@ -84,15 +84,15 @@ public class QuestionServiceImpl implements QuestionService {
                 break;
             case RANGE_QUESTION:
                 question = new Question(questionCmd.getQuestionMessage(),
-                    questionCmd.getEndValue() == ZERO ? FIVE : questionCmd.getStepSize(),
-                    questionCmd.getStartValue(), questionCmd.getStepSize() == ZERO ? ONE : questionCmd.getStepSize(),
-                    questionCmd.getBelowMessage() == null ? "" : questionCmd.getBelowMessage(),
-                    questionCmd.getAboveMessage() == null ? "" : questionCmd.getAboveMessage());
+                    questionCmd.getStartValue(), questionCmd.getEndValue(),
+                        questionCmd.getStepSize() == ZERO ? ONE : questionCmd.getStepSize(),
+                        questionCmd.getBelowMessage() == null ? "" : questionCmd.getBelowMessage(),
+                        questionCmd.getAboveMessage() == null ? "" : questionCmd.getAboveMessage());
                 break;
             case SLIDER_QUESTION:
                 question = new Question(questionCmd.getQuestionMessage(),
-                    questionCmd.getEndValue() == ZERO ? ONE : questionCmd.getStepSize(), questionCmd.getStartValue(),
-                    questionCmd.getStepSize() == ZERO ? ZERO_DOT_ONE : questionCmd.getStepSize(),
+                    questionCmd.getStartValue(), questionCmd.getEndValue(),
+                    questionCmd.getStepSize() == ZERO ? ONE : questionCmd.getStepSize(),
                     questionCmd.getBelowMessage() == null ? "" : questionCmd.getBelowMessage(),
                     questionCmd.getAboveMessage() == null ? "" : questionCmd.getAboveMessage(),
                     questionCmd.isHideValues());
@@ -120,7 +120,6 @@ public class QuestionServiceImpl implements QuestionService {
      */
     @Override
     public Question addQuestion(final Long pollId, final Question question) {
-        System.out.println("Scheiße");
         question.setCategoryId(categoryRepository.findCategoriesByPollId(pollId).get(0).getCategoryId());
         Category category = categoryRepository.findCategoriesByPollId(pollId).get(0);
         category.getQuestionList().add(question);
