@@ -98,15 +98,15 @@ public class Poll {
     /**
      * This attribute represents a question list with all questions of this poll.
      */
-    @OneToMany(cascade = CascadeType.ALL)
-    private List<Question> questionList = new ArrayList<>();
+    // @OneToMany(cascade = CascadeType.ALL) unnötig da mittlerweile in category?
+    // private List<Question> questionList = new ArrayList<>();
 
     /**
      * This attribute represents the link to reach the poll if it is activated.
      */
     private String participationLink;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany/*(cascade = CascadeType.ALL, fetch = FetchType.EAGER)*/
     private List<Category> categoryList = new ArrayList<>();
 
 

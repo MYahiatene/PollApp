@@ -28,6 +28,6 @@ public class PollResultController {
     public void pollResultByUsername(final @RequestBody AnswerCmd answerCmd) {
         LOGGER.info("Hi from the PollResultController"); // hier gibt er es schon nicht aus
         LOGGER.info(answerCmd.toString());
-        pollResultService.getPollResult(Long.parseLong(answerCmd.getPollId()), answerCmd.getUsername());
+        pollResultService.getPollResult(answerCmd.getPollId(), answerCmd.getUsername());
     }
 }

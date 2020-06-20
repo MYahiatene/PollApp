@@ -78,15 +78,15 @@ public class Statistics {
         List<PollResult> prs = pollResultService.getPollResults(pollId);
         if (prs.isEmpty()) {
             LOGGER.warning("Leere Umfrage");
-            return NAME_STRING + pollService.getPoll(pollId.toString()).getPollName() + "\",\"questionList\": []}";
+            return NAME_STRING + pollService.getPoll(pollId).getPollName() + "\",\"questionList\": []}";
         }
         for (final Filter f : filters) {
             prs = f.filter(prs);
         }
         LOGGER.info(prs.toString());
-        final DiagramData dd = new DiagramData(pollService.getPoll(prs.get(0).getPollId().toString()), prs,
+        final DiagramData dd = new DiagramData(pollService.getPoll(prs.get(0).getPollId()), prs,
             categoryService, questionService);
-        return NAME_STRING + pollService.getPoll(pollId.toString()).getPollName() + "\",\"questionList\": "
+        return NAME_STRING + pollService.getPoll(pollId).getPollName() + "\",\"questionList\": "
             + dd.toJSON() + "}";
     }
 

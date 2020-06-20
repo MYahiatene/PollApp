@@ -1,5 +1,6 @@
 package gpse.umfrato.domain.category;
 
+import gpse.umfrato.domain.poll.Poll;
 import gpse.umfrato.domain.poll.PollRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,7 +28,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public Category createCategory(final String name, final long pollId) {
         final Category category = new Category(name, pollId);
-        category.setPollId(pollId);
+        category.setPollId(pollId); //unnötig?
         pollRepository.findById(pollId).orElseThrow(EntityNotFoundException::new).getCategoryList().add(category);
         categoryRepository.save(category);
         return category;

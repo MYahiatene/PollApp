@@ -12,7 +12,7 @@ public interface AnswerService {
      * @param answerList the list of all possible answers
      * @return the given answer
      */
-    Answer giveAnswer(final String username, final Long pollId, final String questionId,
+    Answer giveAnswer(final String username, final Long pollId, final Long questionId,
                       final List<String> answerList);
 
     /**
@@ -20,7 +20,7 @@ public interface AnswerService {
      *
      * @param answerId the id of the selected answer
      */
-    String deleteAnswer(final String answerId);
+    String deleteAnswer(final Long answerId);
 
     /**
      * This method returns the requested answer.

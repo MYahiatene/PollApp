@@ -73,6 +73,7 @@ public class QuestionServiceImpl implements QuestionService {
      */
     @Override
     public Question addQuestion(final QuestionCmd questionCmd) {
+        // System.out.println(questionCmd.toString());
         Question question = null;
         switch (questionCmd.getQuestionType()) {
             case TEXT_QUESTION:
@@ -83,15 +84,15 @@ public class QuestionServiceImpl implements QuestionService {
                 break;
             case RANGE_QUESTION:
                 question = new Question(questionCmd.getQuestionMessage(),
-                    questionCmd.getEndValue() == ZERO ? FIVE : questionCmd.getStepSize(),
-                    questionCmd.getStartValue(), questionCmd.getStepSize() == ZERO ? ONE : questionCmd.getStepSize(),
-                    questionCmd.getBelowMessage() == null ? "" : questionCmd.getBelowMessage(),
-                    questionCmd.getAboveMessage() == null ? "" : questionCmd.getAboveMessage());
+                    questionCmd.getStartValue(), questionCmd.getEndValue(),
+                        questionCmd.getStepSize() == ZERO ? ONE : questionCmd.getStepSize(),
+                        questionCmd.getBelowMessage() == null ? "" : questionCmd.getBelowMessage(),
+                        questionCmd.getAboveMessage() == null ? "" : questionCmd.getAboveMessage());
                 break;
             case SLIDER_QUESTION:
                 question = new Question(questionCmd.getQuestionMessage(),
-                    questionCmd.getEndValue() == ZERO ? ONE : questionCmd.getStepSize(), questionCmd.getStartValue(),
-                    questionCmd.getStepSize() == ZERO ? ZERO_DOT_ONE : questionCmd.getStepSize(),
+                    questionCmd.getStartValue(), questionCmd.getEndValue(),
+                    questionCmd.getStepSize() == ZERO ? ONE : questionCmd.getStepSize(),
                     questionCmd.getBelowMessage() == null ? "" : questionCmd.getBelowMessage(),
                     questionCmd.getAboveMessage() == null ? "" : questionCmd.getAboveMessage(),
                     questionCmd.isHideValues());
@@ -103,12 +104,27 @@ public class QuestionServiceImpl implements QuestionService {
             default:
                 return null;
         }
-        question.setCategoryId(pollRepository.findById(Long.valueOf(questionCmd.getPollId()))
-            .orElseThrow(EntityNotFoundException::new).getCategoryList().get(0).getCategoryId());
-        pollRepository.findById(Long.valueOf(questionCmd.getPollId())).orElseThrow(EntityNotFoundException::new)
-            .getCategoryList().get(0).getQuestionList().add(question);
-        questionRepository.save(question);
+        if(question != null)
+        {
+            question.setCategoryId(categoryRepository.findCategoriesByPollId(questionCmd.getPollId()).get(0).getCategoryId());
+            categoryRepository.findCategoriesByPollId(questionCmd.getPollId()).get(0).getQuestionList().add(question);
+            questionRepository.save(question);
+        }
+        return question;
+    }
 
+    /**
+     * This method creates a question for a poll.
+     *
+     * @return the question which is created
+     */
+    @Override
+    public Question addQuestion(final Long pollId, final Question question) {
+        question.setCategoryId(categoryRepository.findCategoriesByPollId(pollId).get(0).getCategoryId());
+        Category category = categoryRepository.findCategoriesByPollId(pollId).get(0);
+        category.getQuestionList().add(question);
+        categoryRepository.save(category);
+        questionRepository.save(question);
         return question;
     }
 
@@ -119,12 +135,12 @@ public class QuestionServiceImpl implements QuestionService {
      * @param questionId the id of the selected question
      */
     @Override
-    public void removeQuestion(final String categoryId, final String questionId) {
+    public void removeQuestion(final Long categoryId, final Long questionId) {
         try {
-            categoryRepository.findById(Long.valueOf(categoryId))
+            categoryRepository.findById(categoryId)
                 .orElseThrow(EntityNotFoundException::new).getQuestionList().remove(questionRepository
-                .getOne(Long.valueOf(questionId)));
-            questionRepository.deleteById(Long.valueOf(questionId));
+                .getOne(questionId));
+            questionRepository.deleteById(questionId);
 
         } catch (EntityNotFoundException e) {
             e.printStackTrace();

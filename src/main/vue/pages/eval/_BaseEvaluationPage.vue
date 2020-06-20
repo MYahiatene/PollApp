@@ -13,6 +13,9 @@ that each display a basic evaluation of one specific question-->
             <v-container v-if="diagramData.length === 0">
                 <v-card>
                     <v-card-title>Die Umfrage wurde noch nicht beantwortet</v-card-title>
+                    <v-btn :to="'/filterForm'" color="primary">
+                        Analyse
+                    </v-btn>
                 </v-card>
             </v-container>
             <v-container v-else>

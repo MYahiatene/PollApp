@@ -39,7 +39,7 @@ export const actions = {
             commit('saveError', error)
         }
     },
-    async activatePoll({ commit }, pollId) {
+    async updatePollStatus({ commit }, pollId) {
         let error = ''
         const data = await this.$axios.post('/activatePoll/' + pollId).catch((reason) => {
             console.log(reason)

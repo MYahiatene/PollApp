@@ -41,13 +41,13 @@ public class PollController {
      */
     @PostMapping(value = "/createpoll", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasAuthority('Admin')")
-    public String createPoll(final @RequestBody PollCmd pollCmd) {
+    public Long createPoll(final @RequestBody PollCmd pollCmd) {
         try {
             final Poll poll = pollService.createPoll(pollCmd.getCmdPoll());
             participationLinkService.createParticipationLink(poll.getPollId(), "allUsers");
-            return "Poll created! with id: " + poll.getPollId().toString();
+            return poll.getPollId();
         } catch (BadRequestException | MalformedURLException e) {
-            return "Poll creation failed!";
+            return -1L;
         }
     }
 
@@ -74,8 +74,8 @@ public class PollController {
      */
     @GetMapping("/participant/{link}")
     public Poll getPoll(@PathVariable("link") final String link) {
-        final Poll poll = pollService.getPoll(String.valueOf(participationLinkService
-            .getPollIdFromParticipationLink(link)));
+        final Poll poll = pollService.getPoll(participationLinkService
+            .getPollIdFromParticipationLink(link));
         if (poll != null) {
             return poll;
         } else {
@@ -101,7 +101,7 @@ public class PollController {
 
     @GetMapping("/getonepoll")
     public Poll getPoll(final @RequestParam long pollId) {
-        return pollService.getPoll(String.valueOf(pollId));
+        return pollService.getPoll(pollId);
     }
 
 

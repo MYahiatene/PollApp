@@ -9,11 +9,11 @@ public class AnswerCmd {
 
     private String username;
 
-    private String questionId;
+    private Long questionId;
 
     private List<String> answerList;
 
-    private String answerId;
+    private Long answerId;
 
-    private String pollId;
+    private Long pollId;
 }

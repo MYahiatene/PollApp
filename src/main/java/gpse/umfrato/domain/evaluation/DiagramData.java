@@ -1,6 +1,8 @@
 package gpse.umfrato.domain.evaluation;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import gpse.umfrato.domain.answer.Answer;
 import gpse.umfrato.domain.category.Category;
 import gpse.umfrato.domain.category.CategoryService;
@@ -8,6 +10,7 @@ import gpse.umfrato.domain.poll.Poll;
 import gpse.umfrato.domain.pollresult.PollResult;
 import gpse.umfrato.domain.question.Question;
 import gpse.umfrato.domain.question.QuestionService;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -22,9 +25,10 @@ public class DiagramData {
     private static final String JSON_TITLE = ",\"title\": \"";
     private static final String HYPHEN = " - ";
 
-    private final List<QuestionData> questions = new ArrayList<>();
+    private final List<QuestionData> questionList = new ArrayList<>();
     @JsonIgnore
     private final QuestionService questionService;
+    @JsonIgnore
     private final CategoryService categoryService;
     @JsonIgnore
     private final Poll poll;
@@ -44,23 +48,38 @@ public class DiagramData {
     @Getter
     @Setter
     protected static class ChoiceData implements QuestionData {
-        private long questionId;
-        private String questionTitle;
+        private long id;
+        private String title;
+        private String type;
         private List<String> answerPossibilities;
         private List<Integer> data;
-        private List<Double> relative;
-        private String median;
-        private String mode;
+        private Calculation calculated = new Calculation();
+
+        @Getter
+        @Setter
+        private static class Calculation
+        {
+            private List<Double> relative;
+            private String median;
+            private String mode;
+        }
 
         ChoiceData(final long questionId, final String questionMessage,
                                  final List<String> answerPossibilities) {
-            this.questionId = questionId;
-            this.questionTitle = questionMessage;
+            this.id = questionId;
+            this.type = "choice";
+            this.title = questionMessage;
             this.answerPossibilities = answerPossibilities;
             data = new ArrayList<>();
             for (final String ignored : answerPossibilities) {
                 data.add(0);
             }
+        }
+
+        @Override
+        public long getQuestionId()
+        {
+            return this.id;
         }
 
         public void addAnswer(final int answerPossibility) {
@@ -93,21 +112,21 @@ public class DiagramData {
                 modeText.append(answerPossibilities.get(i)).append(DIVIDER_STRING);
             }
             modeText.replace(modeText.lastIndexOf(DIVIDER_STRING), modeText.length(), "");
-            mode = modeText.toString();
+            calculated.mode = modeText.toString();
             //Median ist an mittlerer Stelle
             int medianPos = size / 2;
-            relative = new ArrayList<>();
+            calculated.relative = new ArrayList<>();
             for (int i = 0; i < data.size(); i++) {
                 //Relative Häufigkeiten nur Summe vor Division
-                relative.add(data.get(i).doubleValue() / (double) size);
+                calculated.relative.add(data.get(i).doubleValue() / (double) size);
                 medianPos -= data.get(i);
                 // [1,1,1,1,1,1,2,2,2,3,3,3,4,6](originalDaten) => [0,6,3,3,1,0,1](data)
                 // => 14(data.size) => 7(/2) => 1(-6) => -2(-3) => 2(Position) => Median
-                if (medianPos <= 0 && median == null) {
+                if (medianPos <= 0 && calculated.median == null) {
                     if (medianPos == 0 && i < answerPossibilities.size()) {
-                        median = answerPossibilities.get(i) + DIVIDER_STRING + answerPossibilities.get(i + 1);
+                        calculated.median = answerPossibilities.get(i) + DIVIDER_STRING + answerPossibilities.get(i + 1);
                     } else {
-                        median = answerPossibilities.get(i);
+                        calculated.median = answerPossibilities.get(i);
                     }
                 }
             }
@@ -115,40 +134,52 @@ public class DiagramData {
 
         @Override
         public String toJSON() {
-            final StringBuilder json = new StringBuilder();
-            json.append(JSON_ID).append(questionId)
-                .append(JSON_TYPE).append("\"choice\"")
-                .append(JSON_TITLE).append(questionTitle)
-                .append("\",\"answerPossibilities\": [");
-            for (int i = 0; i < answerPossibilities.size(); i++) {
-                json.append('\"').append(answerPossibilities.get(i)).append('\"');
-                if (i < answerPossibilities.size() - 1) {
-                    json.append(',');
-                }
+             ObjectMapper mapper = new ObjectMapper();
+            try {
+                String json = mapper.writeValueAsString(this);
+                // System.out.println("ChoiceJSON = " + json);
+                return json;
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+                return null;
             }
-            json.append("],\"data\": ").append(data)
-                .append(",\"calculated\": {")
-                .append("\"relative\": ").append(relative)
-                .append(",\"median\": \"").append(median)
-                .append("\",\"mode\": \"").append(mode)
-                .append("\"}}");
-            return json.toString();
         }
     }
 
     @Getter
     @Setter
     protected static class TextData implements QuestionData {
-        private long questionId;
-        private String questionTitle;
-        private List<Long> ids = new ArrayList<>();
-        private List<String> texts = new ArrayList<>();
-        private List<String> editedDates = new ArrayList<>();
-        private List<String> creator = new ArrayList<>();
+        private long id;
+        private String type;
+        private String title;
+        List<TextAnswer> answers = new ArrayList<>();
+
+        @Getter
+        @Setter
+        @AllArgsConstructor
+        private static class TextAnswer
+        {
+            private Long id;
+            private String text;
+            private String edited;
+            private String creator;
+        }
 
         TextData(final long questionId, final String questionMessage) {
-            this.questionId = questionId;
-            this.questionTitle = questionMessage;
+            this.id = questionId;
+            this.type = "text";
+            this.title = questionMessage;
+        }
+
+        @Override
+        public long getQuestionId()
+        {
+            return this.id;
+        }
+
+        public void addAnswer(Long id, String text, String editedDate, String creator)
+        {
+            answers.add(new TextAnswer(id, text ,editedDate, creator));
         }
 
         @Override
@@ -163,24 +194,15 @@ public class DiagramData {
 
         @Override
         public String toJSON() {
-            final StringBuilder json = new StringBuilder();
-            json.append(JSON_ID).append(questionId)
-                .append(JSON_TYPE).append("\"text\"")
-                .append(JSON_TITLE).append(questionTitle)
-                .append("\",\"answers\": [");
-            for (int i = 0; i < ids.size(); i++) {
-                json.append('{')
-                    .append(JSON_ID).append(ids.get(i))
-                    .append(",\"text\": \"").append(texts.get(i))
-                    .append("\",\"answered\": \"").append(editedDates.get(i))
-                    .append("\",\"creator\": \"").append(creator.get(i))
-                    .append("\"}");
-                if (i + 1 < ids.size()) {
-                    json.append(',');
-                }
+            ObjectMapper mapper = new ObjectMapper();
+            try {
+                String json = mapper.writeValueAsString(this);
+                // System.out.println("TextJSON = " + json);
+                return json;
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+                return null;
             }
-            json.append("]}");
-            return json.toString();
         }
     }
 
@@ -196,13 +218,16 @@ public class DiagramData {
         final List<Category> categories = categoryService.getAllCategories(poll.getPollId());
         for (final Category c : categories) {
             for (final Question q : questionService.getAllQuestions(c.getCategoryId())) {
+                // System.out.println(q.toString());
                 QuestionData qd = null;
                 switch (q.getQuestionType()) {
                     case "ChoiceQuestion":
                         qd = new ChoiceData(q.getQuestionId(), q.getQuestionMessage(), q.getAnswerPossibilities());
+                        // System.out.println(qd.toString());
                         break;
                     case "TextQuestion":
                         qd = new TextData(q.getQuestionId(), q.getQuestionMessage());
+                        // System.out.println(qd.toString());
                         break;
                     case "RangeQuestion":
                         final List<String> answerPossibilities = new ArrayList<>();
@@ -215,26 +240,32 @@ public class DiagramData {
                         if (q.getAboveMessage() != null && !q.getAboveMessage().isEmpty()) {
                             answerPossibilities.add(q.getAboveMessage());
                         }
+                        // System.out.println(answerPossibilities.toString());
                         qd = new ChoiceData(q.getQuestionId(), q.getQuestionMessage(), answerPossibilities);
+                        // System.out.println(qd.toString());
                         break;
                     case "SliderQuestion":
                         final List<String> answerPossibilities2 = new ArrayList<>();
                         for (double i = q.getStartValue(); i < q.getEndValue();) {
-                            answerPossibilities2.add(i + HYPHEN + (i += q.getStepSize()));
+                            answerPossibilities2.add(String.valueOf(i));
+                            i += q.getStepSize();
                         }
+                        // System.out.println(answerPossibilities2.toString());
                         qd = new ChoiceData(q.getQuestionId(), q.getQuestionMessage(), answerPossibilities2);
+                        // System.out.println(qd.toString());
                         break;
                     default:
                         break;
                 }
                 if (qd != null) {
-                    questions.add(qd);
+                    questionList.add(qd);
                 }
             }
         }
         for (final PollResult pr : results) {
+            // System.out.println(pr.toString());
             for (final Answer a : pr.getAnswerList()) {
-                for (final QuestionData qd : questions) {
+                for (final QuestionData qd : questionList) {
                     if (qd.getQuestionId() == a.getQuestionId()) {
                         switch (qd.getQuestionType()) {
                             case CHOICE_QUESTION:
@@ -246,12 +277,11 @@ public class DiagramData {
                             case TEXT_QUESTION:
                                 if (!a.getGivenAnswerList().isEmpty()) {
                                     final TextData td = (TextData) qd;
-                                    td.getCreator().add(pr.getPollTaker());
-                                    //nur die neuste (letzte) Antwort
-                                    td.getTexts().add(a.getGivenAnswerList().get(a.getGivenAnswerList().size() - 1));
-                                    td.getEditedDates().add(pr.getLastEditAt());
                                     //vielleicht auch eine neue ID, aber ich wüsste nicht warum, da nur key für frontend
-                                    td.getIds().add(pr.getPollResultId());
+                                    td.addAnswer(pr.getPollResultId(),
+                                            //nur die neuste (letzte) Antwort
+                                            a.getGivenAnswerList().get(a.getGivenAnswerList().size() - 1),
+                                            pr.getLastEditAt(),pr.getPollTaker());
                                 }
                                 break;
                             default:
@@ -261,7 +291,7 @@ public class DiagramData {
                 }
             }
         }
-        for (final QuestionData qd : questions) {
+        for (final QuestionData qd : questionList) {
             qd.statistics();
         }
     }
@@ -269,9 +299,9 @@ public class DiagramData {
     public String toJSON() {
         final StringBuilder json = new StringBuilder();
         json.append('[');
-        for (int i = 0; i < questions.size(); i++) {
-            json.append(questions.get(i).toJSON());
-            if (i + 1 < questions.size()) {
+        for (int i = 0; i < questionList.size(); i++) {
+            json.append(questionList.get(i).toJSON());
+            if (i + 1 < questionList.size()) {
                 json.append(',');
             }
         }
