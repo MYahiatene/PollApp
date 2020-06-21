@@ -34,12 +34,14 @@
                                 <div v-if="question.questionType === 'TextQuestion'">
                                     <v-card-text>
                                         <!--:rules="textQuestionRules"-->
-                                        <div v-if="question.textMultiline === true">
+                                        <!--question.textMultiline ===-->
+                                        <div v-if="true">
                                             <v-textarea
                                                 label="Antwort"
                                                 auto-grow
                                                 counter
                                                 :color="fontColor"
+                                                :rules="titleRules"
                                                 rows="1"
                                                 @input="saveAnswerField($event, question)"
                                             >
@@ -54,17 +56,16 @@
                                         </div>
                                     </v-card-text>
                                 </div>
-                                <div v-else-if="question.questionType === 'ChoicQuestion'">
+                                <div v-else-if="question.questionType === 'ChoiceQuestion'">
                                     <!--Hi Nina, hier ist ein typo, damit meine SortQuestions angezeigt werden und ich sie debuggen kann -->
                                     <!--Radio Button since only one answer possible-->
                                     <div v-if="question.numberOfPossibleAnswers === 1">
                                         <v-card-text>
-                                            <v-radio-group v-model="radioGroup">
+                                            <v-radio-group>
                                                 <v-radio
                                                     v-for="answer in question.answerPossibilities"
-                                                    :key="answer"
+                                                    :key="answer.text"
                                                     :label="`${answer}`"
-                                                    :value="answer"
                                                     @change="saveAnswerRadioButton(question, answer)"
                                                 ></v-radio>
                                             </v-radio-group>
@@ -167,7 +168,7 @@
 
                                 <!--Hi Nina, da muss natürlich 'SortQuestion' hin, aber zum debuggen mache ich das erstmal mit den ChoiceQuestions -->
 
-                                <div v-else-if="question.questionType === 'ChoiceQuestion'" class="pa-2">
+                                <div v-else-if="question.questionType === 'ChoicQuestion'" class="pa-2">
                                     <v-subheader>
                                         Bitte bringen Sie die unten aufgeführten Möglichkeiten mittels Drag & Drop in
                                         eine von Ihnen präferierte Reihenfolge.
@@ -240,7 +241,7 @@ export default {
                 username: 'Anonym',
                 anonymityStatus: 'anonym',
                 questionId: '1',
-                answerList: [],
+                answerList: [[]],
                 answerId: '1',
                 pollId: '1',
             },
@@ -340,6 +341,24 @@ export default {
             }
             return c
         },
+        titleRules: [
+            (v) => {
+                if (v)
+                    return (
+                        v.length >= computedQuestionList[index].textMinimum ||
+                        'Eingabe muss länger als 10 Zeichen sein!'
+                    )
+                else return true
+            },
+            (v) => {
+                if (v)
+                    return (
+                        v.length <= computedQuestionList[index].textMaximum ||
+                        'Eingabe muss kürzer als 100 Zeichen sein!'
+                    )
+                else return true
+            },
+        ],
         /**
          * Get's the given FontColor from PollData.
          * @returns {fontColor}
@@ -521,7 +540,21 @@ export default {
          * @param question The question object, so it can get the QuestionID
          */
         saveAnswerField(e, question) {
-            console.log(e)
+            /* const answerListMultiline = [[]]
+            let counter = 0
+            for (let i = 0; i < e.length; i++) {
+                if (e[i] !== '\n') {
+                    answerListMultiline[counter].push(e[i])
+                } else {
+                    answerListMultiline.push([])
+                    counter++
+                }
+            }
+            console.log(answerListMultiline)
+            // console.log(question.textMultiline)
+            // console.log(question.textMax)
+            // console.log(question.textMin)
+            this.answerObj.answerList = answerListMultiline */
             this.answerObj.answerList = [e]
             this.answerObj.pollId = this.getPoll[1].data.pollId
             this.answerObj.questionId = question.questionId
