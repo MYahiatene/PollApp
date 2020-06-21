@@ -258,7 +258,7 @@ export default {
      * Calls showPoll in methods to getPoll before/while the page is created.
      */
     created() {
-        this.id = this.$route.params.id;
+        this.id = this.$route.params.id
         this.showPoll()
     },
 
@@ -286,15 +286,15 @@ export default {
          * @returns c, the new QuestionList without rangeQuestions
          **/
         computedQuestionList() {
-            const c = [];
+            const c = []
             for (let i = 0; i < this.getCategory.questionList.length; i++) {
                 if (this.getCategory.questionList[i].questionType === 'RangeQuestion') {
-                    const rangeAnswers = [];
-                    const max = this.getCategory.questionList[i].endValue;
-                    const min = this.getCategory.questionList[i].startValue;
-                    const step = this.getCategory.questionList[i].stepSize;
-                    const text1 = this.getCategory.questionList[i].belowMessage;
-                    const text2 = this.getCategory.questionList[i].aboveMessage;
+                    const rangeAnswers = []
+                    const max = this.getCategory.questionList[i].endValue
+                    const min = this.getCategory.questionList[i].startValue
+                    const step = this.getCategory.questionList[i].stepSize
+                    const text1 = this.getCategory.questionList[i].belowMessage
+                    const text2 = this.getCategory.questionList[i].aboveMessage
 
                     /* const rangeAnswers = []
                     const max = 100
@@ -306,10 +306,10 @@ export default {
                         if (text1 != null) {
                             rangeAnswers.push(text1)
                         }
-                        const size = (max - min) / step;
+                        const size = (max - min) / step
                         for (let i = 0; i < size; i++) {
-                            const value = min + i * step;
-                            const nextValue = value + step;
+                            const value = min + i * step
+                            const nextValue = value + step
                             rangeAnswers.push(String(value) + ' - ' + String(nextValue))
                         }
                         if (text2 != null) {
@@ -330,7 +330,7 @@ export default {
                         belowMessage: this.getCategory.questionList[i].belowMessage,
                         aboveMessage: this.getCategory.questionList[i].aboveMessage,
                         hideValues: this.getCategory.questionList[i].hideValues,
-                    };
+                    }
                     // this makes unexpected side effects
                     // this.getCategory.questionList[i].answerPossibilites = ['test1', 'test2']
                     // console.log(obj)
@@ -387,7 +387,7 @@ export default {
          * */
         getRangeQuestionAnswers() {
             // console.log('Hi im in the computed method!')
-            this.generateRangeQuestionAnswers();
+            this.generateRangeQuestionAnswers()
             return 'answer in rangeAnswers'
         }, // do we need this anywhere?
     },
@@ -399,7 +399,7 @@ export default {
          **/
         saveOwnAnswer(question) {
             // save the given answerPossibility from the array ownAnswer in the backend
-            let x = 0;
+            let x = 0
             for (let i = 0; i < this.ownAnswers.length; i++) {
                 if (this.ownAnswers[i].length === 2) {
                     if (this.ownAnswers[i][1] === question.questionId) {
@@ -409,9 +409,9 @@ export default {
             }
             // wird nur ausgeführt, wenn im Textfeld was steht
             if (x !== 0) {
-                x[2] = this.getPoll[1].data.pollId;
-                console.log('Answer to save: ', x);
-                this.$store.dispatch('participant/saveAnswerPossibility', x);
+                x[2] = this.getPoll[1].data.pollId
+                console.log('Answer to save: ', x)
+                this.$store.dispatch('participant/saveAnswerPossibility', x)
                 // delete ownAnswer of the now saved question from the array
                 for (let i = 0; i < this.ownAnswers.length; i++) {
                     if (this.ownAnswers[i][0] === x[0]) {
@@ -425,11 +425,11 @@ export default {
          * Speichert die gegebene Antwort aus dem Textfeld in einem Array mit der zugehörigen QuestionId ab.
          **/
         saveAnswerPossibility(e, question) {
-            let x = 0;
+            let x = 0
             for (let i = 0; i < this.ownAnswers.length; i++) {
                 if (this.ownAnswers[i].length === 2) {
                     if (this.ownAnswers[i][1] === question.questionId) {
-                        this.ownAnswers[i][0] = e;
+                        this.ownAnswers[i][0] = e
                         x = 1
                     }
                 }
@@ -446,10 +446,10 @@ export default {
          * the categoryLength and force updates the page to load the questions from th new category.
          */
         getNextCategory() {
-            this.$store.commit('participant/setCategory', 1);
-            this.categoryIndex = this.getCategoryIndex;
-            this.categoryLength = this.getPoll[1].data.categoryList.length;
-            this.category = this.getCategory;
+            this.$store.commit('participant/setCategory', 1)
+            this.categoryIndex = this.getCategoryIndex
+            this.categoryLength = this.getPoll[1].data.categoryList.length
+            this.category = this.getCategory
             this.$forceUpdate()
         },
         /**
@@ -457,10 +457,10 @@ export default {
          * in getNextcategory().
          */
         getPreviousCategory() {
-            this.$store.commit('participant/setCategory', -1);
-            this.categoryIndex = this.getCategoryIndex;
-            this.categoryLength = this.getPoll[1].data.categoryList.length;
-            this.category = this.getCategory;
+            this.$store.commit('participant/setCategory', -1)
+            this.categoryIndex = this.getCategoryIndex
+            this.categoryLength = this.getPoll[1].data.categoryList.length
+            this.category = this.getCategory
             this.$forceUpdate()
         },
         /**
@@ -471,16 +471,16 @@ export default {
          * @param answer The answer object, so it can get the answer possibilities.
          */
         saveAnswerRadioButton(question, answer) {
-            console.log(question);
-            console.log(answer);
-            this.answerObj.answerList = [];
+            console.log(question)
+            console.log(answer)
+            this.answerObj.answerList = []
             for (let i = 0; i < question.answerPossibilities.length; i++) {
                 if (answer === question.answerPossibilities[i]) {
                     this.answerObj.answerList.push(i) // index of true checkbox
                 }
             }
-            this.answerObj.pollId = this.getPoll[1].data.pollId;
-            this.answerObj.questionId = question.questionId;
+            this.answerObj.pollId = this.getPoll[1].data.pollId
+            this.answerObj.questionId = question.questionId
 
             this.saveAnswer() // alternative: Button after every TextField
 
@@ -494,13 +494,13 @@ export default {
          * @param answer The answer object, so it can get the answer possibilities.
          */
         saveAnswerCheckbox(e, question, answer) {
-            console.log(e);
-            console.log(question);
-            console.log(answer);
-            this.answerObj.answerList = [];
-            let i;
+            console.log(e)
+            console.log(question)
+            console.log(answer)
+            this.answerObj.answerList = []
+            let i
             // checks if checkBox was checked, not unchecked
-            console.log(e);
+            console.log(e)
             if (e === true) {
                 for (i = 0; i < question.answerPossibilities.length; i++) {
                     if (answer === question.answerPossibilities[i]) {
@@ -508,8 +508,8 @@ export default {
                     }
                 }
             }
-            this.answerObj.pollId = this.getPoll[1].data.pollId;
-            this.answerObj.questionId = question.questionId;
+            this.answerObj.pollId = this.getPoll[1].data.pollId
+            this.answerObj.questionId = question.questionId
 
             this.saveAnswer() // alternative: Button after every TextField
 
@@ -522,10 +522,10 @@ export default {
          * @param question The question object, so it can get the QuestionID
          */
         saveAnswerField(e, question) {
-            console.log(e);
-            this.answerObj.answerList = [e];
-            this.answerObj.pollId = this.getPoll[1].data.pollId;
-            this.answerObj.questionId = question.questionId;
+            console.log(e)
+            this.answerObj.answerList = [e]
+            this.answerObj.pollId = this.getPoll[1].data.pollId
+            this.answerObj.questionId = question.questionId
 
             this.saveAnswer() // alternative: Button after every TextField
         },
@@ -536,9 +536,9 @@ export default {
          * @param question The question object, so it can get the QuestionID
          */
         saveAnswerSliderQuestion(e, question) {
-            this.answerObj.answerList = [e];
-            this.answerObj.pollId = this.getPoll[1].data.pollId;
-            this.answerObj.questionId = question.questionId;
+            this.answerObj.answerList = [e]
+            this.answerObj.pollId = this.getPoll[1].data.pollId
+            this.answerObj.questionId = question.questionId
 
             this.saveAnswer()
         },
@@ -557,8 +557,8 @@ export default {
                     )
                 )
             }
-            this.answerObj.pollId = this.getPoll[1].data.pollId;
-            this.answerObj.questionId = question.questionId;
+            this.answerObj.pollId = this.getPoll[1].data.pollId
+            this.answerObj.questionId = question.questionId
             //
             this.saveAnswer()
         },
@@ -591,19 +591,19 @@ export default {
                 const text1 = this.getCategory.questionList[questionId].belowMessage
                 const text2 = this.getCategory.questionList[questionId].aboveMessage
                 */
-            const max = 100;
-            const min = 10;
-            const step = 10;
-            const text1 = 'under 10';
-            const text2 = 'over 90';
-            this.rangeAnswers = []; // set it to null from previous questions
+            const max = 100
+            const min = 10
+            const step = 10
+            const text1 = 'under 10'
+            const text2 = 'over 90'
+            this.rangeAnswers = [] // set it to null from previous questions
             if (max != null && min != null && step != null) {
                 if (text1 != null) {
                     this.rangeAnswers.push(text1)
                 }
-                const size = (max - min) / step;
+                const size = (max - min) / step
                 for (let i = 0; i < size; i++) {
-                    const value = min + i * step;
+                    const value = min + i * step
                     this.rangeAnswers.push(value)
                 }
                 if (text2 != null) {
@@ -620,14 +620,14 @@ export default {
          * Calls showPoll in store/participant.js.
          */
         showPoll() {
-            this.$store.dispatch('participant/showPoll', this.id);
+            this.$store.dispatch('participant/showPoll', this.id)
             this.poll = this.getPoll
         },
         /**
          * Calls saveAnswers from the store with the answerobj (cmdAnswer with all given input)
          */
         saveAnswer() {
-            this.answerObj.username = this.getUsername;
+            this.answerObj.username = this.getUsername
             this.$store.dispatch('participant/saveAnswer', this.answerObj)
         },
         /**
@@ -637,13 +637,13 @@ export default {
          * and partialy anonym users, after they saved it.
          */
         showAnswer() {
-            this.answerObj.username = this.getUsername;
-            this.answerObj.pollId = this.getPoll[1].data.pollId;
-            console.log('Hi, from Participant page pre store.dispatch');
-            this.$store.dispatch('participant/showAnswer', this.answerObj);
-            console.log('Hi, from Participant page post store.dispatch');
-            this.answer = this.getAnswer;
-            console.log('This is the answer object:');
+            this.answerObj.username = this.getUsername
+            this.answerObj.pollId = this.getPoll[1].data.pollId
+            console.log('Hi, from Participant page pre store.dispatch')
+            this.$store.dispatch('participant/showAnswer', this.answerObj)
+            console.log('Hi, from Participant page post store.dispatch')
+            this.answer = this.getAnswer
+            console.log('This is the answer object:')
 
             console.log(this.answer) // never ending object, something is wrong: Start here to debug...
         },
@@ -657,10 +657,10 @@ export default {
 
         createListOfAnswerPossibilitiesForSortQuestions() {
             for (let i = 0; i < this.computedQuestionList.length; i++) {
-                this.AnswerListsOfSortQuestions.push([]);
+                this.AnswerListsOfSortQuestions.push([])
                 if (this.computedQuestionList[i].questionType === 'ChoiceQuestion') {
                     // nur zum testen! Eigentlich 'SortQuestion'
-                    const answerList = [];
+                    const answerList = []
                     for (let j = 0; j < this.computedQuestionList[i].answerPossibilities.length; j++) {
                         answerList.push(this.computedQuestionList[i].answerPossibilities[j])
                     }
@@ -682,7 +682,7 @@ export default {
                 ].answerPossibilities[i]
             }
 
-            this.$forceUpdate();
+            this.$forceUpdate()
             this.saveAnswerSortQuestion(questionIndex)
         },
     },
