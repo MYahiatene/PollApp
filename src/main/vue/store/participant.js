@@ -18,7 +18,7 @@ export const state = () => ({
     answer: ['Object'],
     category: ['Object'],
     username: '',
-})
+});
 /**
  * Defines mapGetters for Usage in _id.vue.
  * @type {{getPoll: (function(*): [string]|null),
@@ -38,7 +38,6 @@ export const getters = {
         return state.numberOfQuestions
     },
     getPoll: (state) => {
-        console.log(state.poll)
         return state.poll
     },
     getCategory: (state) => {
@@ -56,7 +55,10 @@ export const getters = {
     getAnswer: (state) => {
         return state.answer
     },
-}
+    getQuestionId: (state) => {
+        return state.questionId
+    },
+};
 
 export const mutations = {
     /**
@@ -65,10 +67,10 @@ export const mutations = {
      * @type {{setPoll: mutations.setPoll}}
      */
     setPoll: (state, poll) => {
-        state.poll.push(poll)
-        state.visibility = poll.data.visibility
-        state.changeOfCategories = poll.data.categoryChange
-        state.numberOfQuestions = poll.data.categoryList[0].questionList.length // number of questions in this category
+        state.poll.push(poll);
+        state.visibility = poll.data.visibility;
+        state.changeOfCategories = poll.data.categoryChange;
+        state.numberOfQuestions = poll.data.categoryList[0].questionList.length; // number of questions in this category
         state.category = poll.data.categoryList[0]
     },
     /**
@@ -95,21 +97,24 @@ export const mutations = {
      * @type {{setCategory: mutations.setCategory}}
      */
     setCategory: (state, args) => {
-        const index = state.categoryIndex
-        const categoryLength = state.poll[1].data.categoryList.length
+        const index = state.categoryIndex;
+        const categoryLength = state.poll[1].data.categoryList.length;
         if (args === 1) {
             if (index !== categoryLength) {
-                state.category = state.poll[1].data.categoryList[index]
+                state.category = state.poll[1].data.categoryList[index];
                 state.categoryIndex = index + 1
             }
         } else if (args === -1) {
             if (index !== 1) {
-                state.category = state.poll[1].data.categoryList[index - 2]
+                state.category = state.poll[1].data.categoryList[index - 2];
                 state.categoryIndex = index - 1
             }
         }
     },
-}
+    setQuestionId: (state, id) => {
+        state.questionId = id
+    },
+};
 export const actions = {
     /**
      * Defines mapAction showPoll and sets the global axios with the token saved in localstorage and the baseURL to get
@@ -121,11 +126,11 @@ export const actions = {
      */
     async showPoll({ commit }, id) {
         // console.log('showPoll id: ', id)
-        this.$axios.defaults.baseURL = 'http://localhost:8088/api/'
-        this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('user-token')
-        const poll = await this.$axios.get('/participant/' + id)
-        const username = await this.$axios.post('/getUsername', { anonymityStatus: poll.data.anonymityStatus })
-        commit('setUsername', username.data)
+        this.$axios.defaults.baseURL = 'http://localhost:8088/api/';
+        this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('user-token');
+        const poll = await this.$axios.get('/participant/' + id);
+        const username = await this.$axios.post('/getUsername', { anonymityStatus: poll.data.anonymityStatus });
+        commit('setUsername', username.data);
         commit('setPoll', poll)
     },
     /**
@@ -139,16 +144,16 @@ export const actions = {
      */
     async showAnswer(state, answerObj) {
         // console.log('Hi, from participant store pre axios.post')
-        this.$axios.defaults.baseURL = 'http://localhost:8088/api/'
-        this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('user-token')
-        console.log('Hi, from participant store pre axios.post')
+        this.$axios.defaults.baseURL = 'http://localhost:8088/api/';
+        this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('user-token');
+        console.log('Hi, from participant store pre axios.post');
         const answer = await this.$axios.post('/getPollResult', {
             pollId: answerObj.pollId,
             username: answerObj.username,
-        })
-        console.log('Hi, from participant store post axios.post')
-        state.answer = answer
-        console.log('Hi, from participant store post store.commit')
+        });
+        console.log('Hi, from participant store post axios.post');
+        state.answer = answer;
+        console.log('Hi, from participant store post store.commit');
         console.log(answer)
     },
     /* Eventuell einen Header mitsenden, statt data?, aber eigentlich ja das gleiche...
@@ -165,11 +170,27 @@ export const actions = {
      * @param answerObj object with (username, questionId, answerList, pollId)
      */
     saveAnswer(state, answerObj) {
-        console.log('answer in store')
-        console.log(answerObj)
-        this.$axios.defaults.baseURL = 'http://localhost:8088/api/'
-        this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('user-token')
+        console.log('answer in store');
+        console.log(answerObj);
+        this.$axios.defaults.baseURL = 'http://localhost:8088/api/';
+        this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('user-token');
         return this.$axios.post('/poll/' + answerObj.pollId + '/addanswer', answerObj)
         // api.saveAnswers(answerObj)
     },
-}
+    async saveAnswerPossibility(state, answer) {
+        console.log('pollId: ', answer[2]);
+        console.log('questionId: ', answer[1]);
+        console.log('newAnswer: ', answer[0]);
+        const obj = { value: answer[0] };
+        this.$axios.defaults.baseURL = 'http://localhost:8088/api/';
+        this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('user-token');
+        const poll = await this.$axios.post(
+            '/poll/' + answer[2] + '/question/' + answer[1] + '/addAnswerPossibility',
+            obj
+        );
+        console.log('after post');
+        console.log(poll);
+        state.commit('setPoll', poll)
+        // state.commit('setCategory', poll.data.cate)
+    },
+};
