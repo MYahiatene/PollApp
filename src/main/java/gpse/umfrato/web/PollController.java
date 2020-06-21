@@ -80,7 +80,7 @@ public class PollController {
             try {
                 System.out.println(ExportController.toJSON(poll));
                 System.out.println(ExportController.fromJSONToPoll(ExportController.toJSON(poll)).getPollName());
-                System.out.println(ExportController.toCSV(ExportController.toJSON(poll)));
+                System.out.println(ExportController.toCSVManual(poll));
             } catch (Exception e){}
             return poll;
         } else {

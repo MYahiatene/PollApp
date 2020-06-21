@@ -38,6 +38,18 @@ public class ExportController {
 
     /**New Idea: Convert to JSON first and then to CSV, it sure ain't pretty but if it works it's fine*/
 
+    public static String toCSVManual(Poll poll){
+
+        String output = "";
+        output += "Name,PollID,PollCreator,Anonymitätsstatus,Kategorien\n";
+        output += poll.getPollName() + ',' + poll.getPollId() + ',' + poll.getPollCreator() + ',' + poll.getAnonymityStatus();
+        for(Category category : poll.getCategoryList()){
+            output += ',' + category.getCategoryName();
+        }
+        output += '\n';
+        return output;
+    }
+
     public static String toCSV(String json){
         String csv = "";
         try {
