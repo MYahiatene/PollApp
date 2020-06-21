@@ -7,6 +7,7 @@ import gpse.umfrato.domain.evaluation.Statistics;
 import gpse.umfrato.domain.answer.AnswerService;
 import gpse.umfrato.domain.category.CategoryService;
 import gpse.umfrato.domain.cmd.FilterCmd;
+import gpse.umfrato.domain.participationlinks.ParticipationLinkService;
 import gpse.umfrato.domain.poll.PollService;
 import gpse.umfrato.domain.pollresult.PollResultService;
 import gpse.umfrato.domain.question.QuestionService;
@@ -33,6 +34,7 @@ public class EvaluationController {
     private final PollService pollService;
     private final PollResultService pollResultService;
     private final CategoryService categoryService;
+    private final ParticipationLinkService participationLinkService;
     private final ConsistencyQuestionService consistencyQuestionService;
 
     enum Filter {
@@ -44,6 +46,7 @@ public class EvaluationController {
     public EvaluationController(final AnswerService answerService, final UserService userService,
                                 final QuestionService questionService, final PollService pollService,
                                 final PollResultService pollResultService, final CategoryService categoryService,
+                                final ParticipationLinkService participationLinkService,
                                 final ConsistencyQuestionService consistencyQuestionService) {
         this.answerService = answerService;
         this.userService = userService;
@@ -51,6 +54,7 @@ public class EvaluationController {
         this.pollService = pollService;
         this.pollResultService = pollResultService;
         this.categoryService = categoryService;
+        this.participationLinkService = participationLinkService;
         this.consistencyQuestionService = consistencyQuestionService;
     }
 
@@ -70,5 +74,22 @@ public class EvaluationController {
             pollResultService, categoryService, consistencyQuestionService, input.get(0));
         calculation.loadFilter(input);
         return calculation.generateDiagram();
+    }
+
+    @GetMapping("/getParticipants/{pollId:\\d+}")
+    public String getParticipants(final @PathVariable Long pollId)
+    {
+        if (pollService.getPoll(pollId).getPollStatus() != 1)
+        {
+            return "-";
+        }
+        if (pollService.getPoll(pollId).getAnonymityStatus().equals("1"))
+        {
+            return String.valueOf(pollResultService.getPollResults(pollId).size());
+        }
+        else
+        {
+            return pollResultService.getPollResults(pollId).size() + " / " + participationLinkService.getAllParticipationLinks(pollId).size();
+        }
     }
 }

@@ -22,6 +22,7 @@ import java.util.logging.Logger;
 public class Statistics {
 
     private static final String NAME_STRING = "{\"name\":\"";
+    private static final String PARTICIPANTS_STRING = "\",\"particpantCount\":\"";
     private static final double MEDIAN_QUANTILE = 0.5;
     private static final Logger LOGGER = Logger.getLogger("Statistics");
     /* default */ final AnswerService answerService;
@@ -85,15 +86,21 @@ public class Statistics {
         List<PollResult> prs = pollResultService.getPollResults(pollId);
         if (prs.isEmpty()) {
             LOGGER.warning("Leere Umfrage");
-            return NAME_STRING + pollService.getPoll(pollId).getPollName() + "\",\"questionList\": []}";
+            return NAME_STRING + pollService.getPoll(pollId).getPollName()
+                    + PARTICIPANTS_STRING + "(0)"
+                    + "\",\"questionList\": []}";
         }
+        int participantCountUnfiltered = prs.size();
         for (final Filter f : filters) {
             prs = f.filter(prs);
         }
+        int participantCountFiltered = prs.size();
         LOGGER.info(prs.toString());
         final DiagramData dd = new DiagramData(pollService.getPoll(prs.get(0).getPollId()), prs,
             categoryService, questionService);
-        return NAME_STRING + pollService.getPoll(pollId).getPollName() + "\",\"questionList\": "
+        return NAME_STRING + pollService.getPoll(pollId).getPollName()
+                + PARTICIPANTS_STRING + "(" + participantCountFiltered + "/" + participantCountUnfiltered + ")"
+                + "\",\"questionList\": "
             + dd.toJSON() + "}";
     }
 

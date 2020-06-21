@@ -11,6 +11,9 @@ export const getters = {
     getPollName(state) {
         return state.DiagramData.name
     },
+    getParticipants(state) {
+        return state.DiagramData.particpantCount
+    },
     getPolls(state) {
         return state.Polls
     },

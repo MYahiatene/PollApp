@@ -32,7 +32,9 @@ that each display a basic evaluation of one specific question-->
                         <v-btn icon color="primary" @click="forceUpdate"><v-icon> mdi-refresh</v-icon></v-btn>
 
                         <!--                    title of the poll-->
-                        <v-card-title>{{ pollName }}</v-card-title>
+                        <v-col cols="5">
+                            <v-card-title> Angezeigte Teilnehmer: {{ participants }} </v-card-title>
+                        </v-col>
 
                         <v-dialog v-model="dialog">
                             <!--             Here we open a setting window
@@ -42,12 +44,12 @@ that each display a basic evaluation of one specific question-->
                                 </visual-evaluation-settings
                             ></v-card>
                         </v-dialog>
-                        <v-spacer></v-spacer>
-
-                        <v-spacer></v-spacer>
+                        <v-col cols="4">
+                            <v-card-title> {{ pollName }} </v-card-title>
+                        </v-col>
 
                         <!--            This button will lead to the Page where we can filter and analyse the data-->
-
+                        <v-spacer />
                         <v-btn :to="'/filterForm'" color="primary">
                             Analyse
                         </v-btn>
@@ -244,6 +246,7 @@ export default {
             diagramData: 'evaluation/getDiagramData',
             pollName: 'evaluation/getPollName',
             isAuthenticated: 'login/isAuthenticated',
+            participants: 'evaluation/getParticipants',
         }),
 
         // computes the number of pages

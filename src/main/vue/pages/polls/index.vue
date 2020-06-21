@@ -236,7 +236,7 @@ export default {
                     navigator.clipboard.writeText(
                         'http://localhost:8080/participant/' + this.participationLinks[i].participationLink
                     )
-                    /* alert(
+                    /* alert( //TODO: extrem nervig beim Testen
                         'Link kopiert: "localhost:8080/participant/' +
                             this.participationLinks[i].participationLink +
                             '"'
