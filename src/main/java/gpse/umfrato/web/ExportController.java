@@ -1,10 +1,7 @@
 package gpse.umfrato.web;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.deser.impl.ExternalTypeHandler;
-import com.opencsv.CSVWriter;
 import gpse.umfrato.domain.answer.Answer;
 import gpse.umfrato.domain.category.Category;
 import gpse.umfrato.domain.poll.Poll;
@@ -12,21 +9,19 @@ import gpse.umfrato.domain.poll.PollService;
 import gpse.umfrato.domain.pollresult.PollResult;
 import gpse.umfrato.domain.pollresult.PollResultService;
 import gpse.umfrato.domain.question.Question;
+import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.web.bind.annotation.*;
-
-import java.io.*;
-import java.util.*;
-import java.io.*;
+import org.json.CDL;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.List;
 
 @RequestMapping(value = "/api/export/", method = RequestMethod.POST)
 @RestController
@@ -42,6 +37,20 @@ public class ExportController {
     }
 
     /**New Idea: Convert to JSON first and then to CSV, it sure ain't pretty but if it works it's fine*/
+
+    public static String toCSV(String json){
+        String csv = "";
+        try {
+            //org.json.JSONObject output = new org.json.JSONObject(json);
+            org.json.JSONArray docs = CDL.toJSONArray(json);
+            //org.json.JSONArray docs = output.getJSONArray("pollId");
+            csv = CDL.toString(docs);
+            System.out.println(csv);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        return csv;
+    }
 
     public static String toJSON(Poll result) throws Exception {
         ObjectMapper objectMapper = new ObjectMapper()
