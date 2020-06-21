@@ -305,7 +305,7 @@ public class DiagramData {
                                     final TextData td = (TextData) qd;
                                     //vielleicht auch eine neue ID, aber ich wüsste nicht warum, da nur key für frontend
                                     td.addAnswer(pr.getPollResultId(),
-                                            //nur die neuste (letzte) Antwort
+                                            //TODO: nicht nur die neuste (letzte) Antwort
                                             a.getGivenAnswerList().get(a.getGivenAnswerList().size() - 1),
                                             pr.getLastEditAt(),pr.getPollTaker());
                                 }

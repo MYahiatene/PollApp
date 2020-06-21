@@ -12,19 +12,19 @@ import java.util.List;
 
     //DataFilter
 
-    private String basePollId;
+    private Long basePollId;
 
-    private List<String> baseQuestionIds;
+    private List<Long> baseQuestionIds;
 
     //QuestionFilter
-    private String targetPollId;
+    private Long targetPollId;
 
-    private String targetQuestionId;
+    private Long targetQuestionId;
 
     private List<String> targetAnswerPossibilities;
 
     //UserFilter
-    private String targetUserId;
+    private Long targetUserId;
 
     private String targetUserAttribute;
 
@@ -37,4 +37,7 @@ import java.util.List;
     private String filterA;
 
     private String filterB;
+
+    //ConsistencyFilter
+    private Integer minSuccesses;
 }

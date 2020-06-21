@@ -1,10 +1,12 @@
 package gpse.umfrato.domain.evaluation;
 
+import gpse.umfrato.domain.ConsistencyQuestion.ConsistencyQuestionService;
 import gpse.umfrato.domain.answer.Answer;
 import gpse.umfrato.domain.answer.AnswerService;
 import gpse.umfrato.domain.category.Category;
 import gpse.umfrato.domain.category.CategoryService;
 import gpse.umfrato.domain.cmd.FilterCmd;
+import gpse.umfrato.domain.evaluation.filterblocks.filterimpl.ConsistencyFilter;
 import gpse.umfrato.domain.evaluation.filterblocks.filterimpl.Filter;
 import gpse.umfrato.domain.evaluation.filterblocks.filterimpl.QuestionFilter;
 import gpse.umfrato.domain.poll.PollService;
@@ -28,6 +30,7 @@ public class Statistics {
     private final PollService pollService;
     private final PollResultService pollResultService;
     private final CategoryService categoryService;
+    private final ConsistencyQuestionService consistencyQuestionService;
     private List<Filter> filters = new ArrayList<>();
     private Long pollId;
     private final List<Long> questionIds = new ArrayList<>();
@@ -35,14 +38,15 @@ public class Statistics {
     public Statistics(final AnswerService answerService, final UserService userService,
                       final QuestionService questionService, final PollService pollService,
                       final PollResultService pollResultService, final CategoryService categoryService,
-                      final FilterCmd data) {
+                      final ConsistencyQuestionService consistencyQuestionService, final FilterCmd data) {
         this.answerService = answerService;
         this.userService = userService;
         this.questionService = questionService;
         this.pollService = pollService;
         this.pollResultService = pollResultService;
         this.categoryService = categoryService;
-        pollId = Long.valueOf(data.getBasePollId());
+        this.consistencyQuestionService = consistencyQuestionService;
+        pollId = data.getBasePollId();
         final List<Category> categories = categoryService.getAllCategories(pollId);
         if (data.getBaseQuestionIds().isEmpty()) {
             for (final Category c : categories) {
@@ -52,9 +56,7 @@ public class Statistics {
             }
             LOGGER.info(questionIds.toString());
         } else {
-            for (final String qid : data.getBaseQuestionIds()) {
-                questionIds.add(Long.valueOf(qid));
-            }
+            questionIds.addAll(data.getBaseQuestionIds());
         }
     }
 
@@ -62,8 +64,13 @@ public class Statistics {
         for (final FilterCmd cmd : input) {
             Filter filter = null;
             if (cmd.getFilterType().equals("questionAnswer")) {
-                filter = new QuestionFilter(Long.valueOf(cmd.getTargetPollId()),
-                    Long.valueOf(cmd.getTargetQuestionId()), cmd.getTargetAnswerPossibilities(), false);
+                filter = new QuestionFilter(cmd.getTargetPollId(), cmd.getTargetQuestionId(),
+                        cmd.getTargetAnswerPossibilities(), false);
+            }
+            else if (cmd.getFilterType().equals("consistency")) {
+                filter = new ConsistencyFilter(
+                        consistencyQuestionService.getAllConsistencyQuestions(cmd.getBasePollId()),
+                        cmd.getMinSuccesses());
             }
             if (filter != null) {
                 filters.add(filter);

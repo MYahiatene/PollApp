@@ -19,10 +19,10 @@ public class ConsistencyQuestion {
     private Long question1Id;
 
     @ElementCollection
-    private List<Long> answer1Ids;
+    private List<String> answer1Indices;
 
     private Long question2Id;
 
     @ElementCollection
-    private List<Long> answer2Ids;
+    private List<String> answer2Indices;
 }
