@@ -54,7 +54,8 @@
                                         </div>
                                     </v-card-text>
                                 </div>
-                                <div v-else-if="question.questionType === 'ChoiceQuestion'">
+                                <div v-else-if="question.questionType === 'ChoicQuestion'">
+                                    <!--                                    Hi Nina, hier ist ein typo, damit meine SortQuestions angezeigt werden und ich sie debuggen kann -->
                                     <!--Radio Button since only one answer possible-->
                                     <div v-if="question.numberOfPossibleAnswers === 1">
                                         <v-card-text>
@@ -155,6 +156,31 @@
                                         ></v-checkbox>
                                     </v-list>
                                 </div>
+
+                                <!--                                Hi Nina, da muss natürlich 'SortQuestion' hin, aber zum debuggen mache ich das erstmal mit den ChoiceQuestions -->
+
+                                <div v-else-if="question.questionType === 'ChoiceQuestion'" class="pa-2">
+                                    <v-subheader>
+                                        Bitte bringen Sie die unten aufgeführten Möglichkeiten mittels Drag & Drop in
+                                        eine von Ihnen präferierte Reihenfolge.
+                                    </v-subheader>
+                                    <draggable
+                                        v-model="AnswerListsOfSortQuestions[index]"
+                                        @change="saveAnswerSortQuestion(index, question)"
+                                    >
+                                        <div
+                                            v-for="(answerPossibility, i) in AnswerListsOfSortQuestions[index]"
+                                            :key="i"
+                                        >
+                                            <v-chip class="my-1 mx-3" :color="fontColor">
+                                                {{ answerPossibility }}</v-chip
+                                            >
+                                        </div>
+                                    </draggable>
+                                    <v-btn @click="restoreAP(index)" :color="backgroundColor" class="ma-2">
+                                        Zurücksetzen
+                                    </v-btn>
+                                </div>
                             </v-card>
                         </v-list>
                     </v-col>
@@ -180,9 +206,13 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import draggable from 'vuedraggable'
 
 export default {
     name: 'Participant',
+    components: {
+        draggable,
+    },
     layout: 'participant', // uses special layout/participant instead of default-layout
     data() {
         return {
@@ -211,6 +241,7 @@ export default {
                 (v) => v.length >= 10 || 'Eingabe muss länger als 10 Zeichen sein!',
                 (v) => v.length <= 100 || 'Eingabe muss kürzer als 100 Zeichen sein!',
             ],
+            AnswerListsOfSortQuestions: [[1], [2], [3]],
         }
     },
     /**
@@ -219,6 +250,10 @@ export default {
     created() {
         this.id = this.$route.params.id
         this.showPoll()
+    },
+
+    mounted() {
+        this.createListOfAnswerPossibilitiesForSortQuestions()
     },
     computed: {
         /**
@@ -449,6 +484,26 @@ export default {
 
             this.saveAnswer()
         },
+
+        /**
+         * Get's the given answer of a Sort Question and calls saveAnswer() to persist it in the database.
+         * This happens after every change to the Sorting list.
+         * @param index the position of the question within the computedQuestionList
+         * @param question The question object, so it can get the QuestionID
+         */
+        saveAnswerSortQuestion(index, question) {
+            for (let i = 0; i < this.AnswerListsOfSortQuestions[index].length; i++) {
+                this.answerObj.answerList.push(
+                    this.computedQuestionList[index].answerPossibilities.indexOf(
+                        this.AnswerListsOfSortQuestions[index][i]
+                    )
+                )
+            }
+            this.answerObj.pollId = this.getPoll[1].data.pollId
+            this.answerObj.questionId = question.questionId
+            //
+            this.saveAnswer()
+        },
         /**
          * Moves the slider one step to the left, if possible.
          * It's called by click on + Icon at a Range Question.
@@ -533,6 +588,44 @@ export default {
             console.log('This is the answer object:')
 
             console.log(this.answer) // never ending object, something is wrong: Start here to debug...
+        },
+
+        /**
+         * copies all the AnswerLists of SortQuestions from computedQuestionList
+         * stores them in AnswerListsOfSortQuestions
+         * for every question that isn't a sortQuestion an empty Array is added, so that the index to access is question is the same for cpmputedQuestionList
+         *
+         */
+
+        createListOfAnswerPossibilitiesForSortQuestions() {
+            for (let i = 0; i < this.computedQuestionList.length; i++) {
+                this.AnswerListsOfSortQuestions.push([])
+                if (this.computedQuestionList[i].questionType === 'ChoiceQuestion') {
+                    // nur zum testen! Eigentlich 'SortQuestion'
+                    const answerList = []
+                    for (let j = 0; j < this.computedQuestionList[i].answerPossibilities.length; j++) {
+                        answerList.push(this.computedQuestionList[i].answerPossibilities[j])
+                    }
+                    this.AnswerListsOfSortQuestions[i] = answerList
+                }
+            }
+        },
+
+        /**
+         * restores the original order in AnswerListsOfSortQuestions for one question
+         *
+         * @param questionIndex indes of the question whos anserlist should be restored to the original order
+         */
+
+        restoreAP(questionIndex) {
+            for (let i = 0; i < this.computedQuestionList[questionIndex].answerPossibilities.length; i++) {
+                this.AnswerListsOfSortQuestions[questionIndex][i] = this.computedQuestionList[
+                    questionIndex
+                ].answerPossibilities[i]
+            }
+
+            this.$forceUpdate()
+            this.saveAnswerSortQuestion(questionIndex)
         },
     },
 }
