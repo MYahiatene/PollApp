@@ -3,6 +3,7 @@ package gpse.umfrato.web;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.deser.impl.ExternalTypeHandler;
 import com.opencsv.CSVWriter;
 import gpse.umfrato.domain.answer.Answer;
 import gpse.umfrato.domain.category.Category;
@@ -41,7 +42,6 @@ public class ExportController {
 
     /**New Idea: Convert to JSON first and then to CSV, it sure ain't pretty but if it works it's fine*/
 
-
     public static String toJSON(Poll result) throws Exception {
         ObjectMapper objectMapper = new ObjectMapper()
             .findAndRegisterModules();
@@ -50,6 +50,19 @@ public class ExportController {
         } catch (JsonProcessingException e) {
             throw new Exception("Serialisierung fehlgeschlagen");
         }
+    }
+
+    public static Poll fromJSON(String json) throws Exception {
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            Poll poll = objectMapper.readValue(json, Poll.class);
+            System.out.println(poll.getPollId());
+            System.out.println(poll.getPollName());
+            return poll;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     private String FormatCSVField(String data)

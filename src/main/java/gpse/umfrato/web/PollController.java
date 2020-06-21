@@ -79,6 +79,7 @@ public class PollController {
         if (poll != null) {
             try {
                 System.out.println(ExportController.toJSON(poll));
+                System.out.println(ExportController.fromJSON(ExportController.toJSON(poll)).getPollName());
             } catch (Exception e){}
             return poll;
         } else {
