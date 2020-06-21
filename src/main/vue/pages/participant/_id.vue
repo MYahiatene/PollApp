@@ -54,7 +54,9 @@
                                         </div>
                                     </v-card-text>
                                 </div>
-                                <div v-else-if="question.questionType === 'ChoicQuestion'">
+                                <!-- Ich hab den questionType von ChoicQuestion wieder zu ChoiceQuestion getauscht,
+                                damit es wieder passt, ich weiß nicht inwieweit dich das betrifft-->
+                                <div v-else-if="question.questionType === 'ChoiceQuestion'">
                                     <!--                                    Hi Nina, hier ist ein typo, damit meine SortQuestions angezeigt werden und ich sie debuggen kann -->
                                     <!--Radio Button since only one answer possible-->
                                     <div v-if="question.numberOfPossibleAnswers === 1">
@@ -68,6 +70,16 @@
                                                     @change="saveAnswerRadioButton(question, answer)"
                                                 ></v-radio>
                                             </v-radio-group>
+                                            <div v-if="question.userAnswers">
+                                                <v-text-field
+                                                    class="mx-4"
+                                                    auto-grow
+                                                    prepend-icon="mdi-plus"
+                                                    clearable
+                                                    @click:prepend="saveOwnAnswer(question)"
+                                                    @input="saveAnswerPossibility($event, question)"
+                                                ></v-text-field>
+                                            </div>
                                         </v-card-text>
                                     </div>
                                     <div v-else>
@@ -82,20 +94,17 @@
                                                 @change="saveAnswerCheckbox($event, question, answer)"
                                             ></v-checkbox>
                                         </v-list>
+                                        <div v-if="question.userAnswers">
+                                            <v-text-field
+                                                class="mx-4"
+                                                auto-grow
+                                                prepend-icon="mdi-plus"
+                                                clearable
+                                                @click:prepend="saveOwnAnswer(question)"
+                                                @input="saveAnswerPossibility($event, question)"
+                                            ></v-text-field>
+                                        </div>
                                     </div>
-                                    <!-- checks the individual response options for every question, not valid with
-                                    the backend -->
-                                    <!--div v-if="question.ownAnswersAllowed">
-                                        <v-checkbox
-                                            v-model="enabled"
-                                            hide-details
-                                            class="ma-4"
-                                            label="Eigene Antwort:"
-                                        ></v-checkbox>
-                                        <v-col>
-                                            <v-text-field></v-text-field>
-                                        </v-col>
-                                    </div-->
                                 </div>
                                 <div v-else-if="question.questionType === 'SliderQuestion'">
                                     <v-card-text>
@@ -177,7 +186,7 @@
                                             >
                                         </div>
                                     </draggable>
-                                    <v-btn @click="restoreAP(index)" :color="backgroundColor" class="ma-2">
+                                    <v-btn :color="backgroundColor" class="ma-2" @click="restoreAP(index)">
                                         Zurücksetzen
                                     </v-btn>
                                 </div>
@@ -236,6 +245,7 @@ export default {
                 answerId: '1',
                 pollId: '1',
             },
+            ownAnswers: [[]],
             rangeAnswers: [],
             textQuestionRules: [
                 (v) => v.length >= 10 || 'Eingabe muss länger als 10 Zeichen sein!',
@@ -382,6 +392,54 @@ export default {
         }, // do we need this anywhere?
     },
     methods: {
+        /**
+         * Holt sich die gegebene Antwort des Textfeldes aus dem Array ownAnswers und schickt die Antwort mit der
+         * questionId und pollId in den store, um die Antwort im Backend zu speichern. Löscht nach speichern der Antwort
+         * den Eintrag im Array, damit eine neue Antwort gegeben werden kann.
+         **/
+        saveOwnAnswer(question) {
+            // save the given answerPossibility from the array ownAnswer in the backend
+            let x = 0
+            for (let i = 0; i < this.ownAnswers.length; i++) {
+                if (this.ownAnswers[i].length === 2) {
+                    if (this.ownAnswers[i][1] === question.questionId) {
+                        x = this.ownAnswers[i]
+                    }
+                }
+            }
+            // wird nur ausgeführt, wenn im Textfeld was steht
+            if (x !== 0) {
+                x[2] = this.getPoll[1].data.pollId
+                console.log('Answer to save: ', x)
+                this.$store.dispatch('participant/saveAnswerPossibility', x)
+                // delete ownAnswer of the now saved question from the array
+                for (let i = 0; i < this.ownAnswers.length; i++) {
+                    if (this.ownAnswers[i][0] === x[0]) {
+                        this.ownAnswers[i][1] = ''
+                    }
+                }
+            }
+            // TODO: Textfeld nach speichern wieder leeren
+        },
+        /**
+         * Speichert die gegebene Antwort aus dem Textfeld in einem Array mit der zugehörigen QuestionId ab.
+         **/
+        saveAnswerPossibility(e, question) {
+            let x = 0
+            for (let i = 0; i < this.ownAnswers.length; i++) {
+                if (this.ownAnswers[i].length === 2) {
+                    if (this.ownAnswers[i][1] === question.questionId) {
+                        this.ownAnswers[i][0] = e
+                        x = 1
+                    }
+                }
+            }
+            // adds the new Answer possibility to the array
+            if (x === 0) {
+                this.ownAnswers.push([e, question.questionId])
+            }
+            // console.log('ownAnswers: ', this.ownAnswers)
+        },
         /**
          * Calls setCategory in the store to get the next category in the poll and save it at the page, if there is one
          * and sets the categoryIndex from the getter getCategoryIndex from the store, the total amount of questions as

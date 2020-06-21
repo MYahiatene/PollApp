@@ -17,7 +17,6 @@ import java.util.List;
 
 @Service
 public class QuestionServiceImpl implements QuestionService {
-
     /**
      * Initializes the poll service.
      */
@@ -180,6 +179,14 @@ public class QuestionServiceImpl implements QuestionService {
         newCategory.getQuestionList().add(question);
         question.setCategoryId(newCategoryId);
         return question;
+    }
+
+    @Override
+    public void setNewAnswer(final Question question, final String answer) {
+        List<String> list = question.getAnswerPossibilities();
+        list.add(answer);
+        question.setAnswerPossibilities(list);
+        questionRepository.save(question);
     }
 
 

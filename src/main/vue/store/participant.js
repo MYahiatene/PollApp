@@ -38,7 +38,6 @@ export const getters = {
         return state.numberOfQuestions
     },
     getPoll: (state) => {
-        console.log(state.poll)
         return state.poll
     },
     getCategory: (state) => {
@@ -55,6 +54,9 @@ export const getters = {
     },
     getAnswer: (state) => {
         return state.answer
+    },
+    getQuestionId: (state) => {
+        return state.questionId
     },
 }
 
@@ -108,6 +110,9 @@ export const mutations = {
                 state.categoryIndex = index - 1
             }
         }
+    },
+    setQuestionId: (state, id) => {
+        state.questionId = id
     },
 }
 export const actions = {
@@ -171,5 +176,21 @@ export const actions = {
         this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('user-token')
         return this.$axios.post('/poll/' + answerObj.pollId + '/addanswer', answerObj)
         // api.saveAnswers(answerObj)
+    },
+    async saveAnswerPossibility(state, answer) {
+        console.log('pollId: ', answer[2])
+        console.log('questionId: ', answer[1])
+        console.log('newAnswer: ', answer[0])
+        const obj = { value: answer[0] }
+        this.$axios.defaults.baseURL = 'http://localhost:8088/api/'
+        this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('user-token')
+        const poll = await this.$axios.post(
+            '/poll/' + answer[2] + '/question/' + answer[1] + '/addAnswerPossibility',
+            obj
+        )
+        console.log('after post')
+        console.log(poll)
+        state.commit('setPoll', poll)
+        // state.commit('setCategory', poll.data.cate)
     },
 }

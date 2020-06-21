@@ -5,6 +5,8 @@ import gpse.umfrato.domain.participationLinks.ParticipationLink;
 import gpse.umfrato.domain.participationLinks.ParticipationLinkService;
 import gpse.umfrato.domain.poll.Poll;
 import gpse.umfrato.domain.poll.PollService;
+import gpse.umfrato.domain.question.Question;
+import gpse.umfrato.domain.question.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -22,6 +24,7 @@ public class PollController {
     static final Logger LOGGER = Logger.getLogger("PollController");
     private final PollService pollService;
     private final ParticipationLinkService participationLinkService;
+    private final QuestionService questionService;
 
     /**
      * This class constructor initializes the poll service.
@@ -30,9 +33,11 @@ public class PollController {
      * @param participationLinkService
      */
     @Autowired
-    public PollController(final PollService pollService, ParticipationLinkService participationLinkService) {
+    public PollController(final PollService pollService, ParticipationLinkService participationLinkService,
+                          QuestionService questionService) {
         this.pollService = pollService;
         this.participationLinkService = participationLinkService;
+        this.questionService = questionService;
     }
 
     /**
@@ -105,6 +110,15 @@ public class PollController {
         return pollService.getPoll(String.valueOf(pollId));
     }
 
+    @PostMapping("/poll/{pollId:\\d+}/question/{questionId:\\d+}/addAnswerPossibility")
+    public Poll addAnswerPossibility(final @PathVariable String pollId, final @PathVariable Long questionId, final @RequestBody String answer) {
+        LOGGER.info("start im backend");
+        String tmp = answer.substring(answer.indexOf(':'));
+        LOGGER.info(tmp.substring(2,tmp.length()-2));
+        Question question = questionService.getQuestion(questionId);
+        questionService.setNewAnswer(question, tmp.substring(2,tmp.length()-2));
+        return pollService.getPoll(pollId);
+    }
 
 }
 
