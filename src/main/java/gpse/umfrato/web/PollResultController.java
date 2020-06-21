@@ -2,6 +2,7 @@ package gpse.umfrato.web;
 
 import gpse.umfrato.domain.cmd.AnswerCmd;
 import gpse.umfrato.domain.pollresult.PollResultService;
+import org.aspectj.apache.bcel.classfile.Module;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,8 +27,6 @@ public class PollResultController {
     }
     @RequestMapping(value = "/getPollResult", method = RequestMethod.POST) //"/pollResult/{usernameId:\\d+}"
     public void pollResultByUsername(final @RequestBody AnswerCmd answerCmd) {
-        LOGGER.info("TEMPORARY!!!");
-
         LOGGER.info("Hi from the PollResultController"); // hier gibt er es schon nicht aus
         LOGGER.info(answerCmd.toString());
         pollResultService.getPollResult(answerCmd.getPollId(), answerCmd.getUsername());

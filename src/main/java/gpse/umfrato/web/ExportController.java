@@ -12,6 +12,7 @@ import gpse.umfrato.domain.poll.PollService;
 import gpse.umfrato.domain.pollresult.PollResult;
 import gpse.umfrato.domain.pollresult.PollResultService;
 import gpse.umfrato.domain.question.Question;
+import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.*;
@@ -52,7 +53,7 @@ public class ExportController {
         }
     }
 
-    public static Poll fromJSON(String json) throws Exception {
+    public static Poll fromJSONToPoll(String json) throws Exception {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             Poll poll = objectMapper.readValue(json, Poll.class);
@@ -62,6 +63,41 @@ public class ExportController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return null;
+    }
+
+    public static String toJSON(PollResult result) throws Exception {
+        ObjectMapper objectMapper = new ObjectMapper()
+            .findAndRegisterModules();
+        try {
+            return objectMapper.writeValueAsString(result);
+        } catch (JsonProcessingException e) {
+            throw new Exception("Serialisierung fehlgeschlagen");
+        }
+    }
+
+    public static PollResult fromJSONToResult(String json) throws Exception {
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            PollResult pResult = objectMapper.readValue(json, PollResult.class);
+            return pResult;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static String createExportJSON(Poll poll, PollResult result){
+        JSONObject combined = new JSONObject();
+        try {
+            JSONObject pollJSON = new JSONObject();
+            pollJSON.getJSONObject(toJSON(poll));
+            JSONObject resultJSON = new JSONObject();
+            resultJSON.getJSONObject(toJSON(result));
+            combined.put("Poll", pollJSON);
+            combined.put("Results", pollJSON);
+            return combined.toString();
+        } catch(Exception e){}
         return null;
     }
 
