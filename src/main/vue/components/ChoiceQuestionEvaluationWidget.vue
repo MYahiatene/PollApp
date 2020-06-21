@@ -53,11 +53,11 @@
             <!-- here we display a table with the data-->
 
             <v-row>
-                <v-col>
-                    <p>Median: {{ calculated.median }}</p>
+                <v-col cols="3">
+                    <v-chip :color="this.$vuetify.theme.currentTheme.info">Median: {{ calculated.median }}</v-chip>
                 </v-col>
-                <v-col>
-                    <p>Modus: {{ calculated.mode }}</p>
+                <v-col cols="3">
+                    <v-chip :color="this.$vuetify.theme.currentTheme.info">Modus: {{ calculated.mode }}</v-chip>
                 </v-col>
             </v-row>
             <v-row>
@@ -141,6 +141,12 @@ export default {
                     {
                         ticks: {
                             beginAtZero: true,
+                            callback: (value, index, values) => {
+                                if (value % 1 === 0) {
+                                    return value
+                                }
+                                return null
+                            },
                         },
                     },
                 ],

@@ -3,6 +3,7 @@ package gpse.umfrato.domain.poll;
 import gpse.umfrato.domain.category.CategoryRepository;
 import gpse.umfrato.domain.category.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
@@ -85,5 +86,17 @@ class PollServiceImpl implements PollService {
         poll.setPollStatus(poll.getPollStatus() + 1);
         pollRepository.save(poll);
         return poll.getPollStatus();
+    }
+
+    @Override public List<Poll> getLastEditedPolls() {
+        List<Poll> allPolls = pollRepository.findAll();
+        if(allPolls.size() > 5)
+        {
+            return allPolls.subList(0,5);
+        }
+        else
+        {
+            return allPolls;
+        }
     }
 }

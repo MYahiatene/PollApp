@@ -14,8 +14,11 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class DiagramData {
 
@@ -54,6 +57,10 @@ public class DiagramData {
         private List<String> answerPossibilities;
         private List<Integer> data;
         private Calculation calculated = new Calculation();
+        @JsonIgnore
+        private double start = 0;
+        @JsonIgnore
+        private double step = 1;
 
         @Getter
         @Setter
@@ -82,8 +89,18 @@ public class DiagramData {
             return this.id;
         }
 
-        public void addAnswer(final int answerPossibility) {
-            data.set(answerPossibility, data.get(answerPossibility) + 1);
+        public void addAnswer(final double answerPossibility) {
+            int index = (int)((answerPossibility - start) / step);
+            data.set(index, data.get(index) + 1);
+        }
+
+        public void setModifier(double start,double step)
+        {
+            this.start = start;
+            if(step != 0)
+            {
+                this.step = step;
+            }
         }
 
         @Override
@@ -114,7 +131,7 @@ public class DiagramData {
             modeText.replace(modeText.lastIndexOf(DIVIDER_STRING), modeText.length(), "");
             calculated.mode = modeText.toString();
             //Median ist an mittlerer Stelle
-            int medianPos = size / 2;
+            double medianPos = size / 2.0;
             calculated.relative = new ArrayList<>();
             for (int i = 0; i < data.size(); i++) {
                 //Relative Häufigkeiten nur Summe vor Division
@@ -123,8 +140,15 @@ public class DiagramData {
                 // [1,1,1,1,1,1,2,2,2,3,3,3,4,6](originalDaten) => [0,6,3,3,1,0,1](data)
                 // => 14(data.size) => 7(/2) => 1(-6) => -2(-3) => 2(Position) => Median
                 if (medianPos <= 0 && calculated.median == null) {
-                    if (medianPos == 0 && i < answerPossibilities.size()) {
-                        calculated.median = answerPossibilities.get(i) + DIVIDER_STRING + answerPossibilities.get(i + 1);
+                    if (size % 2 == 0 && medianPos == 0)
+                    {
+                        if(i < answerPossibilities.size()) {
+                            int j = i + 1;
+                            while (j < data.size() - 1 && data.get(j) == 0) {
+                                j++;
+                            }
+                            calculated.median = answerPossibilities.get(i) + (j >= data.size() ? "" : DIVIDER_STRING + answerPossibilities.get(j));
+                        }
                     } else {
                         calculated.median = answerPossibilities.get(i);
                     }
@@ -220,6 +244,7 @@ public class DiagramData {
             for (final Question q : questionService.getAllQuestions(c.getCategoryId())) {
                 // System.out.println(q.toString());
                 QuestionData qd = null;
+                DecimalFormat format = new DecimalFormat("#.######", DecimalFormatSymbols.getInstance( Locale.GERMAN ));
                 switch (q.getQuestionType()) {
                     case "ChoiceQuestion":
                         qd = new ChoiceData(q.getQuestionId(), q.getQuestionMessage(), q.getAnswerPossibilities());
@@ -235,7 +260,7 @@ public class DiagramData {
                             answerPossibilities.add(q.getBelowMessage());
                         }
                         for (double i = q.getStartValue(); i < q.getEndValue();) {
-                            answerPossibilities.add(i + HYPHEN + (i += q.getStepSize()));
+                            answerPossibilities.add(format.format(i) + HYPHEN + (format.format(i += q.getStepSize())));
                         }
                         if (q.getAboveMessage() != null && !q.getAboveMessage().isEmpty()) {
                             answerPossibilities.add(q.getAboveMessage());
@@ -247,11 +272,12 @@ public class DiagramData {
                     case "SliderQuestion":
                         final List<String> answerPossibilities2 = new ArrayList<>();
                         for (double i = q.getStartValue(); i < q.getEndValue();) {
-                            answerPossibilities2.add(String.valueOf(i));
+                            answerPossibilities2.add(format.format(i));
                             i += q.getStepSize();
                         }
                         // System.out.println(answerPossibilities2.toString());
                         qd = new ChoiceData(q.getQuestionId(), q.getQuestionMessage(), answerPossibilities2);
+                        ((ChoiceData) qd).setModifier(q.getStartValue(),q.getStepSize());
                         // System.out.println(qd.toString());
                         break;
                     default:
@@ -271,7 +297,7 @@ public class DiagramData {
                             case CHOICE_QUESTION:
                                 final ChoiceData cd = (ChoiceData) qd;
                                 for (final String s: a.getGivenAnswerList()) {
-                                    cd.addAnswer(Integer.parseInt(s));
+                                    cd.addAnswer(Double.parseDouble(s));
                                 }
                                 break;
                             case TEXT_QUESTION:

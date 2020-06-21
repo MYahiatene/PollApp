@@ -38,8 +38,14 @@ public class Poll {
     /**
      * This attribute represents the date when the poll was edited the last time.
      */
-    @JsonIgnore
+    // @JsonIgnore
     private String lastEditAt;
+
+    /**
+     * This attribute represents the user who edited the poll the last time.
+     */
+    // @JsonIgnore
+    private String lastEditFrom;
 
     /**
      * This attribute represents the date when the poll was activated.

@@ -127,10 +127,10 @@
                                         <div v-else-if="question.hideValues === true">
                                             <v-slider
                                                 v-model="value2"
-                                                min="0"
-                                                max="10"
-                                                ticks
-                                                tick-size="4"
+                                                :min="question.startValue"
+                                                :max="question.endValue"
+                                                :step="question.stepSize"
+                                                thumb-label="always"
                                                 append-icon="mdi-plus"
                                                 prepend-icon="mdi-minus"
                                                 :color="fontColor"

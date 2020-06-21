@@ -1,5 +1,8 @@
 package gpse.umfrato.web;
 
+import gpse.umfrato.domain.ConsistencyQuestion.ConsistencyQuestion;
+import gpse.umfrato.domain.ConsistencyQuestion.ConsistencyQuestionService;
+import gpse.umfrato.domain.cmd.ConsistencyQuestionCmd;
 import gpse.umfrato.domain.cmd.PollCmd;
 import gpse.umfrato.domain.participationlinks.ParticipationLinkService;
 import gpse.umfrato.domain.poll.Poll;
@@ -17,9 +20,10 @@ import java.util.logging.Logger;
 @RestController
 @CrossOrigin
 public class PollController {
-    /* default */ static final Logger LOGGER = Logger.getLogger("PollController");
+    static final Logger LOGGER = Logger.getLogger("PollController");
     private final PollService pollService;
     private final ParticipationLinkService participationLinkService;
+    private final ConsistencyQuestionService consistencyQuestionService;
 
     /**
      * This class constructor initializes the poll service.
@@ -28,9 +32,11 @@ public class PollController {
      * @param participationLinkService
      */
     @Autowired
-    public PollController(final PollService pollService, final ParticipationLinkService participationLinkService) {
+    public PollController(final PollService pollService, final ParticipationLinkService participationLinkService,
+                          final ConsistencyQuestionService consistencyQuestionService) {
         this.pollService = pollService;
         this.participationLinkService = participationLinkService;
+        this.consistencyQuestionService = consistencyQuestionService;
     }
 
     /**
@@ -99,11 +105,46 @@ public class PollController {
         }
     }
 
+    @GetMapping("relevantpolls")
+    public List<Poll> getNewestPolls()
+    {
+        return pollService.getLastEditedPolls();
+    }
+
     @GetMapping("/getonepoll")
     public Poll getPoll(final @RequestParam long pollId) {
         return pollService.getPoll(pollId);
     }
 
+    @PostMapping("/poll/{pollId:\\d+}/addcq")
+    public ConsistencyQuestion addConsistencyQuestion(final @PathVariable long pollId, final @RequestBody ConsistencyQuestionCmd consistencyQuestionCmd)
+    {
+        consistencyQuestionCmd.setPollId(pollId);
+        return consistencyQuestionService.createConsistencyQuestion(consistencyQuestionCmd);
+    }
 
+    @GetMapping("/poll/{pollId:\\d+}/consistencyquestions")
+    public List<ConsistencyQuestion> getConsistencyQuestions(final @PathVariable long pollId)
+    {
+        return consistencyQuestionService.getAllConsistencyQuestions(pollId);
+    }
+
+    @GetMapping("/poll/{pollId:\\d+}/consistencyquestions/{question1Id:\\d+}/{question2Id:\\d+}")
+    public List<ConsistencyQuestion> getConsistencyQuestions(final @PathVariable long pollId,final @PathVariable long question1Id,final @PathVariable long question2Id)
+    {
+        return consistencyQuestionService.getAllConsistencyQuestions(question1Id,question2Id);
+    }
+
+    @PostMapping("/poll/editcq/{cqId:\\d+}")
+    public void editConsistencyQuestion(final @PathVariable long cqId, final @RequestBody ConsistencyQuestionCmd consistencyQuestionCmd)
+    {
+        consistencyQuestionService.editConsistencyQuestion(cqId,consistencyQuestionCmd);
+    }
+
+    @PostMapping("/poll/delcq/{cqId:\\d+}")
+    public void addConsistencyQuestion(final @PathVariable long cqId)
+    {
+        consistencyQuestionService.deleteConsistencyQuestion(cqId);
+    }
 }
 

@@ -1,6 +1,7 @@
 package gpse.umfrato.domain.ConsistencyQuestion;
 
 import gpse.umfrato.domain.answer.AnswerRepository;
+import gpse.umfrato.domain.cmd.ConsistencyQuestionCmd;
 import gpse.umfrato.domain.pollresult.PollResultRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,13 +19,13 @@ public class ConsistencyQuestionServiceImpl implements ConsistencyQuestionServic
     }
 
     @Override
-    public ConsistencyQuestion createConsistencyQuestion(Long pollId, Long question1Id, List<Long> answer1Ids, Long question2Id, List<Long> answer2Ids) {
+    public ConsistencyQuestion createConsistencyQuestion(ConsistencyQuestionCmd consistencyQuestionCmd) {
         ConsistencyQuestion cq = new ConsistencyQuestion();
-        cq.setPollId(pollId);
-        cq.setQuestion1Id(question1Id);
-        cq.setAnswer1Ids(answer1Ids);
-        cq.setQuestion2Id(question2Id);
-        cq.setAnswer2Ids(answer2Ids);
+        cq.setPollId(consistencyQuestionCmd.getPollId());
+        cq.setQuestion1Id(consistencyQuestionCmd.getQuestion1Id());
+        cq.setAnswer1Ids(consistencyQuestionCmd.getAnswer1Ids());
+        cq.setQuestion2Id(consistencyQuestionCmd.getQuestion2Id());
+        cq.setAnswer2Ids(consistencyQuestionCmd.getAnswer2Ids());
         return consistencyQuestionRepository.save(cq);
     }
 
@@ -41,19 +42,19 @@ public class ConsistencyQuestionServiceImpl implements ConsistencyQuestionServic
     }
 
     @Override
-    public List<ConsistencyQuestion> getAllConsistencyQuestions(long question1Id, long question2Id) {
+    public List<ConsistencyQuestion> getAllConsistencyQuestions(final long question1Id, final long question2Id) {
         return consistencyQuestionRepository.findConsistencyQuestionsByQuestion1IdOrQuestion2Id(question1Id,question2Id);
     }
 
     @Override
-    public void editConsistencyQuestion(long consistencyQuestionId, Long pollId, Long question1Id, List<Long> answer1Ids, Long question2Id, List<Long> answer2Ids) {
+    public void editConsistencyQuestion(long consistencyQuestionId, final ConsistencyQuestionCmd consistencyQuestionCmd) {
         ConsistencyQuestion cq = null;
         cq = consistencyQuestionRepository.findById(consistencyQuestionId).orElseThrow(EntityNotFoundException::new);
-        cq.setPollId(pollId);
-        cq.setQuestion1Id(question1Id);
-        cq.setAnswer1Ids(answer1Ids);
-        cq.setQuestion2Id(question2Id);
-        cq.setAnswer2Ids(answer2Ids);
+        cq.setPollId(consistencyQuestionCmd.getPollId());
+        cq.setQuestion1Id(consistencyQuestionCmd.getQuestion1Id());
+        cq.setAnswer1Ids(consistencyQuestionCmd.getAnswer1Ids());
+        cq.setQuestion2Id(consistencyQuestionCmd.getQuestion2Id());
+        cq.setAnswer2Ids(consistencyQuestionCmd.getAnswer2Ids());
         consistencyQuestionRepository.save(cq);
     }
 }

@@ -345,24 +345,23 @@ export default {
                     ans2[i] = this.answerIndices2[i]
                 }
 
+                const cq = {
+                    c1: this.categoryIndex,
+                    q1: this.questionIndex,
+                    a1: ans1,
+                    c2: this.categoryIndex2,
+                    q2: this.questionIndex2,
+                    a2: ans2,
+                }
+
+                this.$axios.post('/poll/' + this.polls[this.pollIndex].pollId + '/addcq', cq).catch((reason) => {
+                    console.log('fuck')
+                })
+
                 if (this.currentId === -1) {
-                    this.listOfControlQuestions.push({
-                        c1: this.categoryIndex,
-                        q1: this.questionIndex,
-                        a1: ans1,
-                        c2: this.categoryIndex2,
-                        q2: this.questionIndex2,
-                        a2: ans2,
-                    })
+                    this.listOfControlQuestions.push(cq)
                 } else {
-                    this.listOfControlQuestions[this.currentId] = {
-                        c1: this.categoryIndex,
-                        q1: this.questionIndex,
-                        a1: ans1,
-                        c2: this.categoryIndex2,
-                        q2: this.questionIndex2,
-                        a2: ans2,
-                    }
+                    this.listOfControlQuestions[this.currentId] = cq
                 }
 
                 this.buttonInfo = ''
@@ -391,7 +390,7 @@ export default {
         },
 
         deleteControlQuestion(index) {
-            // the question is added here, so its no longer visble in the editing component
+            // the question is added here, so its no longer visible in the editing component
             this.addControlQuestion(index)
             if (index > -1) {
                 this.listOfControlQuestions.splice(index, 1)
@@ -476,6 +475,7 @@ export default {
             }
             return pollTitles
         },
+
         categoryTitles() {
             const l = []
             for (let i = 0; i < this.polls[this.pollIndex].categoryList.length; i++) {

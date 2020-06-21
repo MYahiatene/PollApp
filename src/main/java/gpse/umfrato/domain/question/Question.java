@@ -17,11 +17,11 @@ public class Question {
 
     // needed for RangeQuestions
 
-    private float startValue;
+    private double startValue;
 
-    private float endValue;
+    private double endValue;
 
-    private float stepSize;
+    private double stepSize;
 
     // needed for Slide and RangeQuestions
 
@@ -117,7 +117,7 @@ public class Question {
      * @param belowMessage the message for the meaning of the start value of a range Question
      * @param aboveMessage the message for the meaning of the end value of a range Question
      */
-    public Question(final String question, final float startValue, final float endValue, final float stepSize, final String belowMessage, final String aboveMessage) {
+    public Question(final String question, final double startValue, final double endValue, final double stepSize, final String belowMessage, final String aboveMessage) {
         this.questionMessage = question;
         this.questionType = "RangeQuestion";
         this.endValue = endValue;
@@ -137,7 +137,7 @@ public class Question {
      * @param aboveMessage the message for the meaning of the end value of a range Question
      * @param hideValues   for the slide question,if it shows the chosen value
      */
-    public Question(final String question, final float startValue, final float endValue, final float stepSize, final String belowMessage, final String aboveMessage, final Boolean hideValues) {
+    public Question(final String question, final double startValue, final double endValue, final double stepSize, final String belowMessage, final String aboveMessage, final Boolean hideValues) {
         this.questionMessage = question;
         this.questionType = "SliderQuestion";
         this.endValue = endValue;

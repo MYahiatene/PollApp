@@ -1,17 +1,18 @@
 package gpse.umfrato.domain.ConsistencyQuestion;
 
 import gpse.umfrato.domain.category.Category;
+import gpse.umfrato.domain.cmd.ConsistencyQuestionCmd;
 
 import java.util.List;
 
 public interface ConsistencyQuestionService {
-    ConsistencyQuestion createConsistencyQuestion(final Long pollId, final Long question1Id, final List<Long> answer1Ids, final Long question2Id, final List<Long> answer2Ids);
+    ConsistencyQuestion createConsistencyQuestion(ConsistencyQuestionCmd consistencyQuestionCmd);
 
     void deleteConsistencyQuestion(final long consistencyQuestionId);
 
     List<ConsistencyQuestion> getAllConsistencyQuestions(final long pollId);
 
-    List<ConsistencyQuestion> getAllConsistencyQuestions(long question1Id, long question2Id);
+    List<ConsistencyQuestion> getAllConsistencyQuestions(final long question1Id, final long question2Id);
 
-    void editConsistencyQuestion(final long consistencyQuestionId, final Long pollId, final Long question1Id, final List<Long> answer1Ids, final Long question2Id, final List<Long> answer2Ids);
+    void editConsistencyQuestion(final long consistencyQuestionId, final ConsistencyQuestionCmd consistencyQuestionCmd);
 }

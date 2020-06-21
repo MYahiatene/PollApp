@@ -34,4 +34,6 @@ public interface PollService {
 
     Integer activatePoll(final Long pollId);
 
+    List<Poll> getLastEditedPolls();
+
 }

@@ -15,10 +15,10 @@ import java.util.List;
 @Service
 public class QuestionServiceImpl implements QuestionService {
 
-    private static final float FIVE = 5.0f;
-    private static final float ZERO_DOT_ONE = 0.1f;
-    private static final float ZERO = 0.0f;
-    private static final float ONE = 1.0f;
+    private static final double FIVE = 5.0;
+    private static final double ZERO_DOT_ONE = 0.1;
+    private static final double ZERO = 0.0;
+    private static final double ONE = 1.0;
 
 
     private static final String TEXT_QUESTION = "TextQuestion";

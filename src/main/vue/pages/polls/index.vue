@@ -14,7 +14,11 @@
                         <template v-slot:header>
                             <v-toolbar class="mb-1">
                                 <v-btn large color="primary" @click="initializeDatabase">
-                                    <v-icon :color="progress">mdi-auto-fix</v-icon>
+                                    <v-icon :color="progressA">mdi-auto-fix</v-icon>
+                                </v-btn>
+                                <v-spacer />
+                                <v-btn large color="secondary" @click="answerPoll">
+                                    <v-icon :color="progressB">mdi-auto-fix</v-icon>
                                 </v-btn>
                                 <v-spacer />
                                 <v-text-field
@@ -86,7 +90,9 @@ export default {
     components: { AuthGate },
     data() {
         return {
-            progressColor: '#FF0000',
+            participantNr: 2,
+            progressColorA: '#FF0000',
+            progressColorB: '#FF0000',
             itemsList: [],
             search: '',
             filter: {},
@@ -127,8 +133,11 @@ export default {
             isAuthenticated: 'login/isAuthenticated',
             getError: 'navigation/getError',
         }),
-        progress() {
-            return this.progressColor
+        progressA() {
+            return this.progressColorA
+        },
+        progressB() {
+            return this.progressColorB
         },
         prepareItems() {
             const data = Object.assign([], this.items)
@@ -227,11 +236,11 @@ export default {
                     navigator.clipboard.writeText(
                         'http://localhost:8080/participant/' + this.participationLinks[i].participationLink
                     )
-                    alert(
+                    /* alert(
                         'Link kopiert: "localhost:8080/participant/' +
                             this.participationLinks[i].participationLink +
                             '"'
-                    )
+                    ) */
                 }
             }
         },
@@ -318,7 +327,7 @@ export default {
                     console.log(reason)
                 })
             console.log(newPollId)
-            this.progressColor = '#ff4d00'
+            this.progressColorA = '#ff4d00'
             await this.$axios
                 .post('/addquestion', {
                     pollId: newPollId,
@@ -334,7 +343,7 @@ export default {
                 .catch((reason) => {
                     console.log(reason)
                 })
-            this.progressColor = '#ffbb00'
+            this.progressColorA = '#ffbb00'
             await this.$axios
                 .post('/addquestion', {
                     pollId: newPollId,
@@ -350,7 +359,7 @@ export default {
                 .catch((reason) => {
                     console.log(reason)
                 })
-            this.progressColor = '#fbff00'
+            this.progressColorA = '#fbff00'
             await this.$axios
                 .post('/addquestion', {
                     pollId: newPollId,
@@ -366,7 +375,7 @@ export default {
                 .catch((reason) => {
                     console.log(reason)
                 })
-            this.progressColor = '#aaff00'
+            this.progressColorA = '#aaff00'
             await this.$axios
                 .post('/addquestion', {
                     pollId: newPollId,
@@ -382,7 +391,7 @@ export default {
                 .catch((reason) => {
                     console.log(reason)
                 })
-            this.progressColor = '#5eff00'
+            this.progressColorA = '#5eff00'
             await this.$axios
                 .post('/addquestion', {
                     pollId: newPollId,
@@ -400,14 +409,14 @@ export default {
                 .catch((reason) => {
                     console.log(reason)
                 })
-            this.progressColor = '#00ff84'
+            this.progressColorA = '#00ff84'
             await this.$axios
                 .post('/addquestion', {
                     pollId: newPollId,
                     questionMessage: 'Sliderfrage nach Gefühl',
                     questionType: 'SliderQuestion',
-                    startValue: 0,
-                    endValue: 1,
+                    startValue: 0.0,
+                    endValue: 1.0,
                     stepSize: 0.01,
                     belowMessage: 'Wenig',
                     aboveMessage: 'Viel',
@@ -419,7 +428,7 @@ export default {
                 .catch((reason) => {
                     console.log(reason)
                 })
-            this.progressColor = '#00d5ff'
+            this.progressColorA = '#00d5ff'
             await this.$axios
                 .post('/addquestion', {
                     pollId: newPollId,
@@ -427,7 +436,7 @@ export default {
                     questionMessage: 'Sliderfrage nach Wert',
                     startValue: 0,
                     endValue: 5000,
-                    stepSize: 1,
+                    stepSize: 10,
                     belowMessage: 'Unten',
                     aboveMessage: 'Oben',
                     hideValues: false,
@@ -438,7 +447,64 @@ export default {
                 .catch((reason) => {
                     console.log(reason)
                 })
-            this.progressColor = '#006eff'
+            this.progressColorA = '#006eff'
+            this.initialize()
+            await this.initializeLinks()
+        },
+
+        async answerPoll() {
+            const i = this.participantNr
+            this.participantNr += 2
+            this.progressColorB = '#ff0000'
+            await this.$store.dispatch('participant/saveAnswer', {
+                username: '' + i,
+                pollId: 1,
+                questionId: 4,
+                answerList: [Math.floor(Math.random() * 4)],
+            })
+            this.progressColorB = '#ff4d00'
+            await this.$store.dispatch('participant/saveAnswer', {
+                username: '' + i,
+                pollId: 1,
+                questionId: 5,
+                answerList: [Math.floor(Math.random() * 5), Math.floor(Math.random() * 4)],
+            })
+            this.progressColorB = '#fbff00'
+            await this.$store.dispatch('participant/saveAnswer', {
+                username: '' + i,
+                pollId: 1,
+                questionId: 6,
+                answerList: ['Hallo'],
+            })
+            this.progressColorB = '#aaff00'
+            await this.$store.dispatch('participant/saveAnswer', {
+                username: '' + i,
+                pollId: 1,
+                questionId: 7,
+                answerList: ['Das ist ein langer Text'],
+            })
+            this.progressColorB = '#5eff00'
+            await this.$store.dispatch('participant/saveAnswer', {
+                username: '' + i,
+                pollId: 1,
+                questionId: 8,
+                answerList: [Math.floor(Math.random() * 8)],
+            })
+            this.progressColorB = '#00ff84'
+            await this.$store.dispatch('participant/saveAnswer', {
+                username: '' + i,
+                pollId: 1,
+                questionId: 9,
+                answerList: [Math.floor(Math.random() * 100) / 100],
+            })
+            this.progressColorB = '#00d5ff'
+            await this.$store.dispatch('participant/saveAnswer', {
+                username: '' + i,
+                pollId: 1,
+                questionId: 10,
+                answerList: [Math.floor((Math.random() * 50000) / 10)],
+            })
+            this.progressColorB = '#006eff'
         },
     },
 }
