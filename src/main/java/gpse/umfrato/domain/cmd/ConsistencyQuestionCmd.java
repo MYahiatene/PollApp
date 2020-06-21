@@ -13,9 +13,9 @@ public class ConsistencyQuestionCmd {
 
     private Long question1Id;
 
-    private List<Long> answer1Ids;
+    private List<String> answer1Indices;
 
     private Long question2Id;
 
-    private List<Long> answer2Ids;
+    private List<String> answer2Indices;
 }

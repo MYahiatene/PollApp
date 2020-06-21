@@ -1,6 +1,8 @@
 package gpse.umfrato.web;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import gpse.umfrato.domain.ConsistencyQuestion.ConsistencyQuestionRepository;
+import gpse.umfrato.domain.ConsistencyQuestion.ConsistencyQuestionService;
 import gpse.umfrato.domain.evaluation.Statistics;
 import gpse.umfrato.domain.answer.AnswerService;
 import gpse.umfrato.domain.category.CategoryService;
@@ -31,6 +33,7 @@ public class EvaluationController {
     private final PollService pollService;
     private final PollResultService pollResultService;
     private final CategoryService categoryService;
+    private final ConsistencyQuestionService consistencyQuestionService;
 
     enum Filter {
         ANSWER_FILTER, USER_FILTER
@@ -40,13 +43,15 @@ public class EvaluationController {
     @Autowired
     public EvaluationController(final AnswerService answerService, final UserService userService,
                                 final QuestionService questionService, final PollService pollService,
-                                final PollResultService pollResultService, final CategoryService categoryService) {
+                                final PollResultService pollResultService, final CategoryService categoryService,
+                                final ConsistencyQuestionService consistencyQuestionService) {
         this.answerService = answerService;
         this.userService = userService;
         this.questionService = questionService;
         this.pollService = pollService;
         this.pollResultService = pollResultService;
         this.categoryService = categoryService;
+        this.consistencyQuestionService = consistencyQuestionService;
     }
 
     /**
@@ -62,7 +67,7 @@ public class EvaluationController {
             return "?";
         }
         final Statistics calculation = new Statistics(answerService, userService, questionService, pollService,
-            pollResultService, categoryService, input.get(0));
+            pollResultService, categoryService, consistencyQuestionService, input.get(0));
         calculation.loadFilter(input);
         return calculation.generateDiagram();
     }

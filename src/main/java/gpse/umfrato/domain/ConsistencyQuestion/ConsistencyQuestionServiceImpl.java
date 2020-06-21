@@ -23,9 +23,9 @@ public class ConsistencyQuestionServiceImpl implements ConsistencyQuestionServic
         ConsistencyQuestion cq = new ConsistencyQuestion();
         cq.setPollId(consistencyQuestionCmd.getPollId());
         cq.setQuestion1Id(consistencyQuestionCmd.getQuestion1Id());
-        cq.setAnswer1Ids(consistencyQuestionCmd.getAnswer1Ids());
+        cq.setAnswer1Indices(consistencyQuestionCmd.getAnswer1Indices());
         cq.setQuestion2Id(consistencyQuestionCmd.getQuestion2Id());
-        cq.setAnswer2Ids(consistencyQuestionCmd.getAnswer2Ids());
+        cq.setAnswer2Indices(consistencyQuestionCmd.getAnswer2Indices());
         return consistencyQuestionRepository.save(cq);
     }
 
@@ -52,9 +52,9 @@ public class ConsistencyQuestionServiceImpl implements ConsistencyQuestionServic
         cq = consistencyQuestionRepository.findById(consistencyQuestionId).orElseThrow(EntityNotFoundException::new);
         cq.setPollId(consistencyQuestionCmd.getPollId());
         cq.setQuestion1Id(consistencyQuestionCmd.getQuestion1Id());
-        cq.setAnswer1Ids(consistencyQuestionCmd.getAnswer1Ids());
+        cq.setAnswer1Indices(consistencyQuestionCmd.getAnswer1Indices());
         cq.setQuestion2Id(consistencyQuestionCmd.getQuestion2Id());
-        cq.setAnswer2Ids(consistencyQuestionCmd.getAnswer2Ids());
+        cq.setAnswer2Indices(consistencyQuestionCmd.getAnswer2Indices());
         consistencyQuestionRepository.save(cq);
     }
 }
