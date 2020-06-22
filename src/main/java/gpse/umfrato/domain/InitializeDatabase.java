@@ -1,6 +1,7 @@
 package gpse.umfrato.domain;
 
 import gpse.umfrato.domain.answer.AnswerService;
+import gpse.umfrato.domain.mail.CsvReader;
 import gpse.umfrato.domain.participationlinks.ParticipationLinkService;
 import gpse.umfrato.domain.category.CategoryService;
 import gpse.umfrato.domain.poll.PollService;
@@ -104,5 +105,9 @@ public class InitializeDatabase implements InitializingBean {
             userService.createUser("testNutzer", dummyPassword, "Markus", "Mueller",
                 "Teilnehmer", "mmueller@gmx.de");
         }
+
+        String path = "src/main/java/gpse/umfrato/domain/mail/testMails.csv";
+        CsvReader csvReader = new CsvReader();
+        csvReader.readEmailsFromCsv(path);
     }
 }
