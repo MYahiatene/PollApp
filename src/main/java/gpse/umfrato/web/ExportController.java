@@ -38,12 +38,24 @@ public class ExportController {
     /**New Idea: Convert to JSON first and then to CSV, it sure ain't pretty but if it works it's fine*/
 
     public static String toCSVManual(Poll poll){
-
+    /**Name, PollID, Creator, Anonymität, Kategorie 1, Kategorie 1, Kategorie 2*/
+    /**TestPoll, 1, Tbettmann, 1, Frage 1, Frage 2, Frage 1 aus Kat. 2*/
         String output = "";
-        output += "Name,PollID,PollCreator,Anonymitätsstatus,Kategorien\n";
+        output += "Name,PollID,PollCreator,Anonymitätsstatus";
+        int amountOfArgumentsBeforeCategories = 4;
+        for(Category category : poll.getCategoryList())
+            output += ',' + category.getCategoryName() + ',' + "Antwortmöglichkeiten";
+        output += '\n';
         output += poll.getPollName() + ',' + poll.getPollId() + ',' + poll.getPollCreator() + ',' + poll.getAnonymityStatus();
-        for(Category category : poll.getCategoryList()){
-            output += ',' + category.getCategoryName();
+        for(Category category : poll.getCategoryList()) {
+            for (Question question : category.getQuestionList()) {
+                output += ',' + escapeSpecialCharacters(question.getQuestionMessage()) + ',';
+                for(String possibility : question.getAnswerPossibilities())
+                    output +=' ' + possibility;
+                output += '\n';
+                for(int i = 0; i<amountOfArgumentsBeforeCategories-1; i++) /**Needs to be -1 because of output + escapeSpecial... that comma can't go away*/
+                    output += ',';
+            }
         }
         output += '\n';
         return output;
@@ -230,7 +242,7 @@ public class ExportController {
         return output;
     }
 
-    public String escapeSpecialCharacters(String data) {
+    public static String escapeSpecialCharacters(String data) {
         String escapedData = data.replaceAll("\\R", " ");
         if (data.contains(",") || data.contains("\"") || data.contains("'")) {
             data = data.replace("\"", "\"\"");
@@ -239,9 +251,4 @@ public class ExportController {
         return escapedData;
     }
 
-    public String convertToCSV(String[] data) {
-        return Stream.of(data)
-            .map(this::escapeSpecialCharacters)
-            .collect(Collectors.joining(","));
-    }
 }
