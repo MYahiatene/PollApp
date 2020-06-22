@@ -16,6 +16,9 @@ that each display a basic evaluation of one specific question-->
                     <v-btn :to="'/filterForm'" color="primary">
                         Analyse
                     </v-btn>
+                    <v-btn :to="'/ControlQuestions'">
+                        Konsistenzfragen
+                    </v-btn>
                 </v-card>
             </v-container>
             <v-container v-else>
