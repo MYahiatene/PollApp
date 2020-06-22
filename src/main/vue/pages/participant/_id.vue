@@ -115,7 +115,7 @@
                                         <!--Thumb label is being shown-->
                                         <div v-if="question.hideValues === false">
                                             <v-slider
-                                                v-model="value1"
+                                                v-model="slideValueList[index]"
                                                 :min="question.startValue"
                                                 :max="question.endValue"
                                                 :step="question.stepSize"
@@ -126,8 +126,8 @@
                                                 prepend-icon="mdi-minus"
                                                 :color="fontColor"
                                                 :track-color="backgroundColor"
-                                                @click:append="addValue"
-                                                @click:prepend="subValue"
+                                                @click:append="addValue(question, index)"
+                                                @click:prepend="subValue(question, index)"
                                                 @change="saveAnswerSliderQuestion($event, question)"
                                             >
                                             </v-slider>
@@ -135,7 +135,7 @@
                                         <!--Thumb-label is not being shown-->
                                         <div v-else-if="question.hideValues === true">
                                             <v-slider
-                                                v-model="value2"
+                                                v-model="slideValueList[index]"
                                                 min="0"
                                                 max="10"
                                                 ticks
@@ -230,8 +230,7 @@ export default {
             categoryLength: 0,
             enabled: false,
             disableMe: false,
-            value1: 0,
-            value2: 0,
+            slideValueList: [0, 0],
             answerObj: {
                 username: 'Anonym',
                 anonymityStatus: 'anonym',
@@ -398,6 +397,14 @@ export default {
     },
     methods: {
         /**
+         * Generates an array in the size of the number of questions with all 0, to use as values for the slider.
+         */
+        valuesForSlideQuestion() {
+            for (let i = 0; i < this.getCategory.questionList.length; i++) {
+                this.slideValueList.push(0)
+            }
+        },
+        /**
          * Holt sich die gegebene Antwort des Textfeldes aus dem Array ownAnswers und schickt die Antwort mit der
          * questionId und pollId in den store, um die Antwort im Backend zu speichern. Löscht nach speichern der Antwort
          * den Eintrag im Array, damit eine neue Antwort gegeben werden kann.
@@ -516,7 +523,7 @@ export default {
             this.answerObj.pollId = this.getPoll[1].data.pollId
             this.answerObj.questionId = question.questionId
 
-            this.saveAnswer() // alternative: Button after every TextField
+            this.saveAnswer()
 
             // this.showAnswer() // TODO: Fails with 405???
         },
@@ -527,18 +534,6 @@ export default {
          * @param question The question object, so it can get the QuestionID
          */
         saveAnswerField(e, question) {
-            /* const answerListMultiline = [[]]
-            let counter = 0
-            for (let i = 0; i < e.length; i++) {
-                if (e[i] !== '\n') {
-                    answerListMultiline[counter].push(e[i])
-                } else {
-                    answerListMultiline.push([])
-                    counter++
-                }
-            }
-            console.log(answerListMultiline) */
-            // also check that no more than 255 chars in one line(limit string)
             const answerList = []
             let answer = ''
             let stringcounter = 0
@@ -573,6 +568,10 @@ export default {
             this.answerObj.answerList = [e]
             this.answerObj.pollId = this.getPoll[1].data.pollId
             this.answerObj.questionId = question.questionId
+            console.log('startValue', question.startValue)
+            console.log('endValue', question.endValue)
+            console.log('stepSize', question.stepSize)
+            console.log('value', this.slideValueList)
 
             this.saveAnswer()
         },
@@ -603,53 +602,17 @@ export default {
          * Moves the slider one step to the left, if possible.
          * It's called by click on + Icon at a Range Question.
          */
-        subValue() {
-            this.value = this.value - 1
+        subValue(question, index) {
+            console.log(this.slideValueList[index])
+            this.slideValueList[index] = this.slideValueList[index] - question.stepSize || question.startValue
+            console.log(this.slideValueList[index])
         },
         /**
          * Moves the slider one step to the right, if possible.
          * It's called by click on + Icon at a Range Question.
          */
-        addValue() {
-            this.value = this.value + 1
-        },
-        /**
-         * Generates the range answers out of min, max and possible texts and gives it back in format for v-for.
-         * Don't know how attributes are saved, so this is a placeholder: change min, max, text1, text2
-         * Don't know if I have to declare the appedning thing an answer or if it works like this.
-         * */
-        generateRangeQuestionAnswers() {
-            // console.log('Hi, the function is called!')
-            /*
-                // how can I access this??? Both ways don't work
-                const max = this.getCategory.data.questio...
-                const min = this.getCategory.questionList[questionId].startValue
-                const step = this.getCategory.questionList[questionId].stepSize
-                const text1 = this.getCategory.questionList[questionId].belowMessage
-                const text2 = this.getCategory.questionList[questionId].aboveMessage
-                */
-            const max = 100
-            const min = 10
-            const step = 10
-            const text1 = 'under 10'
-            const text2 = 'over 90'
-            this.rangeAnswers = [] // set it to null from previous questions
-            if (max != null && min != null && step != null) {
-                if (text1 != null) {
-                    this.rangeAnswers.push(text1)
-                }
-                const size = (max - min) / step
-                for (let i = 0; i < size; i++) {
-                    const value = min + i * step
-                    this.rangeAnswers.push(value)
-                }
-                if (text2 != null) {
-                    this.rangeAnswers.push(text2)
-                }
-            }
-            // console.log(this.question)
-            // console.log(this.rangeAnswers)
-            // console.log('Hi Im in the getRangeQuestionAnswersMutation method!')
+        addValue(question, index) {
+            this.slideValueList[index] = this.slideValueList[index] + question.stepSize || question.endValue
         },
         // -------------------------------------------------------------------------------------------------------------
         // Get or save information to/from the Backend
@@ -659,6 +622,7 @@ export default {
         showPoll() {
             this.$store.dispatch('participant/showPoll', this.id)
             this.poll = this.getPoll
+            this.valuesForSlideQuestion()
         },
         /**
          * Calls saveAnswers from the store with the answerobj (cmdAnswer with all given input)
@@ -694,8 +658,7 @@ export default {
         createListOfAnswerPossibilitiesForSortQuestions() {
             for (let i = 0; i < this.computedQuestionList.length; i++) {
                 this.AnswerListsOfSortQuestions.push([])
-                if (this.computedQuestionList[i].questionType === 'ChoiceQuestion') {
-                    // nur zum testen! Eigentlich 'SortQuestion'
+                if (this.computedQuestionList[i].questionType === 'SortQuestion') {
                     const answerList = []
                     for (let j = 0; j < this.computedQuestionList[i].answerPossibilities.length; j++) {
                         answerList.push(this.computedQuestionList[i].answerPossibilities[j])
@@ -703,8 +666,6 @@ export default {
                     this.AnswerListsOfSortQuestions[i] = answerList
                 }
             }
-            // console.log('AnswerListOfSortQuestions:' + this.AnswerListsOfSortQuestions[0])
-            // console.log('AnswerListOfSortQuestions:' + this.AnswerListsOfSortQuestions[1])
         },
 
         /**
@@ -712,7 +673,6 @@ export default {
          *
          * @param questionIndex indes of the question whos anserlist should be restored to the original order
          */
-
         restoreAP(questionIndex, question) {
             for (let i = 0; i < this.computedQuestionList[questionIndex].answerPossibilities.length; i++) {
                 this.AnswerListsOfSortQuestions[questionIndex][i] = this.computedQuestionList[

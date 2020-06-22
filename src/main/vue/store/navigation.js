@@ -27,7 +27,7 @@ export const mutations = {
     },
 }
 export const actions = {
-    async initialize({ commit }) {
+    async initialize({ commit, state }) {
         let error = ''
         const data = await this.$axios.get('/poll').catch((reason) => {
             console.log(reason)
