@@ -12,7 +12,6 @@ import gpse.umfrato.domain.question.Question;
 import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.web.bind.annotation.*;
-import org.json.CDL;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -48,20 +47,6 @@ public class ExportController {
         }
         output += '\n';
         return output;
-    }
-
-    public static String toCSV(String json){
-        String csv = "";
-        try {
-            //org.json.JSONObject output = new org.json.JSONObject(json);
-            org.json.JSONArray docs = CDL.toJSONArray(json);
-            //org.json.JSONArray docs = output.getJSONArray("pollId");
-            csv = CDL.toString(docs);
-            System.out.println(csv);
-        } catch(Exception e) {
-            e.printStackTrace();
-        }
-        return csv;
     }
 
     public static String toJSON(Poll result) throws Exception {
@@ -108,15 +93,18 @@ public class ExportController {
         return null;
     }
 
-    public static String createExportJSON(Poll poll, PollResult result){
+    public static String createExportJSON(Poll poll, List<PollResult> result){
         JSONObject combined = new JSONObject();
         try {
             JSONObject pollJSON = new JSONObject();
             pollJSON.getJSONObject(toJSON(poll));
-            JSONObject resultJSON = new JSONObject();
-            resultJSON.getJSONObject(toJSON(result));
             combined.put("Poll", pollJSON);
-            combined.put("Results", pollJSON);
+            JSONObject resultJSON;
+            for(PollResult resultIndex : result) {
+                resultJSON = new JSONObject();
+                resultJSON.getJSONObject(toJSON(resultIndex));
+                combined.put("Results", resultJSON);
+            }
             return combined.toString();
         } catch(Exception e){}
         return null;
