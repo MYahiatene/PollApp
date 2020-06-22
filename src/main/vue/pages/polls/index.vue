@@ -215,7 +215,7 @@ export default {
             if (item.pollStatus === 1) {
                 this.setLink(item)
             } else if (confirm('Umfrage entgültig löschen?')) {
-                alert('Jetzt wäre sie gelöscht')
+                this.deletePoll(item)
             }
         },
         showValue(item, key) {
@@ -243,6 +243,9 @@ export default {
                     ) */
                 }
             }
+        },
+        deletePoll(item) {
+            alert('Jetzt wäre die Umfrage gelöscht...')
         },
         async initializeDatabase() {
             const today = new Date()

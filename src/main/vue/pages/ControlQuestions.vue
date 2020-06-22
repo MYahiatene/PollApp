@@ -533,10 +533,21 @@ export default {
                 return []
             } else {
                 const l = []
-                for (let i = 0; i < this.questions[this.questionIndex].answerPossibilities.length; i++) {
-                    l[i] = this.questions[this.questionIndex].answerPossibilities[i]
+                if (this.questions[this.questionIndex].questionType === 'RangeQuestion') {
+                    l.push(this.questions[this.questionIndex].belowMessage)
+                    for (
+                        let i = this.questions[this.questionIndex].startValue;
+                        i < this.questions[this.questionIndex].endValue;
+                        i += this.questions[this.questionIndex].stepSize
+                    ) {
+                        l.push('' + i + ' - ' + (i + this.questions2[this.questionIndex2].stepSize))
+                    }
+                    l.push(this.questions[this.questionIndex].aboveMessage)
+                } else {
+                    for (let i = 0; i < this.questions[this.questionIndex].answerPossibilities.length; i++) {
+                        l[i] = this.questions[this.questionIndex].answerPossibilities[i]
+                    }
                 }
-
                 return l
             }
         },
@@ -546,10 +557,21 @@ export default {
                 return []
             } else {
                 const l = []
-                for (let i = 0; i < this.questions2[this.questionIndex2].answerPossibilities.length; i++) {
-                    l[i] = this.questions2[this.questionIndex2].answerPossibilities[i]
+                if (this.questions2[this.questionIndex2].questionType === 'RangeQuestion') {
+                    l.push(this.questions2[this.questionIndex2].belowMessage)
+                    for (
+                        let i = this.questions2[this.questionIndex2].startValue;
+                        i < this.questions2[this.questionIndex2].endValue;
+                        i += this.questions2[this.questionIndex2].stepSize
+                    ) {
+                        l.push('' + i + ' - ' + (i + this.questions2[this.questionIndex2].stepSize))
+                    }
+                    l.push(this.questions2[this.questionIndex2].aboveMessage)
+                } else {
+                    for (let i = 0; i < this.questions2[this.questionIndex2].answerPossibilities.length; i++) {
+                        l[i] = this.questions2[this.questionIndex2].answerPossibilities[i]
+                    }
                 }
-
                 return l
             }
         },
