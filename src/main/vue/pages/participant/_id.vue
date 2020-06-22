@@ -252,6 +252,24 @@ export default {
                 (v) => v.length <= 100 || 'Eingabe muss kürzer als 100 Zeichen sein!',
             ],
             AnswerListsOfSortQuestions: [[1], [2], [3]],
+            titleRulesData: [
+                (v) => {
+                    if (v)
+                        return (
+                            v.length >= this.computedQuestionList[0].textMinimum ||
+                            'Eingabe muss länger als 10 Zeichen sein!'
+                        )
+                    else return true
+                },
+                (v) => {
+                    if (v)
+                        return (
+                            v.length <= this.computedQuestionList[0].textMaximum ||
+                            'Eingabe muss kürzer als 100 Zeichen sein!'
+                        )
+                    else return true
+                },
+            ],
         }
     },
     /**
@@ -341,24 +359,42 @@ export default {
             }
             return c
         },
-        titleRules: [
-            (v) => {
-                if (v)
-                    return (
-                        v.length >= computedQuestionList[index].textMinimum ||
-                        'Eingabe muss länger als 10 Zeichen sein!'
-                    )
-                else return true
-            },
-            (v) => {
-                if (v)
-                    return (
-                        v.length <= computedQuestionList[index].textMaximum ||
-                        'Eingabe muss kürzer als 100 Zeichen sein!'
-                    )
-                else return true
-            },
-        ],
+        titleRules() {
+            let min
+            let max
+            let index = 0
+            console.log('questionId', this.answerObj.questionId)
+            console.log('idInList', this.getCategory.questionList[0].questionId)
+            for (let i = 0; i < this.getCategory.questionList.length; i++) {
+                if (this.getCategory.questionList[i].questionId === this.answerObj.questionId) {
+                    index = i
+                }
+            }
+            if (this.getCategory.questionList[index].textMinimum === undefined) {
+                console.log('min is undefined')
+                min = 0
+            } else {
+                min = this.getCategory.questionList[index].textMinimum
+            }
+            if (this.getCategory.questionList[index].textMaximum === undefined) {
+                console.log('max is undefined')
+                max = 10
+            } else {
+                max = this.getCategory.questionList[index].textMaximum
+            }
+            console.log('min', min)
+            console.log('max', max)
+            return [
+                (v) => {
+                    if (v) return v.length > min || 'Eingabe muss länger als ' + min + ' Zeichen sein!'
+                    else return true
+                },
+                (v) => {
+                    if (v) return v.length < max || 'Eingabe muss kürzer als ' + max + ' Zeichen sein!'
+                    else return true
+                },
+            ]
+        },
         /**
          * Get's the given FontColor from PollData.
          * @returns {fontColor}
@@ -410,6 +446,28 @@ export default {
         }, // do we need this anywhere?
     },
     methods: {
+        titleRulesMethod() {
+            console.log(this.computedQuestionList[this.index].textMinimum)
+            console.log(this.index)
+            return [
+                (v) => {
+                    if (v)
+                        return (
+                            v.length >= this.computedQuestionList[this.index].textMinimum ||
+                            'Eingabe muss länger als 10 Zeichen sein!'
+                        )
+                    else return true
+                },
+                (v) => {
+                    if (v)
+                        return (
+                            v.length <= this.computedQuestionList[this.index].textMaximum ||
+                            'Eingabe muss kürzer als 100 Zeichen sein!'
+                        )
+                    else return true
+                },
+            ]
+        },
         /**
          * Holt sich die gegebene Antwort des Textfeldes aus dem Array ownAnswers und schickt die Antwort mit der
          * questionId und pollId in den store, um die Antwort im Backend zu speichern. Löscht nach speichern der Antwort
@@ -550,11 +608,12 @@ export default {
                     counter++
                 }
             }
-            console.log(answerListMultiline)
-            // console.log(question.textMultiline)
-            // console.log(question.textMax)
-            // console.log(question.textMin)
-            this.answerObj.answerList = answerListMultiline */
+            console.log(answerListMultiline) */
+            // also check that no more than 255 chars in one line(limit string)
+            console.log(question.textMultiline)
+            console.log(question.textMaximum)
+            console.log(question.textMinimum)
+            // this.answerObj.answerList = answerListMultiline
             this.answerObj.answerList = [e]
             this.answerObj.pollId = this.getPoll[1].data.pollId
             this.answerObj.questionId = question.questionId
