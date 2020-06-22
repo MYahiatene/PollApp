@@ -36,7 +36,6 @@ public class EvaluationController {
         ANSWER_FILTER, USER_FILTER
     }
 
-
     @Autowired
     public EvaluationController(final AnswerService answerService, final UserService userService,
                                 final QuestionService questionService, final PollService pollService,
