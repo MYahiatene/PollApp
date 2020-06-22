@@ -41,7 +41,7 @@
                                                 auto-grow
                                                 counter
                                                 :color="fontColor"
-                                                :rules="titleRules"
+                                                :rules="textQuestionRules"
                                                 rows="1"
                                                 @input="saveAnswerField($event, question)"
                                             >
@@ -51,13 +51,13 @@
                                             <v-text-field
                                                 label="Antwort"
                                                 :color="fontColor"
+                                                :rules="textQuestionRules"
                                                 @input="saveAnswerField($event, question)"
                                             ></v-text-field>
                                         </div>
                                     </v-card-text>
                                 </div>
                                 <div v-else-if="question.questionType === 'ChoiceQuestion'">
-                                    <!--Hi Nina, hier ist ein typo, damit meine SortQuestions angezeigt werden und ich sie debuggen kann -->
                                     <!--Radio Button since only one answer possible-->
                                     <div v-if="question.numberOfPossibleAnswers === 1">
                                         <v-card-text>
@@ -112,7 +112,7 @@
                                             {{ question.belowMessage }}
                                             <span class="float-right">{{ question.aboveMessage }}</span>
                                         </p>
-                                        <!--Currently choosen value are supposed to be shown-->
+                                        <!--Thumb label is being shown-->
                                         <div v-if="question.hideValues === false">
                                             <v-slider
                                                 v-model="value1"
@@ -152,9 +152,7 @@
                                         </div>
                                     </v-card-text>
                                 </div>
-                                <!-- @change="getRangeQuestionAnswers"-->
                                 <div v-else-if="question.questionType === 'RangeQuestion'">
-                                    <!--rangeAnswer in rangeAnswers-->
                                     <v-list v-for="answer in question.answerPossibilities" :key="answer">
                                         <v-checkbox
                                             class="my-n2 mx-3"
@@ -164,11 +162,8 @@
                                         ></v-checkbox>
                                     </v-list>
                                 </div>
-                                <div v-else-if="question.questionType === 'SortQuestion'"></div>
 
-                                <!--Hi Nina, da muss natürlich 'SortQuestion' hin, aber zum debuggen mache ich das erstmal mit den ChoiceQuestions -->
-
-                                <div v-else-if="question.questionType === 'ChoicQuestion'" class="pa-2">
+                                <div v-else-if="question.questionType === 'SortQuestion'" class="pa-2">
                                     <v-subheader>
                                         Bitte bringen Sie die unten aufgeführten Möglichkeiten mittels Drag & Drop in
                                         eine von Ihnen präferierte Reihenfolge.
@@ -247,29 +242,7 @@ export default {
             },
             ownAnswers: [[]],
             rangeAnswers: [],
-            textQuestionRules: [
-                (v) => v.length >= 10 || 'Eingabe muss länger als 10 Zeichen sein!',
-                (v) => v.length <= 100 || 'Eingabe muss kürzer als 100 Zeichen sein!',
-            ],
             AnswerListsOfSortQuestions: [[1], [2], [3]],
-            titleRulesData: [
-                (v) => {
-                    if (v)
-                        return (
-                            v.length >= this.computedQuestionList[0].textMinimum ||
-                            'Eingabe muss länger als 10 Zeichen sein!'
-                        )
-                    else return true
-                },
-                (v) => {
-                    if (v)
-                        return (
-                            v.length <= this.computedQuestionList[0].textMaximum ||
-                            'Eingabe muss kürzer als 100 Zeichen sein!'
-                        )
-                    else return true
-                },
-            ],
         }
     },
     /**
@@ -300,7 +273,7 @@ export default {
         }),
         /**
          * Generates a questionList for the current category from the origin questionList, where every rangeQuestion is
-         * converted to choiceboxQuestion and the other questions are taken over.
+         * converted to a choiceboxQuestion with generated answerPossibilties and the other questions are taken over.
          * @returns c, the new QuestionList without rangeQuestions
          **/
         computedQuestionList() {
@@ -314,12 +287,6 @@ export default {
                     const text1 = this.getCategory.questionList[i].belowMessage
                     const text2 = this.getCategory.questionList[i].aboveMessage
 
-                    /* const rangeAnswers = []
-                    const max = 100
-                    const min = 10
-                    const step = 10
-                    const text1 = 'id'
-                    const text2 = 'hjsrfb' */
                     if (max != null && min != null && step != null) {
                         if (text1 != null) {
                             rangeAnswers.push(text1)
@@ -334,8 +301,6 @@ export default {
                             rangeAnswers.push(text2)
                         }
                     }
-                    // console.log(rangeAnswers)
-                    // Arrays.asList(rangeAnswers)
                     const obj = {
                         questionType: this.getCategory.questionList[i].questionType,
                         questionMessage: this.getCategory.questionList[i].questionMessage,
@@ -349,9 +314,6 @@ export default {
                         aboveMessage: this.getCategory.questionList[i].aboveMessage,
                         hideValues: this.getCategory.questionList[i].hideValues,
                     }
-                    // this makes unexpected side effects
-                    // this.getCategory.questionList[i].answerPossibilites = ['test1', 'test2']
-                    // console.log(obj)
                     c[i] = obj
                 } else {
                     c[i] = this.getCategory.questionList[i]
@@ -359,12 +321,13 @@ export default {
             }
             return c
         },
-        titleRules() {
+        /**
+         * Gives back an array of rules (max, min characters) for the text field answer, based on choosen attributes.
+         */
+        textQuestionRules() {
             let min
             let max
             let index = 0
-            console.log('questionId', this.answerObj.questionId)
-            console.log('idInList', this.getCategory.questionList[0].questionId)
             for (let i = 0; i < this.getCategory.questionList.length; i++) {
                 if (this.getCategory.questionList[i].questionId === this.answerObj.questionId) {
                     index = i
@@ -378,12 +341,10 @@ export default {
             }
             if (this.getCategory.questionList[index].textMaximum === undefined) {
                 console.log('max is undefined')
-                max = 10
+                max = 1000
             } else {
                 max = this.getCategory.questionList[index].textMaximum
             }
-            console.log('min', min)
-            console.log('max', max)
             return [
                 (v) => {
                     if (v) return v.length > min || 'Eingabe muss länger als ' + min + ' Zeichen sein!'
@@ -434,40 +395,8 @@ export default {
         hasNoPrevious() {
             return this.categoryIndex === 1 || !this.getChangeOfCategories
         },
-        /**
-         * Generates the range answers out of min, max and possible texts and gives it back in format for v-for.
-         * Don't know how attributes are saved, so this is a placeholder: change min, max, text1, text2
-         * Don't know if I have to declare the appedning thing an answer or if it works like this.
-         * */
-        getRangeQuestionAnswers() {
-            // console.log('Hi im in the computed method!')
-            this.generateRangeQuestionAnswers()
-            return 'answer in rangeAnswers'
-        }, // do we need this anywhere?
     },
     methods: {
-        titleRulesMethod() {
-            console.log(this.computedQuestionList[this.index].textMinimum)
-            console.log(this.index)
-            return [
-                (v) => {
-                    if (v)
-                        return (
-                            v.length >= this.computedQuestionList[this.index].textMinimum ||
-                            'Eingabe muss länger als 10 Zeichen sein!'
-                        )
-                    else return true
-                },
-                (v) => {
-                    if (v)
-                        return (
-                            v.length <= this.computedQuestionList[this.index].textMaximum ||
-                            'Eingabe muss kürzer als 100 Zeichen sein!'
-                        )
-                    else return true
-                },
-            ]
-        },
         /**
          * Holt sich die gegebene Antwort des Textfeldes aus dem Array ownAnswers und schickt die Antwort mit der
          * questionId und pollId in den store, um die Antwort im Backend zu speichern. Löscht nach speichern der Antwort
@@ -610,11 +539,25 @@ export default {
             }
             console.log(answerListMultiline) */
             // also check that no more than 255 chars in one line(limit string)
-            console.log(question.textMultiline)
-            console.log(question.textMaximum)
-            console.log(question.textMinimum)
-            // this.answerObj.answerList = answerListMultiline
-            this.answerObj.answerList = [e]
+            const answerList = []
+            let answer = ''
+            let stringcounter = 0
+            for (let i = 0; i < e.length; i++) {
+                if (stringcounter === 255 || e[i] === '\n') {
+                    answerList.push(answer)
+                    answer = ''
+                    stringcounter = 0
+                }
+                if (e[i] === '\n') {
+                    stringcounter += 1
+                } else {
+                    answer = answer.concat(e[i])
+                    stringcounter += 1
+                }
+            }
+            answerList.push(answer)
+
+            this.answerObj.answerList = answerList
             this.answerObj.pollId = this.getPoll[1].data.pollId
             this.answerObj.questionId = question.questionId
 
