@@ -55,6 +55,8 @@ public class ExportController {
                     output +=' ' + possibility;
                 if(question.getQuestionType() == "RangeQuestion")
                     output += question.getStartValue() + ".." + question.getEndValue() + " in Inkrementen von " + question.getStepSize();
+                if(question.getQuestionType() == "SliderQuestion")
+                    output += question.getStartValue() + ".." + question.getEndValue() + " in Inkrementen von " + question.getStepSize();
                 output += '\n';
                 for(int i = 0; i<amountOfArgumentsBeforeCategories-1; i++) /**Needs to be -1 because of output + escapeSpecial... that comma can't go away*/
                     output += ',';
