@@ -14,7 +14,6 @@ import java.util.logging.Logger;
 public class CsvReader {
 
     public List<String> readEmailsFromCsv(String fileName) {
-        Logger logger = null;
 
         List<String> emails = new ArrayList<>();
 
