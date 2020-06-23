@@ -53,10 +53,11 @@ import ChoiceQuestion from './ChoiceQuestion'
 import TextQuestion from './TextQuestion'
 import RangeQuestion from './RangeQuestion'
 import SortQuestion from './SortQuestion'
+import SliderQuestion from './SliderQuestion'
 
 export default {
     name: 'QuestionBuildWidget',
-    components: { ChoiceQuestion, TextQuestion, SortQuestion, RangeQuestion },
+    components: { ChoiceQuestion, TextQuestion, SortQuestion, RangeQuestion, SliderQuestion },
     props: {
         categoryData: { type: Array },
     },
@@ -163,6 +164,12 @@ export default {
                     textMinBool: this.getQuestion.textMinBool,
                     textMaximum: this.getQuestion.textMaximum,
                     textMaxBool: this.getQuestion.textMaxBool,
+                    endValue: this.getQuestion.endValue,
+                    startValue: this.getQuestion.startValue,
+                    stepSize: this.getQuestion.stepSize,
+                    belowMessage: this.getQuestion.belowMessage,
+                    aboveMessage: this.getQuestion.aboveMessage,
+                    hideValues: this.getQuestion.hideValues,
                 })
             }
             console.log('BuildIndex:\n')

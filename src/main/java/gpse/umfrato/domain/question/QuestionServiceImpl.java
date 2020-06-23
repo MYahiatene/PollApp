@@ -87,7 +87,7 @@ public class QuestionServiceImpl implements QuestionService {
                 break;
             case SLIDER_QUESTION:
                 question = new Question(questionCmd.getQuestionMessage(),
-                    questionCmd.getEndValue() == ZERO ? ONE : questionCmd.getStepSize(), questionCmd.getStartValue(),
+                    questionCmd.getEndValue() == ZERO ? ONE : questionCmd.getEndValue(), questionCmd.getStartValue(),
                     questionCmd.getStepSize() == ZERO ? ZERO_DOT_ONE : questionCmd.getStepSize(),
                     questionCmd.getBelowMessage() == null ? "" : questionCmd.getBelowMessage(),
                     questionCmd.getAboveMessage() == null ? "" : questionCmd.getAboveMessage(),
@@ -167,9 +167,26 @@ public class QuestionServiceImpl implements QuestionService {
                 question.setTextMinimum(questionCmd.getTextMinimum());
                 question.setTextMaximum(questionCmd.getTextMaximum());
                 break;
+            case SORT_QUESTION:
+                question.setQuestionMessage(questionCmd.getQuestionMessage());
+                question.setAnswerPossibilities(questionCmd.getAnswerPossibilities());
+                break;
             case RANGE_QUESTION:
+                question.setQuestionMessage(questionCmd.getQuestionMessage());
+                question.setAboveMessage(questionCmd.getAboveMessage());
+                question.setBelowMessage(questionCmd.getBelowMessage());
+                question.setStepSize(questionCmd.getStepSize());
+                question.setStartValue(questionCmd.getStartValue());
+                question.setEndValue(questionCmd.getEndValue());
                 break;
             case SLIDER_QUESTION:
+                question.setQuestionMessage(questionCmd.getQuestionMessage());
+                question.setAboveMessage(questionCmd.getAboveMessage());
+                question.setBelowMessage(questionCmd.getBelowMessage());
+                question.setStepSize(questionCmd.getStepSize());
+                question.setStartValue(questionCmd.getStartValue());
+                question.setEndValue(questionCmd.getEndValue());
+                question.setHideValues(questionCmd.isHideValues());
                 break;
             case CHOICE_QUESTION:
                 question.setAnswerPossibilities(questionCmd.getAnswerPossibilities());
