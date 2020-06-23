@@ -59,7 +59,8 @@
                                 </div>
                                 <div v-else-if="question.questionType === 'ChoiceQuestion'">
                                     <!--Radio Button since only one answer possible-->
-                                    <div v-if="question.numberOfPossibleAnswers === 1">
+                                    <!--Only to debug, otherwise numberOfPossibleAnswer === 1-->
+                                    <div v-if="question.numberOfPossibleAnswers === 0">
                                         <v-card-text>
                                             <v-radio-group>
                                                 <v-radio
@@ -525,7 +526,7 @@ export default {
 
             this.saveAnswer()
 
-            // this.showAnswer() // TODO: Fails with 405???
+            this.showAnswer() // TODO: Fails with 405???
         },
         /**
          * Get's the given answer of a free text question and calls saveAnswer() to persist it in the database. This
@@ -646,7 +647,7 @@ export default {
             this.answer = this.getAnswer
             console.log('This is the answer object:')
 
-            console.log(this.answer) // never ending object, something is wrong: Start here to debug...
+            console.log(this.answer) // never ending object, something is wrong: Just calls it too early??? But object in participant is also "empty"
         },
 
         /**

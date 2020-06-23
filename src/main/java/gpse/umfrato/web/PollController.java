@@ -48,13 +48,13 @@ public class PollController {
      */
     @PostMapping(value = "/createpoll", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasAuthority('Admin')")
-    public Long createPoll(final @RequestBody PollCmd pollCmd) {
+    public String createPoll(final @RequestBody PollCmd pollCmd) {
         try {
             final Poll poll = pollService.createPoll(pollCmd.getCmdPoll());
             participationLinkService.createParticipationLink(poll.getPollId(), "allUsers");
-            return poll.getPollId();
+            return "Poll created! with id: " + poll.getPollId().toString();
         } catch (BadRequestException | MalformedURLException e) {
-            return -1L;
+            return "Poll creation failed!";
         }
     }
 

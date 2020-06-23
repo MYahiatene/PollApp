@@ -147,6 +147,7 @@ export const actions = {
         this.$axios.defaults.baseURL = 'http://localhost:8088/api/'
         this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('user-token')
         console.log('Hi, from participant store pre axios.post')
+        // Problem schon hier: PollResultController Funktion wird nie aufgerufen...
         const answer = await this.$axios.post('/getPollResult', {
             pollId: answerObj.pollId,
             username: answerObj.username,
@@ -155,6 +156,7 @@ export const actions = {
         state.answer = answer
         console.log('Hi, from participant store post store.commit')
         console.log(answer)
+        // gives back an object with data:"" Why? Really means empty? Other stuff is correct (pollId, Username, baseURL...)
     },
     /* Eventuell einen Header mitsenden, statt data?, aber eigentlich ja das gleiche...
      *  const options = {
