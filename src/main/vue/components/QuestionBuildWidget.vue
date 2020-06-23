@@ -33,7 +33,7 @@
                     <v-row>
                         <v-col cols="9"></v-col>
                         <v-col cols="2">
-                            <v-btn @click="createQuestion">
+                            <v-btn @click="createQuestion" :disabled="questionMessageBool">
                                 <v-icon color="primary" left>
                                     mdi-plus
                                 </v-icon>
@@ -95,6 +95,11 @@ export default {
             getQuestionMessage: 'questionOverview/getQuestionMessage',
             getBuildIndex: 'questionOverview/getBuildIndex',
         }),
+        questionMessageBool: {
+            get() {
+                return !(this.questionType.length && this.questionMessageModel.length)
+            },
+        },
         buildIndex: {
             get() {
                 return this.getBuildIndex
