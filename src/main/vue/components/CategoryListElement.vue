@@ -182,7 +182,13 @@ export default {
                     .catch((error) => {
                         console.log(error)
                     })
-
+                if (this.deleteIndex === '1') {
+                    console.log(this.categoryData)
+                    category.questionList.forEach((question) => {
+                        question.categoryId = this.categoryData[0].categoryId
+                        this.categoryData[0].questionList.push(question)
+                    })
+                }
                 this.deleteIndex = '0'
             }
         },

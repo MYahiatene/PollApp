@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 @Service
 public class CategoryServiceImpl implements CategoryService {
@@ -21,6 +22,7 @@ public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
 
     private final QuestionRepository questionRepository;
+    private final Logger logger = Logger.getAnonymousLogger();
 
     @Autowired
     public CategoryServiceImpl(final CategoryRepository categoryRepository, final PollRepository pollRepository,
@@ -47,9 +49,13 @@ public class CategoryServiceImpl implements CategoryService {
         if (questionState.equals("1")) {
             final long standardCategoryId = pollRepository.findById(pollId).orElseThrow(EntityNotFoundException::new)
                 .getCategoryList().get(0).getCategoryId();
-
-            categoryRepository.findById(categoryId).orElseThrow(EntityNotFoundException::new).getQuestionList()
-                .forEach(question -> question.setCategoryId(standardCategoryId));
+            final List<Long> tmpList = new ArrayList<>();
+            categoryRepository.getOne(categoryId).getQuestionList()
+                .forEach(question -> {
+                    question.setCategoryId(standardCategoryId);
+                    tmpList.add(question.getQuestionId());
+                });
+            tmpList.forEach(id -> categoryRepository.findById(standardCategoryId).orElseThrow(EntityNotFoundException::new).getQuestionList().add(questionRepository.getOne(id)));
         }
         if (questionState.equals("2")) {
             categoryRepository.findById(categoryId).orElseThrow(EntityNotFoundException::new).getQuestionList()
