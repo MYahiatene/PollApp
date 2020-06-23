@@ -232,9 +232,14 @@ export default {
         },
         deletePoll(item) {
             const index = this.items.indexOf(item)
-            confirm('Sind sie sich sicher, dass sie diese Umfrage löschen möchten?') &&
-                this.splicePolls(index) &&
-                this.$axios.put('/deletepoll', { pollId: item.pollId })
+            const pollID = String(item.pollId)
+            console.log(pollID)
+            console.log(typeof pollID)
+            const del = confirm('Sind sie sich sicher, dass sie diese Umfrage löschen möchten?')
+            if (del) {
+                this.splicePolls(index)
+                this.$axios.put('/deletepoll', { pollId: pollID })
+            }
         },
     },
 }
