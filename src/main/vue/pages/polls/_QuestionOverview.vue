@@ -130,7 +130,15 @@ export default {
                     value: 'TextQuestion',
                 },
                 {
-                    text: 'Intervallfrage',
+                    text: 'Sortierfrage',
+                    value: 'SortQuestion',
+                },
+                {
+                    text: 'Sliderfrage',
+                    value: 'SliderQuestion',
+                },
+                {
+                    text: 'Reichweitenfrage',
                     value: 'RangeQuestion',
                 },
             ],

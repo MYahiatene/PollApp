@@ -154,5 +154,11 @@ public class Question {
         this.aboveMessage = aboveMessage;
         this.hideValues = hideValues;
     }
+
+    public Question(final String questionMessage, final List<String> answerPossibilities) {
+        this.questionMessage = questionMessage;
+        this.questionType = "SortQuestion";
+        this.answerPossibilities = answerPossibilities;
+    }
 }
 

@@ -52,10 +52,11 @@ import { mapActions, mapGetters, mapMutations } from 'vuex'
 import ChoiceQuestion from './ChoiceQuestion'
 import TextQuestion from './TextQuestion'
 import RangeQuestion from './RangeQuestion'
+import SortQuestion from './SortQuestion'
 
 export default {
     name: 'QuestionBuildWidget',
-    components: { ChoiceQuestion, TextQuestion, RangeQuestion },
+    components: { ChoiceQuestion, TextQuestion, SortQuestion, RangeQuestion },
     props: {
         categoryData: { type: Array },
     },
@@ -70,6 +71,18 @@ export default {
                 {
                     text: 'Freitextfrage',
                     value: 'TextQuestion',
+                },
+                {
+                    text: 'Sortierfrage',
+                    value: 'SortQuestion',
+                },
+                {
+                    text: 'Sliderfrage',
+                    value: 'SliderQuestion',
+                },
+                {
+                    text: 'Reichweitenfrage',
+                    value: 'RangeQuestion',
                 },
             ],
         }
@@ -111,8 +124,6 @@ export default {
     },
     methods: {
         createQuestion() {
-            console.log('BuildIndex:\n')
-            console.log(this.buildIndex)
             if (this.buildIndex === 1) {
                 console.log(this.getQuestion.answerPossibilities)
                 this.$axios

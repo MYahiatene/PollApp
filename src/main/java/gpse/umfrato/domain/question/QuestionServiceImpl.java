@@ -24,6 +24,7 @@ public class QuestionServiceImpl implements QuestionService {
     private static final String RANGE_QUESTION = "RangeQuestion";
     private static final String SLIDER_QUESTION = "SliderQuestion";
     private static final String CHOICE_QUESTION = "ChoiceQuestion";
+    private static final String SORT_QUESTION = "SortQuestion";
 
     /**
      * Initializes the poll service.
@@ -95,6 +96,9 @@ public class QuestionServiceImpl implements QuestionService {
             case CHOICE_QUESTION:
                 question = new Question(questionCmd.getQuestionMessage(), questionCmd.getAnswerPossibilities(),
                     questionCmd.getNumberOfPossibleAnswers(), questionCmd.isUserAnswers());
+                break;
+            case SORT_QUESTION:
+                question = new Question(questionCmd.getQuestionMessage(), questionCmd.getAnswerPossibilities());
                 break;
             default:
                 return null;
