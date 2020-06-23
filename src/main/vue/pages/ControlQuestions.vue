@@ -82,7 +82,7 @@
                             v-model="selectedAnswers"
                             multiple
                             :no-data-text="'Keine Fragen ausgewählt'"
-                            @input="updateAnswerIndices()"
+                            @change="updateAnswerIndices()"
                         >
                             <template v-slot:selection="{ item, index }">
                                 <v-chip
@@ -134,7 +134,7 @@
                             v-model="selectedAnswers2"
                             multiple
                             :no-data-text="'Keine Fragen ausgewählt'"
-                            @input="updateAnswerIndices2()"
+                            @change="updateAnswerIndices2()"
                         >
                             <template v-slot:selection="{ item, index }">
                                 <v-chip
@@ -197,8 +197,8 @@
             <div v-for="(cq, index) in listOfControlQuestions" :key="index">
                 <v-row>
                     <v-chip @click="openCq(index)" class="ma-1" :outlined="index === currentId">
-                        {{ index }}: Frage {{ cq.q1 }} : {{ cq.a1.length }} Antwort(en) mit Frage {{ cq.q2 }} :
-                        {{ cq.a2.length }} Antwort(en)
+                        {{ index }}: {{ cq.serverId }}: Frage {{ cq.q1 }} : {{ cq.a1.length }} Antwort(en) mit Frage
+                        {{ cq.q2 }} : {{ cq.a2.length }} Antwort(en)
 
                         <v-icon class="ml-1" @click="copyQcQuestion(index)"> mdi-content-duplicate</v-icon>
                         <v-icon right @click="deleteDialog = true"> mdi-minus-circle-outline</v-icon>
@@ -233,6 +233,7 @@ export default {
             listOfControlQuestions: [],
             buttonInfo: '',
             currentId: -1,
+            currentServerId: -1,
             questionWasCopied: false,
             deleteDialog: false,
             panel: false,
@@ -267,6 +268,30 @@ export default {
 
         this.computeWordsFromIndices()
 
+        this.$axios
+            .get('/poll/' + this.polls[this.pollIndex].pollId + '/consistencyquestions')
+            .then((response) => {
+                const list = response.data
+                console.log(response)
+
+                for (let i = 0; i < list.length; i++) {
+                    console.log(i)
+                    this.listOfControlQuestions.push({
+                        c1: this.getCategoryIndexAndQuestionIndexFromQuestionId(list[i].question1Id).categoryIndex,
+                        q1: this.getCategoryIndexAndQuestionIndexFromQuestionId(list[i].question1Id).questionIndex,
+                        a1: list[i].answer1Indices,
+                        c2: this.getCategoryIndexAndQuestionIndexFromQuestionId(list[i].question2Id).categoryIndex,
+                        q2: this.getCategoryIndexAndQuestionIndexFromQuestionId(list[i].question2Id).questionIndex,
+                        a2: list[i].answer2Indices,
+                        serverId: list[i].consistencyQuestionId,
+                    })
+                }
+                console.log(this.listOfControlQuestions)
+            })
+            .catch((reason) => {
+                console.log('fuck gse')
+            })
+
         // if (this.categoryIndex === -1) {
         //     this.selectedCategory = ''
         // }
@@ -299,6 +324,9 @@ export default {
         },
 
         updateAnswerIndices() {
+            console.log('update Answers ')
+
+            this.answerIndices = []
             for (let i = 0; i < this.selectedAnswers.length; i++) {
                 this.answerIndices[i] = this.answerTitles.indexOf(this.selectedAnswers[i])
             }
@@ -306,10 +334,10 @@ export default {
 
         updateAnswerIndices2() {
             console.log('update Answers 2 ')
+            this.answerIndices2 = []
             for (let i = 0; i < this.selectedAnswers2.length; i++) {
                 this.answerIndices2[i] = this.answerTitles2.indexOf(this.selectedAnswers2[i])
             }
-            console.log(this.answerIndices2)
         },
 
         askForCategory() {
@@ -324,6 +352,8 @@ export default {
         },
 
         addControlQuestion() {
+            this.updateAnswerIndices()
+            this.updateAnswerIndices2()
             console.log('add')
             if (
                 this.categoryIndex === -1 ||
@@ -352,11 +382,38 @@ export default {
                     c2: this.categoryIndex2,
                     q2: this.questionIndex2,
                     a2: ans2,
+                    serverId: this.currentServerId,
+                }
+                console.log(ans1)
+
+                const consistencyQuestion = {
+                    consistencyQuestionId: null,
+                    pollId: this.polls[this.pollIndex].pollId,
+                    question1Id: this.questions[this.questionIndex].questionId,
+                    answer1Indices: ans1,
+                    question2Id: this.questions2[this.questionIndex2].questionId,
+                    answer2Indices: ans2,
                 }
 
-                this.$axios.post('/poll/' + this.polls[this.pollIndex].pollId + '/addcq', cq).catch((reason) => {
-                    console.log('fuck')
-                })
+                if (this.currentServerId !== -1) {
+                    consistencyQuestion.consistencyQuestionId = this.currentServerId
+
+                    this.$axios.post('/poll/editcq/' + this.currentServerId, consistencyQuestion).catch((reason) => {
+                        console.log('fuck in edit')
+                    })
+                } else {
+                    this.$axios
+                        .post('/poll/' + this.polls[this.pollIndex].pollId + '/addcq', consistencyQuestion)
+                        .then((response) => {
+                            cq.serverId = response.data.consistencyQuestionId
+                            console.log('id')
+                            console.log(response.data.consistencyQuestionId)
+                            console.log(cq.serverId)
+                        })
+                        .catch((reason) => {
+                            console.log('fuck')
+                        })
+                }
 
                 if (this.currentId === -1) {
                     this.listOfControlQuestions.push(cq)
@@ -366,6 +423,7 @@ export default {
 
                 this.buttonInfo = ''
                 this.currentId = -1
+                this.currentServerId = -1
                 this.categoryIndex = -1
                 this.questionIndex = -1
                 this.answerIndices = []
@@ -377,9 +435,10 @@ export default {
         },
 
         discardControlQuestion() {
-            // deletes the CQ that is currently edited from the editors window, but still keeps her former version.
+            // deletes the CQ that is currently edited from the editors window, but still keeps its former version.
             this.buttonInfo = ''
             this.currentId = -1
+            this.currentServerId = -1
             this.categoryIndex = -1
             this.questionIndex = -1
             this.answerIndices = []
@@ -391,18 +450,27 @@ export default {
 
         deleteControlQuestion(index) {
             // the question is added here, so its no longer visible in the editing component
+
             this.addControlQuestion(index)
+            console.log('delete')
             if (index > -1) {
+                this.$axios.post('/poll/delcq/' + this.listOfControlQuestions[index].serverId).catch((reason) => {
+                    console.log('fuck in delete')
+                })
                 this.listOfControlQuestions.splice(index, 1)
+                console.log(this.listOfControlQuestions)
+                console.log(index)
             }
         },
 
         openCq(index) {
             if (this.questionWasCopied) {
                 this.currentId = -1
+                this.currentServerId = -1
                 this.questionWasCopied = false
             } else {
                 this.currentId = index
+                this.currentServerId = this.listOfControlQuestions[index].serverId
             }
 
             this.categoryIndex = this.listOfControlQuestions[index].c1
@@ -457,6 +525,22 @@ export default {
 
         closeDeleteDialog() {
             this.deleteDialog = false
+        },
+
+        getCategoryIndexAndQuestionIndexFromQuestionId(questionId) {
+            console.log('bin in getCat...')
+            for (let c = 0; c < this.categories.length; c++) {
+                console.log(c)
+                const questions = this.categories[c].questionList
+                for (let q = 0; q < questions.length; q++) {
+                    console.log(q)
+                    if (questions[q].questionId === questionId) {
+                        console.log({ categoryIndex: c, questionIndex: q })
+                        return { categoryIndex: c, questionIndex: q }
+                    }
+                }
+            }
+            return null
         },
     },
     computed: {
@@ -540,7 +624,7 @@ export default {
                         i < this.questions[this.questionIndex].endValue;
                         i += this.questions[this.questionIndex].stepSize
                     ) {
-                        l.push('' + i + ' - ' + (i + this.questions2[this.questionIndex2].stepSize))
+                        l.push('' + i + ' - ' + (i + this.questions[this.questionIndex].stepSize))
                     }
                     l.push(this.questions[this.questionIndex].aboveMessage)
                 } else {
