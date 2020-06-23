@@ -139,6 +139,12 @@ export default {
                         textMinBool: this.getQuestion.textMinBool,
                         textMaximum: this.getQuestion.textMaximum,
                         textMaxBool: this.getQuestion.textMaxBool,
+                        endValue: this.getQuestion.endValue,
+                        startValue: this.getQuestion.startValue,
+                        stepSize: this.getQuestion.stepSize,
+                        belowMessage: this.getQuestion.belowMessage,
+                        aboveMessage: this.getQuestion.aboveMessage,
+                        hideValues: this.getQuestion.hideValues,
                     })
                     .then((response) => {
                         this.categoryData[0].questionList.push(response.data)

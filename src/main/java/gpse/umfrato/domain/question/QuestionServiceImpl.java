@@ -80,7 +80,7 @@ public class QuestionServiceImpl implements QuestionService {
                 break;
             case RANGE_QUESTION:
                 question = new Question(questionCmd.getQuestionMessage(),
-                    questionCmd.getEndValue() == ZERO ? FIVE : questionCmd.getStepSize(),
+                    questionCmd.getEndValue() == ZERO ? FIVE : questionCmd.getEndValue(),
                     questionCmd.getStartValue(), questionCmd.getStepSize() == ZERO ? ONE : questionCmd.getStepSize(),
                     questionCmd.getBelowMessage() == null ? "" : questionCmd.getBelowMessage(),
                     questionCmd.getAboveMessage() == null ? "" : questionCmd.getAboveMessage());
