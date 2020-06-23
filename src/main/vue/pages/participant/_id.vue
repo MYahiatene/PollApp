@@ -225,6 +225,7 @@ export default {
             id: 0,
             poll: ['Object'],
             answer: ['Object'],
+            givenAnswers: [],
             category: ['Object'],
             question: ['Object'],
             categoryIndex: 1,
@@ -507,26 +508,34 @@ export default {
          * @param answer The answer object, so it can get the answer possibilities.
          */
         saveAnswerCheckbox(e, question, answer) {
-            console.log(e)
-            console.log(question)
-            console.log(answer)
-            this.answerObj.answerList = []
+            // somwhow the id page is faster than the store, so it doesn't give the correct object, but the store does
+            this.showAnswer()
+            console.log(this.givenAnswers)
+            // tried to not mutate vuex store state outside mutation handler, but apparently doesn't work even when reassigning
+            // Error: "[vuex] do not mutate vuex store state outside mutation handlers."
+            const lastgivenAnswers = this.givenAnswers
             let i
             // checks if checkBox was checked, not unchecked
             console.log(e)
             if (e === true) {
                 for (i = 0; i < question.answerPossibilities.length; i++) {
                     if (answer === question.answerPossibilities[i]) {
-                        this.answerObj.answerList.push(i) // index of true checkbox
+                        lastgivenAnswers.push(i) // index of true checkbox
+                    }
+                }
+            } else {
+                for (i = 0; i < question.answerPossibilities.length; i++) {
+                    if (answer === question.answerPossibilities[i]) {
+                        // funktioniert das mit Index oder mit Namen?(answer)
+                        lastgivenAnswers.pop(i) // index of false checkbox
                     }
                 }
             }
+            this.answerObj.answerList = this.lastgivenAnswers
             this.answerObj.pollId = this.getPoll[1].data.pollId
             this.answerObj.questionId = question.questionId
 
             this.saveAnswer()
-
-            this.showAnswer() // TODO: Fails with 405???
         },
         /**
          * Get's the given answer of a free text question and calls saveAnswer() to persist it in the database. This
@@ -644,10 +653,10 @@ export default {
             console.log('Hi, from Participant page pre store.dispatch')
             this.$store.dispatch('participant/showAnswer', this.answerObj)
             console.log('Hi, from Participant page post store.dispatch')
-            this.answer = this.getAnswer
+            this.givenAnswers = this.getAnswer
             console.log('This is the answer object:')
 
-            console.log(this.answer) // never ending object, something is wrong: Just calls it too early??? But object in participant is also "empty"
+            console.log(this.givenAnswers) // never ending object, something is wrong: Just calls it too early??? But object in participant is also "empty"
         },
 
         /**
