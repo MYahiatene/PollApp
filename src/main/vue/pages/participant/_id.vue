@@ -224,7 +224,7 @@ export default {
             radioGroup: 1,
             id: 0,
             poll: ['Object'],
-            answer: ['Object'],
+            answer: [],
             givenAnswers: [],
             category: ['Object'],
             question: ['Object'],
@@ -237,7 +237,7 @@ export default {
                 username: 'Anonym',
                 anonymityStatus: 'anonym',
                 questionId: '1',
-                answerList: [[]],
+                answerList: [],
                 answerId: '1',
                 pollId: '1',
             },
@@ -485,8 +485,6 @@ export default {
          * @param answer The answer object, so it can get the answer possibilities.
          */
         saveAnswerRadioButton(question, answer) {
-            console.log(question)
-            console.log(answer)
             this.answerObj.answerList = []
             for (let i = 0; i < question.answerPossibilities.length; i++) {
                 if (answer === question.answerPossibilities[i]) {
@@ -508,30 +506,38 @@ export default {
          * @param answer The answer object, so it can get the answer possibilities.
          */
         saveAnswerCheckbox(e, question, answer) {
-            // somwhow the id page is faster than the store, so it doesn't give the correct object, but the store does
             this.showAnswer()
-            console.log(this.givenAnswers)
+            console.log('given Answers', this.givenAnswers)
+            const objectIndex = this.givenAnswers.indexOf('Object')
+            console.log('index', objectIndex)
+            if (objectIndex !== -1) {
+                this.$store.commit('participant/takeOffAnswer', objectIndex)
+                console.log('I#m in if', this.givenAnswers)
+            }
             // tried to not mutate vuex store state outside mutation handler, but apparently doesn't work even when reassigning
             // Error: "[vuex] do not mutate vuex store state outside mutation handlers."
-            const lastgivenAnswers = this.givenAnswers
+            // let lastgivenAnswers = []
+            // lastgivenAnswers = this.givenAnswers
             let i
             // checks if checkBox was checked, not unchecked
-            console.log(e)
             if (e === true) {
                 for (i = 0; i < question.answerPossibilities.length; i++) {
                     if (answer === question.answerPossibilities[i]) {
-                        lastgivenAnswers.push(i) // index of true checkbox
+                        // lastgivenAnswers.push(i) // index of true checkbox
+                        this.$store.commit('participant/setAnswer', i)
                     }
                 }
             } else {
                 for (i = 0; i < question.answerPossibilities.length; i++) {
                     if (answer === question.answerPossibilities[i]) {
                         // funktioniert das mit Index oder mit Namen?(answer)
-                        lastgivenAnswers.pop(i) // index of false checkbox
+                        const index = this.givenAnswers.indexOf(i)
+                        this.$store.commit('participant/takeOffAnswer', index)
                     }
                 }
             }
-            this.answerObj.answerList = this.lastgivenAnswers
+            this.answerObj.answerList = this.getAnswer
+            console.log('answerList', this.getAnswer)
             this.answerObj.pollId = this.getPoll[1].data.pollId
             this.answerObj.questionId = question.questionId
 

@@ -61,7 +61,7 @@ public class PollResultServiceImpl implements PollResultService {
         try {
             return pollResultRepository.findPollResultByPollIdAndPollTaker(pollId, pollTaker);
         } catch(NullPointerException e) {
-            return new PollResult(pollId, pollTaker);
+            return null;
         }
     }
 
