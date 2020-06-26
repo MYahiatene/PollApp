@@ -3,7 +3,7 @@
     <div v-if="getPoll[1] !== undefined">
         <v-container>
             <!--When/After the PollData "arrived" show the logo-->
-            <div v-if="getPoll[1].data.logo !== undefined">
+            <div v-if="getPoll[1].data.logo !== null">
                 <img :src="getPoll[1].data.logo" alt="failedToLoadLogo" height="275" />
             </div>
             <v-content>
@@ -507,23 +507,15 @@ export default {
          */
         saveAnswerCheckbox(e, question, answer) {
             this.showAnswer()
-            console.log('given Answers', this.givenAnswers)
             const objectIndex = this.givenAnswers.indexOf('Object')
-            console.log('index', objectIndex)
             if (objectIndex !== -1) {
                 this.$store.commit('participant/takeOffAnswer', objectIndex)
-                console.log('I#m in if', this.givenAnswers)
             }
-            // tried to not mutate vuex store state outside mutation handler, but apparently doesn't work even when reassigning
-            // Error: "[vuex] do not mutate vuex store state outside mutation handlers."
-            // let lastgivenAnswers = []
-            // lastgivenAnswers = this.givenAnswers
             let i
             // checks if checkBox was checked, not unchecked
             if (e === true) {
                 for (i = 0; i < question.answerPossibilities.length; i++) {
                     if (answer === question.answerPossibilities[i]) {
-                        // lastgivenAnswers.push(i) // index of true checkbox
                         this.$store.commit('participant/setAnswer', i)
                     }
                 }
@@ -537,7 +529,6 @@ export default {
                 }
             }
             this.answerObj.answerList = this.getAnswer
-            console.log('answerList', this.getAnswer)
             this.answerObj.pollId = this.getPoll[1].data.pollId
             this.answerObj.questionId = question.questionId
 
@@ -656,13 +647,8 @@ export default {
         showAnswer() {
             this.answerObj.username = this.getUsername
             this.answerObj.pollId = this.getPoll[1].data.pollId
-            console.log('Hi, from Participant page pre store.dispatch')
             this.$store.dispatch('participant/showAnswer', this.answerObj)
-            console.log('Hi, from Participant page post store.dispatch')
             this.givenAnswers = this.getAnswer
-            console.log('This is the answer object:')
-
-            console.log(this.givenAnswers) // never ending object, something is wrong: Just calls it too early??? But object in participant is also "empty"
         },
 
         /**

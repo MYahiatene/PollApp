@@ -82,16 +82,18 @@ export const mutations = {
         state.username = username
     },
     /**
-     * Set's the answer object gotten from showAnswer as the current state.
+     * Is called from participant(id page) to add a new index (new checked Checkbox) to the answer.
      * @param state
-     * @param answer
+     * @param answer Index of the checked box/answerPossibilities
      */
     setAnswer: (state, answer) => {
-        // console.log('Hi from store setter!')
         state.answer.push(answer)
-        console.log(state.answer)
-        // console.log('Hi from store setter after being set')
     },
+    /**
+     * Is called from participant(id) page to take away an index (new unchecked Checkbox) from the answer
+     * @param state
+     * @param answer Index of the Index of the check box/answerPossibilities
+     */
     takeOffAnswer: (state, answer) => {
         state.answer.splice(answer, 1)
     },
@@ -129,7 +131,6 @@ export const actions = {
      * @returns {Promise<void>}
      */
     async showPoll({ commit }, id) {
-        // console.log('showPoll id: ', id)
         this.$axios.defaults.baseURL = 'http://localhost:8088/api/'
         this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('user-token')
         const poll = await this.$axios.get('/participant/' + id)
@@ -147,27 +148,14 @@ export const actions = {
      * @returns {Promise<void>}
      */
     async showAnswer(state, answerObj) {
-        // console.log('Hi, from participant store pre axios.post')
         this.$axios.defaults.baseURL = 'http://localhost:8088/api/'
         this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('user-token')
-        console.log('Hi, from participant store pre axios.post')
-        // Problem schon hier: PollResultController Funktion wird nie aufgerufen...
         const answer = await this.$axios.post('/getPollResult', {
             pollId: answerObj.pollId,
             username: answerObj.username,
         })
-        console.log('Hi, from participant store post axios.post')
         state.answer = answer
-        console.log('Hi, from participant store post store.commit')
-        console.log(answer)
-        // gives back an object with data:"" Why? Really means empty? Other stuff is correct (pollId, Username, baseURL...)
     },
-    /* Eventuell einen Header mitsenden, statt data?, aber eigentlich ja das gleiche...
-     *  const options = {
-     *  headers: {'X-Custom-Header': 'value'}
-     *  };
-     *  axios.post('/save', { a: 10 }, options);
-     * */
     /**
      * Defines mapAction saveAnswer which saves  an answerObj (AnswerCmd) for a specific question from a specific poll
      * from a specific user. It sets the global axios baseURL and the header with the token from the localstorage and
@@ -176,12 +164,9 @@ export const actions = {
      * @param answerObj object with (username, questionId, answerList, pollId)
      */
     saveAnswer(state, answerObj) {
-        // console.log('answer in store')
-        // console.log(answerObj)
         this.$axios.defaults.baseURL = 'http://localhost:8088/api/'
         this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('user-token')
         return this.$axios.post('/poll/' + answerObj.pollId + '/addanswer', answerObj)
-        // api.saveAnswers(answerObj)
     },
     async saveAnswerPossibility(state, answer) {
         console.log('pollId: ', answer[2])
@@ -197,6 +182,5 @@ export const actions = {
         console.log('after post')
         console.log(poll)
         state.commit('setPoll', poll)
-        // state.commit('setCategory', poll.data.cate)
     },
 }
