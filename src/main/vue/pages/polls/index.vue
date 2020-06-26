@@ -53,6 +53,11 @@
                                             mdi-link-variant
                                         </v-icon>
                                     </template>
+                                    <template v-slot:item.copy="{ item }">
+                                        <v-icon @click="copyPoll(item)">
+                                            {{ item.copyIcon }}
+                                        </v-icon>
+                                    </template>
                                 </v-data-table>
                             </template>
                         </v-container>
@@ -99,6 +104,7 @@ export default {
                 { text: '', value: 'status', sortable: false },
                 { text: '', value: 'action', sortable: false },
                 { text: '', value: 'link', sortable: false },
+                { text: '', value: 'copy', sortable: false },
                 { text: 'Umfrage', value: 'pollName' },
                 { text: 'Erstellt von', value: 'pollCreator' },
                 { text: 'Status', value: 'pollStatusString' },
@@ -136,14 +142,17 @@ export default {
                     data[i].pollStatusString = 'Inaktiv'
                     data[i].actionIcon = 'mdi-pencil'
                     data[i].statusIcon = 'mdi-play'
+                    data[i].copyIcon = 'mdi-content-copy'
                 } else if (this.items[i].pollStatus === 1) {
                     data[i].pollStatusString = 'Aktiv'
                     data[i].actionIcon = 'mdi-magnify'
                     data[i].statusIcon = 'mdi-stop'
+                    data[i].copyIcon = 'mdi-content-copy'
                 } else if (this.items[i].pollStatus === 2) {
                     data[i].pollStatusString = 'Beendet'
                     data[i].actionIcon = 'mdi-magnify'
                     data[i].statusIcon = 'mdi-content-duplicate'
+                    data[i].copyIcon = 'mdi-content-copy'
                 }
                 const categories = this.items[i].categoryList
                 data[i].categoryCount = categories.length
@@ -153,6 +162,7 @@ export default {
                     data[i].questionCount = count + categories[j].questionList.length
                 }
             }
+            console.log('dataVue: ', data)
             return data
         },
     },
@@ -217,6 +227,7 @@ export default {
                 }
             }
         },
+        copyPoll(item) {},
     },
 }
 </script>
