@@ -3,7 +3,7 @@
         <AuthGate v-if="isAuthenticated !== true"></AuthGate>
         <v-container v-else-if="storeValid">
             <v-card class="pa-2 ma-0">
-                <v-text-field class="display-1" v-model="pollData.pollName" />
+                <v-text-field v-model="pollData.pollName" class="display-1" />
             </v-card>
 
             <v-container>
@@ -42,12 +42,12 @@
                                                         two-line
                                                     >
                                                         <CategoryListElement
-                                                            :buildIndex="buildIndex"
-                                                            :categoryID="category.categoryId"
-                                                            :pollID="pollData.pollId"
-                                                            :categoryName="category.categoryName"
+                                                            :build-index="buildIndex"
+                                                            :category-i-d="category.categoryId"
+                                                            :poll-i-d="pollData.pollId"
+                                                            :category-name="category.categoryName"
                                                             :questions="category.questionList"
-                                                            :pollData="pollData"
+                                                            :poll-data="pollData"
                                                             :category="category"
                                                             @text-input="disableDraggable"
                                                         />
@@ -62,7 +62,7 @@
                     </v-col>
                     <v-col cols="12" lg="8" md="8" sm="8">
                         <v-card v-show="buildIndex > 0" class="pa-1" :style="frameColor">
-                            <QuestionBuildWidget :categoryData="categoryData"></QuestionBuildWidget>
+                            <QuestionBuildWidget :category-data="categoryData"></QuestionBuildWidget>
                         </v-card>
                     </v-col>
                 </v-row>
