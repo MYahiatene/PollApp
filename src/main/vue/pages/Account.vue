@@ -2,13 +2,19 @@
     <div>
         <v-container>
             <v-card class="mx-auto" max-width="800" tile>
-                <v-card-title class="justify-center"> Willkommen, {{ getUsername }}! </v-card-title>
+                <v-card-title class="justify-center"> Willkommen, {{ account.firstName }}! </v-card-title>
                 <v-container class="ma-1">
                     <v-container>
                         <span class="font-weight-bold">
                             Name:
                         </span>
                         {{ account.firstName }} {{ account.lastName }}</v-container
+                    >
+                    <v-container>
+                        <span class="font-weight-bold">
+                            Username:
+                        </span>
+                        {{ account.username }}</v-container
                     >
                     <v-container>
                         <span class="font-weight-bold">
@@ -35,12 +41,20 @@
                             <v-container>
                                 <v-row>
                                     <v-col cols="12">
-                                        <v-text-field label="Neues Passwort" type="password" required></v-text-field>
+                                        <v-text-field
+                                            label="Neues Passwort"
+                                            :type="showPassword ? 'text' : 'password'"
+                                            :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+                                            @click:append="showPassword = !showPassword"
+                                            required
+                                        ></v-text-field>
                                     </v-col>
                                     <v-col cols="12">
                                         <v-text-field
-                                            label=" Neues Password wiederholen"
-                                            type="password"
+                                            label="Neues Passwort wiederholen"
+                                            :type="showPassword ? 'text' : 'password'"
+                                            :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+                                            @click:append="showPassword = !showPassword"
                                             required
                                         ></v-text-field>
                                     </v-col>
@@ -70,6 +84,7 @@ export default {
             users: [],
             authenticated: false,
             dialog: false,
+            showPassword: false,
             search: '',
             expanded: [],
             singleExpand: false,
