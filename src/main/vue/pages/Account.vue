@@ -1,23 +1,61 @@
 <template>
     <div>
         <v-container>
-            <v-card class="mx-auto" max-width="1000" tile>
-                <v-card-title> Willkommen, {{ getUsername }}! </v-card-title>
-                <v-container>Name: {{ account.firstName }} {{ account.lastName }}</v-container>
-                <v-container>E-Mail: {{ account.email }}</v-container>
-                <v-container>Rolle: {{ account.role }}</v-container>
+            <v-card class="mx-auto" max-width="800" tile>
+                <v-card-title class="justify-center"> Willkommen, {{ getUsername }}! </v-card-title>
+                <v-container class="ma-1">
+                    <v-container>
+                        <span class="font-weight-bold">
+                            Name:
+                        </span>
+                        {{ account.firstName }} {{ account.lastName }}</v-container
+                    >
+                    <v-container>
+                        <span class="font-weight-bold">
+                            E-Mail:
+                        </span>
+                        {{ account.email }}</v-container
+                    >
+                    <v-container>
+                        <span class="font-weight-bold">
+                            Rolle:
+                        </span>
+                        {{ account.role }}</v-container
+                    >
+                </v-container>
+                <v-dialog v-model="dialog" persistent max-width="600px">
+                    <template v-slot:activator="{ on }">
+                        <v-btn color="primary" class="ma-4 float-left" v-on="on">Passwort ändern</v-btn>
+                    </template>
+                    <v-card>
+                        <v-card-title>
+                            Passwort ändern
+                        </v-card-title>
+                        <v-card-text>
+                            <v-container>
+                                <v-row>
+                                    <v-col cols="12">
+                                        <v-text-field label="Neues Passwort" type="password" required></v-text-field>
+                                    </v-col>
+                                    <v-col cols="12">
+                                        <v-text-field
+                                            label=" Neues Password wiederholen"
+                                            type="password"
+                                            required
+                                        ></v-text-field>
+                                    </v-col>
+                                </v-row>
+                            </v-container>
+                        </v-card-text>
+                        <v-card-actions>
+                            <v-spacer></v-spacer>
+                            <v-btn color="primary" text @click="dialog = false">Abbrechen</v-btn>
+                            <v-btn color="primary" text @click="dialog = false">Speichern</v-btn>
+                        </v-card-actions>
+                    </v-card>
+                </v-dialog>
             </v-card>
         </v-container>
-        <v-dialog v-model="dialog">
-            <template v-slot:activator="{ on }">
-                <v-btn color="primary" class="mb-2" v-on="on">Passwort ändern</v-btn>
-            </template>
-            <v-card>
-                <v-card-title>
-                    This is a dialog!
-                </v-card-title>
-            </v-card>
-        </v-dialog>
     </div>
 </template>
 
@@ -119,15 +157,6 @@ export default {
                 })
             })
             this.getAccount()
-        },
-        getUserVorNachname() {
-            for (let i = 0; i < this.users.length; i++) {
-                if ((this.users[i].username = this.getUsername)) {
-                    return this.users[i].firstName + this.users[i].lastName
-                } else {
-                    return 'Something went wrong here!'
-                }
-            }
         },
         getAccount() {
             for (let i = 0; i < this.users.length; i++) {
