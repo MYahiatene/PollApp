@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div v-if="this.pollData.pollStatus === 0">
         <AuthGate v-if="isAuthenticated !== true"></AuthGate>
         <v-container v-else-if="storeValid">
             <v-card class="pa-2 ma-0">
@@ -81,15 +81,16 @@
             </v-card>
         </v-container>
     </div>
+    <div v-else>Die Umfrage ist im Moment aktiv und kann nicht bearbeitet werden.</div>
 </template>
 
 <script>
-import { mapActions, mapGetters, mapMutations } from 'vuex'
-import draggable from 'vuedraggable'
-import CategoryListElement from '../../components/CategoryListElement'
-import QuestionBuildWidget from '../../components/QuestionBuildWidget'
+    import {mapActions, mapGetters, mapMutations} from 'vuex'
+    import draggable from 'vuedraggable'
+    import CategoryListElement from '../../components/CategoryListElement'
+    import QuestionBuildWidget from '../../components/QuestionBuildWidget'
 
-export default {
+    export default {
     name: 'QuestionOverview',
     components: { CategoryListElement, QuestionBuildWidget, draggable },
     data() {
@@ -138,7 +139,7 @@ export default {
         }
     },
     created() {
-        this.loadPoll()
+        this.loadPoll();
         this.loadCategories()
     },
     computed: {
@@ -199,7 +200,7 @@ export default {
                 textMaxBool: false,
                 choiceType: '',
                 questionId: null,
-            })
+            });
             this.buildIndex = 1
         },
         editQuestion(question) {
@@ -209,7 +210,7 @@ export default {
                 numberOfPossibleAnswers: this.selectedQuestion.numberOfPossibleAnswers,
                 questionMessage: this.selectedQuestion.questionMessage,
                 questionType: this.selectedQuestion.questionType,
-            })
+            });
             this.questionIndex = 0
         },
         onEnd(evt) {
@@ -218,7 +219,7 @@ export default {
                 console.log('new drag index:\n' + evt.newDraggableIndex + '\n')
                 console.log('old index:\n' + evt.oldIndex + '\n')
                 console.log('new index:\n' + evt.newIndex + '\n') */
-            console.log(evt)
+            console.log(evt);
             if (evt.pullMode) {
                 //  this.$axios.post('/changequestioncategory')
             }
@@ -235,7 +236,7 @@ export default {
                     },
                 })
                 .then((response) => {
-                    this.pollData = response.data
+                    this.pollData = response.data;
                     console.log(this.pollData)
                 })
                 .catch((error) => {
@@ -251,14 +252,14 @@ export default {
                 })
                 .then((response) => {
                     response.data.forEach((ele) => {
-                        const obj = {}
-                        this.test = response.data
-                        obj.categoryId = ele.categoryId
-                        obj.categoryName = ele.categoryName
-                        obj.questionList = ele.questionList
+                        const obj = {};
+                        this.test = response.data;
+                        obj.categoryId = ele.categoryId;
+                        obj.categoryName = ele.categoryName;
+                        obj.questionList = ele.questionList;
                         this.categoryData.push(obj)
-                    })
-                    console.log('CategoryData')
+                    });
+                    console.log('CategoryData');
                     console.log(this.categoryData)
                 })
                 .catch((error) => {
@@ -270,7 +271,7 @@ export default {
                 pollId: this.pollData.pollId,
                 questionId: this.selectedQuestion.questionId,
                 categoryId: this.selectedQuestion.categoryId,
-            })
+            });
             this.categoryData.forEach((element) => {
                 if (this.selectedQuestion.categoryId === element.categoryId) {
                     element.questionList.forEach((el) => {
@@ -279,7 +280,7 @@ export default {
                         }
                     })
                 }
-            })
+            });
             this.categoryData[0].questionList.forEach((question) => {
                 console.log(question.questionId)
             })
@@ -291,28 +292,28 @@ export default {
                     name: this.editCategory.categoryName,
                 })
                 .then((response) => {
-                    this.editCategory = response.data
-                    console.log(this.editCategory)
-                    this.defaultCategory = Object.assign({}, this.editCategory)
-                    this.categoryData.push(this.defaultCategory)
+                    this.editCategory = response.data;
+                    console.log(this.editCategory);
+                    this.defaultCategory = Object.assign({}, this.editCategory);
+                    this.categoryData.push(this.defaultCategory);
                     console.log(this.categoryData)
                 })
         },
         editCat(category) {
-            this.questionIndex = 0
-            this.questionCreationIndex = false
-            this.categoryIndex = true
+            this.questionIndex = 0;
+            this.questionCreationIndex = false;
+            this.categoryIndex = true;
             this.tmpcategory = category
         },
         save(category) {
             this.$axios.put('/editcategory', {
                 categoryId: category.categoryId,
                 name: category.categoryName,
-            })
+            });
             this.categoryIndex = false
         },
         deleteCategory(category) {
-            const index = this.categoryData.indexOf(category)
+            const index = this.categoryData.indexOf(category);
             confirm('Sind sie sich sicher, dass sie diese Kategorie löschen möchten?') &&
                 this.categoryData.splice(index, 1) &&
                 this.$axios
@@ -324,8 +325,8 @@ export default {
                     })
         },
         activateCreateQuestion() {
-            this.questionIndex = 0
-            this.categoryIndex = false
+            this.questionIndex = 0;
+            this.categoryIndex = false;
             this.questionCreationIndex = true
         },
         createQuestion(NewQuestionMessage, NewQuestionType) {
@@ -366,7 +367,7 @@ export default {
                 questionMessage: this.test,
                 answerPossibilities: [],
                 questionType: '',
-            }
+            };
             this.saveData(payload)
         },
         sendState() {
@@ -376,19 +377,19 @@ export default {
             this.disableDrag = disable
         },
         selectQuestion(question, questionType) {
-            this.selectedQuestion = question
-            this.categoryIndex = false
-            this.questionCreationIndex = false
-            this.questionIndex = 1
-            this.questionMessage = question.questionMessage
+            this.selectedQuestion = question;
+            this.categoryIndex = false;
+            this.questionCreationIndex = false;
+            this.questionIndex = 1;
+            this.questionMessage = question.questionMessage;
 
             switch (questionType) {
                 case 'ChoiceQuestion':
-                    return 'ChoiceQuestion'
+                    return 'ChoiceQuestion';
                 case 'TextQuestion':
-                    return 'TextQuestion'
+                    return 'TextQuestion';
                 case 'RangeQuestion':
-                    return 'RangeQuestion'
+                    return 'RangeQuestion';
                 default:
                     return ''
             }
