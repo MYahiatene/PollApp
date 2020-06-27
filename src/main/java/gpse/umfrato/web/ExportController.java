@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gpse.umfrato.domain.answer.Answer;
 import gpse.umfrato.domain.category.Category;
+import gpse.umfrato.domain.export.ExportService;
 import gpse.umfrato.domain.poll.Poll;
 import gpse.umfrato.domain.poll.PollService;
 import gpse.umfrato.domain.pollresult.PollResult;
@@ -29,15 +30,17 @@ public class ExportController {
     static final Logger LOGGER = Logger.getLogger("ExportController");
     private final PollService pollService;
     private final PollResultService pollResultService;
+    private final ExportService exportService;
 
-    public ExportController(PollService pollService, PollResultService pollResultService) {
+    public ExportController(PollService pollService, PollResultService pollResultService, ExportService exportService) {
         this.pollService = pollService;
         this.pollResultService = pollResultService;
+        this.exportService = exportService;
     }
 
     /**New Idea: Convert to JSON first and then to CSV, it sure ain't pretty but if it works it's fine*/
 
-    @RequestMapping(value = "/api/export/", method = RequestMethod.POST)
+    @GetMapping("/toCSVPoll")
     @CrossOrigin
     public static String toCSVManual(Poll poll){
     /**Name, PollID, Creator, Anonymität, Kategorie 1, Kategorie 1, Kategorie 2*/
@@ -68,7 +71,7 @@ public class ExportController {
         return output;
     }
 
-    @RequestMapping(value = "/api/export/", method = RequestMethod.POST)
+    @GetMapping("/toJSONPoll")
     @CrossOrigin
     public static String toJSON(Poll result) throws Exception {
         ObjectMapper objectMapper = new ObjectMapper()
@@ -80,7 +83,7 @@ public class ExportController {
         }
     }
 
-    @RequestMapping(value = "/api/export/", method = RequestMethod.POST)
+    @GetMapping("/importPoll")
     @CrossOrigin
     public static Poll fromJSONToPoll(String json) throws Exception {
         try {
@@ -95,7 +98,7 @@ public class ExportController {
         return null;
     }
 
-    @RequestMapping(value = "/api/export/", method = RequestMethod.POST)
+    @GetMapping("/toJSONPollResult")
     @CrossOrigin
     public static String toJSON(PollResult result) throws Exception {
         ObjectMapper objectMapper = new ObjectMapper()
@@ -107,7 +110,7 @@ public class ExportController {
         }
     }
 
-    @RequestMapping(value = "/api/export/", method = RequestMethod.POST)
+    @GetMapping("/importPollResult")
     @CrossOrigin
     public static PollResult fromJSONToResult(String json) throws Exception {
         try {
@@ -120,7 +123,7 @@ public class ExportController {
         return null;
     }
 
-    @RequestMapping(value = "/api/export/", method = RequestMethod.POST)
+    @GetMapping("/toJSONPollWithPollResult")
     @CrossOrigin
     public static String createExportJSON(Poll poll, List<PollResult> result){
         JSONObject combined = new JSONObject();
