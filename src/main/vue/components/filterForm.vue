@@ -58,7 +58,8 @@
                                     </v-checkbox>
                                 </v-col>
                                 <v-col>
-                                    <control-questions></control-questions>
+                                    <control-questions
+                                    :poll-index="pollIndex"></control-questions>
                                 </v-col>
                             </v-row>
 
@@ -160,7 +161,7 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
-import ControlQuestions from '../pages/ControlQuestions'
+import ControlQuestions from './ControlQuestions'
 import baseQAFilter from './Filter/baseQAFilter'
 
 export default {
@@ -213,6 +214,7 @@ export default {
         ...mapActions({ sendFilter: 'evaluation/sendFilter' }),
 
         saveToStore() {
+            console.log('saveToStore()')
             // const filterData = []
             // for (let f = 0; f < this.qafilterList.length; f++) {
             //     if (this.qafilterList[f].active) {
@@ -234,6 +236,7 @@ export default {
         },
 
         addQAFilter() {
+            console.log('addQAFilter()')
             this.qafilterList.push({
                 active: true,
                 filterId: this.globalFilterId++,
@@ -245,11 +248,12 @@ export default {
         },
 
         deleteQAFilter(index) {
+            console.log('deleteQAFilter()')
             this.qafilterList[index].active = false
         },
 
         updateQaFilter([filterId, categoryIndex, questionIndex, answerIndices]) {
-            console.log('updateQAFilter')
+            console.log('updateQAFilter()')
             this.qafilterList[filterId].categoryId = categoryIndex
             this.qafilterList[filterId].questionId = questionIndex
             for (let i = 0; i < answerIndices.length; i++) {
@@ -259,7 +263,10 @@ export default {
         },
     },
 
-    created() {
+    mounted() {
+        console.log('mounted()')
+        console.log(this.initialPollIndex)
+        console.log(this.pollTitles)
         this.chosenPoll = this.pollTitles[this.initialPollIndex]
         console.log(this.chosenPoll)
         console.log(this.initialPollIndex)
@@ -272,22 +279,30 @@ export default {
         }),
 
         pollTitles() {
+            console.log('pollTitles()')
             const pollTitles = []
+            console.log(this.polls)
             for (let i = 0; i < this.polls.length; i++) {
                 pollTitles.push(' (#' + this.polls[i].pollId + ') ' + this.polls[i].pollName)
             }
+            console.log(pollTitles)
             return pollTitles
         },
 
         pollIndex() {
-            console.log('pollIndex:')
+            console.log('pollIndex()')
+            console.log(this.chosenPoll)
+            console.log(this.pollTitles)
             console.log(this.pollTitles.indexOf(this.chosenPoll))
             return this.pollTitles.indexOf(this.chosenPoll)
         },
 
         questionTitles() {
+            console.log('questionTitle()')
+            if (this.pollIndex === -1) {
+                return []
+            }
             const questionTitles = []
-            console.log('questionTitle function')
             console.log(this.polls)
             console.log(this.pollIndex)
             for (let i = 0; i < this.polls[this.pollIndex].categoryList.length; i++) {

@@ -26,6 +26,8 @@ export const mutations = {
     },
     initializePolls(state, pollData) {
         state.Polls = pollData.data
+        console.log('PD')
+        console.log(state.Polls)
     },
     saveFilter(state, filterList) {
         state.FilterList = filterList
@@ -37,6 +39,9 @@ export const actions = {
         console.log('INIT')
         console.log(pollId)
         console.log(this.$axios.defaults.headers)
+        console.log('getPolls from Server')
+        const pollData = await this.$axios.get('/poll')
+        commit('initializePolls', pollData)
         const data = await this.$axios.post('/evaluation/generateDiagram', [
             {
                 filterType: 'DataFilter',
@@ -46,8 +51,6 @@ export const actions = {
         ])
         console.log(data)
         commit('initializeData', data)
-        const pollData = await this.$axios.get('/poll')
-        commit('initializePolls', pollData)
     },
     async sendFilter({ state, commit }, filterList) {
         console.log('in store!')

@@ -112,6 +112,7 @@ export default {
                 { text: 'Umfrage', value: 'pollName' },
                 { text: 'Erstellt von', value: 'pollCreator' },
                 { text: 'Status', value: 'pollStatusString' },
+                { text: 'Beantwortet von', value: 'paticipantCount' },
                 { text: 'Kategorienanzahl', value: 'categoryCount' },
                 { text: 'Fragenanzahl', value: 'questionCount' },
                 { text: 'Anonymitätsgrad', value: 'anonymityString' },

@@ -238,7 +238,7 @@ export default {
             sortBy: 'id',
         }
     },
-    mounted() {
+    created() {
         this.initialize(this.$route.params.BaseEvaluationPage)
     },
     computed: {
@@ -289,11 +289,17 @@ export default {
         },
 
         getPollIndex() {
+            console.log('getPollIndex()')
+            console.log(this.getPolls)
+            console.log(this.$route.params)
             for (let i = 0; i < this.getPolls.length; i++) {
-                if (this.getPolls[i].pollId === this.$route.params.BaseEvaluationPage) {
+                console.log(i)
+                if (this.getPolls[i].pollId.toString() === this.$route.params.BaseEvaluationPage) {
+                    console.log('treffer')
                     return i
                 }
             }
+            console.log('shit')
             return -1
         },
     },

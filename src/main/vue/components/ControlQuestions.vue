@@ -1,5 +1,5 @@
 <template>
-    <v-dialog overlay-color="background" persistent v-model="dialog" width="500" overlay-opacity="0.95" fullscreen>
+    <v-dialog v-model="dialog" overlay-color="background" persistent width="500" overlay-opacity="0.95" fullscreen>
         <template v-slot:activator="{ on }">
             <v-btn v-on="on">
                 Konsistenzfragen bearbeiten
@@ -7,12 +7,10 @@
         </template>
         <v-card class="ma-1 pa-5">
             <h2>Konsistenzfragen von Umfrage: "{{ pollName }}"</h2>
-
             <v-btn color="primary" @click="dialog = false">
                 Fertig
             </v-btn>
-
-            <v-expansion-panels flat v-model="panel">
+            <v-expansion-panels v-model="panel" flat>
                 <v-expansion-panel>
                     <v-expansion-panel-header>
                         Was sind eigentlich Konsistenzfragen?
@@ -54,7 +52,7 @@
                             nach von einem aufmerksamen Teilnehmer nur gemeinsam gewählt werden können.
                         </p>
 
-                        <v-btn text color="info" @click="panel = false" style="float: right;"> Ok! </v-btn>
+                        <v-btn text color="info" style="float: right;" @click="panel = false"> Ok! </v-btn>
                     </v-expansion-panel-content>
                 </v-expansion-panel>
             </v-expansion-panels>
@@ -66,48 +64,48 @@
                         <v-card flat class="pa-2">
                             <v-overflow-btn
                                 v-if="!askForCategory()"
+                                v-model="selectedCategory"
                                 prefix="Kategorie: "
                                 :items="categoryTitles"
-                                v-model="selectedCategory"
-                                @input="updateCategoryIndex()"
                                 elevation="0"
                                 style="box-shadow: none;"
+                                @input="updateCategoryIndex()"
                             >
                             </v-overflow-btn>
                             <p v-else>Kategorie: "{{ selectedCategory }}"</p>
                             <v-spacer></v-spacer>
                             <v-overflow-btn
+                                v-model="selectedQuestion"
                                 prefix="Frage: "
                                 dense
                                 :items="questionTitles"
-                                v-model="selectedQuestion"
                                 :no-data-text="'Keine Kategorie ausgewählt'"
-                                @input="updateQuestionIndex()"
                                 elevation="0"
                                 style="box-shadow: none;"
+                                @input="updateQuestionIndex()"
                             >
                             </v-overflow-btn>
                             <v-select
+                                v-model="selectedAnswers"
                                 prefix="Mögliche Antwort(en): "
                                 :items="answerTitles"
-                                v-model="selectedAnswers"
                                 multiple
                                 :no-data-text="'Keine Fragen ausgewählt'"
                                 @change="updateAnswerIndices()"
                             >
                                 <template v-slot:selection="{ item, index }">
                                     <v-chip
+                                        v-if="index < answerTitlesDisplayedInSelect"
                                         close
                                         @click:close="selectedAnswers.splice(index, 1)"
-                                        v-if="index < answerTitlesDisplayedInSelect"
                                     >
                                         <span>{{ item }}</span>
                                     </v-chip>
                                     <span v-if="index === answerTitlesDisplayedInSelect" class="grey--text caption"
                                         >(oder
                                         {{ selectedAnswers.length - answerTitlesDisplayedInSelect }}
-                                        weitere)</span
-                                    >
+                                        weitere)
+                                    </span>
                                 </template>
                             </v-select>
                         </v-card>
@@ -118,40 +116,40 @@
                         <v-card flat class="pa-2">
                             <v-overflow-btn
                                 v-if="!askForCategory()"
+                                v-model="selectedCategory2"
                                 prefix="Kategorie: "
                                 :items="categoryTitles"
-                                v-model="selectedCategory2"
-                                @input="updateCategoryIndex2()"
                                 elevation="0"
                                 style="box-shadow: none;"
+                                @input="updateCategoryIndex2()"
                             >
                             </v-overflow-btn>
                             <p v-else>Kategorie: "{{ selectedCategory }}"</p>
                             <v-spacer></v-spacer>
                             <v-overflow-btn
+                                v-model="selectedQuestion2"
                                 prefix="Frage: "
                                 dense
                                 :items="questionTitles2"
-                                v-model="selectedQuestion2"
                                 :no-data-text="'Keine Kategorie ausgewählt'"
-                                @input="updateQuestionIndex2()"
                                 elevation="0"
                                 style="box-shadow: none;"
+                                @input="updateQuestionIndex2()"
                             >
                             </v-overflow-btn>
                             <v-select
+                                v-model="selectedAnswers2"
                                 prefix="Mögliche Antwort(en): "
                                 :items="answerTitles2"
-                                v-model="selectedAnswers2"
                                 multiple
                                 :no-data-text="'Keine Fragen ausgewählt'"
                                 @change="updateAnswerIndices2()"
                             >
                                 <template v-slot:selection="{ item, index }">
                                     <v-chip
+                                        v-if="index < answerTitlesDisplayedInSelect"
                                         close
                                         @click:close="selectedAnswers2.splice(index, 1)"
-                                        v-if="index < answerTitlesDisplayedInSelect"
                                     >
                                         <span>{{ item }}</span>
                                     </v-chip>
@@ -169,11 +167,11 @@
 
             <v-card-actions>
                 <!--            margin so the text doesn't touch the buttons -->
-                <v-btn @click="addControlQuestion" class="mr-2" color="primary">
+                <v-btn class="mr-2" color="primary" @click="addControlQuestion">
                     Speichern
                 </v-btn>
                 {{ buttonInfo }}
-                <v-btn @click="discardControlQuestion" class="ml-2" color="secondary">
+                <v-btn class="ml-2" color="secondary" @click="discardControlQuestion">
                     Änderungen verwerfen
                 </v-btn>
             </v-card-actions>
@@ -207,7 +205,7 @@
 
                 <div v-for="(cq, index) in listOfControlQuestions" :key="index">
                     <v-row>
-                        <v-chip @click="openCq(index)" class="ma-1" :outlined="index === currentId">
+                        <v-chip class="ma-1" :outlined="index === currentId" @click="openCq(index)">
                             {{ index }}: {{ cq.serverId }}: Frage {{ cq.q1 }} : {{ cq.a1.length }} Antwort(en) mit Frage
                             {{ cq.q2 }} : {{ cq.a2.length }} Antwort(en)
 
@@ -227,6 +225,28 @@
 import { mapGetters } from 'vuex'
 export default {
     name: 'QAFilter',
+    props: {
+        pollIndex: {
+            type: Number,
+            default: 0,
+        },
+        filterId: {
+            type: Number,
+            default: 0,
+        },
+        initialCategoryIndex: {
+            default: -1,
+            type: Number,
+        },
+        initialQuestionIndex: {
+            default: -1,
+            type: Number,
+        },
+        initialAnswerIndices: {
+            default: () => [],
+            type: Array,
+        },
+    },
     data() {
         return {
             categoryIndex: -1,
@@ -252,26 +272,127 @@ export default {
             dialog: false,
         }
     },
-    props: {
-        pollIndex: {
-            type: Number,
-            default: 0,
+    computed: {
+        ...mapGetters({
+            polls: 'evaluation/getPolls',
+        }),
+
+        pollName() {
+            return this.polls[this.pollIndex].pollName
         },
-        filterId: {
-            type: Number,
-            default: 0,
+
+        pollTitles() {
+            const pollTitles = Object.assign([{}], this.polls)
+            for (let i = 0; i < pollTitles.length; i++) {
+                pollTitles[i] = this.polls[i].pollName
+            }
+            return pollTitles
         },
-        initialCategoryIndex: {
-            default: -1,
-            type: Number,
+
+        categoryTitles() {
+            const l = []
+            for (let i = 0; i < this.polls[this.pollIndex].categoryList.length; i++) {
+                l[i] = this.polls[this.pollIndex].categoryList[i].categoryName
+            }
+            return l
         },
-        initialQuestionIndex: {
-            default: -1,
-            type: Number,
+
+        categories() {
+            return this.polls[this.pollIndex].categoryList
         },
-        initialAnswerIndices: {
-            default: () => [],
-            type: Array,
+
+        questionTitles() {
+            if (this.categoryIndex === -1) {
+                return []
+            } else {
+                const l = []
+                for (let i = 0; i < this.categories[this.categoryIndex].questionList.length; i++) {
+                    l[i] = this.categories[this.categoryIndex].questionList[i].questionMessage
+                }
+                return l
+            }
+        },
+
+        questionTitles2() {
+            if (this.categoryIndex2 === -1) {
+                return []
+            } else {
+                const l = []
+                for (let i = 0; i < this.categories[this.categoryIndex2].questionList.length; i++) {
+                    l[i] = this.categories[this.categoryIndex2].questionList[i].questionMessage
+                }
+                return l
+            }
+        },
+
+        questions() {
+            if (this.categoryIndex === -1) {
+                return []
+            } else {
+                return this.categories[this.categoryIndex].questionList
+            }
+        },
+
+        questions2() {
+            if (this.categoryIndex2 === -1) {
+                return []
+            } else {
+                return this.categories[this.categoryIndex2].questionList
+            }
+        },
+
+        answerTitles() {
+            if (this.questionIndex === -1) {
+                return []
+            } else {
+                const l = []
+                if (this.questions[this.questionIndex].questionType === 'RangeQuestion') {
+                    l.push(this.questions[this.questionIndex].belowMessage)
+                    for (
+                        let i = this.questions[this.questionIndex].startValue;
+                        i < this.questions[this.questionIndex].endValue;
+                        i += this.questions[this.questionIndex].stepSize
+                    ) {
+                        l.push('' + i + ' - ' + (i + this.questions[this.questionIndex].stepSize))
+                    }
+                    l.push(this.questions[this.questionIndex].aboveMessage)
+                } else {
+                    for (let i = 0; i < this.questions[this.questionIndex].answerPossibilities.length; i++) {
+                        l[i] = this.questions[this.questionIndex].answerPossibilities[i]
+                    }
+                }
+                return l
+            }
+        },
+
+        answerTitles2() {
+            if (this.questionIndex2 === -1) {
+                return []
+            } else {
+                const l = []
+                if (this.questions2[this.questionIndex2].questionType === 'RangeQuestion') {
+                    l.push(this.questions2[this.questionIndex2].belowMessage)
+                    for (
+                        let i = this.questions2[this.questionIndex2].startValue;
+                        i < this.questions2[this.questionIndex2].endValue;
+                        i += this.questions2[this.questionIndex2].stepSize
+                    ) {
+                        l.push('' + i + ' - ' + (i + this.questions2[this.questionIndex2].stepSize))
+                    }
+                    l.push(this.questions2[this.questionIndex2].aboveMessage)
+                } else {
+                    for (let i = 0; i < this.questions2[this.questionIndex2].answerPossibilities.length; i++) {
+                        l[i] = this.questions2[this.questionIndex2].answerPossibilities[i]
+                    }
+                }
+                return l
+            }
+        },
+
+        // this needs to be computed, so we can get it from the nuxt Config
+
+        frameColor() {
+            return 'background-color:' + this.$vuetify.theme.currentTheme.background2 + ';'
         },
     },
     mounted() {
@@ -363,7 +484,6 @@ export default {
             }
             return OnlyOneCategory
         },
-
         addControlQuestion() {
             this.updateAnswerIndices()
             this.updateAnswerIndices2()
@@ -554,129 +674,6 @@ export default {
                 }
             }
             return null
-        },
-    },
-    computed: {
-        ...mapGetters({
-            polls: 'evaluation/getPolls',
-        }),
-
-        pollName() {
-            return this.polls[0].pollName
-        },
-
-        pollTitles() {
-            const pollTitles = Object.assign([{}], this.polls)
-            for (let i = 0; i < pollTitles.length; i++) {
-                pollTitles[i] = this.polls[i].pollName
-            }
-            return pollTitles
-        },
-
-        categoryTitles() {
-            const l = []
-            for (let i = 0; i < this.polls[this.pollIndex].categoryList.length; i++) {
-                l[i] = this.polls[this.pollIndex].categoryList[i].categoryName
-            }
-            return l
-        },
-
-        categories() {
-            return this.polls[this.pollIndex].categoryList
-        },
-
-        questionTitles() {
-            if (this.categoryIndex === -1) {
-                return []
-            } else {
-                const l = []
-                for (let i = 0; i < this.categories[this.categoryIndex].questionList.length; i++) {
-                    l[i] = this.categories[this.categoryIndex].questionList[i].questionMessage
-                }
-                return l
-            }
-        },
-
-        questionTitles2() {
-            if (this.categoryIndex2 === -1) {
-                return []
-            } else {
-                const l = []
-                for (let i = 0; i < this.categories[this.categoryIndex2].questionList.length; i++) {
-                    l[i] = this.categories[this.categoryIndex2].questionList[i].questionMessage
-                }
-                return l
-            }
-        },
-
-        questions() {
-            if (this.categoryIndex === -1) {
-                return []
-            } else {
-                return this.categories[this.categoryIndex].questionList
-            }
-        },
-
-        questions2() {
-            if (this.categoryIndex2 === -1) {
-                return []
-            } else {
-                return this.categories[this.categoryIndex2].questionList
-            }
-        },
-
-        answerTitles() {
-            if (this.questionIndex === -1) {
-                return []
-            } else {
-                const l = []
-                if (this.questions[this.questionIndex].questionType === 'RangeQuestion') {
-                    l.push(this.questions[this.questionIndex].belowMessage)
-                    for (
-                        let i = this.questions[this.questionIndex].startValue;
-                        i < this.questions[this.questionIndex].endValue;
-                        i += this.questions[this.questionIndex].stepSize
-                    ) {
-                        l.push('' + i + ' - ' + (i + this.questions[this.questionIndex].stepSize))
-                    }
-                    l.push(this.questions[this.questionIndex].aboveMessage)
-                } else {
-                    for (let i = 0; i < this.questions[this.questionIndex].answerPossibilities.length; i++) {
-                        l[i] = this.questions[this.questionIndex].answerPossibilities[i]
-                    }
-                }
-                return l
-            }
-        },
-
-        answerTitles2() {
-            if (this.questionIndex2 === -1) {
-                return []
-            } else {
-                const l = []
-                if (this.questions2[this.questionIndex2].questionType === 'RangeQuestion') {
-                    l.push(this.questions2[this.questionIndex2].belowMessage)
-                    for (
-                        let i = this.questions2[this.questionIndex2].startValue;
-                        i < this.questions2[this.questionIndex2].endValue;
-                        i += this.questions2[this.questionIndex2].stepSize
-                    ) {
-                        l.push('' + i + ' - ' + (i + this.questions2[this.questionIndex2].stepSize))
-                    }
-                    l.push(this.questions2[this.questionIndex2].aboveMessage)
-                } else {
-                    for (let i = 0; i < this.questions2[this.questionIndex2].answerPossibilities.length; i++) {
-                        l[i] = this.questions2[this.questionIndex2].answerPossibilities[i]
-                    }
-                }
-                return l
-            }
-        },
-
-        // this needs to be computed, so we can get it from the nuxt Config
-
-        frameColor() {
-            return 'background-color:' + this.$vuetify.theme.currentTheme.background2 + ';'
         },
     },
 }
