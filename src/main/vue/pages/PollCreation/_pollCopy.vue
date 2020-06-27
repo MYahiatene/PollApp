@@ -15,10 +15,9 @@
                             <v-text-field
                                 v-model="title"
                                 hint="Wie soll die Umfrage genannt werden?"
+                                :label="getTitle"
                                 :rules="titleRules"
-                                label="Titel"
                                 required
-                                :title="getTitle()"
                             >
                             </v-text-field>
                         </v-col>
@@ -184,7 +183,7 @@ export default {
             categoryChange: false,
             visibility: false,
             valid: false,
-            title: '',
+            title: this.getTitle(),
             backgroundColor: null,
             fontColor: null,
             logo: null,
@@ -328,8 +327,11 @@ export default {
         },
         getTitle() {
             if (this.pollId !== 0) {
-                return this.getPoll.pollName
+                return 'gettitle0'
             }
+            console.log(this.$store.poll)
+            console.log('F 333')
+            return 'asdfghgetEquals0'
         },
     },
 }
