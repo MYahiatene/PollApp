@@ -142,7 +142,7 @@ public class PollController {
     }
 
     @PostMapping("/poll/delcq/{cqId:\\d+}")
-    public void deleteConsistencyQuestion(final @PathVariable long cqId)
+    public void addConsistencyQuestion(final @PathVariable long cqId)
     {
         consistencyQuestionService.deleteConsistencyQuestion(cqId);
     }
