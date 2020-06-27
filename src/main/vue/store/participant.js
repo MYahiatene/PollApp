@@ -85,9 +85,7 @@ export const mutations = {
      * @param answer
      */
     setAnswer: (state, answer) => {
-        // console.log('Hi from store setter!')
         state.answer = answer
-        // console.log('Hi from store setter after being set')
     },
     /**
      * Sets the next or previous category of the poll as the current one, if there is one, depending on the argument

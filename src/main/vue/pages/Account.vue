@@ -28,15 +28,6 @@
                         </span>
                         {{ account.role }}</v-container
                     >
-                    <!--TODO: make red and cursive!-->
-                    <v-container>
-                        <div v-if="incorrectPw">
-                            <span
-                                >Die eingegebenen Passwörter stimmen nicht überein. Das Passwort wurde nicht
-                                geändert,</span
-                            >
-                        </div>
-                    </v-container>
                 </v-container>
                 <v-dialog v-model="dialog" persistent max-width="600px">
                     <template v-slot:activator="{ on }">
@@ -53,9 +44,9 @@
                                         <v-text-field
                                             v-model="newPassword1"
                                             label="Neues Passwort"
-                                            :type="showPassword ? 'text' : 'password'"
-                                            :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
-                                            @click:append="showPassword = !showPassword"
+                                            :type="showPassword1 ? 'text' : 'password'"
+                                            :append-icon="showPassword1 ? 'mdi-eye' : 'mdi-eye-off'"
+                                            @click:append="showPassword1 = !showPassword1"
                                             required
                                         ></v-text-field>
                                     </v-col>
@@ -63,14 +54,14 @@
                                         <v-text-field
                                             v-model="newPassword2"
                                             label="Neues Passwort wiederholen"
-                                            :type="showPassword ? 'text' : 'password'"
-                                            :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
-                                            @click:append="showPassword = !showPassword"
+                                            :type="showPassword2 ? 'text' : 'password'"
+                                            :append-icon="showPassword2 ? 'mdi-eye' : 'mdi-eye-off'"
+                                            @click:append="showPassword2 = !showPassword2"
                                             required
                                         ></v-text-field>
                                     </v-col>
                                     <!--ToDo: Make red and cursive-->
-                                    <div v-if="incorrectPw">
+                                    <div v-if="incorrectPw" class="red--text font-italic">
                                         <span>Die Passwörter stimmen nicht überein!</span>
                                     </div>
                                 </v-row>
@@ -99,16 +90,23 @@ export default {
             users: [],
             authenticated: false,
             dialog: false,
-            showPassword: false,
+            showPassword1: false,
+            showPassword2: false,
             newPassword1: '',
             newPassword2: '',
             incorrectPw: false,
+            userObj: {
+                username: '',
+                password: '',
+            },
+            failStatus: -1,
         }
     },
     computed: {
         ...mapGetters({
             authenticate: 'administration/getToken',
             getUsername: 'login/getUsername',
+            getFailStatus: 'account/getFailStatus',
         }),
     },
     created() {
@@ -165,19 +163,34 @@ export default {
          * When "Abbrechen" is clicked nothing happens, the changes will be discarded and the dialog will close.
          */
         closePw() {
+            console.log('failStatus', this.failStatus)
             this.incorrectPw = false
             this.dialog = false
         },
+        /**
+         * When "Speichern" is clicked and the Passwords are the same, the password is saved and updated
+         * and if not the dialog doesn't close and gives you an error message.
+         */
         savePw() {
             if (this.newPassword1 === this.newPassword2) {
                 this.incorrectPw = false
                 this.dialog = false
-                console.log('Das muss jetzt noch gespeichert werden')
+
+                this.userObj.username = this.account.username
+                this.userObj.password = this.newPassword1
+
+                // this.$store.dispatch('account/changePassword', this.userObj)
+                // this.failStatus = this.getFailStatus
+
+                this.$axios.defaults.baseURL = 'http://localhost:8088/api/'
+                this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('user-token')
+                const status = this.$axios.put('/changePassword', this.userObj)
+
+                this.failStatus = status
+                console.log('failStatus', this.failStatus)
             } else {
                 this.incorrectPw = true
             }
-            console.log('PW1', this.newPassword1)
-            console.log('PW2', this.newPassword2)
         },
     },
 }

@@ -109,4 +109,23 @@ public class UserController {
         userService.deleteUser(deleteUserCmd.getUsername());
         return "test";
     }
+
+    /**
+     * Changes the password in the database.
+     *
+     * @param userCmd
+     * @return 1 or 0; depending if it workes or not
+     */
+    @PutMapping("/changePassword")
+    public int changePassword(final @RequestBody UserCmd userCmd) {
+        LOGGER.info("UserCmd" + userCmd);
+        try{
+            userService.changePassword(userCmd.getUsername(), userCmd.getPassword());
+            return 1;
+        }
+        catch(BadRequestException e){
+            LOGGER.info("Could not Change Password");
+            return 0;
+        }
+    }
 }
