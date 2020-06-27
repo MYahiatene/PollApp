@@ -28,6 +28,15 @@
                         </span>
                         {{ account.role }}</v-container
                     >
+                    <!--TODO: make red and cursive!-->
+                    <v-container>
+                        <div v-if="incorrectPw">
+                            <span
+                                >Die eingegebenen Passwörter stimmen nicht überein. Das Passwort wurde nicht
+                                geändert,</span
+                            >
+                        </div>
+                    </v-container>
                 </v-container>
                 <v-dialog v-model="dialog" persistent max-width="600px">
                     <template v-slot:activator="{ on }">
@@ -42,6 +51,7 @@
                                 <v-row>
                                     <v-col cols="12">
                                         <v-text-field
+                                            v-model="newPassword1"
                                             label="Neues Passwort"
                                             :type="showPassword ? 'text' : 'password'"
                                             :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
@@ -51,6 +61,7 @@
                                     </v-col>
                                     <v-col cols="12">
                                         <v-text-field
+                                            v-model="newPassword2"
                                             label="Neues Passwort wiederholen"
                                             :type="showPassword ? 'text' : 'password'"
                                             :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
@@ -58,13 +69,17 @@
                                             required
                                         ></v-text-field>
                                     </v-col>
+                                    <!--ToDo: Make red and cursive-->
+                                    <div v-if="incorrectPw">
+                                        <span>Die Passwörter stimmen nicht überein!</span>
+                                    </div>
                                 </v-row>
                             </v-container>
                         </v-card-text>
                         <v-card-actions>
                             <v-spacer></v-spacer>
-                            <v-btn color="primary" text @click="dialog = false">Abbrechen</v-btn>
-                            <v-btn color="primary" text @click="dialog = false">Speichern</v-btn>
+                            <v-btn color="primary" text @click="closePw">Abbrechen</v-btn>
+                            <v-btn color="primary" text @click="savePw">Speichern</v-btn>
                         </v-card-actions>
                     </v-card>
                 </v-dialog>
@@ -85,44 +100,9 @@ export default {
             authenticated: false,
             dialog: false,
             showPassword: false,
-            search: '',
-            expanded: [],
-            singleExpand: false,
-            sortBy: '',
-            editedIndex: -1,
-            editedUser: {
-                username: '',
-                role: '',
-                email: '',
-                firstName: '',
-                lastName: '',
-            },
-            defaultUser: {
-                username: '',
-                role: '',
-                email: '',
-                firstName: '',
-                lastName: '',
-            },
-            roles: ['Admin', 'Umfrageersteller', 'Umfragebearbeiter', 'Teilnehmer'],
-            headers: [
-                { text: 'Username', value: 'username', align: 'start' },
-                {
-                    text: 'Rolle',
-                    value: 'role',
-                },
-                {
-                    text: '',
-                    value: 'actions',
-                    sortable: false,
-                },
-                {
-                    text: '',
-                    value: 'data-table-expand',
-                    sortable: false,
-                    width: '1',
-                },
-            ],
+            newPassword1: '',
+            newPassword2: '',
+            incorrectPw: false,
         }
     },
     computed: {
@@ -180,6 +160,24 @@ export default {
                     console.log(this.account)
                 }
             }
+        },
+        /**
+         * When "Abbrechen" is clicked nothing happens, the changes will be discarded and the dialog will close.
+         */
+        closePw() {
+            this.incorrectPw = false
+            this.dialog = false
+        },
+        savePw() {
+            if (this.newPassword1 === this.newPassword2) {
+                this.incorrectPw = false
+                this.dialog = false
+                console.log('Das muss jetzt noch gespeichert werden')
+            } else {
+                this.incorrectPw = true
+            }
+            console.log('PW1', this.newPassword1)
+            console.log('PW2', this.newPassword2)
         },
     },
 }
