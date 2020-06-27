@@ -326,14 +326,15 @@ export default {
             if (this.pollId !== '0') {
                 this.$store.dispatch('PollCreation/getCopyPoll', this.pollId)
                 this.poll = this.getPoll
-                this.categoryList = this.poll.categoryList
+                if (this.poll) {
+                    this.categoryList = this.poll.categoryList
+                }
             }
         },
         getTitle() {
             if (this.pollId !== 0) {
                 return 'gettitle0'
             }
-            console.log(this.$store.poll)
             console.log('F 333')
             return 'asdfghgetEquals0'
         },
