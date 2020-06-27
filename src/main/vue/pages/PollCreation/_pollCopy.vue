@@ -18,7 +18,9 @@
                                 :rules="titleRules"
                                 label="Titel"
                                 required
-                            ></v-text-field>
+                                :title="getTitle()"
+                            >
+                            </v-text-field>
                         </v-col>
                     </v-row>
 
@@ -175,6 +177,7 @@ export default {
     components: {},
     data() {
         return {
+            pollId: 0,
             switch1: false,
             switch2: false,
             switch3: false,
@@ -209,10 +212,15 @@ export default {
             anonymityRules: [(v) => !!v || 'Anonymitätsgrad fehlt.'],
         }
     },
+    mounted() {
+        this.pollId = this.$route.params.pollCopy
+        this.getCopyPoll()
+    },
     computed: {
         ...mapGetters({
             isAuthenticated: 'login/isAuthenticated',
             getUsername: 'login/getUsername',
+            getPoll: 'PollCreation/getPoll',
         }),
         time() {
             const today = new Date()
@@ -310,6 +318,18 @@ export default {
          */
         getFontColor(e) {
             this.fontColor = e.hexa
+        },
+        getCopyPoll() {
+            if (this.pollId !== 0) {
+                this.$store.dispatch('PollCreation/getCopyPoll', this.pollId)
+                // this.poll = this.getPoll
+                // console.log('poll: ', this.poll)
+            }
+        },
+        getTitle() {
+            if (this.pollId !== 0) {
+                return this.getPoll.pollName
+            }
         },
     },
 }

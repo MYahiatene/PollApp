@@ -22,7 +22,7 @@
                                     label="Suchen"
                                 ></v-text-field>
                                 <v-spacer />
-                                <v-btn large color="primary" to="./PollCreation">
+                                <v-btn large color="primary" to="./PollCreation/0">
                                     <v-icon>mdi-plus</v-icon>
                                 </v-btn>
                             </v-toolbar>
@@ -162,7 +162,6 @@ export default {
                     data[i].questionCount = count + categories[j].questionList.length
                 }
             }
-            console.log('dataVue: ', data)
             return data
         },
     },
@@ -227,7 +226,9 @@ export default {
                 }
             }
         },
-        copyPoll(item) {},
+        copyPoll(item) {
+            this.$router.push('/PollCreation/' + item.pollId)
+        },
     },
 }
 </script>
