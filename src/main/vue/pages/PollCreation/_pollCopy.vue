@@ -177,6 +177,7 @@ export default {
     data() {
         return {
             pollId: 0,
+            categoryList: [],
             switch1: false,
             switch2: false,
             switch3: false,
@@ -211,7 +212,7 @@ export default {
             anonymityRules: [(v) => !!v || 'Anonymitätsgrad fehlt.'],
         }
     },
-    mounted() {
+    created() {
         this.pollId = this.$route.params.pollCopy
         this.getCopyPoll()
     },
@@ -251,6 +252,9 @@ export default {
             }
             console.log(obj)
             this.$axios.post('/createpoll', obj).catch()
+            /* if (this.pollId !== '0') {
+                this.$axios.post('/copyQuestionList', this.questionList).catch()
+            } */
             this.$router.push('/polls')
         },
         formatDate(date) {
@@ -319,10 +323,10 @@ export default {
             this.fontColor = e.hexa
         },
         getCopyPoll() {
-            if (this.pollId !== 0) {
+            if (this.pollId !== '0') {
                 this.$store.dispatch('PollCreation/getCopyPoll', this.pollId)
-                // this.poll = this.getPoll
-                // console.log('poll: ', this.poll)
+                this.poll = this.getPoll
+                this.categoryList = this.poll.categoryList
             }
         },
         getTitle() {

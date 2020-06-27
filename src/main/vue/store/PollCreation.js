@@ -12,7 +12,6 @@ export const getters = {
 export const mutations = {
     savePoll(state, poll) {
         state.poll = poll
-        console.log('savePoll: ', state.poll)
     },
 }
 // not used right now, since createPoll is directly called on page.vue
