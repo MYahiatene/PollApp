@@ -13,9 +13,6 @@ that each display a basic evaluation of one specific question-->
             <v-container v-if="diagramData.length === 0">
                 <v-card>
                     <v-card-title>Die Umfrage wurde noch nicht beantwortet</v-card-title>
-                    <v-btn :to="'/filterForm'" color="primary">
-                        Analyse
-                    </v-btn>
                     <v-btn :to="'/ControlQuestions'">
                         Konsistenzfragen
                     </v-btn>
@@ -53,9 +50,7 @@ that each display a basic evaluation of one specific question-->
 
                         <!--            This button will lead to the Page where we can filter and analyse the data-->
                         <v-spacer />
-                        <v-btn :to="'/filterForm'" color="primary">
-                            Analyse
-                        </v-btn>
+                        <filter-form></filter-form>
 
                         <!--                   title of the poll-->
 
@@ -206,10 +201,12 @@ import AuthGate from '../../components/AuthGate'
 import ChoiceQuestionEvaluationWidget from '../../components/ChoiceQuestionEvaluationWidget'
 import visualEvaluationSettings from '../../components/visualEvaluationSettings'
 import TextQuestionEvaluationWidget from '../../components/TextQuestionEvaluationWidget'
+import FilterForm from '../../components/filterForm'
 
 export default {
     name: 'BaseEvaluationPage',
     components: {
+        FilterForm,
         AuthGate,
         ChoiceQuestionEvaluationWidget,
         visualEvaluationSettings,
