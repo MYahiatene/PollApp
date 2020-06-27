@@ -46,6 +46,13 @@ class PollServiceImpl implements PollService {
         return poll;
     }
 
+    @Override
+    @Transactional
+    public Poll createCopyPoll(final Poll poll) {
+        pollRepository.save(poll);
+        return poll;
+    }
+
     /**
      * This method returns a list with all polls.
      *

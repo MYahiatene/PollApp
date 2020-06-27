@@ -52,6 +52,25 @@ public class PollController {
     }
 
     /**
+     * This method creates the poll with the given settings from the PollCreation page.
+     *
+     * @param pollCmd
+     * @return String with PollID or Error
+     */
+    @PostMapping(value = "/createcopypoll", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAuthority('Admin')")
+    public String createCopyPoll(final @RequestBody PollCmd pollCmd) {
+        try {
+            final Poll poll = pollService.createCopyPoll(pollCmd.getCmdPoll());
+            participationLinkService.createParticipationLink(poll.getPollId(), "allUsers");
+            LOGGER.info(poll.toString());
+            return poll.getPollId().toString();
+        } catch (BadRequestException | MalformedURLException e) {
+            return null;
+        }
+    }
+
+    /**
      * This method returns a list with all polls.
      *
      * @return a list with all polls.

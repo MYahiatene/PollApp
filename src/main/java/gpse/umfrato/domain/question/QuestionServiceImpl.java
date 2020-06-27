@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
+import java.util.ListIterator;
 
 @Service
 public class QuestionServiceImpl implements QuestionService {
@@ -199,6 +200,26 @@ public class QuestionServiceImpl implements QuestionService {
         newCategory.getQuestionList().add(question);
         question.setCategoryId(newCategoryId);
         return question;
+    }
+
+    @Override
+    public void copyQuestions(final Long categoryId, final Long pollId, final List<Question> questions) {
+        final ListIterator<Question> iterator = questions.listIterator();
+        while(iterator.hasNext()) {
+            final Question question = iterator.next();
+            final QuestionCmd cmd = new QuestionCmd(pollId, question.getEndValue(), question.getStartValue(),
+                question.getStepSize(), question.getBelowMessage(), question.getAboveMessage(), question.isHideValues(),
+                question.isTextMultiline(), question.getTextMinimum(), question.getTextMaximum(),
+                question.isTextMinBool(), question.isTextMaxBool(), question.isHasConsistencyRelationship(),
+                categoryId, question.getQuestionMessage(), question.getAnswerPossibilities(),
+                question.getQuestionType(), question.isUserAnswers(), question.getNumberOfPossibleAnswers());
+            final Question newQuestion = addQuestion(cmd);
+            final Category newCategory = categoryRepository.findById(categoryId)
+                .orElseThrow(EntityNotFoundException::new);
+            newCategory.getQuestionList().add(question);
+            questionRepository.save(question);
+        }
+
     }
 
 

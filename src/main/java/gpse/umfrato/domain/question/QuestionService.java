@@ -32,4 +32,6 @@ public interface QuestionService {
 
     Question changeCategory(final Long questionId, final Long oldCategoryId, final Long newCategoryId);
 
+    void copyQuestions(final Long categoryId, final Long pollId, final List<Question> questions);
+
 }

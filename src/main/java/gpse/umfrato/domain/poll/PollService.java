@@ -11,6 +11,8 @@ public interface PollService {
      */
     Poll createPoll(Poll poll);
 
+    Poll createCopyPoll(final Poll poll);
+
     /**
      * This method returns a list with all polls.
      *

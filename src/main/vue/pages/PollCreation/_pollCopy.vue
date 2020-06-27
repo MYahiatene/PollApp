@@ -212,7 +212,7 @@ export default {
             anonymityRules: [(v) => !!v || 'Anonymitätsgrad fehlt.'],
         }
     },
-    created() {
+    mounted() {
         this.pollId = this.$route.params.pollCopy
         this.getCopyPoll()
     },
@@ -235,7 +235,7 @@ export default {
          * Puts all information in an object and directly acces axios over above declared instance at PostMapping
          * createPoll in PollController.
          */
-        sendData() {
+        async sendData() {
             const obj = {
                 pollcreator: this.getUsername,
                 anonymityStatus: this.selectedAnonymityType,
@@ -250,11 +250,14 @@ export default {
                 fontColor: this.fontColor,
                 logo: this.logo,
             }
-            console.log(obj)
-            this.$axios.post('/createpoll', obj).catch()
-            /* if (this.pollId !== '0') {
-                this.$axios.post('/copyQuestionList', this.questionList).catch()
-            } */
+            console.log('obj: ', obj)
+            if (this.pollId !== '0') {
+                const newId = await this.$axios.post('/createcopypoll', obj).catch()
+                console.log('newId: ', newId.data)
+                this.$axios.post('/copycategories/' + this.poll.pollId + '/' + newId.data).catch()
+            } else {
+                this.$axios.post('/createpoll', obj).catch()
+            }
             this.$router.push('/polls')
         },
         formatDate(date) {
@@ -297,6 +300,7 @@ export default {
         },
         /**
          * Reads the given file and saves image as this.logo.
+         *
          * @param e Change-Event
          * */
         showImage(e) {
@@ -322,16 +326,12 @@ export default {
         getFontColor(e) {
             this.fontColor = e.hexa
         },
-        getCopyPoll() {
+        async getCopyPoll() {
             if (this.pollId !== '0') {
-                this.$store.dispatch('PollCreation/getCopyPoll', this.pollId)
+                await this.$store.dispatch('PollCreation/getCopyPoll', this.pollId)
                 this.poll = this.getPoll
                 this.categoryList = this.poll.categoryList
-            }
-        },
-        getTitle() {
-            if (this.pollId !== 0) {
-                return this.getPoll.pollName
+                console.log('poll', this.poll)
             }
         },
     },
