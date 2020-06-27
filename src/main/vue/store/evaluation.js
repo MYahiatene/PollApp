@@ -52,6 +52,11 @@ export const actions = {
         console.log(data)
         commit('initializeData', data)
     },
+
+    async getCQLength({ commit }, pollId) {
+        const pollData = await this.$axios.get('/poll/'+pollId+'/ConsistencyQuestions')
+        commit('initializePolls', pollData)
+    },
     async sendFilter({ state, commit }, filterList) {
         console.log('in store!')
         commit('saveFilter', filterList)

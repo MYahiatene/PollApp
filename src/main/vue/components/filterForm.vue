@@ -44,26 +44,37 @@
 
                     <v-expansion-panel>
                         <v-expansion-panel-header>
+                            Konsistenzfragen
+                        </v-expansion-panel-header>
+                        <v-expansion-panel-content>
+                            <v-container fluid>
+                                <v-row>
+                                    <v-col colls="12" lg="10">
+                                        <v-slider
+                                            v-model="minConsistencyValue"
+                                            min="0"
+                                            step="1"
+                                            :max="numberOfCQ"
+                                            thumb-label="true"
+                                            hint="Anzahl der korrekt beantworteten Konsistenzfragen."
+                                            label="Konsistenzfragen"
+                                        >
+                                        </v-slider>
+                                    </v-col>
+                                    <v-col>
+                                        <control-questions :poll-index="pollIndex"></control-questions>
+                                    </v-col>
+                                </v-row>
+                            </v-container>
+                        </v-expansion-panel-content>
+                    </v-expansion-panel>
+
+                    <v-expansion-panel>
+                        <v-expansion-panel-header>
                             Antwortenfilter
                         </v-expansion-panel-header>
                         <v-expansion-panel-content dense>
                             Hier können Sie das Antwortverhalten der Teilnehmer, die Sie betrachten wollen festlegen.
-                            <v-divider></v-divider>
-                            <v-row>
-                                <v-col colls="12" lg="10">
-                                    <v-checkbox
-                                        v-model="applyConsistency"
-                                        label="Betrachte nur Teilnehmer, die alle Konsistenzfragen konsistent beantwortet haben."
-                                    >
-                                    </v-checkbox>
-                                </v-col>
-                                <v-col>
-                                    <control-questions
-                                    :poll-index="pollIndex"></control-questions>
-                                </v-col>
-                            </v-row>
-
-                            <v-divider></v-divider>
 
                             <v-row>
                                 <v-col colls="12" lg="10">
@@ -179,6 +190,7 @@ export default {
         return {
             globalFilterId: 1,
             applyConsistency: false,
+            minConsistencyValue: 0,
             qafilter: false,
             qafilterList: [
                 { active: true, filterId: 0, filterType: 'qaFilter', categoryId: -1, questionId: -1, answerIds: [] },
@@ -194,7 +206,31 @@ export default {
 
             dialog: false,
 
-            filterData: {
+            filterData: [
+                {
+                    pollId: 1,
+                    chosenQuestions: [11, 12, 32, 4, 50, 8], // these are questionIDs
+                    filterType: 'dataFilter',
+                },
+                {
+                    filterType: 'questionAnswer', // 'consistency', 'dataFilter'
+                    invertFilter: false,
+                    targetQuestionId: 3, // within a category
+                    targetAnswerPossibilities: ['2', '3', '5'], // or within an answerlist of a question
+                },
+                {
+                    filterType: 'consistency',
+                    minSuccesses: 0, // von 0 (aus) bis zur Länge der Konsistenzfragen
+                },
+                {
+                    filterType: 'date',
+                    startDate: ' ',
+                    endDate: ' ',
+                    invertFilter: false,
+                },
+            ],
+
+            filterData1: {
                 pollId: 1,
                 chosenQuestions: [11, 12, 32, 4, 50, 8], // these are questionIDs
                 chosenQuestionTypes: ['singleChoice', 'multiChoice', 'range', 'slide', 'sort', 'text'],
@@ -215,7 +251,17 @@ export default {
 
         saveToStore() {
             console.log('saveToStore()')
-            // const filterData = []
+            const filterData = []
+            filterData.push({
+                filterType: 'dataFilter',
+                pollId: this.polls[this.pollIndex].pollId,
+                chosenQuestions: this.chosenQuestionIds, // these are questionIDs
+            })
+
+            filterData.push({
+                filterType: 'consistency',
+                minSuccesses: this.minConsistencyValue, // von 0 (aus) bis zur Länge der Konsistenzfragen
+            })
             // for (let f = 0; f < this.qafilterList.length; f++) {
             //     if (this.qafilterList[f].active) {
             //         filterData.push({
@@ -228,7 +274,8 @@ export default {
             //         })
             //     }
             // }
-            // this.sendFilter(filterData)
+            console.log(filterData)
+            this.sendFilter(filterData)
 
             console.log('save filter was called')
 
@@ -278,6 +325,18 @@ export default {
             polls: 'evaluation/getPolls',
         }),
 
+        async numberOfCQ() {
+            await this.$axios
+                .get('/poll/' + this.polls[this.pollIndex].pollId + '/consistencyquestions')
+                .then((response) => {
+                    return response.data.length
+                })
+                .catch((reason) => {
+                    console.log('fuck gse')
+                })
+            return 0
+        },
+
         pollTitles() {
             console.log('pollTitles()')
             const pollTitles = []
@@ -295,6 +354,21 @@ export default {
             console.log(this.pollTitles)
             console.log(this.pollTitles.indexOf(this.chosenPoll))
             return this.pollTitles.indexOf(this.chosenPoll)
+        },
+
+        chosenQuestionIds() {
+            const questionIds = []
+            for (let i = 0; i < this.selectedQuestions.length; i++) {
+                const poll = this.polls[this.pollIndex]
+                for (let c = 0; c < poll.categoryList.length; c++) {
+                    for (let q = 0; q < poll.categoryList[c].questionList.length; q++) {
+                        if (poll.categoryList[c].questionList[q].questionMessage === this.selectedQuestions[i]) {
+                            questionIds.push(poll.categoryList[c].questionList[q].questionId)
+                        }
+                    }
+                }
+            }
+            return questionIds
         },
 
         questionTitles() {

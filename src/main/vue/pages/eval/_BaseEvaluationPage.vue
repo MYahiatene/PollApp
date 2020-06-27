@@ -296,6 +296,7 @@ export default {
                 console.log(i)
                 if (this.getPolls[i].pollId.toString() === this.$route.params.BaseEvaluationPage) {
                     console.log('treffer')
+                    console.log(i)
                     return i
                 }
             }
