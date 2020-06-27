@@ -15,8 +15,8 @@
                             <v-text-field
                                 v-model="title"
                                 hint="Wie soll die Umfrage genannt werden?"
+                                :label="getTitle"
                                 :rules="titleRules"
-                                label="Titel"
                                 required
                             >
                             </v-text-field>
@@ -184,7 +184,7 @@ export default {
             categoryChange: false,
             visibility: false,
             valid: false,
-            title: '',
+            title: this.getTitle(),
             backgroundColor: null,
             fontColor: null,
             logo: null,
@@ -300,7 +300,6 @@ export default {
         },
         /**
          * Reads the given file and saves image as this.logo.
-         *
          * @param e Change-Event
          * */
         showImage(e) {
@@ -333,6 +332,13 @@ export default {
                 this.categoryList = this.poll.categoryList
                 console.log('poll', this.poll)
             }
+        },
+        getTitle() {
+            if (this.pollId !== 0) {
+                return 'gettitle0'
+            }
+            console.log('F 333')
+            return 'asdfghgetEquals0'
         },
     },
 }
