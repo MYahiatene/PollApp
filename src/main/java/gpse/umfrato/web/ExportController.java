@@ -37,6 +37,8 @@ public class ExportController {
 
     /**New Idea: Convert to JSON first and then to CSV, it sure ain't pretty but if it works it's fine*/
 
+    @RequestMapping(value = "/api/export/", method = RequestMethod.POST)
+    @CrossOrigin
     public static String toCSVManual(Poll poll){
     /**Name, PollID, Creator, Anonymität, Kategorie 1, Kategorie 1, Kategorie 2*/
     /**TestPoll, 1, Tbettmann, 1, Frage 1, Frage 2, Frage 1 aus Kat. 2*/
@@ -66,6 +68,8 @@ public class ExportController {
         return output;
     }
 
+    @RequestMapping(value = "/api/export/", method = RequestMethod.POST)
+    @CrossOrigin
     public static String toJSON(Poll result) throws Exception {
         ObjectMapper objectMapper = new ObjectMapper()
             .findAndRegisterModules();
@@ -76,6 +80,8 @@ public class ExportController {
         }
     }
 
+    @RequestMapping(value = "/api/export/", method = RequestMethod.POST)
+    @CrossOrigin
     public static Poll fromJSONToPoll(String json) throws Exception {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
@@ -89,6 +95,8 @@ public class ExportController {
         return null;
     }
 
+    @RequestMapping(value = "/api/export/", method = RequestMethod.POST)
+    @CrossOrigin
     public static String toJSON(PollResult result) throws Exception {
         ObjectMapper objectMapper = new ObjectMapper()
             .findAndRegisterModules();
@@ -99,6 +107,8 @@ public class ExportController {
         }
     }
 
+    @RequestMapping(value = "/api/export/", method = RequestMethod.POST)
+    @CrossOrigin
     public static PollResult fromJSONToResult(String json) throws Exception {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
@@ -110,6 +120,8 @@ public class ExportController {
         return null;
     }
 
+    @RequestMapping(value = "/api/export/", method = RequestMethod.POST)
+    @CrossOrigin
     public static String createExportJSON(Poll poll, List<PollResult> result){
         JSONObject combined = new JSONObject();
         try {
