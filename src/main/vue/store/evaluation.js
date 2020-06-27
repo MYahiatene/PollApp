@@ -1,6 +1,6 @@
 export const state = () => ({
     DiagramData: {},
-    Polls: {},
+    Polls: [],
     FilterList: {},
 })
 export const getters = {

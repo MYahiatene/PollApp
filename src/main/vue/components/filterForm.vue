@@ -1,7 +1,7 @@
 <template>
     <v-dialog overlay-color="background" persistent v-model="dialog" width="500" overlay-opacity="0.95" fullscreen>
         <template v-slot:activator="{ on }">
-            <v-btn color="primary" v-on="on" disabled>
+            <v-btn color="primary" v-on="on">
                 Analyse
             </v-btn>
         </template>
@@ -9,7 +9,8 @@
         <v-card class="ma-2 pa-2">
             <v-card-title>Erweiterte Analyse {{ polls.length }}</v-card-title>
             <template>
-                <v-overflow-btn prefix="Basisdaten:" :items="pollTitles" dense v-model="chosenPoll"> </v-overflow-btn>
+                <v-overflow-btn editable prefix="Basisdaten:" :items="pollTitles" dense v-model="chosenPoll">
+                </v-overflow-btn>
                 <v-expansion-panels accordion multiple hover>
                     <v-expansion-panel>
                         <v-expansion-panel-header>
@@ -57,9 +58,7 @@
                                     </v-checkbox>
                                 </v-col>
                                 <v-col>
-                                    <v-btn :to="'/ControlQuestions'">
-                                        Konsistenzfragen bearbeiten
-                                    </v-btn>
+                                    <control-questions></control-questions>
                                 </v-col>
                             </v-row>
 
@@ -152,7 +151,7 @@
             </template>
             <v-card-actions>
                 <v-col>
-                    <v-btn color="primary" @click="saveToStore()"> Anwenden </v-btn>
+                    <v-btn color="primary" @click="saveToStore(), (dialog = false)"> Anwenden </v-btn>
                 </v-col>
             </v-card-actions>
         </v-card>
@@ -161,12 +160,19 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
+import ControlQuestions from '../pages/ControlQuestions'
 import baseQAFilter from './Filter/baseQAFilter'
 
 export default {
     name: 'filterForm',
     components: {
         baseQAFilter,
+        ControlQuestions,
+    },
+    props: {
+        initialPollIndex: {
+            type: Number,
+        },
     },
     data() {
         return {
@@ -181,7 +187,6 @@ export default {
                 { active: true, filterId: 0, filterType: 'dateFilter', endDate: '', startDate: '', negated: false },
             ],
 
-            initialPollIndex: 0,
             chosenPoll: '',
             selectedQuestions: [],
             questionTitlesDisplayedInSelect: 3,
@@ -254,8 +259,10 @@ export default {
         },
     },
 
-    mounted() {
+    created() {
         this.chosenPoll = this.pollTitles[this.initialPollIndex]
+        console.log(this.chosenPoll)
+        console.log(this.initialPollIndex)
         this.selectedQuestions = this.questionTitles
     },
 
@@ -265,20 +272,22 @@ export default {
         }),
 
         pollTitles() {
-            const pollTitles = Object.assign([{}], this.polls)
+            const pollTitles = []
             for (let i = 0; i < this.polls.length; i++) {
-                pollTitles[i] = this.polls[i].pollName
+                pollTitles.push(' (#' + this.polls[i].pollId + ') ' + this.polls[i].pollName)
             }
             return pollTitles
         },
 
         pollIndex() {
-            // return this.pollTitles.indexOf(this.chosenPoll)
-            return 0
+            console.log('pollIndex:')
+            console.log(this.pollTitles.indexOf(this.chosenPoll))
+            return this.pollTitles.indexOf(this.chosenPoll)
         },
 
         questionTitles() {
             const questionTitles = []
+            console.log('questionTitle function')
             console.log(this.polls)
             console.log(this.pollIndex)
             for (let i = 0; i < this.polls[this.pollIndex].categoryList.length; i++) {

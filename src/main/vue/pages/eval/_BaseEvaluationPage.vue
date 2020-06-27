@@ -50,7 +50,7 @@ that each display a basic evaluation of one specific question-->
 
                         <!--            This button will lead to the Page where we can filter and analyse the data-->
                         <v-spacer />
-                        <filter-form></filter-form>
+                        <filter-form :initial-poll-index="getPollIndex"></filter-form>
 
                         <!--                   title of the poll-->
 
@@ -247,6 +247,7 @@ export default {
             pollName: 'evaluation/getPollName',
             isAuthenticated: 'login/isAuthenticated',
             participants: 'evaluation/getParticipants',
+            getPolls: 'evaluation/getPolls',
         }),
 
         // computes the number of pages
@@ -285,6 +286,15 @@ export default {
 
         itemsPerPageArray() {
             return [1, Math.round(this.items.length / 2), this.items.length]
+        },
+
+        getPollIndex() {
+            for (let i = 0; i < this.getPolls.length; i++) {
+                if (this.getPolls[i].pollId === this.$route.params.BaseEvaluationPage) {
+                    return i
+                }
+            }
+            return -1
         },
     },
     methods: {
