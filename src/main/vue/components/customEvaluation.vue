@@ -1,182 +1,176 @@
 <template>
-    <div>
-        <v-dialog overlay-color="background" persistent v-model="dialog" width="500" overlay-opacity="0.95" fullscreen>
-            <template v-slot:activator="{ on }">
-                <v-btn color="primary" v-on="on" disabled>
-                    Analyse
-                </v-btn>
-            </template>
-            <v-card>
-                <v-container>
-                    <v-container v-if="polls.length > 0">
-                        <v-layout row justify-space-around>
-                            <v-flex md6 lg3>
-                                <v-card class="ma-3 pa-3">
-                                    <v-card-title>Filter</v-card-title>
-                                    <template>
-                                        <v-expansion-panels accordion multiple hover>
-                                            <v-expansion-panel v-for="(item, index) in kategories" :key="index">
-                                                <v-expansion-panel-header :color="item.color">
-                                                    {{ item.name }}
-                                                </v-expansion-panel-header>
-                                                <v-expansion-panel-content :color="item.color">
-                                                    <div class="overline">{{ item.explanation }}</div>
-                                                    <div v-for="(option, jdex) in item.options" :key="jdex">
-                                                        <draggable
-                                                            :list="item.options"
-                                                            :clone="clone"
-                                                            :group="{ name: 'filter', pull: 'clone' }"
-                                                        >
-                                                            <v-chip
-                                                                class="ma-1 filter"
-                                                                :color="item.darkColor"
-                                                                draggable
-                                                                @click="addFilter(option)"
-                                                            >
-                                                                {{ option.title }}
-                                                            </v-chip>
-                                                        </draggable>
-                                                    </div>
-                                                </v-expansion-panel-content>
-                                            </v-expansion-panel>
-                                        </v-expansion-panels>
-                                    </template>
-                                </v-card>
-                            </v-flex>
-                            <v-flex md6 lg9>
-                                <v-card class="ma-3 pa-3">
-                                    <v-card-title
-                                        >Analyse
-                                        <v-col align="right">
-                                            <v-btn color="primary" @click="saveToStore()">
-                                                Anwenden
-                                            </v-btn>
-                                        </v-col>
-                                    </v-card-title>
-                                    <v-card class="pa-2">
-                                        <v-responsive :aspect-ratio="16 / 5">
-                                            <v-overflow-btn
-                                                prefix="Basisdaten:"
-                                                :items="pollTitles"
-                                                dense
-                                                v-model="chosenPoll"
-                                            >
-                                            </v-overflow-btn>
-                                            <v-divider></v-divider>
-                                            <div>
-                                                <v-overflow-btn
-                                                    prefix="Ausgewählte Fragen:"
-                                                    allow-overflow
-                                                    dense
-                                                    multiple
-                                                    flat
-                                                    :items="questionTitles"
-                                                    v-model="selectedQuestions"
-                                                >
-                                                </v-overflow-btn>
-                                            </div>
-                                            <v-divider></v-divider>
-                                            <v-card height="5000" color="#f8faff">
-                                                <draggable
-                                                    class="dragArea list-group"
-                                                    :list="filterList"
-                                                    group="filter"
-                                                >
-                                                    <div v-for="(filter, index) in filterList" :key="index">
+    <v-dialog overlay-color="background" persistent v-model="dialog" width="500" overlay-opacity="0.95" fullscreen>
+        <template v-slot:activator="{ on }">
+            <v-btn color="primary" v-on="on" disabled>
+                Analyse
+            </v-btn>
+        </template>
+        <v-card>
+            <v-container>
+                <v-container v-if="polls.length > 0">
+                    <v-layout row justify-space-around>
+                        <v-flex md6 lg3>
+                            <v-card class="ma-3 pa-3">
+                                <v-card-title>Filter</v-card-title>
+                                <template>
+                                    <v-expansion-panels accordion multiple hover>
+                                        <v-expansion-panel v-for="(item, index) in kategories" :key="index">
+                                            <v-expansion-panel-header :color="item.color">
+                                                {{ item.name }}
+                                            </v-expansion-panel-header>
+                                            <v-expansion-panel-content :color="item.color">
+                                                <div class="overline">{{ item.explanation }}</div>
+                                                <div v-for="(option, jdex) in item.options" :key="jdex">
+                                                    <draggable
+                                                        :list="item.options"
+                                                        :clone="clone"
+                                                        :group="{ name: 'filter', pull: 'clone' }"
+                                                    >
                                                         <v-chip
-                                                            :color="kategories[2].color"
-                                                            v-model="consistencyChip"
-                                                            v-if="filter.filterType === 'consistency'"
-                                                            close
-                                                            @click:close="deleteFromFilterList(filter)"
+                                                            class="ma-1 filter"
+                                                            :color="item.darkColor"
+                                                            draggable
+                                                            @click="addFilter(option)"
                                                         >
-                                                            Es werden nur Teilnehmer angezeigt, die alle
-                                                            Konsistenzfragen bestanden haben.
+                                                            {{ option.title }}
                                                         </v-chip>
-
-                                                        <v-chip
-                                                            :color="kategories[3].color"
-                                                            close
-                                                            v-if="filter.filterType === 'age'"
-                                                            @click:close="deleteFromFilterList(filter)"
-                                                        >
-                                                            Nur Teilnehmer mit Alter
-                                                            <filter-chip-menu
-                                                                :color="kategories[3].color"
-                                                                :items="['<', '>', '=']"
-                                                                @choice-updated="
-                                                                    (update) => {
-                                                                        selectedAgeOperation = update
-                                                                    }
-                                                                "
-                                                            >
-                                                            </filter-chip-menu>
-                                                            <v-text-field
-                                                                type="number"
-                                                                min="0"
-                                                                oninput="validity.valid||(value='')"
-                                                            >
-                                                            </v-text-field>
-                                                        </v-chip>
-
-                                                        <v-chip
-                                                            :color="kategories[3].color"
-                                                            close
-                                                            v-if="filter.filterType === 'gender'"
-                                                            @click:close="deleteFromFilterList(filter)"
-                                                        >
-                                                            Nur Teilnehmer mit dem Geschlecht
-                                                            <filter-chip-menu
-                                                                :color="kategories[3].color"
-                                                                :items="['Männlich', 'Weiblich', 'Divers']"
-                                                                @choice-updated="
-                                                                    (update) => {
-                                                                        selectedGender = update
-                                                                    }
-                                                                "
-                                                            >
-                                                            </filter-chip-menu>
-                                                        </v-chip>
-
-                                                        <q-a-filter
-                                                            v-if="filter.filterType === 'questionAnswer'"
-                                                            :poll-index="pollIndex"
-                                                            :filter-id="filter.filterId"
-                                                            :selected-answer="filter.selectedAnswer"
-                                                            :selected-question="filter.selectedQuestion"
-                                                            :selected-category="filter.selectedCategory"
-                                                            @updateData="updateQAFilter"
-                                                        ></q-a-filter>
-
-                                                        <!--                                        <p v-else>-->
-                                                        <!--                                            filter.filterType-->
-                                                        <!--                                        </p>-->
-                                                    </div>
-                                                </draggable>
-                                            </v-card>
-                                        </v-responsive>
-                                    </v-card>
-                                    <v-card-actions>
-                                        <v-btn color="primary">
+                                                    </draggable>
+                                                </div>
+                                            </v-expansion-panel-content>
+                                        </v-expansion-panel>
+                                    </v-expansion-panels>
+                                </template>
+                            </v-card>
+                        </v-flex>
+                        <v-flex md6 lg9>
+                            <v-card class="ma-3 pa-3">
+                                <v-card-title
+                                    >Analyse
+                                    <v-col align="right">
+                                        <v-btn color="primary" @click="saveToStore()">
                                             Anwenden
                                         </v-btn>
-                                        <v-btn color="secondary">
-                                            Vergleichen
-                                        </v-btn>
-                                    </v-card-actions>
+                                    </v-col>
+                                </v-card-title>
+                                <v-card class="pa-2">
+                                    <v-responsive :aspect-ratio="16 / 5">
+                                        <v-overflow-btn
+                                            prefix="Basisdaten:"
+                                            :items="pollTitles"
+                                            dense
+                                            v-model="chosenPoll"
+                                        >
+                                        </v-overflow-btn>
+                                        <v-divider></v-divider>
+                                        <div>
+                                            <v-overflow-btn
+                                                prefix="Ausgewählte Fragen:"
+                                                allow-overflow
+                                                dense
+                                                multiple
+                                                flat
+                                                :items="questionTitles"
+                                                v-model="selectedQuestions"
+                                            >
+                                            </v-overflow-btn>
+                                        </div>
+                                        <v-divider></v-divider>
+                                        <v-card height="5000" color="#f8faff">
+                                            <draggable class="dragArea list-group" :list="filterList" group="filter">
+                                                <div v-for="(filter, index) in filterList" :key="index">
+                                                    <v-chip
+                                                        :color="kategories[2].color"
+                                                        v-model="consistencyChip"
+                                                        v-if="filter.filterType === 'consistency'"
+                                                        close
+                                                        @click:close="deleteFromFilterList(filter)"
+                                                    >
+                                                        Es werden nur Teilnehmer angezeigt, die alle Konsistenzfragen
+                                                        bestanden haben.
+                                                    </v-chip>
+
+                                                    <v-chip
+                                                        :color="kategories[3].color"
+                                                        close
+                                                        v-if="filter.filterType === 'age'"
+                                                        @click:close="deleteFromFilterList(filter)"
+                                                    >
+                                                        Nur Teilnehmer mit Alter
+                                                        <filter-chip-menu
+                                                            :color="kategories[3].color"
+                                                            :items="['<', '>', '=']"
+                                                            @choice-updated="
+                                                                (update) => {
+                                                                    selectedAgeOperation = update
+                                                                }
+                                                            "
+                                                        >
+                                                        </filter-chip-menu>
+                                                        <v-text-field
+                                                            type="number"
+                                                            min="0"
+                                                            oninput="validity.valid||(value='')"
+                                                        >
+                                                        </v-text-field>
+                                                    </v-chip>
+
+                                                    <v-chip
+                                                        :color="kategories[3].color"
+                                                        close
+                                                        v-if="filter.filterType === 'gender'"
+                                                        @click:close="deleteFromFilterList(filter)"
+                                                    >
+                                                        Nur Teilnehmer mit dem Geschlecht
+                                                        <filter-chip-menu
+                                                            :color="kategories[3].color"
+                                                            :items="['Männlich', 'Weiblich', 'Divers']"
+                                                            @choice-updated="
+                                                                (update) => {
+                                                                    selectedGender = update
+                                                                }
+                                                            "
+                                                        >
+                                                        </filter-chip-menu>
+                                                    </v-chip>
+
+                                                    <q-a-filter
+                                                        v-if="filter.filterType === 'questionAnswer'"
+                                                        :poll-index="pollIndex"
+                                                        :filter-id="filter.filterId"
+                                                        :selected-answer="filter.selectedAnswer"
+                                                        :selected-question="filter.selectedQuestion"
+                                                        :selected-category="filter.selectedCategory"
+                                                        @updateData="updateQAFilter"
+                                                    ></q-a-filter>
+
+                                                    <!--                                        <p v-else>-->
+                                                    <!--                                            filter.filterType-->
+                                                    <!--                                        </p>-->
+                                                </div>
+                                            </draggable>
+                                        </v-card>
+                                    </v-responsive>
                                 </v-card>
-                            </v-flex>
-                        </v-layout>
-                    </v-container>
-                    <v-container v-else>
-                        <v-card>
-                            <v-card-title>Der Server antwortet nicht</v-card-title>
-                        </v-card>
-                    </v-container>
+                                <v-card-actions>
+                                    <v-btn color="primary">
+                                        Anwenden
+                                    </v-btn>
+                                    <v-btn color="secondary">
+                                        Vergleichen
+                                    </v-btn>
+                                </v-card-actions>
+                            </v-card>
+                        </v-flex>
+                    </v-layout>
                 </v-container>
-            </v-card>
-        </v-dialog>
-    </div>
+                <v-container v-else>
+                    <v-card>
+                        <v-card-title>Der Server antwortet nicht</v-card-title>
+                    </v-card>
+                </v-container>
+            </v-container>
+        </v-card>
+    </v-dialog>
 </template>
 
 <script>
