@@ -13,9 +13,10 @@ import java.io.IOException;
 import java.util.List;
 
 @Service
-public class ExportServiceImpl {
+public class ExportServiceImpl implements ExportService {
 
-    String toCSVManual(Poll poll) {
+    @Override
+    public String toCSVManual(Poll poll) {
         /**Name, PollID, Creator, Anonymität, Kategorie 1, Kategorie 1, Kategorie 2*/
         /**TestPoll, 1, Tbettmann, 1, Frage 1, Frage 2, Frage 1 aus Kat. 2*/
         String output = "";
@@ -42,8 +43,8 @@ public class ExportServiceImpl {
         output += '\n';
         return output;
     }
-
-    String toJSON(Poll result) throws Exception {
+    @Override
+    public String toJSON(Poll result) throws Exception {
         ObjectMapper objectMapper = new ObjectMapper()
             .findAndRegisterModules();
         try {
@@ -53,7 +54,8 @@ public class ExportServiceImpl {
         }
     }
 
-    Poll fromJSONToPoll(String json) {
+    @Override
+    public Poll fromJSONToPoll(String json) {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             Poll poll = objectMapper.readValue(json, Poll.class);
@@ -66,7 +68,8 @@ public class ExportServiceImpl {
         return null;
     }
 
-    String toJSON(PollResult result) throws Exception {
+    @Override
+    public String toJSON(PollResult result) throws Exception {
         ObjectMapper objectMapper = new ObjectMapper()
             .findAndRegisterModules();
         try {
@@ -76,7 +79,8 @@ public class ExportServiceImpl {
         }
     }
 
-    PollResult fromJSONToResult(String json) {
+    @Override
+    public PollResult fromJSONToResult(String json) {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             PollResult pResult = objectMapper.readValue(json, PollResult.class);
@@ -87,7 +91,8 @@ public class ExportServiceImpl {
         return null;
     }
 
-    String createExportJSON(Poll poll, List<PollResult> result) {
+    @Override
+    public String createExportJSON(Poll poll, List<PollResult> result) {
         JSONObject combined = new JSONObject();
         try {
             JSONObject pollJSON = new JSONObject();

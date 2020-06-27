@@ -4,12 +4,15 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gpse.umfrato.domain.answer.Answer;
 import gpse.umfrato.domain.category.Category;
+import gpse.umfrato.domain.cmd.FilterCmd;
+import gpse.umfrato.domain.evaluation.Statistics;
 import gpse.umfrato.domain.export.ExportService;
 import gpse.umfrato.domain.poll.Poll;
 import gpse.umfrato.domain.poll.PollService;
 import gpse.umfrato.domain.pollresult.PollResult;
 import gpse.umfrato.domain.pollresult.PollResultService;
 import gpse.umfrato.domain.question.Question;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.web.bind.annotation.*;
@@ -32,6 +35,7 @@ public class ExportController {
     private final PollResultService pollResultService;
     private final ExportService exportService;
 
+    @Autowired
     public ExportController(PollService pollService, PollResultService pollResultService, ExportService exportService) {
         this.pollService = pollService;
         this.pollResultService = pollResultService;
@@ -40,11 +44,11 @@ public class ExportController {
 
     /**New Idea: Convert to JSON first and then to CSV, it sure ain't pretty but if it works it's fine*/
 
-    @GetMapping("/toCSVPoll")
-    @CrossOrigin
-    public static String toCSVManual(Poll poll){
-    /**Name, PollID, Creator, Anonymität, Kategorie 1, Kategorie 1, Kategorie 2*/
-    /**TestPoll, 1, Tbettmann, 1, Frage 1, Frage 2, Frage 1 aus Kat. 2*/
+    @PostMapping("/toCSVPoll")
+    public String toCSVManual(final @RequestBody Poll poll){
+        return exportService.toCSVManual(poll);
+    /**Name, PollID, Creator, Anonymität, Kategorie 1, Kategorie 1, Kategorie 2*//*
+    *//**TestPoll, 1, Tbettmann, 1, Frage 1, Frage 2, Frage 1 aus Kat. 2*//*
         String output = "";
         output += "Name,PollID,PollCreator,Anonymitätsstatus";
         int amountOfArgumentsBeforeCategories = 4;
@@ -63,30 +67,31 @@ public class ExportController {
                 if(question.getQuestionType() == "SliderQuestion")
                     output += question.getStartValue() + ".." + question.getEndValue() + " in Inkrementen von " + question.getStepSize();
                 output += '\n';
-                for(int i = 0; i<amountOfArgumentsBeforeCategories-1; i++) /**Needs to be -1 because of output + escapeSpecial... that comma can't go away*/
+                for(int i = 0; i<amountOfArgumentsBeforeCategories-1; i++) *//**Needs to be -1 because of output + escapeSpecial... that comma can't go away*//*
                     output += ',';
             }
         }
         output += '\n';
-        return output;
+        return output;*/
     }
 
-    @GetMapping("/toJSONPoll")
-    @CrossOrigin
-    public static String toJSON(Poll result) throws Exception {
+    @PostMapping("/toJSONPoll")
+    public String toJSON(final @RequestBody Poll result) throws Exception {
+        return exportService.toJSON(result);
+/*        LOGGER.info(result.toString());
         ObjectMapper objectMapper = new ObjectMapper()
             .findAndRegisterModules();
         try {
             return objectMapper.writeValueAsString(result);
         } catch (JsonProcessingException e) {
             throw new Exception("Serialisierung fehlgeschlagen");
-        }
+        }*/
     }
 
-    @GetMapping("/importPoll")
-    @CrossOrigin
-    public static Poll fromJSONToPoll(String json) throws Exception {
-        try {
+    @PostMapping("/importPoll")
+    public Poll fromJSONToPoll(final @RequestBody String json) throws Exception {
+        return exportService.fromJSONToPoll(json);
+/*        try {
             ObjectMapper objectMapper = new ObjectMapper();
             Poll poll = objectMapper.readValue(json, Poll.class);
             System.out.println(poll.getPollId());
@@ -95,38 +100,38 @@ public class ExportController {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return null;
+        return null;*/
     }
 
-    @GetMapping("/toJSONPollResult")
-    @CrossOrigin
-    public static String toJSON(PollResult result) throws Exception {
-        ObjectMapper objectMapper = new ObjectMapper()
+    @PostMapping("/toJSONPollResult")
+    public String toJSON(final @RequestBody PollResult result) throws Exception {
+        return exportService.toJSON(result);
+/*        ObjectMapper objectMapper = new ObjectMapper()
             .findAndRegisterModules();
         try {
             return objectMapper.writeValueAsString(result);
         } catch (JsonProcessingException e) {
             throw new Exception("Serialisierung fehlgeschlagen");
-        }
+        }*/
     }
 
-    @GetMapping("/importPollResult")
-    @CrossOrigin
-    public static PollResult fromJSONToResult(String json) throws Exception {
-        try {
+    @PostMapping("/importPollResult")
+    public PollResult fromJSONToResult(final @RequestBody String json) throws Exception {
+        return exportService.fromJSONToResult(json);
+/*        try {
             ObjectMapper objectMapper = new ObjectMapper();
             PollResult pResult = objectMapper.readValue(json, PollResult.class);
             return pResult;
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return null;
+        return null;*/
     }
 
-    @GetMapping("/toJSONPollWithPollResult")
-    @CrossOrigin
-    public static String createExportJSON(Poll poll, List<PollResult> result){
-        JSONObject combined = new JSONObject();
+    @PostMapping("/toJSONWithPollResult")
+    public String createExportJSON(Poll poll, List<PollResult> result){
+        return exportService.createExportJSON(poll, result);
+/*        JSONObject combined = new JSONObject();
         try {
             JSONObject pollJSON = new JSONObject();
             pollJSON.getJSONObject(toJSON(poll));
@@ -139,7 +144,7 @@ public class ExportController {
             }
             return combined.toString();
         } catch(Exception e){}
-        return null;
+        return null;*/
     }
 
     private String FormatCSVField(String data)

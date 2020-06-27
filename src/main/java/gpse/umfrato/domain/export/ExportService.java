@@ -8,11 +8,11 @@ import java.util.List;
 public interface ExportService {
     String toCSVManual(Poll poll);
 
-    String toJSON(Poll result);
+    String toJSON(Poll result) throws Exception;
 
     Poll fromJSONToPoll(String json);
 
-    String toJSON(PollResult result);
+    String toJSON(PollResult result) throws Exception;
 
     PollResult fromJSONToResult(String json);
 
