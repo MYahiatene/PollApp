@@ -1,6 +1,7 @@
 package gpse.umfrato.domain.export;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gpse.umfrato.domain.category.Category;
 import gpse.umfrato.domain.poll.Poll;
@@ -68,8 +69,7 @@ public class ExportServiceImpl implements ExportService {
         return null;
     }
 
-    @Override
-    public String toJSON(PollResult result) throws Exception {
+    public String toJSONSingularPR(PollResult result) throws Exception {
         ObjectMapper objectMapper = new ObjectMapper()
             .findAndRegisterModules();
         try {
@@ -80,10 +80,21 @@ public class ExportServiceImpl implements ExportService {
     }
 
     @Override
-    public PollResult fromJSONToResult(String json) {
+    public String toJSON(List<PollResult> result) throws Exception {
+        ObjectMapper objectMapper = new ObjectMapper()
+            .findAndRegisterModules();
+        try {
+            return objectMapper.writeValueAsString(result);
+        } catch (JsonProcessingException e) {
+            throw new Exception("Serialisierung fehlgeschlagen");
+        }
+    }
+
+    @Override
+    public List<PollResult> fromJSONToResult(String json) {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
-            PollResult pResult = objectMapper.readValue(json, PollResult.class);
+            List<PollResult> pResult = objectMapper.readValue(json, new TypeReference<List<PollResult>>(){});
             return pResult;
         } catch (IOException e) {
             e.printStackTrace();
@@ -101,7 +112,7 @@ public class ExportServiceImpl implements ExportService {
             JSONObject resultJSON;
             for(PollResult resultIndex : result) {
                 resultJSON = new JSONObject();
-                resultJSON.getJSONObject(toJSON(resultIndex));
+                resultJSON.getJSONObject(toJSONSingularPR(resultIndex));
                 combined.put("Results", resultJSON);
             }
             return combined.toString();

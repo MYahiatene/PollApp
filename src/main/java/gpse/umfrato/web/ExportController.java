@@ -104,7 +104,7 @@ public class ExportController {
     }
 
     @PostMapping("/toJSONPollResult")
-    public String toJSON(final @RequestBody PollResult result) throws Exception {
+    public String toJSON(final @RequestBody List<PollResult> result) throws Exception {
         return exportService.toJSON(result);
 /*        ObjectMapper objectMapper = new ObjectMapper()
             .findAndRegisterModules();
@@ -116,7 +116,7 @@ public class ExportController {
     }
 
     @PostMapping("/importPollResult")
-    public PollResult fromJSONToResult(final @RequestBody String json) throws Exception {
+    public List<PollResult> fromJSONToResult(final @RequestBody String json) throws Exception {
         return exportService.fromJSONToResult(json);
 /*        try {
             ObjectMapper objectMapper = new ObjectMapper();

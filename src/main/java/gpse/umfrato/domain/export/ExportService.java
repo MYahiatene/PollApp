@@ -12,9 +12,9 @@ public interface ExportService {
 
     Poll fromJSONToPoll(String json);
 
-    String toJSON(PollResult result) throws Exception;
+    String toJSON(List<PollResult> result) throws Exception;
 
-    PollResult fromJSONToResult(String json);
+    List<PollResult> fromJSONToResult(String json);
 
     String createExportJSON(Poll poll, List<PollResult> result);
 

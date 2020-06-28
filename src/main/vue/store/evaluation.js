@@ -53,9 +53,22 @@ export const actions = {
         console.log(response)
         commit('initializeData', response)
     },
-    async exportAnswers({ state, commit }) {
+    async exportAnswers({ state, commit }, pollId) {
+        /** Export von einem Poll */
         console.log('export start!')
-        const response = await this.$axios.post('/export/answers' + 1)
+        const response = await this.$axios.post(
+            '/export/toJSONPoll' + 1,
+            getters.getPolls().get(pollId)
+        ) /** Was macht das +1 da? */
+        console.log('response: ', response)
+    },
+    async exportResults({ state, commit }) {
+        /** Export von einer Liste an PollResults */
+        console.log('export start!')
+        const response = await this.$axios.post(
+            '/export/toJSONPollResult' + 1,
+            getters.getDiagramData()
+        ) /** Was macht das +1 da? */
         console.log('response: ', response)
     },
 }

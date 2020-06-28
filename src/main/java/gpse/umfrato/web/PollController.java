@@ -77,11 +77,6 @@ public class PollController {
         final Poll poll = pollService.getPoll(participationLinkService
             .getPollIdFromParticipationLink(link));
         if (poll != null) {
-            try {
-                System.out.println(ExportController.toJSON(poll));
-                System.out.println(ExportController.fromJSONToPoll(ExportController.toJSON(poll)).getPollName());
-                System.out.println(ExportController.toCSVManual(poll));
-            } catch (Exception e){}
             return poll;
         } else {
             throw new BadRequestException();
