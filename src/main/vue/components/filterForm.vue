@@ -81,14 +81,11 @@
 
                             <v-row>
                                 <v-col colls="12" lg="10">
-                                    <v-checkbox v-model="qafilter" label="Weitere Filter..."> </v-checkbox>
-                                </v-col>
-                                <v-col v-if="qafilter">
                                     <v-btn @click="addQAFilter"> <v-icon> mdi-plus</v-icon> </v-btn>
                                 </v-col>
                             </v-row>
 
-                            <div v-if="qafilter">
+                            <div>
                                 <div v-for="filter in qafilterList" :key="filter.filterId">
                                     <div v-if="filter.active">
                                         <v-card class="pa-3 ma-2">
@@ -133,34 +130,28 @@
                         <v-expansion-panel-content>
                             Hier können Sie den Antwortzeitpunkt der Teilnehmer, die Sie betrachten wollen festlegen.
 
+                            <v-row>
+                                <v-col colls="12" lg="10">
+                                    <v-btn @click="addDateFilter"> <v-icon> mdi-plus</v-icon> </v-btn>
+                                </v-col>
+                            </v-row>
+
                             <div v-for="filter in dateFilterList" :key="filter.filterId">
                                 <div v-if="filter.active">
                                     <v-card class="pa-3 ma-2">
                                         <v-row>
                                             <v-spacer></v-spacer>
-                                            <v-btn icon @click="addQAFilter()">
+                                            <v-btn icon @click="addDateFilter()">
                                                 <v-icon> mdi-plus </v-icon>
                                             </v-btn>
-                                            <v-btn icon @click="deleteQAFilter(filter.filterId)">
+                                            <v-btn icon @click="deleteDateFilter(filter.filterIndex)">
                                                 <v-icon> mdi-delete </v-icon>
                                             </v-btn>
                                         </v-row>
                                         <v-row>
                                             <v-col cols="12" lg="11">
-                                                <base-q-a-filter
-                                                    :poll-index="pollIndex"
-                                                    :filter-id="filter.filterId"
-                                                    :initial-category-index="
-                                                        qafilterList[filter.filterId].categoryIndex
-                                                    "
-                                                    :initial-question-index="
-                                                        qafilterList[filter.filterId].questionIndex
-                                                    "
-                                                    :initial-answer-indices="
-                                                        qafilterList[filter.filterId].answerIndices
-                                                    "
-                                                    @updateData="updateQaFilter"
-                                                ></base-q-a-filter>
+                                                <p>dateFilter {{ filter.filterIndex }}</p>
+                                                <base-date-filter></base-date-filter>
                                             </v-col>
                                         </v-row>
                                     </v-card>
@@ -183,10 +174,12 @@
 import { mapActions, mapGetters } from 'vuex'
 import ControlQuestions from './ControlQuestions'
 import baseQAFilter from './Filter/baseQAFilter'
+import BaseDateFilter from './Filter/baseDateFilter'
 
 export default {
     name: 'FilterForm',
     components: {
+        BaseDateFilter,
         baseQAFilter,
         ControlQuestions,
     },
@@ -208,7 +201,14 @@ export default {
             ],
 
             dateFilterList: [
-                { active: true, filterId: 0, filterType: 'dateFilter', endDate: '', startDate: '', negated: false },
+                {
+                    active: true,
+                    filterIndex: 0,
+                    filterType: 'date',
+                    endDate: '',
+                    startDate: '',
+                    invertFilter: false,
+                },
             ],
 
             chosenPoll: '',
@@ -423,6 +423,34 @@ export default {
             this.qafilterList[filterId].answerIndices = answerIndices
             console.log(this.qafilterList)
         },
+
+        addDateFilter() {
+            console.log('addDateFilter()')
+            const id = this.dateFilterList.length
+            this.dateFilterList.push({
+                active: true,
+                filterIndex: id,
+                filterType: 'dateFilter',
+                endDate: '',
+                startDate: '',
+                invertFilter: false,
+            })
+        },
+
+        deleteDateFilter(index) {
+            console.log('deleteDateFilter()')
+            console.log(index)
+            this.dateFilterList[index].active = false
+            this.$forceUpdate()
+        },
+
+        // updateDateFilter([filterId, categoryIndex, questionIndex, answerIndices]) {
+        //     console.log('updateDateFilter()')
+        //     this.qafilterList[filterId].categoryIndex = categoryIndex
+        //     this.qafilterList[filterId].questionIndex = questionIndex
+        //     this.qafilterList[filterId].answerIndices = answerIndices
+        //     console.log(this.qafilterList)
+        // },
     },
 }
 </script>
