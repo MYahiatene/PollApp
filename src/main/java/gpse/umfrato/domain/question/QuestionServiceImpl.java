@@ -10,8 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.logging.Logger;
 
 @Service
 public class QuestionServiceImpl implements QuestionService {
@@ -203,21 +205,43 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
+    public Question addChoiceQuestion (final Question question, final Long pollId) {
+        Question newQuestion = null;
+        newQuestion = new Question(question.getQuestionMessage(), new ArrayList<>(),
+            question.getNumberOfPossibleAnswers(), question.isUserAnswers());
+        final ListIterator<String> it = question.getAnswerPossibilities().listIterator();
+        while(it.hasNext()) {
+            String answer = it.next();
+            newQuestion.getAnswerPossibilities().add(answer);
+        }
+        newQuestion.setCategoryId(pollRepository.findById(pollId)
+            .orElseThrow(EntityNotFoundException::new).getCategoryList().get(0).getCategoryId());
+        pollRepository.findById(pollId).orElseThrow(EntityNotFoundException::new)
+            .getCategoryList().get(0).getQuestionList().add(newQuestion);
+        questionRepository.save(newQuestion);
+
+        return newQuestion;
+    }
+
+    @Override
     public void copyQuestions(final Long categoryId, final Long pollId, final List<Question> questions) {
         final ListIterator<Question> iterator = questions.listIterator();
         while(iterator.hasNext()) {
-            final Question question = iterator.next();
-            final QuestionCmd cmd = new QuestionCmd(pollId, question.getEndValue(), question.getStartValue(),
+            Question newQuestion = null;
+            Question question = iterator.next();
+            QuestionCmd cmd = new QuestionCmd(pollId, question.getEndValue(), question.getStartValue(),
                 question.getStepSize(), question.getBelowMessage(), question.getAboveMessage(), question.isHideValues(),
                 question.isTextMultiline(), question.getTextMinimum(), question.getTextMaximum(),
                 question.isTextMinBool(), question.isTextMaxBool(), question.isHasConsistencyRelationship(),
                 categoryId, question.getQuestionMessage(), question.getAnswerPossibilities(),
                 question.getQuestionType(), question.isUserAnswers(), question.getNumberOfPossibleAnswers());
-            final Question newQuestion = addQuestion(cmd);
-            final Category newCategory = categoryRepository.findById(categoryId)
-                .orElseThrow(EntityNotFoundException::new);
-            newCategory.getQuestionList().add(question);
-            questionRepository.save(question);
+            if (question.getQuestionType().equals(CHOICE_QUESTION)) {
+                newQuestion = addChoiceQuestion(question, pollId);
+            } else {
+                newQuestion = addQuestion(cmd);
+            }
+            Question finalQuestion = changeCategory(newQuestion.getQuestionId(), newQuestion.getCategoryId(),
+                categoryId);
         }
 
     }

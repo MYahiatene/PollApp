@@ -80,18 +80,13 @@ public class CategoryController {
     @PreAuthorize("hasAuthority('Admin')")
     public String copyCategories(final @PathVariable Long oldPollId, final @PathVariable long newPollId) {
         try {
-            LOGGER.info("Start");
-            LOGGER.info("oldPollId: " + oldPollId);
-            LOGGER.info("newPollId: " + newPollId);
             final List<Category> categories = categoryService.getAllCategories(Long.valueOf(oldPollId));
-            LOGGER.info("categories: " + categories);
             final ListIterator<Category> iterator = categories.listIterator();
             while(iterator.hasNext()) {
                 final Category oldCategory = iterator.next();
                 final Category newCategory = categoryService.createCategory(oldCategory.getCategoryName(), newPollId);
                 questionService.copyQuestions(newCategory.getCategoryId(), newPollId, oldCategory.getQuestionList());
             }
-            LOGGER.info(pollService.getPoll(String.valueOf(newPollId)).toString());
             return "Categories created: " + categories.toString();
         } catch (BadRequestException e) {
             return "Category creation failed!";
