@@ -25,15 +25,15 @@ public class Statistics {
     private static final String PARTICIPANTS_STRING = "\",\"particpantCount\":\"";
     private static final double MEDIAN_QUANTILE = 0.5;
     private static final Logger LOGGER = Logger.getLogger("Statistics");
-    /* default */ final AnswerService answerService;
-    /* default */ final UserService userService;
+    private final AnswerService answerService;
+    private final UserService userService;
     private final QuestionService questionService;
     private final PollService pollService;
     private final PollResultService pollResultService;
     private final CategoryService categoryService;
     private final ConsistencyQuestionService consistencyQuestionService;
-    private List<Filter> filters = new ArrayList<>();
-    private Long pollId;
+    private final List<Filter> filters = new ArrayList<>();
+    private final Long pollId;
     private final List<Long> questionIds = new ArrayList<>();
 
     public Statistics(final AnswerService answerService, final UserService userService,
@@ -55,7 +55,7 @@ public class Statistics {
                     questionIds.add(q.getQuestionId());
                 }
             }
-            LOGGER.info(questionIds.toString());
+           /* LOGGER.info(questionIds.toString());*/
         } else {
             questionIds.addAll(data.getBaseQuestionIds());
         }
@@ -65,12 +65,11 @@ public class Statistics {
         for (final FilterCmd cmd : input) {
             Filter filter = null;
             if (cmd.getFilterType().equals("questionAnswer")) {
-                filter = new QuestionFilter(cmd.getTargetPollId(), cmd.getTargetQuestionId(),
-                        cmd.getTargetAnswerPossibilities(), false);
+                filter = new QuestionFilter(pollId, cmd.getTargetQuestionId(),
+                        cmd.getTargetAnswerPossibilities(), cmd.getInvertFilter(), false);
             }
             else if (cmd.getFilterType().equals("consistency")) {
-                filter = new ConsistencyFilter(
-                        consistencyQuestionService.getAllConsistencyQuestions(cmd.getBasePollId()),
+                filter = new ConsistencyFilter(consistencyQuestionService.getAllConsistencyQuestions(pollId),
                         cmd.getMinSuccesses());
             }
             if (filter != null) {
@@ -96,7 +95,7 @@ public class Statistics {
         }
         int participantCountFiltered = prs.size();
         LOGGER.info(prs.toString());
-        final DiagramData dd = new DiagramData(pollService.getPoll(prs.get(0).getPollId()), prs,
+        final DiagramData dd = new DiagramData(pollService.getPoll(prs.get(0).getPollId()), prs, questionIds,
             categoryService, questionService);
         return NAME_STRING + pollService.getPoll(pollId).getPollName()
                 + PARTICIPANTS_STRING + "(" + participantCountFiltered + "/" + participantCountUnfiltered + ")"

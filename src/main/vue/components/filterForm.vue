@@ -1,5 +1,5 @@
 <template>
-    <v-dialog overlay-color="background" persistent v-model="dialog" width="500" overlay-opacity="0.95" fullscreen>
+    <v-dialog v-model="dialog" overlay-color="background" persistent width="500" overlay-opacity="0.95" fullscreen>
         <template v-slot:activator="{ on }">
             <v-btn color="primary" v-on="on">
                 Analyse
@@ -9,7 +9,7 @@
         <v-card class="ma-2 pa-2">
             <v-card-title>Erweiterte Analyse {{ polls.length }}</v-card-title>
             <template>
-                <v-overflow-btn editable prefix="Basisdaten:" :items="pollTitles" dense v-model="chosenPoll">
+                <v-overflow-btn v-model="chosenPoll" editable prefix="Basisdaten:" :items="pollTitles" dense>
                 </v-overflow-btn>
                 <v-expansion-panels accordion multiple hover>
                     <v-expansion-panel>
@@ -23,9 +23,9 @@
                                 <v-select v-model="selectedQuestions" :items="questionTitles" multiple>
                                     <template v-slot:selection="{ item, index }">
                                         <v-chip
+                                            v-if="index < questionTitlesDisplayedInSelect"
                                             close
                                             @click:close="selectedQuestions.splice(index, 1)"
-                                            v-if="index < questionTitlesDisplayedInSelect"
                                         >
                                             <span>{{ item }}</span>
                                         </v-chip>
@@ -54,15 +54,18 @@
                                             v-model="minConsistencyValue"
                                             min="0"
                                             step="1"
-                                            :max="numberOfCQ"
-                                            thumb-label="true"
-                                            hint="Anzahl der korrekt beantworteten Konsistenzfragen."
+                                            :max="maxConsistencyValue"
+                                            :thumbLabel="true"
+                                            hint="Es werden nur noch Teilnehmer angezeigt, die mindestens diese Anzahl von Konsistenzfragen bestanden haben."
                                             label="Konsistenzfragen"
                                         >
                                         </v-slider>
                                     </v-col>
                                     <v-col>
-                                        <control-questions :poll-index="pollIndex"></control-questions>
+                                        <control-questions
+                                            :poll-index="pollIndex"
+                                            @close-event="updateNumberOfConsistencyQuestions"
+                                        ></control-questions>
                                     </v-col>
                                 </v-row>
                             </v-container>
@@ -89,7 +92,7 @@
                                 <div v-for="filter in qafilterList" :key="filter.filterId">
                                     <div v-if="filter.active">
                                         <v-card class="pa-3 ma-2">
-                                            <v-row align="right">
+                                            <v-row>
                                                 <v-spacer></v-spacer>
                                                 <v-btn icon @click="addQAFilter()">
                                                     <v-icon> mdi-plus </v-icon>
@@ -133,7 +136,7 @@
                             <div v-for="filter in dateFilterList" :key="filter.filterId">
                                 <div v-if="filter.active">
                                     <v-card class="pa-3 ma-2">
-                                        <v-row align="right">
+                                        <v-row>
                                             <v-spacer></v-spacer>
                                             <v-btn icon @click="addQAFilter()">
                                                 <v-icon> mdi-plus </v-icon>
@@ -147,9 +150,15 @@
                                                 <base-q-a-filter
                                                     :poll-index="pollIndex"
                                                     :filter-id="filter.filterId"
-                                                    :initial-category-index="qafilterList[filter.filterId].categoryId"
-                                                    :initial-question-index="qafilterList[filter.filterId].questionId"
-                                                    :initial-answer-indices="qafilterList[filter.filterId].answerIds"
+                                                    :initial-category-index="
+                                                        qafilterList[filter.filterId].categoryIndex
+                                                    "
+                                                    :initial-question-index="
+                                                        qafilterList[filter.filterId].questionIndex
+                                                    "
+                                                    :initial-answer-indices="
+                                                        qafilterList[filter.filterId].answerIndices
+                                                    "
                                                     @updateData="updateQaFilter"
                                                 ></base-q-a-filter>
                                             </v-col>
@@ -176,7 +185,7 @@ import ControlQuestions from './ControlQuestions'
 import baseQAFilter from './Filter/baseQAFilter'
 
 export default {
-    name: 'filterForm',
+    name: 'FilterForm',
     components: {
         baseQAFilter,
         ControlQuestions,
@@ -184,6 +193,7 @@ export default {
     props: {
         initialPollIndex: {
             type: Number,
+            default: 0,
         },
     },
     data() {
@@ -191,6 +201,7 @@ export default {
             globalFilterId: 1,
             applyConsistency: false,
             minConsistencyValue: 0,
+            maxConsistencyValue: 0,
             qafilter: false,
             qafilterList: [
                 { active: true, filterId: 0, filterType: 'qaFilter', categoryId: -1, questionId: -1, answerIds: [] },
@@ -207,7 +218,7 @@ export default {
             dialog: false,
 
             filterData: [
-                {
+                /* {
                     pollId: 1,
                     chosenQuestions: [11, 12, 32, 4, 50, 8], // these are questionIDs
                     filterType: 'dataFilter',
@@ -227,7 +238,7 @@ export default {
                     startDate: ' ',
                     endDate: ' ',
                     invertFilter: false,
-                },
+                }, */
             ],
 
             filterData1: {
@@ -245,97 +256,10 @@ export default {
             },
         }
     },
-
-    methods: {
-        ...mapActions({ sendFilter: 'evaluation/sendFilter' }),
-
-        saveToStore() {
-            console.log('saveToStore()')
-            const filterData = []
-            filterData.push({
-                filterType: 'dataFilter',
-                pollId: this.polls[this.pollIndex].pollId,
-                chosenQuestions: this.chosenQuestionIds, // these are questionIDs
-            })
-
-            filterData.push({
-                filterType: 'consistency',
-                minSuccesses: this.minConsistencyValue, // von 0 (aus) bis zur Länge der Konsistenzfragen
-            })
-            // for (let f = 0; f < this.qafilterList.length; f++) {
-            //     if (this.qafilterList[f].active) {
-            //         filterData.push({
-            //             filterType: 'qaFilter',
-            //             invertFilter: false,
-            //             targetPollId: this.pollIndex,
-            //             targetCategoryId: this.qafilterList[f].categoryId,
-            //             targetQuestionId: this.qafilterList[f].questionId,
-            //             targetAnswerPossibilities: this.qafilterList[f].answerIds,
-            //         })
-            //     }
-            // }
-            console.log(filterData)
-            this.sendFilter(filterData)
-
-            console.log('save filter was called')
-
-            this.sendFilter(this.filterData)
-        },
-
-        addQAFilter() {
-            console.log('addQAFilter()')
-            this.qafilterList.push({
-                active: true,
-                filterId: this.globalFilterId++,
-                filterType: 'qaFilter',
-                categoryId: -1,
-                questionId: -1,
-                answerIds: [],
-            })
-        },
-
-        deleteQAFilter(index) {
-            console.log('deleteQAFilter()')
-            this.qafilterList[index].active = false
-        },
-
-        updateQaFilter([filterId, categoryIndex, questionIndex, answerIndices]) {
-            console.log('updateQAFilter()')
-            this.qafilterList[filterId].categoryId = categoryIndex
-            this.qafilterList[filterId].questionId = questionIndex
-            for (let i = 0; i < answerIndices.length; i++) {
-                this.qafilterList[filterId].answerIds[i] = answerIndices[i]
-            }
-            console.log(this.qafilterList)
-        },
-    },
-
-    mounted() {
-        console.log('mounted()')
-        console.log(this.initialPollIndex)
-        console.log(this.pollTitles)
-        this.chosenPoll = this.pollTitles[this.initialPollIndex]
-        console.log(this.chosenPoll)
-        console.log(this.initialPollIndex)
-        this.selectedQuestions = this.questionTitles
-    },
-
     computed: {
         ...mapGetters({
             polls: 'evaluation/getPolls',
         }),
-
-        async numberOfCQ() {
-            await this.$axios
-                .get('/poll/' + this.polls[this.pollIndex].pollId + '/consistencyquestions')
-                .then((response) => {
-                    return response.data.length
-                })
-                .catch((reason) => {
-                    console.log('fuck gse')
-                })
-            return 0
-        },
 
         pollTitles() {
             console.log('pollTitles()')
@@ -387,6 +311,117 @@ export default {
             console.log('questionTitles: ')
             console.log(questionTitles)
             return questionTitles
+        },
+    },
+    mounted() {
+        console.log('mounted()')
+        console.log(this.initialPollIndex)
+        console.log(this.pollTitles)
+        this.chosenPoll = this.pollTitles[this.initialPollIndex]
+        console.log(this.chosenPoll)
+        console.log(this.initialPollIndex)
+        this.selectedQuestions = this.questionTitles
+        this.updateNumberOfConsistencyQuestions()
+    },
+    methods: {
+        ...mapActions({ sendFilter: 'evaluation/sendFilter' }),
+
+        async saveToStore() {
+            console.log('saveToStore()')
+            const filterData = []
+            filterData.push({
+                filterType: 'dataFilter',
+                basePollId: this.polls[this.pollIndex].pollId,
+                baseQuestionIds: this.chosenQuestionIds, // these are questionIDs
+            })
+            filterData.push({
+                filterType: 'consistency',
+                minSuccesses: this.minConsistencyValue, // von 0 (aus) bis zur Länge der Konsistenzfragen
+            })
+            console.log('Jo')
+            console.log(this.qafilterList)
+            console.log(filterData)
+            if (this.qafilter) {
+                for (let i = 0; i < this.qafilterList.length; i++) {
+                    console.log(i)
+                    const filter = this.qafilterList[i]
+                    console.log(this.qafilterList)
+                    console.log(this.polls)
+                    console.log(this.pollIndex)
+                    filterData.push({
+                        filterType: 'questionAnswer',
+                        invertFilter: false,
+                        targetQuestionId: this.polls[this.pollIndex].categoryList[filter.categoryIndex].questionList[
+                            filter.questionIndex
+                        ].questionId,
+                        targetAnswerPossibilities: filter.answerIndices,
+                    })
+                }
+            }
+            /* if (this.datefilter) {
+                for (const filter in this.dateFilterList) {
+                    filterData.push({
+                        filterType: 'date',
+                        invertFilter: false,
+                        startDate: '10€, dass das',
+                        endDate: 'strings werden?',
+                    })
+                }
+            } */
+            console.log(filterData)
+            // for (let f = 0; f < this.qafilterList.length; f++) {
+            //     if (this.qafilterList[f].active) {
+            //         filterData.push({
+            //             filterType: 'qaFilter',
+            //             invertFilter: false,
+            //             targetPollId: this.pollIndex,
+            //             targetCategoryId: this.qafilterList[f].categoryId,
+            //             targetQuestionId: this.qafilterList[f].questionId,
+            //             targetAnswerPossibilities: this.qafilterList[f].answerIds,
+            //         })
+            //     }
+            // }
+            console.log(filterData)
+            await this.sendFilter(filterData)
+            console.log('save filter was called')
+            this.$emit('close-event')
+        },
+
+        async updateNumberOfConsistencyQuestions() {
+            await this.$axios
+                .get('/poll/' + this.polls[this.pollIndex].pollId + '/consistencyquestionnumber')
+                .then((response) => {
+                    this.maxConsistencyValue = response.data
+                })
+                .catch((reason) => {
+                    console.log(reason)
+                    this.maxConsistencyValue = 0
+                })
+        },
+
+        addQAFilter() {
+            console.log('addQAFilter()')
+            this.qafilterList.push({
+                active: true,
+                filterId: this.globalFilterId++,
+                filterType: 'qaFilter',
+                categoryId: -1,
+                questionId: -1,
+                answerIds: [],
+            })
+        },
+
+        deleteQAFilter(index) {
+            console.log('deleteQAFilter()')
+            this.qafilterList[index].active = false
+        },
+
+        updateQaFilter([filterId, categoryIndex, questionIndex, answerIndices]) {
+            console.log('updateQAFilter()')
+            this.qafilterList[filterId].categoryIndex = categoryIndex
+            this.qafilterList[filterId].questionIndex = questionIndex
+            this.qafilterList[filterId].answerIndices = answerIndices
+            console.log(this.qafilterList)
         },
     },
 }

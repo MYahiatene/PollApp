@@ -26,7 +26,7 @@ public class EvaluationController {
     private static final Logger LOGGER = Logger.getLogger("EvaluationController");
 
     @Autowired
-    /* default */ ObjectMapper objectMapper;
+    ObjectMapper objectMapper;
 
     private final AnswerService answerService;
     private final UserService userService;

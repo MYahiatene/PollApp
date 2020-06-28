@@ -23,9 +23,6 @@ import java.util.Locale;
 public class DiagramData {
 
     public static final String DIVIDER_STRING = " / ";
-    private static final String JSON_ID = "{\"id\": ";
-    private static final String JSON_TYPE = ",\"type\": ";
-    private static final String JSON_TITLE = ",\"title\": \"";
     private static final String HYPHEN = " - ";
 
     private final List<QuestionData> questionList = new ArrayList<>();
@@ -35,6 +32,8 @@ public class DiagramData {
     private final CategoryService categoryService;
     @JsonIgnore
     private final Poll poll;
+    @JsonIgnore
+    private final List<Long> questionIds;
 
     interface QuestionData {
         enum QuestionType { CHOICE_QUESTION, TEXT_QUESTION, RANGE_QUESTION, SLIDER_QUESTION }
@@ -160,9 +159,7 @@ public class DiagramData {
         public String toJSON() {
              ObjectMapper mapper = new ObjectMapper();
             try {
-                String json = mapper.writeValueAsString(this);
-                // System.out.println("ChoiceJSON = " + json);
-                return json;
+                return mapper.writeValueAsString(this);
             } catch (JsonProcessingException e) {
                 e.printStackTrace();
                 return null;
@@ -220,9 +217,7 @@ public class DiagramData {
         public String toJSON() {
             ObjectMapper mapper = new ObjectMapper();
             try {
-                String json = mapper.writeValueAsString(this);
-                // System.out.println("TextJSON = " + json);
-                return json;
+                return mapper.writeValueAsString(this);
             } catch (JsonProcessingException e) {
                 e.printStackTrace();
                 return null;
@@ -230,11 +225,12 @@ public class DiagramData {
         }
     }
 
-    public DiagramData(final Poll poll, final List<PollResult> results, final CategoryService categoryService,
+    public DiagramData(final Poll poll, final List<PollResult> results, final List<Long> questionIds, final CategoryService categoryService,
                        final QuestionService questionService) {
         this.categoryService = categoryService;
         this.questionService = questionService;
         this.poll = poll;
+        this.questionIds = questionIds;
         loadData(results);
     }
 
@@ -242,6 +238,9 @@ public class DiagramData {
         final List<Category> categories = categoryService.getAllCategories(poll.getPollId());
         for (final Category c : categories) {
             for (final Question q : questionService.getAllQuestions(c.getCategoryId())) {
+                if (!questionIds.contains(q.getQuestionId())) {
+                    continue;
+                }
                 // System.out.println(q.toString());
                 QuestionData qd = null;
                 DecimalFormat format = new DecimalFormat("#.######", DecimalFormatSymbols.getInstance( Locale.GERMAN ));

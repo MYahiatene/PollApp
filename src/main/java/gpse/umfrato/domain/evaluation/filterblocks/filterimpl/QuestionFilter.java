@@ -15,6 +15,8 @@ private final Long targetQuestionId;
 
 private final List<String> targetAnswerPossibilities;
 
+private final boolean inverted;
+
 private final boolean absoluteMatch;
 
 @Override public List<PollResult> filter(final List<PollResult> input) {
@@ -44,7 +46,7 @@ private final boolean absoluteMatch;
                 }
             }
         }
-        if (match) {
+        if (match != inverted) {
             filteredList.add(pr);
         }
     }

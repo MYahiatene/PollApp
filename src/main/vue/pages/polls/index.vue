@@ -456,58 +456,69 @@ export default {
         },
 
         async answerPoll() {
-            const i = this.participantNr
-            this.participantNr += 2
-            this.progressColorB = '#ff0000'
-            await this.$store.dispatch('participant/saveAnswer', {
-                username: '' + i,
-                pollId: 1,
-                questionId: 4,
-                answerList: [Math.floor(Math.random() * 4)],
-            })
-            this.progressColorB = '#ff4d00'
-            await this.$store.dispatch('participant/saveAnswer', {
-                username: '' + i,
-                pollId: 1,
-                questionId: 5,
-                answerList: [Math.floor(Math.random() * 5), Math.floor(Math.random() * 4)],
-            })
-            this.progressColorB = '#fbff00'
-            await this.$store.dispatch('participant/saveAnswer', {
-                username: '' + i,
-                pollId: 1,
-                questionId: 6,
-                answerList: ['Hallo'],
-            })
-            this.progressColorB = '#aaff00'
-            await this.$store.dispatch('participant/saveAnswer', {
-                username: '' + i,
-                pollId: 1,
-                questionId: 7,
-                answerList: ['Das ist ein langer Text'],
-            })
-            this.progressColorB = '#5eff00'
-            await this.$store.dispatch('participant/saveAnswer', {
-                username: '' + i,
-                pollId: 1,
-                questionId: 8,
-                answerList: [Math.floor(Math.random() * 8)],
-            })
-            this.progressColorB = '#00ff84'
-            await this.$store.dispatch('participant/saveAnswer', {
-                username: '' + i,
-                pollId: 1,
-                questionId: 9,
-                answerList: [Math.floor(Math.random() * 100) / 100],
-            })
-            this.progressColorB = '#00d5ff'
-            await this.$store.dispatch('participant/saveAnswer', {
-                username: '' + i,
-                pollId: 1,
-                questionId: 10,
-                answerList: [Math.floor((Math.random() * 50000) / 10)],
-            })
-            this.progressColorB = '#006eff'
+            for (let j = 0; j < 200; j++) {
+                if (j < 200) {
+                    this.progressColorB = '#006eff'
+                } else if (j < 175) {
+                    this.progressColorB = '#00d5ff'
+                } else if (j < 150) {
+                    this.progressColorB = '#00ff84'
+                } else if (j < 125) {
+                    this.progressColorB = '#5eff00'
+                } else if (j < 100) {
+                    this.progressColorB = '#aaff00'
+                } else if (j < 75) {
+                    this.progressColorB = '#fbff00'
+                } else if (j < 50) {
+                    this.progressColorB = '#ff4d00'
+                } else if (j < 25) {
+                    this.progressColorB = '#ff0000'
+                }
+                const i = this.participantNr
+                this.participantNr += 2
+                await this.$store.dispatch('participant/saveAnswer', {
+                    username: '' + i,
+                    pollId: 1,
+                    questionId: 4,
+                    answerList: [Math.floor(Math.random() * 4)],
+                })
+                await this.$store.dispatch('participant/saveAnswer', {
+                    username: '' + i,
+                    pollId: 1,
+                    questionId: 5,
+                    answerList: [Math.floor(Math.random() * 5), Math.floor(Math.random() * 4)],
+                })
+                await this.$store.dispatch('participant/saveAnswer', {
+                    username: '' + i,
+                    pollId: 1,
+                    questionId: 6,
+                    answerList: ['Hallo'],
+                })
+                await this.$store.dispatch('participant/saveAnswer', {
+                    username: '' + i,
+                    pollId: 1,
+                    questionId: 7,
+                    answerList: ['Das ist ein langer Text'],
+                })
+                await this.$store.dispatch('participant/saveAnswer', {
+                    username: '' + i,
+                    pollId: 1,
+                    questionId: 8,
+                    answerList: [Math.floor(Math.random() * 8)],
+                })
+                await this.$store.dispatch('participant/saveAnswer', {
+                    username: '' + i,
+                    pollId: 1,
+                    questionId: 9,
+                    answerList: [Math.floor(Math.random() * 100) / 100],
+                })
+                await this.$store.dispatch('participant/saveAnswer', {
+                    username: '' + i,
+                    pollId: 1,
+                    questionId: 10,
+                    answerList: [Math.floor((Math.random() * 50000) / 10)],
+                })
+            }
         },
     },
 }

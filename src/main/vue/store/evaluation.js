@@ -1,7 +1,8 @@
 export const state = () => ({
     DiagramData: {},
     Polls: [],
-    FilterList: {},
+    FilterList: [],
+    pollId: -1,
 })
 export const getters = {
     getDiagramData(state) {
@@ -19,18 +20,28 @@ export const getters = {
     },
 }
 export const mutations = {
-    initializeData(state, data) {
+    setDiagramData(state, data) {
         state.DiagramData = data.data
         console.log('DD')
         console.log(state.DiagramData)
     },
-    initializePolls(state, pollData) {
+    setPollData(state, pollData) {
         state.Polls = pollData.data
         console.log('PD')
         console.log(state.Polls)
     },
     saveFilter(state, filterList) {
         state.FilterList = filterList
+    },
+    setPollID(state, id) {
+        state.pollId = id
+        state.FilterList = [
+            {
+                filterType: 'dataFilter',
+                basePollId: id,
+                baseQuestionIds: [],
+            },
+        ]
     },
 }
 
@@ -40,8 +51,9 @@ export const actions = {
         console.log(pollId)
         console.log(this.$axios.defaults.headers)
         console.log('getPolls from Server')
+        commit('setPollID', pollId)
         const pollData = await this.$axios.get('/poll')
-        commit('initializePolls', pollData)
+        commit('setPollData', pollData)
         const data = await this.$axios.post('/evaluation/generateDiagram', [
             {
                 filterType: 'DataFilter',
@@ -50,18 +62,32 @@ export const actions = {
             },
         ])
         console.log(data)
-        commit('initializeData', data)
+        commit('setDiagramData', data)
     },
-
-    async getCQLength({ commit }, pollId) {
-        const pollData = await this.$axios.get('/poll/'+pollId+'/ConsistencyQuestions')
-        commit('initializePolls', pollData)
+    updateData({ state, commit }) {
+        this.$axios
+            .post('/evaluation/generateDiagram', state.FilterList)
+            .catch((reason) => {
+                console.log(reason)
+            })
+            .then((response) => {
+                console.log(response)
+                commit('setDiagramData', response)
+            })
     },
     async sendFilter({ state, commit }, filterList) {
         console.log('in store!')
         commit('saveFilter', filterList)
-        const response = await this.$axios.post('/evaluation/generateDiagram', filterList)
-        console.log(response)
-        commit('initializeData', response)
+        console.log(filterList)
+        await this.$axios
+            .post('/evaluation/generateDiagram', filterList)
+            .catch((reason) => {
+                console.log(reason)
+            })
+            .then((response) => {
+                console.log(response)
+                commit('setDiagramData', response)
+            })
+        console.log('store durch')
     },
 }

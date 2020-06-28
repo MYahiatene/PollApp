@@ -18,10 +18,14 @@ public class ConsistencyQuestion {
 
     private Long question1Id;
 
+    private Boolean question1Slider = false;
+
     @ElementCollection
     private List<String> answer1Indices;
 
     private Long question2Id;
+
+    private Boolean question2Slider = false;
 
     @ElementCollection
     private List<String> answer2Indices;

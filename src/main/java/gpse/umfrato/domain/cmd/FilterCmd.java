@@ -8,7 +8,7 @@ import java.util.List;
 
     private String filterType;
 
-    private boolean invertFilter;
+    private Boolean invertFilter;
 
     //DataFilter
 
@@ -17,8 +17,6 @@ import java.util.List;
     private List<Long> baseQuestionIds;
 
     //QuestionFilter
-    private Long targetPollId;
-
     private Long targetQuestionId;
 
     private List<String> targetAnswerPossibilities;
@@ -40,4 +38,10 @@ import java.util.List;
 
     //ConsistencyFilter
     private Integer minSuccesses;
+
+    //DateFilter
+
+    private String startDate;
+
+    private String endDate;
 }

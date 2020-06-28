@@ -129,6 +129,12 @@ public class PollController {
         return consistencyQuestionService.getAllConsistencyQuestions(pollId);
     }
 
+    @GetMapping("/poll/{pollId:\\d+}/consistencyquestionnumber")
+    public Integer getConsistencyQuestionCount(final @PathVariable long pollId)
+    {
+        return consistencyQuestionService.getAllConsistencyQuestions(pollId).size();
+    }
+
     @GetMapping("/poll/{pollId:\\d+}/consistencyquestions/{question1Id:\\d+}/{question2Id:\\d+}")
     public List<ConsistencyQuestion> getConsistencyQuestions(final @PathVariable long pollId,final @PathVariable long question1Id,final @PathVariable long question2Id)
     {

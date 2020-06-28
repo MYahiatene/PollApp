@@ -24,42 +24,53 @@ public class ConsistencyFilter implements Filter {
         final List<PollResult> filteredList = new ArrayList<>();
         for (final PollResult pr: input) {
             int successNr = 0;
-            for (ConsistencyQuestion cq:consistencyQuestionList)
-            {
-                int match1 = 0;
-                for (Answer a:pr.getAnswerList())
-                {
-                    if (a.getQuestionId().equals(cq.getQuestion1Id()))
-                    {
-                        for (String answer:a.getGivenAnswerList())
-                        {
-                            if(cq.getAnswer1Indices().contains(answer))
-                            {
-                                match1++;
+            for (ConsistencyQuestion cq: consistencyQuestionList) {
+                int match = 0;
+                int noMatch = 0;
+                for (Answer a: pr.getAnswerList()) {
+                    if (a.getQuestionId().equals(cq.getQuestion1Id())) {
+                        for (String answer: a.getGivenAnswerList()) {
+                            if (cq.getQuestion1Slider()) {
+                                if (Double.parseDouble(cq.getAnswer1Indices().get(0)) <= Double.parseDouble(answer) && Double.parseDouble(cq.getAnswer1Indices().get(1)) >= Double.parseDouble(answer)) {
+                                    match++;
+                                } else {
+                                    noMatch++;
+                                }
+                            } else {
+                                if (cq.getAnswer1Indices().contains(answer)) {
+                                    match++;
+                                } else {
+                                    noMatch++;
+                                }
                             }
                         }
-                        match1 -= a.getGivenAnswerList().size();
                         break;
                     }
                 }
-                int match2 = 0;
-                for (Answer a:pr.getAnswerList())
-                {
-                    if (a.getQuestionId().equals(cq.getQuestion2Id()))
-                    {
-                        for (String answer:a.getGivenAnswerList())
-                        {
-                            if(cq.getAnswer2Indices().contains(answer))
-                            {
-                                match2++;
+                if (match != 0 && noMatch != 0) {
+                    continue;
+                }
+                for (Answer a: pr.getAnswerList()) {
+                    if (a.getQuestionId().equals(cq.getQuestion2Id())) {
+                        for (String answer: a.getGivenAnswerList()) {
+                            if (cq.getQuestion2Slider()) {
+                                if (Double.parseDouble(cq.getAnswer2Indices().get(0)) <= Double.parseDouble(answer) && Double.parseDouble(cq.getAnswer2Indices().get(1)) >= Double.parseDouble(answer)) {
+                                    match++;
+                                } else {
+                                    noMatch++;
+                                }
+                            } else {
+                                if (cq.getAnswer2Indices().contains(answer)) {
+                                    match++;
+                                } else {
+                                    noMatch++;
+                                }
                             }
                         }
-                        match2 -= a.getGivenAnswerList().size();
                         break;
                     }
                 }
-                if(match1 == 0 && match2 == 0)
-                {
+                if (match == 0 || noMatch == 0) {
                     successNr++;
                 }
             }

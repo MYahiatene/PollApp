@@ -13,9 +13,6 @@ that each display a basic evaluation of one specific question-->
             <v-container v-if="diagramData.length === 0">
                 <v-card>
                     <v-card-title>Die Umfrage wurde noch nicht beantwortet</v-card-title>
-                    <v-btn :to="'/ControlQuestions'">
-                        Konsistenzfragen
-                    </v-btn>
                 </v-card>
             </v-container>
             <v-container v-else>
@@ -50,7 +47,7 @@ that each display a basic evaluation of one specific question-->
 
                         <!--            This button will lead to the Page where we can filter and analyse the data-->
                         <v-spacer />
-                        <filter-form :initial-poll-index="getPollIndex"></filter-form>
+                        <filter-form :initial-poll-index="getPollIndex" @close-event="widgetKey += 1"></filter-form>
 
                         <!--                   title of the poll-->
 
@@ -305,7 +302,7 @@ export default {
         },
     },
     methods: {
-        ...mapActions({ initialize: 'evaluation/initialize' }),
+        ...mapActions({ initialize: 'evaluation/initialize', updateData: 'evaluation/updateData' }),
 
         /*
 
@@ -355,8 +352,9 @@ export default {
 
         // updates the page
         async forceUpdate() {
+            console.log('force-update')
             // gets the stuff from the database
-            await this.initialize(this.$route.params.BaseEvaluationPage)
+            await this.updateData()
             // forces the diagrams to update
             this.widgetKey += 1
         },

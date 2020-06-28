@@ -7,7 +7,7 @@
         </template>
         <v-card class="ma-1 pa-5">
             <h2>Konsistenzfragen von Umfrage: "{{ pollName }}"</h2>
-            <v-btn color="primary" @click="dialog = false">
+            <v-btn color="primary" @click=";(dialog = false), $emit('close-event')">
                 Fertig
             </v-btn>
             <v-expansion-panels v-model="panel" flat>
@@ -423,7 +423,7 @@ export default {
                 console.log(this.listOfControlQuestions)
             })
             .catch((reason) => {
-                console.log('fuck gse')
+                console.log(reason)
             })
 
         // if (this.categoryIndex === -1) {
@@ -532,7 +532,7 @@ export default {
                     consistencyQuestion.consistencyQuestionId = this.currentServerId
 
                     this.$axios.post('/poll/editcq/' + this.currentServerId, consistencyQuestion).catch((reason) => {
-                        console.log('fuck in edit')
+                        console.log(reason + ' in edit')
                     })
                 } else {
                     this.$axios
@@ -544,7 +544,7 @@ export default {
                             console.log(cq.serverId)
                         })
                         .catch((reason) => {
-                            console.log('fuck')
+                            console.log(reason + ' auch in edit')
                         })
                 }
 
@@ -588,7 +588,7 @@ export default {
             console.log('delete')
             if (index > -1) {
                 this.$axios.post('/poll/delcq/' + this.listOfControlQuestions[index].serverId).catch((reason) => {
-                    console.log('fuck in delete')
+                    console.log(reason + ' in delete')
                 })
                 this.listOfControlQuestions.splice(index, 1)
                 console.log(this.listOfControlQuestions)

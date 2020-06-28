@@ -21,11 +21,7 @@ public class ConsistencyQuestionServiceImpl implements ConsistencyQuestionServic
     @Override
     public ConsistencyQuestion createConsistencyQuestion(ConsistencyQuestionCmd consistencyQuestionCmd) {
         ConsistencyQuestion cq = new ConsistencyQuestion();
-        cq.setPollId(consistencyQuestionCmd.getPollId());
-        cq.setQuestion1Id(consistencyQuestionCmd.getQuestion1Id());
-        cq.setAnswer1Indices(consistencyQuestionCmd.getAnswer1Indices());
-        cq.setQuestion2Id(consistencyQuestionCmd.getQuestion2Id());
-        cq.setAnswer2Indices(consistencyQuestionCmd.getAnswer2Indices());
+        cqCmdToCq(consistencyQuestionCmd, cq);
         return consistencyQuestionRepository.save(cq);
     }
 
@@ -48,13 +44,19 @@ public class ConsistencyQuestionServiceImpl implements ConsistencyQuestionServic
 
     @Override
     public void editConsistencyQuestion(long consistencyQuestionId, final ConsistencyQuestionCmd consistencyQuestionCmd) {
-        ConsistencyQuestion cq = null;
+        ConsistencyQuestion cq;
         cq = consistencyQuestionRepository.findById(consistencyQuestionId).orElseThrow(EntityNotFoundException::new);
+        cqCmdToCq(consistencyQuestionCmd, cq);
+        consistencyQuestionRepository.save(cq);
+    }
+
+    private static void cqCmdToCq(ConsistencyQuestionCmd consistencyQuestionCmd, ConsistencyQuestion cq) {
         cq.setPollId(consistencyQuestionCmd.getPollId());
         cq.setQuestion1Id(consistencyQuestionCmd.getQuestion1Id());
+        cq.setQuestion1Slider(consistencyQuestionCmd.getQuestion1Slider());
         cq.setAnswer1Indices(consistencyQuestionCmd.getAnswer1Indices());
         cq.setQuestion2Id(consistencyQuestionCmd.getQuestion2Id());
+        cq.setQuestion2Slider(consistencyQuestionCmd.getQuestion2Slider());
         cq.setAnswer2Indices(consistencyQuestionCmd.getAnswer2Indices());
-        consistencyQuestionRepository.save(cq);
     }
 }
