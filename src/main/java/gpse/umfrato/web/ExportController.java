@@ -26,7 +26,7 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@RequestMapping(value = "/api/export/", method = RequestMethod.POST)
+@RequestMapping(value = "/api/export/")
 @RestController
 @CrossOrigin
 public class ExportController {
@@ -75,8 +75,9 @@ public class ExportController {
         return output;*/
     }
 
-    @PostMapping("/toJSONPoll")
-    public String toJSON(final @RequestBody Poll result) throws Exception {
+    @PostMapping("/toJSONPoll/{pollId:\\d+}")
+    public String toJSON(final @PathVariable Long pollId) throws Exception {
+        Poll result = pollService.getPoll(pollId);
         return exportService.toJSON(result);
 /*        LOGGER.info(result.toString());
         ObjectMapper objectMapper = new ObjectMapper()

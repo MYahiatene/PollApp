@@ -292,7 +292,7 @@ export default {
         ...mapActions({ initialize: 'evaluation/initialize' }),
 
         exportAnswers() {
-            this.$store.dispatch('evaluation/exportAnswers')
+            this.$store.dispatch('evaluation/exportAnswers', 1) // This should be PollId
         },
         /*
 

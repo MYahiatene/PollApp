@@ -56,15 +56,11 @@ export const actions = {
         console.log(response)
         commit('initializeData', response)
     },
-    async exportAnswers({ state, commit }) {
+    async exportAnswers({ state, commit }, pollId) {
         /** Export von einem Poll */
         console.log('export start! Poll: ')
-        console.log(getters.getPolls(state))
-        console.log(getters.getPollId(state)) /** This still doesn't work */
-        const response = await this.$axios.post(
-            '/export/toJSONPoll',
-            getters.getPolls(state)
-        ) /** Was macht das +1 da? */
+        console.log('/api/export/toJSONPoll/{pollId:' + pollId + '}')
+        const response = await this.$axios.post('/api/export/toJSONPoll/{pollId:' + pollId + '}')
         console.log('response: ', response)
     },
     async exportResults({ state, commit }) {
