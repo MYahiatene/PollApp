@@ -3,6 +3,9 @@ package gpse.umfrato.domain.cmd;
 import gpse.umfrato.domain.poll.Poll;
 import lombok.Data;
 
+/**
+ * The command design class for polls.
+ */
 @Data
 public class PollCmd {
 

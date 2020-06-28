@@ -64,9 +64,9 @@ public class QuestionServiceImpl implements QuestionService {
 
 
     /**
-     * This method creates a question for a poll.
-     *
-     * @return the question which is created
+     * This method adds a question.
+     * @param questionCmd the Cmd which includes the necessary details
+     * @return returns the question object
      */
     @Override
     public Question addQuestion(final QuestionCmd questionCmd) {
@@ -154,7 +154,11 @@ public class QuestionServiceImpl implements QuestionService {
     public List<Question> getAllQuestions(final long categoryId) {
         return questionRepository.findQuestionsByCategoryId(categoryId);
     }
-
+    /**
+     * This method edits a question.
+     * @param questionCmd the Cmd which includes the necessary details
+     * @return returns the edited question object
+     */
     @Override
     public Question editQuestion(final QuestionCmd questionCmd) {
         final Question question = questionRepository.
@@ -206,7 +210,7 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     /**
-     * This method changes the category of a question
+     * This method changes the category of a question.
      * @param questionId the id of the question
      * @param newCategoryId the new category id of the question
      * @param newIndex the new index in the question list of the question

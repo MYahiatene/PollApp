@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 @Service
 public class CategoryServiceImpl implements CategoryService {
@@ -31,6 +30,12 @@ public class CategoryServiceImpl implements CategoryService {
         this.questionRepository = questionRepository;
     }
 
+    /**
+     * This method creates a category.
+     * @param name the name of the category
+     * @param pollId the id of the poll to which the category is added
+     * @return returns the category as an object
+     */
     @Override
     public Category createCategory(final String name, final long pollId) {
         final Category category = new Category(name, pollId);
@@ -40,6 +45,12 @@ public class CategoryServiceImpl implements CategoryService {
         return category;
     }
 
+    /**
+     * This method deletes a category.
+     * @param categoryId the id of the category
+     * @param questionState the question state of the category
+     * @return returns a confirmation String
+     */
     @Override
     public String deleteCategory(final Long categoryId, final String questionState) {
         final long pollId = categoryRepository.findById(categoryId).
@@ -70,11 +81,21 @@ public class CategoryServiceImpl implements CategoryService {
         return "Kategorie gelöscht";
     }
 
+    /**
+     * This method returns all the categories belonging to one poll id.
+     * @param pollId the poll id
+     * @return returns all the categories as a list
+     */
     @Override
     public List<Category> getAllCategories(final long pollId) {
         return categoryRepository.findCategoriesByPollId(pollId);
     }
 
+    /**
+     * This method edits the name of a category.
+     * @param categoryId the id of the category
+     * @param name the new name of the category
+     */
     @Override
     public void editCategory(final long categoryId, final String name) {
         final Category category = categoryRepository.getOne(categoryId);

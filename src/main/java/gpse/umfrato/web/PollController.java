@@ -102,7 +102,7 @@ public class PollController {
     @RequestMapping(value = "/getUsername", method = RequestMethod.POST)
     public String getUsername(final @RequestBody PollCmd pollCmd) {
         if (pollCmd.getAnonymityStatus().equals("1")) {
-            return pollService.createAnonymUsername();
+            return pollService.createAnonymousUsername();
         } else {
             return "Nina";
         }
