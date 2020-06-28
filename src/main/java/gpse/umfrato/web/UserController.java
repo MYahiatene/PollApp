@@ -13,6 +13,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.logging.Logger;
 
+/**
+ * The User controller used to process user specific requests.
+ */
 @RequestMapping("/api")
 @RestController
 @CrossOrigin
@@ -56,6 +59,7 @@ public class UserController {
 
     /**
      * This method edits user details
+     *
      * @param editUserCmd the Cmd includes all necessary details
      * @return returns a confirmation String
      */
@@ -95,7 +99,7 @@ public class UserController {
     }
 
     /**
-     * Checks if the users token has the authority admin.
+     * Checks if the users token has the authority "Admin".
      */
     @PreAuthorize("hasAuthority('Admin')")
     @GetMapping("/checkToken")
@@ -104,13 +108,14 @@ public class UserController {
     }
 
     /**
-     * Checks if the users token has the authority "Umfrageersteller".
+     * Checks if the users token has the authority "Creator".
      */
     @PreAuthorize("hasAuthority('Creator')")
     @GetMapping("/checkCreatorToken")
     public void checkCreatorToken() {
 
     }
+
     /**
      * Deletes a user in the data base.
      *

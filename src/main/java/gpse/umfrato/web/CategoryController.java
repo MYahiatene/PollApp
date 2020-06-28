@@ -9,6 +9,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * The category controller used to process category specific requests.
+ */
 @RequestMapping("/api")
 @RestController
 @CrossOrigin
@@ -16,15 +19,21 @@ public class CategoryController {
 
     private final CategoryService categoryService;
 
+    /**
+     * The constructor is used inject the category service.
+     *
+     * @param categoryService
+     */
     @Autowired
     public CategoryController(final CategoryService categoryService) {
         this.categoryService = categoryService;
     }
 
     /**
-     * This method adds a category
-     * @param categoryCmd the Cmd includes the name and the poll id of the new category
-     * @return returns the new category object
+     * This method adds a category.
+     *
+     * @param categoryCmd the Cmd includes the name and the poll id of the new category.
+     * @return returns the new category object.
      */
     @PreAuthorize("hasAnyAuthority('Admin', 'Creator', 'Editor')")
     @PostMapping("/addcategory")
@@ -33,9 +42,10 @@ public class CategoryController {
     }
 
     /**
-     * This method returns all the categories belonging to one poll
-     * @param pollId the id of the poll
-     * @return returns all the categories
+     * This method returns all the categories belonging to one poll.
+     *
+     * @param pollId the id of the poll.
+     * @return returns all the categories.
      */
     @GetMapping("/getallcategories")
     public List<Category> getCategories(final @RequestParam long pollId) {
@@ -45,7 +55,7 @@ public class CategoryController {
     /**
      * Deletes a category in the data base.
      *
-     * @param categoryCmd the Cmd of category
+     * @param categoryCmd the Cmd of category.
      */
     @PreAuthorize("hasAnyAuthority('Admin', 'Creator', 'Editor')")
     @PutMapping("/deletecategory")
@@ -56,7 +66,8 @@ public class CategoryController {
 
     /**
      * This method changes the name of the category.
-     * @param categoryCmd the Cmd includes the required id and the new name of the catgegory
+     *
+     * @param categoryCmd the Cmd includes the required id and the new name of the catgegory.
      */
     @PreAuthorize("hasAnyAuthority('Admin', 'Creator', 'Editor')")
     @PutMapping("/editcategory")

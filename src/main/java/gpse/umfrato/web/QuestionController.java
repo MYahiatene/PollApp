@@ -12,12 +12,15 @@ import java.util.logging.Logger;
 
 import java.util.List;
 
+/**
+ * The Question controller used to process question specific requests.
+ */
 @RequestMapping(value = "/api", method = RequestMethod.GET)
 @RestController
 @CrossOrigin(origins = "http://127.0.0.1:8080")
 public class QuestionController {
 
-    /* default */ static final Logger LOGGER = Logger.getLogger("QuestionController");
+    private static final Logger LOGGER = Logger.getLogger("QuestionController");
     private final QuestionService questionService;
 
     /**
@@ -65,18 +68,33 @@ public class QuestionController {
         return questionService.getQuestion(Long.valueOf(questionCmd.getPollId()));
     }
 
+    /**
+     * This method returns a list of all questions in a specific category.
+     * @param categoryId The categoryId of a specific category.
+     * @return returns a list of all questions in a specific category.
+     */
     @GetMapping("/getallquestions")
     public List<Question> getAllQuestions(final @RequestParam long categoryId) {
 
         return questionService.getAllQuestions(categoryId);
     }
 
+    /**
+     * This method edits a specific question.
+     * @param questionCmd takes the necessary question Cmd object.
+     * @return returns the specific question object.
+     */
     @PreAuthorize("hasAnyAuthority('Admin','Creator', 'Editor')")
     @PutMapping("/editquestion")
     public Question editQuestion(final @RequestBody QuestionCmd questionCmd) {
         return questionService.editQuestion(questionCmd);
     }
 
+    /**
+     * This method changes the category of a question.
+     * @param questionCategoryChangeCmd takes the questionCategoryChangeCmd object.
+     * @return returns the specific question.
+     */
     @PreAuthorize("hasAnyAuthority('Admin','Creator', 'Editor')")
     @PostMapping("/changequestioncategory")
     public Question changeQuestionCategory(final @RequestBody QuestionCategoryChangeCmd questionCategoryChangeCmd) {

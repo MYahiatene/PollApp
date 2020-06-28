@@ -8,6 +8,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.logging.Logger;
 
+/**
+ * The PollResult controller used to process poll result specific requests.
+ */
 @RequestMapping(value = "/api", method = RequestMethod.GET)
 @RestController
 @CrossOrigin
@@ -17,14 +20,21 @@ public class PollResultController {
     private final PollResultService pollResultService;
 
     /**
-     * This class constructor initializes the objects.
-     * @param pollResultService      the answer service
+     * This class constructor initializes the pollResult service.
+     *
+     * @param pollResultService the pollResult service
      */
     @Autowired
     public PollResultController(final PollResultService pollResultService) {
         this.pollResultService = pollResultService;
 
     }
+
+    /**
+     * This method is used to return the pollResult of a specific user.
+     *
+     * @param answerCmd takes the necessary answerCmd object.
+     */
     @PreAuthorize("hasAnyAuthority('Admin','Creator')")
     @RequestMapping(value = "/getPollResult", method = RequestMethod.POST) //"/pollResult/{usernameId:\\d+}"
     public void pollResultByUsername(final @RequestBody AnswerCmd answerCmd) {
