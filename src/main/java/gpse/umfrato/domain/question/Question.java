@@ -153,6 +153,11 @@ public class Question {
         this.hideValues = hideValues;
     }
 
+    /**
+     * The question constructor if the question type is SortQuestion.
+     * @param questionMessage the message of the question
+     * @param answerPossibilities the answer possibilities of this question
+     */
     public Question(final String questionMessage, final List<String> answerPossibilities) {
         this.questionMessage = questionMessage;
         this.questionType = "SortQuestion";

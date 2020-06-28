@@ -55,7 +55,7 @@ public class UserController {
     }
 
     /**
-     * This method edits user details
+     * This method edits user details.
      * @param editUserCmd the Cmd includes all necessary details
      * @return returns a confirmation String
      */

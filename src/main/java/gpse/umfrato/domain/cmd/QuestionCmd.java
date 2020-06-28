@@ -4,6 +4,9 @@ import lombok.Data;
 
 import java.util.List;
 
+/**
+ * The command design class for questions.
+ */
 @Data
 public class QuestionCmd {
 

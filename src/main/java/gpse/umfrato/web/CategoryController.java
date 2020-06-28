@@ -22,7 +22,7 @@ public class CategoryController {
     }
 
     /**
-     * This method adds a category
+     * This method adds a category.
      * @param categoryCmd the Cmd includes the name and the poll id of the new category
      * @return returns the new category object
      */
@@ -33,7 +33,7 @@ public class CategoryController {
     }
 
     /**
-     * This method returns all the categories belonging to one poll
+     * This method returns all the categories belonging to one poll.
      * @param pollId the id of the poll
      * @return returns all the categories
      */

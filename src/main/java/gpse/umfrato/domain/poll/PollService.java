@@ -30,8 +30,13 @@ public interface PollService {
      * This method creates a unique username for anonymous polls.
      * @return a number as an anonymous Username
      */
-    String createAnonymUsername();
+    String createAnonymousUsername();
 
+    /**
+     * This method activates the poll.
+     * @param pollId the id of the poll which will be activated
+     * @return returns the poll activation status
+     */
     Integer activatePoll(final Long pollId);
 
     /**

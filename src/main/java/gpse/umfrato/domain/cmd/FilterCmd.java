@@ -4,6 +4,9 @@ import lombok.Data;
 
 import java.util.List;
 
+/**
+ * The command design class for filter.
+ */
 @Data public class FilterCmd {
 
     private String filterType;

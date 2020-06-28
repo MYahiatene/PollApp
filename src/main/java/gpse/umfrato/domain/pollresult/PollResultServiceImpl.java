@@ -24,11 +24,22 @@ public class PollResultServiceImpl implements PollResultService {
         this.pollResultRepository = pollResultRepository;
     }
 
+    /**
+     * This method creates a poll result.
+     * @param pollID the id of the poll
+     * @param username the username who creates the poll result
+     * @return returns the poll result
+     */
     @Override
     public PollResult createPollResult(final Long pollID, final String username) {
         return new PollResult(pollID, username);
     }
-
+    /**
+     * This method returns all answers of one user.
+     * @param input the input
+     * @param pollTaker the poll taker
+     * @return returns all answers as a list
+     */
     @Override
     public List<Answer> getUserAnswers(final List<PollResult> input, final String pollTaker) {
         final ListIterator<PollResult> iter = input.listIterator();
@@ -41,17 +52,23 @@ public class PollResultServiceImpl implements PollResultService {
         return null;
     }
 
-    @Override
-    public List<PollResult> getAllPollResults() {
-        /**TODO! wahrscheinlich nicht mehr nötig? - Jan*/ return null;
-    }
-
+    /**
+     * This method returns all the poll results.
+     * @param pollId the poll id
+     * @return returns all poll results as a list belonging to one poll id
+     */
     @Override
     public List<PollResult> getPollResults(final Long pollId) {
         LOGGER.info(pollId.toString());
         return pollResultRepository.findPollResultsByPollId(pollId);
     }
 
+    /**
+     * This method returns the poll result belonging to one poll id and one poll taker.
+     * @param pollId the id of the poll
+     * @param pollTaker the poll taker
+     * @return returns the poll result
+     */
     @Override
     public PollResult getPollResult(final Long pollId, final String pollTaker) {
         return pollResultRepository.findPollResultByPollIdAndPollTaker(pollId, pollTaker);
