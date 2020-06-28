@@ -5,6 +5,7 @@ import gpse.umfrato.domain.cmd.QuestionCmd;
 import gpse.umfrato.domain.question.Question;
 import gpse.umfrato.domain.question.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.logging.Logger;
@@ -34,6 +35,7 @@ public class QuestionController {
      *
      * @param questionCmd has the question and the poll id
      */
+    @PreAuthorize("hasAnyAuthority('Admin','Creator', 'Editor')")
     @PostMapping("/addquestion")
     public Question addQuestion(final @RequestBody QuestionCmd questionCmd) {
         return questionService.addQuestion(questionCmd);
@@ -44,6 +46,7 @@ public class QuestionController {
      *
      * @param questionCmd the Cmd of the question
      */
+    @PreAuthorize("hasAnyAuthority('Admin','Creator', 'Editor')")
     @PutMapping("/removequestion")
     public void deleteQuestion(final @RequestBody QuestionCmd questionCmd) {
         questionService.removeQuestion(String.valueOf(questionCmd.getCategoryId()),
@@ -68,11 +71,13 @@ public class QuestionController {
         return questionService.getAllQuestions(categoryId);
     }
 
+    @PreAuthorize("hasAnyAuthority('Admin','Creator', 'Editor')")
     @PutMapping("/editquestion")
     public Question editQuestion(final @RequestBody QuestionCmd questionCmd) {
         return questionService.editQuestion(questionCmd);
     }
 
+    @PreAuthorize("hasAnyAuthority('Admin','Creator', 'Editor')")
     @PostMapping("/changequestioncategory")
     public Question changeQuestionCategory(final @RequestBody QuestionCategoryChangeCmd questionCategoryChangeCmd) {
         return questionService.changeCategory(Long.parseLong(questionCategoryChangeCmd.getQuestionId()),

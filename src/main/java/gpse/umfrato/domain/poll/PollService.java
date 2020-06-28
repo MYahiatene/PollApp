@@ -27,15 +27,25 @@ public interface PollService {
     Poll getPoll(String id);
 
     /**
-     * This method creates a unique username for anonym polls.
-     * @return a number as an anonym Username
+     * This method creates a unique username for anonymous polls.
+     * @return a number as an anonymous Username
      */
     String createAnonymUsername();
 
     Integer activatePoll(final Long pollId);
 
+    /**
+     * This method edits a poll name.
+     * @param pollId the id of the poll which name will be edited
+     * @param pollName the new name of the poll
+     */
     void editPollName(final Long pollId, final String pollName);
 
+    /**
+     * This method deletes a poll.
+     * @param pollId the id of the poll which will be deleted
+     * @return returns a confirmation String
+     */
     String deletePoll(final String pollId);
 
 }

@@ -3,6 +3,7 @@ package gpse.umfrato.web;
 import gpse.umfrato.domain.cmd.AnswerCmd;
 import gpse.umfrato.domain.pollresult.PollResultService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.logging.Logger;
@@ -24,6 +25,7 @@ public class PollResultController {
         this.pollResultService = pollResultService;
 
     }
+    @PreAuthorize("hasAnyAuthority('Admin','Creator')")
     @RequestMapping(value = "/getPollResult", method = RequestMethod.POST) //"/pollResult/{usernameId:\\d+}"
     public void pollResultByUsername(final @RequestBody AnswerCmd answerCmd) {
         LOGGER.info("Hi from the PollResultController"); // hier gibt er es schon nicht aus

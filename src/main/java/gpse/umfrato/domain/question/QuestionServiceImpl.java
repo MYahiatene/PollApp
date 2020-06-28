@@ -103,8 +103,10 @@ public class QuestionServiceImpl implements QuestionService {
             default:
                 return null;
         }
-        question.setCategoryId(pollRepository.getOne(Long.valueOf(questionCmd.getPollId())).getCategoryList().get(0).getCategoryId());
-        pollRepository.findById(Long.valueOf(questionCmd.getPollId())).get().getCategoryList().get(0).getQuestionList().add(question);
+        question.setCategoryId(pollRepository.getOne(Long.valueOf(questionCmd.getPollId())).
+            getCategoryList().get(0).getCategoryId());
+        pollRepository.findById(Long.valueOf(questionCmd.getPollId())).get().getCategoryList().get(0).getQuestionList().
+            add(question);
         questionRepository.save(question);
 
 
@@ -203,13 +205,20 @@ public class QuestionServiceImpl implements QuestionService {
 
     }
 
+    /**
+     * This method changes the category of a question
+     * @param questionId the id of the question
+     * @param newCategoryId the new category id of the question
+     * @param newIndex the new index in the question list of the question
+     * @return returns the question
+     */
     @Override
     public Question changeCategory(final Long questionId, final Long newCategoryId, final Long newIndex) {
-        Question question = questionRepository.findById(questionId).get();
-        long oldCategoryId = questionRepository.findById(questionId).orElseThrow(EntityNotFoundException::new)
+        final Question question = questionRepository.findById(questionId).get();
+        final long oldCategoryId = questionRepository.findById(questionId).orElseThrow(EntityNotFoundException::new)
             .getCategoryId();
-        Category oldCategory = categoryRepository.getOne(oldCategoryId);
-        Category newCategory = categoryRepository.getOne(newCategoryId);
+        final Category oldCategory = categoryRepository.getOne(oldCategoryId);
+        final Category newCategory = categoryRepository.getOne(newCategoryId);
         oldCategory.getQuestionList().remove(question);
         question.setCategoryId(newCategoryId);
         newCategory.getQuestionList().add(newIndex.intValue(), question);

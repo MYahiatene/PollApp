@@ -99,6 +99,14 @@ public class UserController {
     }
 
     /**
+     * Checks if the users token has the authority "Umfrageersteller".
+     */
+    @PreAuthorize("hasAuthority('Creator')")
+    @GetMapping("/checkCreatorToken")
+    public void checkCreatorToken() {
+
+    }
+    /**
      * Deletes a user in the data base.
      *
      * @param deleteUserCmd the user to delete

@@ -22,7 +22,6 @@ public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
 
     private final QuestionRepository questionRepository;
-    private final Logger logger = Logger.getAnonymousLogger();
 
     @Autowired
     public CategoryServiceImpl(final CategoryRepository categoryRepository, final PollRepository pollRepository,
@@ -42,7 +41,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public String deleteCategory(Long categoryId, String questionState) {
+    public String deleteCategory(final Long categoryId, final String questionState) {
         final long pollId = categoryRepository.findById(categoryId).
             orElseThrow(EntityNotFoundException::new).getPollId();
 
@@ -55,7 +54,8 @@ public class CategoryServiceImpl implements CategoryService {
                     question.setCategoryId(standardCategoryId);
                     tmpList.add(question.getQuestionId());
                 });
-            tmpList.forEach(id -> categoryRepository.findById(standardCategoryId).orElseThrow(EntityNotFoundException::new).getQuestionList().add(questionRepository.getOne(id)));
+            tmpList.forEach(id -> categoryRepository.findById(standardCategoryId).orElseThrow(EntityNotFoundException::
+                new).getQuestionList().add(questionRepository.getOne(id)));
         }
         if (questionState.equals("2")) {
             categoryRepository.findById(categoryId).orElseThrow(EntityNotFoundException::new).getQuestionList()
@@ -67,7 +67,7 @@ public class CategoryServiceImpl implements CategoryService {
             remove(categoryRepository.findById(categoryId).orElseThrow(EntityNotFoundException::new));
         categoryRepository.deleteById(categoryId);
 
-        return ("Kategorie gelöscht");
+        return "Kategorie gelöscht";
     }
 
     @Override

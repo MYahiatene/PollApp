@@ -127,7 +127,7 @@ export default {
                 firstName: '',
                 lastName: '',
             },
-            roles: ['Admin', 'Umfrageersteller', 'Umfragebearbeiter', 'Teilnehmer'],
+            roles: ['Admin', 'Creator', 'Editor', 'User'],
             headers: [
                 { text: 'Username', value: 'username', align: 'start' },
                 {

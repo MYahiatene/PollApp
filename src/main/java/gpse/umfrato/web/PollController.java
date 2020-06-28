@@ -1,6 +1,5 @@
 package gpse.umfrato.web;
 
-import gpse.umfrato.domain.cmd.CategoryCmd;
 import gpse.umfrato.domain.cmd.PollCmd;
 import gpse.umfrato.domain.participationlinks.ParticipationLinkService;
 import gpse.umfrato.domain.poll.Poll;
@@ -41,7 +40,7 @@ public class PollController {
      * @return String with PollID or Error
      */
     @PostMapping(value = "/createpoll", produces = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasAuthority('Admin')")
+    @PreAuthorize("hasAnyAuthority('Admin', 'Creator')")
     public String createPoll(final @RequestBody PollCmd pollCmd) {
         try {
             final Poll poll = pollService.createPoll(pollCmd.getCmdPoll());
@@ -77,11 +76,11 @@ public class PollController {
     public Poll getPoll(@PathVariable("link") final String link) {
         final Poll poll = pollService.getPoll(String.valueOf(participationLinkService
             .getPollIdFromParticipationLink(link)));
-        if (poll != null) {
-            return poll;
-        } else {
+        if (poll == null) {
             throw new BadRequestException();
         }
+        return poll;
+
     }
 
     /**
@@ -100,18 +99,34 @@ public class PollController {
         }
     }
 
+    /**
+     * This method returns one poll object.
+     * @param pollId the poll object will be identified by the poll id
+     * @return returns the poll object
+     */
     @GetMapping("/getonepoll")
     public Poll getPoll(final @RequestParam long pollId) {
         return pollService.getPoll(String.valueOf(pollId));
     }
 
+    /**
+     * This method edits the name of the poll.
+     * @param pollCmd the Cmd includes the id and the new name of the poll
+     */
+    @PreAuthorize("hasAnyAuthority('Admin','Creator')")
     @PutMapping("/editpollname")
     public void editPollName(final @RequestBody PollCmd pollCmd) {
         pollService.editPollName(Long.parseLong(pollCmd.getPollId()), pollCmd.getPollName());
     }
 
+    /**
+     * This method deletes a poll.
+     * @param pollCmd the Cmd includes the id of the poll which will be deleted
+     * @return returns a confirmation String
+     */
+    @PreAuthorize("hasAnyAuthority('Admin','Creator')")
     @PutMapping("/deletepoll")
-    public String deletePoll(final @RequestBody PollCmd pollCmd){
+    public String deletePoll(final @RequestBody PollCmd pollCmd) {
         return pollService.deletePoll(pollCmd.getPollId());
     }
 }

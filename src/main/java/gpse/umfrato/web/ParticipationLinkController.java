@@ -22,10 +22,6 @@ public class ParticipationLinkController {
 
     @GetMapping("/participationLinks")
     public List<ParticipationLink> getParticipationLinks() {
-        /*if (participationLinkService.getAllParticipationLinks(pollCmd.getId()).isEmpty()) {
-            throw new BadRequestException();
-        } else {*/
             return participationLinkService.getAllParticipationLinks();
-        //}
     }
 }

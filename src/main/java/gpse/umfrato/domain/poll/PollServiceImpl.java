@@ -1,6 +1,5 @@
 package gpse.umfrato.domain.poll;
 
-import gpse.umfrato.domain.category.Category;
 import gpse.umfrato.domain.category.CategoryRepository;
 import gpse.umfrato.domain.category.CategoryService;
 import gpse.umfrato.domain.question.QuestionRepository;
@@ -9,7 +8,6 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -18,7 +16,6 @@ class PollServiceImpl implements PollService {
     /* default */ final CategoryRepository categoryRepository;
     private final PollRepository pollRepository;
     private final CategoryService categoryService;
-    private final QuestionRepository questionRepository;
     private int anonymUsername = 0;
 
     /**
@@ -30,11 +27,10 @@ class PollServiceImpl implements PollService {
      */
     @Autowired
     public PollServiceImpl(final PollRepository pollRepository, final CategoryService categoryService,
-                           final CategoryRepository categoryRepository, final QuestionRepository questionRepository) {
+                           final CategoryRepository categoryRepository) {
         this.pollRepository = pollRepository;
         this.categoryService = categoryService;
         this.categoryRepository = categoryRepository;
-        this.questionRepository = questionRepository;
     }
 
     /**
@@ -94,15 +90,15 @@ class PollServiceImpl implements PollService {
     }
 
     @Override
-    public void editPollName(Long pollId, String pollName) {
+    public void editPollName(final Long pollId,final String pollName) {
         final Poll poll = pollRepository.getOne(pollId);
         poll.setPollName(pollName);
         pollRepository.save(poll);
     }
 
     @Override
-    public String deletePoll(String pollID) {
+    public String deletePoll(final String pollID) {
         pollRepository.deleteById(Long.valueOf(pollID));
-        return ("Poll erfolgreich gelöscht");
+        return "Poll erfolgreich gelöscht";
     }
 }
