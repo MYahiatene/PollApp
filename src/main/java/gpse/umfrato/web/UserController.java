@@ -54,6 +54,11 @@ public class UserController {
         return HTTP_POST;
     }
 
+    /**
+     * This method edits user details
+     * @param editUserCmd the Cmd includes all necessary details
+     * @return returns a confirmation String
+     */
     @PreAuthorize("hasAuthority('Admin')")
     @PutMapping("editUser")
     public String editUser(final @RequestBody EditUserCmd editUserCmd) {
