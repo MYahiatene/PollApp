@@ -60,7 +60,7 @@ export const actions = {
         /** Export von einem Poll */
         console.log('export start! Poll: ')
         console.log('/api/export/toJSONPoll/{pollId:' + pollId + '}')
-        const response = await this.$axios.post('/api/export/toJSONPoll/{pollId:' + pollId + '}')
+        const response = await this.$axios.post('/export/toJSONPoll/' + pollId)
         console.log('response: ', response)
     },
     async exportResults({ state, commit }) {
