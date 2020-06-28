@@ -75,9 +75,16 @@ public class ExportController {
         return output;*/
     }
 
+    public void writeToFile(String s, Long pollId) throws FileNotFoundException {
+        File file = new File("src/main/java/gpse/umfrato/domain/export/files/"+pollId.toString()+".txt");
+        PrintWriter out = new PrintWriter(file);
+        out.println(s);
+    }
+
     @PostMapping("/toJSONPoll/{pollId:\\d+}")
     public String toJSON(final @PathVariable Long pollId) throws Exception {
         Poll result = pollService.getPoll(pollId);
+        writeToFile(exportService.toJSON(result), pollId);
         return exportService.toJSON(result);
 /*        LOGGER.info(result.toString());
         ObjectMapper objectMapper = new ObjectMapper()
