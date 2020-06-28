@@ -151,7 +151,10 @@
                                         <v-row>
                                             <v-col cols="12" lg="11">
                                                 <p>dateFilter {{ filter.filterIndex }}</p>
-                                                <base-date-filter></base-date-filter>
+                                                <base-date-filter
+                                                    @newDateFilter="updateDateFilter"
+                                                    :filter-index="filter.filterIndex"
+                                                ></base-date-filter>
                                             </v-col>
                                         </v-row>
                                     </v-card>
@@ -196,6 +199,7 @@ export default {
             minConsistencyValue: 0,
             maxConsistencyValue: 0,
             qafilter: false,
+            datefilter: true,
             qafilterList: [
                 { active: true, filterId: 0, filterType: 'qaFilter', categoryId: -1, questionId: -1, answerIds: [] },
             ],
@@ -358,16 +362,18 @@ export default {
                     })
                 }
             }
-            /* if (this.datefilter) {
-                for (const filter in this.dateFilterList) {
-                    filterData.push({
-                        filterType: 'date',
-                        invertFilter: false,
-                        startDate: '10€, dass das',
-                        endDate: 'strings werden?',
-                    })
+            if (this.datefilter) {
+                for (let i = 0; i < this.dateFilterList.length; i++) {
+                    if (this.dateFilterList[i].active) {
+                        filterData.push({
+                            filterType: 'date',
+                            invertFilter: this.dateFilterList[i].invertFilter,
+                            startDate: this.dateFilterList[i].startDate,
+                            endDate: this.dateFilterList[i].endDate,
+                        })
+                    }
                 }
-            } */
+            }
             console.log(filterData)
             // for (let f = 0; f < this.qafilterList.length; f++) {
             //     if (this.qafilterList[f].active) {
@@ -444,13 +450,31 @@ export default {
             this.$forceUpdate()
         },
 
-        // updateDateFilter([filterId, categoryIndex, questionIndex, answerIndices]) {
-        //     console.log('updateDateFilter()')
-        //     this.qafilterList[filterId].categoryIndex = categoryIndex
-        //     this.qafilterList[filterId].questionIndex = questionIndex
-        //     this.qafilterList[filterId].answerIndices = answerIndices
-        //     console.log(this.qafilterList)
-        // },
+        updateDateFilter([filterIndex, startDate, endDate, invertFilter]) {
+            console.log('updateDateFilter()')
+            console.log(startDate.charAt(0))
+            let datesSwitched = false
+
+            if (startDate && endDate) {
+                for (let i = 0; i < startDate.length; i++) {
+                    if (!(startDate.charAt(i) === '-')) {
+                        if (parseInt(startDate.charAt(i), 10) > parseInt(endDate.charAt(i), 10)) {
+                            datesSwitched = true
+                        }
+                    }
+                }
+            }
+
+            if (datesSwitched) {
+                this.dateFilterList[filterIndex].startDate = endDate
+                this.dateFilterList[filterIndex].endDate = startDate
+            } else {
+                this.dateFilterList[filterIndex].startDate = startDate
+                this.dateFilterList[filterIndex].endDate = endDate
+            }
+            this.dateFilterList[filterIndex].invertFilter = invertFilter
+            console.log(this.dateFilterList)
+        },
     },
 }
 </script>

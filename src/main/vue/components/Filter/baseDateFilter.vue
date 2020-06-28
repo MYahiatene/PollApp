@@ -10,13 +10,14 @@
             locale="de"
             :min="min"
             :max="max"
+            @input="$emit('newDateFilter', [filterIndex, dates[0], dates[1], inverted])"
         ></v-date-picker>
 
         <p>Zeige Antworten, die</p>
         <p v-if="inverted">nicht</p>
         <p>in diesem Bereich getätigt wurden.</p>
         <p>
-            {{ dates }}
+            {{ nicelyFormatedDates }}
         </p>
     </div>
 </template>
@@ -31,6 +32,32 @@ export default {
         max: '2100-01-01',
         inverted: false,
     }),
+    props: {
+        filterIndex: {
+            type: Number,
+        },
+    },
+
+    // computed(){
+    //
+    //     startDate(){
+    //         dates
+    //     }
+    //
+    //     nicelyFormatedDates(){
+    //
+    //         if (startDate && endDate) {
+    //             for (let i = 0; i < startDate.length; i++) {
+    //                 if (!(startDate.charAt(i) === '-')) {
+    //                     if (parseInt(startDate.charAt(i), 10) > parseInt(endDate.charAt(i), 10)) {
+    //                         datesSwitched = true
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //     }
+    //
+    // }
 }
 </script>
 
