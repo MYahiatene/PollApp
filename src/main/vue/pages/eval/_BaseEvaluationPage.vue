@@ -29,7 +29,8 @@ that each display a basic evaluation of one specific question-->
                         <!--                    button for refresh-->
 
                         <!--                    <v-btn icon onClick="window.location.reload()" color="primary"><v-icon> mdi-refresh</v-icon></v-btn>-->
-                        <v-btn icon color="primary" @click="forceUpdate"><v-icon> mdi-refresh</v-icon></v-btn>
+                        <v-btn icon color="primary" @click="exportAnswers"><v-icon> mdi-refresh</v-icon></v-btn>
+                        <!--forceUpdate-->
 
                         <!--                    title of the poll-->
                         <v-card-title>{{ pollName }}</v-card-title>

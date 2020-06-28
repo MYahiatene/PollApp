@@ -14,6 +14,9 @@ export const getters = {
     getPolls(state) {
         return state.Polls
     },
+    getPollId(state) {
+        return state.Polls.pollId
+    },
 }
 export const mutations = {
     initializeData(state, data) {
@@ -53,12 +56,14 @@ export const actions = {
         console.log(response)
         commit('initializeData', response)
     },
-    async exportAnswers({ state, commit }, pollId) {
+    async exportAnswers({ state, commit }) {
         /** Export von einem Poll */
-        console.log('export start!')
+        console.log('export start! Poll: ')
+        console.log(getters.getPolls(state))
+        console.log(getters.getPollId(state)) /** This still doesn't work */
         const response = await this.$axios.post(
-            '/export/toJSONPoll' + 1,
-            getters.getPolls().get(pollId)
+            '/export/toJSONPoll',
+            getters.getPolls(state)
         ) /** Was macht das +1 da? */
         console.log('response: ', response)
     },
