@@ -43,4 +43,15 @@ export const actions = {
                 console.log(error)
             })
     },
+
+    async getPollName({ commit }, id) {
+        console.log('Hallo aus der pollName')
+        const response = await this.$axios.get('/getPollName', {
+            params: {
+                pollId: id,
+            },
+        })
+        console.log('responsepollName: ', response.data)
+        return response.data
+    },
 }

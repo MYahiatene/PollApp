@@ -15,7 +15,7 @@
                             <v-text-field
                                 v-model="title"
                                 hint="Wie soll die Umfrage genannt werden?"
-                                :label="getTitle"
+                                :label="pollTitle"
                                 :rules="titleRules"
                                 required
                             >
@@ -184,7 +184,8 @@ export default {
             categoryChange: false,
             visibility: false,
             valid: false,
-            title: this.getTitle(),
+            title: '',
+            pollTitle: 'Titel',
             backgroundColor: null,
             fontColor: null,
             logo: null,
@@ -215,6 +216,7 @@ export default {
     mounted() {
         this.pollId = this.$route.params.pollCopy
         this.getCopyPoll()
+        this.getTitle()
     },
     computed: {
         ...mapGetters({
@@ -333,12 +335,17 @@ export default {
                 console.log('poll', this.poll)
             }
         },
-        getTitle() {
+        async getTitle() {
+            console.log('GetTitle')
             if (this.pollId !== 0) {
-                return 'gettitle0'
+                const response = await this.$store.dispatch('PollCreation/getPollName', this.pollId)
+                console.log(response)
+                this.title = response
+                this.$router.forceUpdate()
+                return response
             }
             console.log('F 333')
-            return 'asdfghgetEquals0'
+            return 'Titel'
         },
     },
 }

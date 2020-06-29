@@ -123,6 +123,11 @@ public class PollController {
         return pollService.getPoll(String.valueOf(pollId));
     }
 
+    @GetMapping("/getPollName")
+    public String getPollName(final @RequestParam long pollId) {
+        LOGGER.info("PollID: " + String.valueOf(pollId));
+        return pollService.getPoll(String.valueOf(pollId)).getPollName();
+    }
 
 }
 
