@@ -130,6 +130,8 @@
                         <v-expansion-panel-content>
                             Hier können Sie den Antwortzeitpunkt der Teilnehmer, die Sie betrachten wollen festlegen.
 
+                            <v-switch label="Teilnahme über Zeit darstellen" v-model="showTimeDiagram"> </v-switch>
+
                             <v-row>
                                 <v-col colls="12" lg="10">
                                     <v-btn @click="addDateFilter"> <v-icon> mdi-plus</v-icon> </v-btn>
@@ -150,7 +152,6 @@
                                         </v-row>
                                         <v-row>
                                             <v-col cols="12" lg="11">
-                                                <p>dateFilter {{ filter.filterIndex }}</p>
                                                 <base-date-filter
                                                     @newDateFilter="updateDateFilter"
                                                     :filter-index="filter.filterIndex"
@@ -297,6 +298,7 @@ export default {
                     },
                 ],
             },
+            showTimeDiagram: false,
         }
     },
     computed: {
@@ -423,6 +425,7 @@ export default {
                             invertFilter: this.dateFilterList[i].invertFilter,
                             startDate: this.dateFilterList[i].startDate,
                             endDate: this.dateFilterList[i].endDate,
+                            timeDiagram: this.showTimeDiagram,
                         })
                     }
                 }
@@ -503,28 +506,16 @@ export default {
             this.$forceUpdate()
         },
 
-        updateDateFilter([filterIndex, startDate, startTime, endDate, endTime, invertFilter]) {
+        updateDateFilter([filterIndex, startDate, endDate, invertFilter]) {
             console.log('updateDateFilter()')
-            console.log(startDate.charAt(0))
-            let datesSwitched = false
+            console.log(startDate)
+            console.log(endDate)
+            console.log(this.dateFilterList)
+            console.log(filterIndex)
 
-            if (startDate && endDate) {
-                for (let i = 0; i < startDate.length; i++) {
-                    if (!(startDate.charAt(i) === '-')) {
-                        if (parseInt(startDate.charAt(i), 10) > parseInt(endDate.charAt(i), 10)) {
-                            datesSwitched = true
-                        }
-                    }
-                }
-            }
+            this.dateFilterList[filterIndex].startDate = startDate
+            this.dateFilterList[filterIndex].endDate = endDate
 
-            if (datesSwitched) {
-                this.dateFilterList[filterIndex].startDate = endDate
-                this.dateFilterList[filterIndex].endDate = startDate
-            } else {
-                this.dateFilterList[filterIndex].startDate = startDate
-                this.dateFilterList[filterIndex].endDate = endDate
-            }
             this.dateFilterList[filterIndex].invertFilter = invertFilter
             console.log(this.dateFilterList)
         },

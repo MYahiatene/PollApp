@@ -70,8 +70,8 @@ export const actions = {
         console.log(data)
         commit('setDiagramData', data)
     },
-    updateData({ state, commit }) {
-        this.$axios
+    async updateData({ state, commit }) {
+        await this.$axios
             .post('/evaluation/generateDiagram', state.FilterList)
             .catch((reason) => {
                 console.log(reason)
