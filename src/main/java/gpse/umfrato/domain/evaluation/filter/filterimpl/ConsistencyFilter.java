@@ -4,22 +4,24 @@ import gpse.umfrato.domain.consistencyquestion.ConsistencyQuestion;
 import gpse.umfrato.domain.answer.Answer;
 import gpse.umfrato.domain.evaluation.filter.Filter;
 import gpse.umfrato.domain.pollresult.PollResult;
+import lombok.AllArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@AllArgsConstructor
 public class ConsistencyFilter implements Filter {
 
-    private final int minNumberOfSuccesses;
     private final List<ConsistencyQuestion> consistencyQuestionList;
+    private final int minNumberOfSuccesses;
 
-    public ConsistencyFilter(final List<ConsistencyQuestion> consistencyQuestionList, final int minNumberOfSuccesses)
-    {
-        this.consistencyQuestionList = consistencyQuestionList;
-        this.minNumberOfSuccesses = minNumberOfSuccesses;
+    @Override
+    public String getFilterType() {
+        return "consistency";
     }
 
-    @Override public List<PollResult> filter(final List<PollResult> input) {
+    @Override
+    public List<PollResult> filter(final List<PollResult> input) {
         final List<PollResult> filteredList = new ArrayList<>();
         for (final PollResult pr: input) {
             int successNr = 0;

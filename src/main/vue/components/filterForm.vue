@@ -32,10 +32,10 @@
                                         <span
                                             v-if="index === questionTitlesDisplayedInSelect"
                                             class="grey--text caption"
-                                            >(und
-                                            {{ selectedQuestions.length - questionTitlesDisplayedInSelect }}
-                                            weitere)</span
                                         >
+                                            (und
+                                            {{ selectedQuestions.length - questionTitlesDisplayedInSelect }} weitere)
+                                        </span>
                                     </template>
                                 </v-select>
                             </v-container>

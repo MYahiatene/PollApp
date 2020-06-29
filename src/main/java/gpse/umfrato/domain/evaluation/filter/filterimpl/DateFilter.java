@@ -20,14 +20,14 @@ public DateFilter(final String startDate, final String endDate, final Boolean in
 {
     if(!(startEmpty = startDate.isEmpty())) {
         try {
-            start = new SimpleDateFormat("yyyy-MM-dd").parse(startDate);
+            start = new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(startDate);
         } catch (ParseException pe) {
             valid = false;
         }
     }
     if(!(endEmpty = endDate.isEmpty())) {
         try {
-            end = new SimpleDateFormat("yyyy-MM-dd").parse(endDate);
+            end = new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(endDate);
         } catch (ParseException pe) {
             valid = false;
         }
@@ -35,7 +35,13 @@ public DateFilter(final String startDate, final String endDate, final Boolean in
     this.inverted = inverted;
 }
 
-@Override public List<PollResult> filter(final List<PollResult> input) {
+    @Override
+    public String getFilterType() {
+        return "date";
+    }
+
+@Override
+public List<PollResult> filter(final List<PollResult> input) {
 
     if(valid)
     {

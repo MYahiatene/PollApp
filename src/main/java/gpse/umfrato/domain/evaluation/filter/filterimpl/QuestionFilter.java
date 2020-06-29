@@ -20,6 +20,11 @@ private final boolean inverted;
 
 private final boolean requireAbsoluteMatch;
 
+    @Override
+    public String getFilterType() {
+        return "questionAnswer";
+    }
+
 @Override public List<PollResult> filter(final List<PollResult> input) {
     final List<PollResult> filteredList = new ArrayList<>();
     for (final PollResult pr: input) {

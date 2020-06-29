@@ -1,31 +1,35 @@
 package gpse.umfrato.domain.evaluation.filter.filterimpl;
 
 import gpse.umfrato.domain.evaluation.filter.Filter;
-import gpse.umfrato.domain.poll.Poll;
 import gpse.umfrato.domain.pollresult.PollResult;
 import lombok.AllArgsConstructor;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @AllArgsConstructor
-public class UserFilter implements Filter {
-    private final List<String> userList;
-    private final boolean inverted;
+public class OrFilter implements Filter {
+    private final List<Filter> filterList;
 
     @Override
     public String getFilterType() {
-        return "user";
+        return "or";
     }
 
-    @Override public List<PollResult> filter(final List<PollResult> input) {
+    @Override public List<PollResult> filter(List<PollResult> input) {
         final List<PollResult> filteredList = new ArrayList<>();
-        for(final PollResult pr:input)
+        for(PollResult pr:input)
         {
-            if(userList.contains(pr.getPollTaker()) != inverted)
+            for(Filter f:filterList)
             {
-                filteredList.add(pr);
+                if(f.filter(Collections.singletonList(pr)).size() == 1)
+                {
+                    filteredList.add(pr);
+                    break;
+                }
             }
+
         }
         return filteredList;
     }
