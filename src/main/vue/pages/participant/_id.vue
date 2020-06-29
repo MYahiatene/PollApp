@@ -43,7 +43,7 @@
                                                 :color="fontColor"
                                                 :rules="textQuestionRules"
                                                 rows="1"
-                                                v-model="lastInput"
+                                                v-model="valueList[index]"
                                                 @input="saveAnswerField($event, question)"
                                             >
                                             </v-textarea>
@@ -53,7 +53,7 @@
                                                 label="Antwort"
                                                 :color="fontColor"
                                                 :rules="textQuestionRules"
-                                                v-model="lastInput"
+                                                v-model="valueList[index]"
                                                 @input="saveAnswerField($event, question)"
                                             ></v-text-field>
                                         </div>
@@ -118,7 +118,7 @@
                                         <!--Thumb label is being shown-->
                                         <div v-if="question.hideValues === false">
                                             <v-slider
-                                                v-model="slideValueList[index]"
+                                                v-model="valueList[index]"
                                                 :min="question.startValue"
                                                 :max="question.endValue"
                                                 :step="question.stepSize"
