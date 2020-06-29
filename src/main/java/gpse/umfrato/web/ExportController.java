@@ -82,6 +82,12 @@ public class ExportController {
         return new FileSystemResource(new File("src/main/java/gpse/umfrato/domain/export/files/"+pollId.toString()+".txt"));
     }
 
+    @RequestMapping(value = "/getResult/{pollId:\\d+}", method = RequestMethod.GET) // This should be a string, I don't know
+    @ResponseBody
+    public FileSystemResource getResult(@PathVariable Long pollId) {
+        return new FileSystemResource(new File("src/main/java/gpse/umfrato/domain/export/files/Results"+pollId.toString()+".txt"));
+    }
+
     public void writeToFile(String s, String pollId) throws FileNotFoundException {
         File file = new File("src/main/java/gpse/umfrato/domain/export/files/"+pollId+".txt");
         PrintWriter out = new PrintWriter(file);
