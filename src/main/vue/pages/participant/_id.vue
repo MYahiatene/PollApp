@@ -414,13 +414,10 @@ export default {
 
                 if (this.givenAnswers[i] != null) {
                     // for RadioButtons we need answer text and given back are the indizes
-                    if (type === ChoiceQuestion && this.getCategory.questionList[i].numberOfPossibleAnswers === 1) {
+                    if (type === 'ChoiceQuestion' && this.getCategory.questionList[i].numberOfPossibleAnswers === 1) {
                         this.valueList.push(this.getCategory.questionList[i].answerPossibilities[this.givenAnswers[i]])
-                    } else if (
-                        // ChoiceQuestions in []
-                        type === ChoiceQuestion &&
-                        this.getCategory.questionList[i].numberOfPossibleAnswers !== 1
-                    ) {
+                    } // for Checkboxes and RangeQuestions it works the same
+                    else if (type === 'ChoiceQuestion' || type === 'RangeQuestion') {
                         const array = []
                         for (let j = 0; j < this.givenAnswers.length; j++) {
                             array.push(this.getCategory.questionList[i].answerPossibilities[this.givenAnswers[i]])
@@ -441,6 +438,7 @@ export default {
                             this.valueList.push([])
                             break
                         case 'RangeQuestion':
+                            this.valueList.push([])
                             break
                         case 'SortQuestion':
                             break
