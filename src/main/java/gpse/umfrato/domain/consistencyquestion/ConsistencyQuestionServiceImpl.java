@@ -1,8 +1,6 @@
-package gpse.umfrato.domain.ConsistencyQuestion;
+package gpse.umfrato.domain.consistencyquestion;
 
-import gpse.umfrato.domain.answer.AnswerRepository;
 import gpse.umfrato.domain.cmd.ConsistencyQuestionCmd;
-import gpse.umfrato.domain.pollresult.PollResultRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,21 +17,20 @@ public class ConsistencyQuestionServiceImpl implements ConsistencyQuestionServic
     }
 
     @Override
-    public ConsistencyQuestion createConsistencyQuestion(ConsistencyQuestionCmd consistencyQuestionCmd) {
-        ConsistencyQuestion cq = new ConsistencyQuestion();
+    public ConsistencyQuestion createConsistencyQuestion(final ConsistencyQuestionCmd consistencyQuestionCmd) {
+        final ConsistencyQuestion cq = new ConsistencyQuestion();
         cqCmdToCq(consistencyQuestionCmd, cq);
         return consistencyQuestionRepository.save(cq);
     }
 
     @Override
-    public void deleteConsistencyQuestion(long consistencyQuestionId) {
-        consistencyQuestionRepository.findById(consistencyQuestionId)
-                .orElseThrow(EntityNotFoundException :: new);
+    public void deleteConsistencyQuestion(final long consistencyQuestionId) {
+        consistencyQuestionRepository.findById(consistencyQuestionId).orElseThrow(EntityNotFoundException :: new);
         consistencyQuestionRepository.deleteById(consistencyQuestionId);
     }
 
     @Override
-    public List<ConsistencyQuestion> getAllConsistencyQuestions(long pollId) {
+    public List<ConsistencyQuestion> getAllConsistencyQuestions(final long pollId) {
         return consistencyQuestionRepository.findConsistencyQuestionsByPollId(pollId);
     }
 
@@ -43,14 +40,14 @@ public class ConsistencyQuestionServiceImpl implements ConsistencyQuestionServic
     }
 
     @Override
-    public void editConsistencyQuestion(long consistencyQuestionId, final ConsistencyQuestionCmd consistencyQuestionCmd) {
+    public void editConsistencyQuestion(final long consistencyQuestionId, final ConsistencyQuestionCmd consistencyQuestionCmd) {
         ConsistencyQuestion cq;
         cq = consistencyQuestionRepository.findById(consistencyQuestionId).orElseThrow(EntityNotFoundException::new);
         cqCmdToCq(consistencyQuestionCmd, cq);
         consistencyQuestionRepository.save(cq);
     }
 
-    private static void cqCmdToCq(ConsistencyQuestionCmd consistencyQuestionCmd, ConsistencyQuestion cq) {
+    private static void cqCmdToCq(final ConsistencyQuestionCmd consistencyQuestionCmd,final ConsistencyQuestion cq) {
         cq.setPollId(consistencyQuestionCmd.getPollId());
         cq.setQuestion1Id(consistencyQuestionCmd.getQuestion1Id());
         cq.setQuestion1Slider(consistencyQuestionCmd.getQuestion1Slider());

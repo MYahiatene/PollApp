@@ -121,7 +121,7 @@ public class QuestionServiceImpl implements QuestionService {
     @Override
     public Question addQuestion(final Long pollId, final Question question) {
         question.setCategoryId(categoryRepository.findCategoriesByPollId(pollId).get(0).getCategoryId());
-        Category category = categoryRepository.findCategoriesByPollId(pollId).get(0);
+        final Category category = categoryRepository.findCategoriesByPollId(pollId).get(0);
         category.getQuestionList().add(question);
         categoryRepository.save(category);
         questionRepository.save(question);

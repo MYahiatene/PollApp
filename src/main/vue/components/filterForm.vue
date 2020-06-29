@@ -162,6 +162,40 @@
                             </div>
                         </v-expansion-panel-content>
                     </v-expansion-panel>
+                    <v-spacer />
+                    <v-expansion-panel>
+                        <v-expansion-panel-header>
+                            Sessionmanagement
+                        </v-expansion-panel-header>
+                        <v-expansion-panel-content>
+                            Hier können Sie Auswertungs-Sessions speichern und laden.
+                            <v-row>
+                                <v-col cols="6">
+                                    <v-overflow-btn
+                                        v-model="choosenSessionTitle"
+                                        label="Session zum laden wählen"
+                                        editable
+                                        :items="sessions"
+                                    >
+                                    </v-overflow-btn>
+                                    <v-btn color="primary" @click="loadOneSession()">
+                                        Laden
+                                    </v-btn>
+                                </v-col>
+                                <v-col cols="6">
+                                    <v-text-field
+                                        v-model="sessionTitle"
+                                        label="Sessiontitel"
+                                        hint="Sie sollten jeder Session einen Namen geben, um sie später unterscheiden zu können."
+                                    >
+                                    </v-text-field>
+                                    <v-btn color="primary" @click="saveToStore(), saveThisSession()">
+                                        Speichern
+                                    </v-btn>
+                                </v-col>
+                            </v-row>
+                        </v-expansion-panel-content>
+                    </v-expansion-panel>
                 </v-expansion-panels>
             </template>
             <v-card-actions>
@@ -198,6 +232,8 @@ export default {
             applyConsistency: false,
             minConsistencyValue: 0,
             maxConsistencyValue: 0,
+            sessionTitle: '',
+            choosenSessionTitle: '',
             qafilter: false,
             datefilter: true,
             qafilterList: [
@@ -266,6 +302,7 @@ export default {
     computed: {
         ...mapGetters({
             polls: 'evaluation/getPolls',
+            getSessions: 'evaluation/getSessions',
         }),
 
         pollTitles() {
@@ -319,6 +356,15 @@ export default {
             console.log(questionTitles)
             return questionTitles
         },
+
+        sessions() {
+            const sessions = this.getSessions
+            const titles = []
+            for (let i = 0; i < sessions.length; i++) {
+                titles.push(sessions[i].sessionTitle)
+            }
+            return titles
+        },
     },
     mounted() {
         console.log('mounted()')
@@ -328,10 +374,16 @@ export default {
         console.log(this.chosenPoll)
         console.log(this.initialPollIndex)
         this.selectedQuestions = this.questionTitles
+        this.loadSessions()
         this.updateNumberOfConsistencyQuestions()
     },
     methods: {
-        ...mapActions({ sendFilter: 'evaluation/sendFilter' }),
+        ...mapActions({
+            sendFilter: 'evaluation/sendFilter',
+            saveSession: 'evaluation/saveSession',
+            loadSessions: 'evaluation/loadSessions',
+            loadSession: 'evaluation/loadSession',
+        }),
 
         async saveToStore() {
             console.log('saveToStore()')
@@ -348,22 +400,20 @@ export default {
             console.log('Jo')
             console.log(this.qafilterList)
             console.log(filterData)
-            if (this.qafilter) {
-                for (let i = 0; i < this.qafilterList.length; i++) {
-                    console.log(i)
-                    const filter = this.qafilterList[i]
-                    console.log(this.qafilterList)
-                    console.log(this.polls)
-                    console.log(this.pollIndex)
-                    filterData.push({
-                        filterType: 'questionAnswer',
-                        invertFilter: false,
-                        targetQuestionId: this.polls[this.pollIndex].categoryList[filter.categoryIndex].questionList[
-                            filter.questionIndex
-                        ].questionId,
-                        targetAnswerPossibilities: filter.answerIndices,
-                    })
-                }
+            for (let i = 0; i < this.qafilterList.length; i++) {
+                console.log(i)
+                const filter = this.qafilterList[i]
+                console.log(this.qafilterList)
+                console.log(this.polls)
+                console.log(this.pollIndex)
+                filterData.push({
+                    filterType: 'questionAnswer',
+                    invertFilter: false,
+                    targetQuestionId: this.polls[this.pollIndex].categoryList[filter.categoryIndex].questionList[
+                        filter.questionIndex
+                    ].questionId,
+                    targetAnswerPossibilities: filter.answerIndices,
+                })
             }
             if (this.datefilter) {
                 for (let i = 0; i < this.dateFilterList.length; i++) {
@@ -477,6 +527,28 @@ export default {
             }
             this.dateFilterList[filterIndex].invertFilter = invertFilter
             console.log(this.dateFilterList)
+        },
+
+        saveThisSession() {
+            console.log('saveThisSession()')
+            this.saveToStore()
+            const payload = {
+                sessionTitle: this.sessionTitle,
+                lastUsername: 'Jan',
+            }
+            this.saveSession(payload)
+        },
+
+        loadOneSession() {
+            console.log('loadOneSession()')
+            let id = -1
+            const sessions = this.getSessions
+            for (let i = 0; i < sessions.length; i++) {
+                if (sessions[i].sessionTitle === this.choosenSessionTitle) {
+                    id = sessions[i].sessionId
+                }
+            }
+            this.loadSession(id)
         },
     },
 }

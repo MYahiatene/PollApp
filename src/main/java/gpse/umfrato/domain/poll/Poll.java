@@ -33,6 +33,7 @@ public class Poll {
     /**
      * This attribute represents the date when the poll was created.
      */
+    //TODO: zu Date machen?
     private String creationDate;
 
     /**

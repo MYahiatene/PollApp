@@ -1,4 +1,4 @@
-package gpse.umfrato.domain.ConsistencyQuestion;
+package gpse.umfrato.domain.consistencyquestion;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

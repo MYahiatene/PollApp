@@ -1,6 +1,5 @@
-package gpse.umfrato.domain.ConsistencyQuestion;
+package gpse.umfrato.domain.consistencyquestion;
 
-import gpse.umfrato.domain.category.Category;
 import gpse.umfrato.domain.cmd.ConsistencyQuestionCmd;
 
 import java.util.List;

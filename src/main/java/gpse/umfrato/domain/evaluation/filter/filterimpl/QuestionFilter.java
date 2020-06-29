@@ -1,6 +1,7 @@
-package gpse.umfrato.domain.evaluation.filterblocks.filterimpl;
+package gpse.umfrato.domain.evaluation.filter.filterimpl;
 
 import gpse.umfrato.domain.answer.Answer;
+import gpse.umfrato.domain.evaluation.filter.Filter;
 import gpse.umfrato.domain.pollresult.PollResult;
 import lombok.AllArgsConstructor;
 
@@ -17,7 +18,7 @@ private final List<String> targetAnswerPossibilities;
 
 private final boolean inverted;
 
-private final boolean absoluteMatch;
+private final boolean requireAbsoluteMatch;
 
 @Override public List<PollResult> filter(final List<PollResult> input) {
     final List<PollResult> filteredList = new ArrayList<>();
@@ -26,7 +27,7 @@ private final boolean absoluteMatch;
         if (pr.getPollId().equals(targetPollId)) {
             for (final Answer a: pr.getAnswerList()) {
                 if (a.getQuestionId().equals(targetQuestionId)) {
-                    if (absoluteMatch) {
+                    if (requireAbsoluteMatch) {
                         match = true;
                         for (final String ga: a.getGivenAnswerList()) {
                             if (!targetAnswerPossibilities.contains(ga)) {
@@ -51,9 +52,5 @@ private final boolean absoluteMatch;
         }
     }
     return filteredList;
-}
-
-@Override public List<Double> compute(final List<PollResult> input) {
-    return null;
 }
 }

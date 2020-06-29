@@ -3,6 +3,7 @@ export const state = () => ({
     Polls: [],
     FilterList: [],
     pollId: -1,
+    Sessions: [],
 })
 export const getters = {
     getDiagramData(state) {
@@ -17,6 +18,9 @@ export const getters = {
     },
     getPolls(state) {
         return state.Polls
+    },
+    getSessions(state) {
+        return state.Sessions
     },
 }
 export const mutations = {
@@ -33,6 +37,9 @@ export const mutations = {
     saveFilter(state, filterList) {
         state.FilterList = filterList
     },
+    setSessions(state, data) {
+        state.Sessions = data.data
+    },
     setPollID(state, id) {
         state.pollId = id
         state.FilterList = [
@@ -44,7 +51,6 @@ export const mutations = {
         ]
     },
 }
-
 export const actions = {
     async initialize({ commit }, pollId) {
         console.log('INIT')
@@ -89,5 +95,50 @@ export const actions = {
                 commit('setDiagramData', response)
             })
         console.log('store durch')
+    },
+    async saveSession({ state, commit }, sessionInfo) {
+        console.log('saveSession()')
+        console.log(sessionInfo)
+        const payload = {
+            pollId: state.pollId,
+            sessionTitle: sessionInfo.sessionTitle,
+            lastUsername: sessionInfo.lastUsername,
+            diagramColors: [],
+            filterList: state.FilterList,
+        }
+        await this.$axios
+            .post('/evaluation/saveSession', payload)
+            .then((response) => {
+                console.log(response)
+            })
+            .catch((reason) => {
+                console.log(reason)
+            })
+    },
+
+    async loadSessions({ state, commit }) {
+        console.log('getSessions()')
+        await this.$axios
+            .get('/evaluation/getSessions/' + state.pollId)
+            .then((response) => {
+                console.log(response)
+                commit('setSessions', response)
+            })
+            .catch((reason) => {
+                console.log(reason)
+            })
+    },
+
+    async loadSession({ state, commit }, sessionId) {
+        console.log('loadSession(' + sessionId + ')')
+        await this.$axios
+            .get('/evaluation/loadSession/' + sessionId)
+            .then((response) => {
+                console.log(response)
+                commit('saveFilter', response.data.filterList)
+            })
+            .catch((reason) => {
+                console.log(reason)
+            })
     },
 }

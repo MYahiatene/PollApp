@@ -60,7 +60,7 @@ public class AnswerServiceImpl implements AnswerService {
         if (!answerDa) {
             pollResult.getAnswerList().add(answer);
         }
-        final DateFormat df = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+        final DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         final Date dateobj = new Date();
         pollResult.setLastEditAt(df.format(dateobj));
         answerRepository.save(answer);
