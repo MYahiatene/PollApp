@@ -210,7 +210,10 @@ export default {
                     filterIndex: 0,
                     filterType: 'date',
                     endDate: '',
+                    endTime: '',
                     startDate: '',
+                    startTime: '',
+
                     invertFilter: false,
                 },
             ],
@@ -450,7 +453,7 @@ export default {
             this.$forceUpdate()
         },
 
-        updateDateFilter([filterIndex, startDate, endDate, invertFilter]) {
+        updateDateFilter([filterIndex, startDate, startTime, endDate, endTime, invertFilter]) {
             console.log('updateDateFilter()')
             console.log(startDate.charAt(0))
             let datesSwitched = false

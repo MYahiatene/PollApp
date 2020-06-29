@@ -13,9 +13,9 @@
             @input="update()"
         ></v-date-picker>
 
-        <p>Zeige Antworten, die {{ conditional }} zwischen dem {{ startDate }}</p>
+        <p>Zeige Antworten, die {{ conditional }} zwischen dem {{ startDate }} {{ time1 }}</p>
         <v-text-field label="Uhrzeit" :value="time1" type="time" style="width: 170px;"></v-text-field>
-        <p>und dem {{ endDate }}</p>
+        <p>und dem {{ endDate }} {{ time2 }}</p>
         <v-text-field label="Uhrzeit" :value="time2" type="time" style="width: 170px;"></v-text-field>
         <p>getätigt wurden.</p>
     </div>
