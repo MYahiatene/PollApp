@@ -75,8 +75,8 @@ public class ExportController {
         return output;*/
     }
 
-    public void writeToFile(String s, Long pollId) throws FileNotFoundException {
-        File file = new File("src/main/java/gpse/umfrato/domain/export/files/"+pollId.toString()+".txt");
+    public void writeToFile(String s, String pollId) throws FileNotFoundException {
+        File file = new File("src/main/java/gpse/umfrato/domain/export/files/"+pollId+".txt");
         PrintWriter out = new PrintWriter(file);
         out.println(s);
     }
@@ -84,7 +84,7 @@ public class ExportController {
     @PostMapping("/toJSONPoll/{pollId:\\d+}")
     public String toJSON(final @PathVariable Long pollId) throws Exception {
         Poll result = pollService.getPoll(pollId);
-        writeToFile(exportService.toJSON(result), pollId);
+        writeToFile(exportService.toJSON(result), pollId.toString());
         return exportService.toJSON(result);
 /*        LOGGER.info(result.toString());
         ObjectMapper objectMapper = new ObjectMapper()
@@ -114,7 +114,7 @@ public class ExportController {
     @PostMapping("/toJSONPollResult/{pollId:\\d+}")
     public String toJSONResult(final @PathVariable Long pollID) throws Exception {
         List<PollResult> results = pollResultService.getPollResults(pollID);
-        writeToFile(exportService.toJSON(results), pollID);
+        writeToFile(exportService.toJSON(results), "Results"+pollID.toString());
         return exportService.toJSON(results);
 /*        ObjectMapper objectMapper = new ObjectMapper()
             .findAndRegisterModules();
