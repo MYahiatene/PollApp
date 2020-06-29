@@ -64,11 +64,12 @@
                                     <!--Only to debug, otherwise numberOfPossibleAnswer === 1-->
                                     <div v-if="question.numberOfPossibleAnswers === 1">
                                         <v-card-text>
-                                            <v-radio-group>
+                                            <v-radio-group v-model="valueList[index]">
                                                 <v-radio
                                                     v-for="answer in question.answerPossibilities"
                                                     :key="answer.text"
                                                     :label="`${answer}`"
+                                                    :value="answer"
                                                     @change="saveAnswerRadioButton(question, answer)"
                                                 ></v-radio>
                                             </v-radio-group>
@@ -214,6 +215,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import draggable from 'vuedraggable'
+import ChoiceQuestion from '../../components/ChoiceQuestion'
 
 export default {
     name: 'Participant',
@@ -403,20 +405,17 @@ export default {
         },
     },
     methods: {
-        /**
-         * Generates an array in the size of the number of questions with all 0, to use as values for the slider.
-         */
-        valuesForSlideQuestion() {
-            for (let i = 0; i < this.getCategory.questionList.length; i++) {
-                this.slideValueList.push(0)
-            }
-        },
         valuesForQuestions() {
             for (let i = 0; i < this.getCategory.questionList.length; i++) {
                 const type = this.getCategory.questionList[i].questionType
 
                 if (this.givenAnswers[i] != null) {
-                    this.valueList.push(this.givenAnswers[i])
+                    // for RadioButtons we need answer text and given back are the indizes
+                    if (type === ChoiceQuestion && this.getCategory.questionList[i].numberOfPossibleAnswers === 1) {
+                        this.valueList.push(this.getCategory.questionList[i].answerPossibilities[this.givenAnswers[i]])
+                    } else {
+                        this.valueList.push(this.givenAnswers[i])
+                    }
                 } else {
                     switch (type) {
                         case 'TextQuestion':
@@ -426,6 +425,7 @@ export default {
                             this.valueList.push(0)
                             break
                         case 'ChoiceQuestion':
+                            this.valueList.push('') // This works for RadioButton, let's see if for MultipleChoice too, or else another if
                             break
                         case 'RangeQuestion':
                             break
@@ -435,6 +435,18 @@ export default {
                 }
             }
             console.log(this.valueList)
+        },
+        radioValue(question, answer) {
+            /* for (let i = 0; i < question.answerPossibilities.length; i++) {
+                if (question.answerPossibilities[i] === answer) {
+                    if (this.valueList[this.index][0] === i) {
+                        return 'selected'
+                    } else {
+                        return ''
+                    }
+                }
+            } */
+            return 'selected'
         },
         /**
          * Holt sich die gegebene Antwort des Textfeldes aus dem Array ownAnswers und schickt die Antwort mit der
