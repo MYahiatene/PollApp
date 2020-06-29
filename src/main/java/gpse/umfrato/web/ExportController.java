@@ -111,9 +111,11 @@ public class ExportController {
         return null;*/
     }
 
-    @PostMapping("/toJSONPollResult")
-    public String toJSON(final @RequestBody List<PollResult> result) throws Exception {
-        return exportService.toJSON(result);
+    @PostMapping("/toJSONPollResult/{pollId:\\d+}")
+    public String toJSONResult(final @PathVariable Long pollID) throws Exception {
+        List<PollResult> results = pollResultService.getPollResults(pollID);
+        writeToFile(exportService.toJSON(results), pollID);
+        return exportService.toJSON(results);
 /*        ObjectMapper objectMapper = new ObjectMapper()
             .findAndRegisterModules();
         try {

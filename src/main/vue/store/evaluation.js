@@ -58,18 +58,15 @@ export const actions = {
     },
     async exportAnswers({ state, commit }, pollId) {
         /** Export von einem Poll */
-        console.log('export start! Poll: ')
+        console.log('export start!')
         console.log('/api/export/toJSONPoll/{pollId:' + pollId + '}')
         const response = await this.$axios.post('/export/toJSONPoll/' + pollId)
         console.log('response: ', response)
     },
-    async exportResults({ state, commit }) {
-        /** Export von einer Liste an PollResults */
+    async exportResults({ state, commit }, pollId) {
         console.log('export start!')
-        const response = await this.$axios.post(
-            '/export/toJSONPollResult' + 1,
-            getters.getDiagramData()
-        ) /** Was macht das +1 da? */
+        console.log('/api/export/toJSONPollResult/{pollId:' + pollId + '}')
+        const response = await this.$axios.post('/export/toJSONPollResult/' + pollId)
         console.log('response: ', response)
     },
 }

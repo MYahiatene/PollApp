@@ -195,6 +195,7 @@ that each display a basic evaluation of one specific question-->
         </v-container>
         <v-container>
             <v-btn class="pl-4" @click="exportAnswers()">Antworten exportieren </v-btn>
+            <v-btn class="pl-4" @click="exportResults()">Antworten exportieren </v-btn>
         </v-container>
     </v-container>
 </template>
@@ -293,6 +294,9 @@ export default {
 
         exportAnswers() {
             this.$store.dispatch('evaluation/exportAnswers', 1) // This should be PollId
+        },
+        exportResults() {
+            this.$store.dispatch('evaluation/exportResults', 1) // This should be PollId
         },
         /*
 

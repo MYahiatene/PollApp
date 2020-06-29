@@ -85,6 +85,7 @@ public class ExportServiceImpl implements ExportService {
         ObjectMapper objectMapper = new ObjectMapper()
             .findAndRegisterModules();
         try {
+            System.out.println("JSONDATA: "+objectMapper.writeValueAsString(result));
             return objectMapper.writeValueAsString(result);
         } catch (JsonProcessingException e) {
             throw new Exception("Serialisierung fehlgeschlagen");
