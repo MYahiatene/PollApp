@@ -55,16 +55,35 @@
                             <v-container fluid>
                                 <v-row>
                                     <v-col colls="12" lg="10">
-                                        <v-slider
-                                            v-model="minConsistencyValue"
-                                            min="0"
-                                            step="1"
-                                            :max="maxConsistencyValue"
-                                            :thumbLabel="true"
-                                            hint="Es werden nur noch Teilnehmer angezeigt, die mindestens diese Anzahl von Konsistenzfragen bestanden haben."
-                                            label="Konsistenzfragen"
-                                        >
-                                        </v-slider>
+                                        <div v-if="maxConsistencyValue === 0">
+                                            Erstelle erst Konsistenzfragen!
+                                        </div>
+                                        <div v-else-if="maxConsistencyValue === 1">
+                                            <v-switch
+                                                v-model="consistencyOn"
+                                                hint="Es werden nur noch Teilnehmer angezeigt, die mindestens diese Anzahl von Konsistenzfragen bestanden haben."
+                                                label="Konsistenzfrage anwenden"
+                                                @change="
+                                                    consistencyOn
+                                                        ? (minConsistencyValue = 1)
+                                                        : (minConsistencyValue = 0)
+                                                "
+                                            >
+                                            </v-switch>
+                                        </div>
+                                        <div v-else>
+                                            <v-slider
+                                                v-model="minConsistencyValue"
+                                                min="0"
+                                                step="1"
+                                                :max="maxConsistencyValue"
+                                                :thumbLabel="true"
+                                                hint="Es werden nur noch Teilnehmer angezeigt, die mindestens diese Anzahl von Konsistenzfragen bestanden haben."
+                                                label="Konsistenzfragen"
+                                                @change="updateConsistencyOn()"
+                                            >
+                                            </v-slider>
+                                        </div>
                                     </v-col>
                                     <v-col>
                                         <control-questions
@@ -115,7 +134,7 @@
                                                             qafilterList[filter.filterId].questionId
                                                         "
                                                         :initial-answer-indices="
-                                                            qafilterList[filter.filterId].answerIds
+                                                            qafilterList[filter.filterId].answerIndices
                                                         "
                                                         @updateData="updateQaFilter"
                                                     ></base-q-a-filter>
@@ -309,6 +328,7 @@ export default {
                 ],
             },
             showTimeDiagram: false,
+            consistencyOn: false,
         }
     },
     computed: {
@@ -563,6 +583,11 @@ export default {
                 }
             }
             this.loadSession(id)
+        },
+
+        updateConsistencyOn() {
+
+            this.consistencyOn = !(this.minConsistencyValue === 0)
         },
     },
 }
