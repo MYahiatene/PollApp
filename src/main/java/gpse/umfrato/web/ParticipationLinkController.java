@@ -15,7 +15,6 @@ import java.util.logging.Logger;
 @RestController
 @CrossOrigin
 public class ParticipationLinkController {
-    private static final Logger LOGGER = Logger.getLogger("ParticipationLinkController");
     private final ParticipationLinkService participationLinkService;
 
     @Autowired

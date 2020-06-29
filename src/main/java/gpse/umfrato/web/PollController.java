@@ -20,7 +20,6 @@ import java.util.logging.Logger;
 @RestController
 @CrossOrigin
 public class PollController {
-    private static final Logger LOGGER = Logger.getLogger("PollController");
     private final PollService pollService;
     private final ParticipationLinkService participationLinkService;
 

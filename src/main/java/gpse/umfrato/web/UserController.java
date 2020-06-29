@@ -3,6 +3,7 @@ package gpse.umfrato.web;
 import gpse.umfrato.domain.cmd.DeleteUserCmd;
 import gpse.umfrato.domain.cmd.EditUserCmd;
 import gpse.umfrato.domain.cmd.UserCmd;
+import gpse.umfrato.domain.password.RandomPasswordGenerator;
 import gpse.umfrato.domain.user.User;
 import gpse.umfrato.domain.user.UserRepository;
 import gpse.umfrato.domain.user.UserService;
@@ -58,7 +59,7 @@ public class UserController {
     }
 
     /**
-     * This method edits user details
+     * This method edits user details.
      *
      * @param editUserCmd the Cmd includes all necessary details
      * @return returns a confirmation String
@@ -126,5 +127,13 @@ public class UserController {
     public String deleteUser(final @RequestBody DeleteUserCmd deleteUserCmd) {
         userService.deleteUser(deleteUserCmd.getUsername());
         return "test";
+    }
+
+    // todo: test function only
+    @PreAuthorize("hasAuthority('Admin')")
+    @PostMapping("/generatepwd")
+    public String generatePwd() {
+        final RandomPasswordGenerator randomPasswordGenerator = new RandomPasswordGenerator();
+        return new String(randomPasswordGenerator.generatePwd());
     }
 }

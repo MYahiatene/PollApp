@@ -1,13 +1,16 @@
 package gpse.umfrato.domain.user;
 
+import gpse.umfrato.domain.password.RandomPasswordGenerator;
 import gpse.umfrato.web.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Primary
@@ -27,11 +30,23 @@ class UserServiceImpl implements UserService {
      * @param role the roles from user
      * @return created user
      */
+    // todo: send password form here to user
     @Override
     public User createUser(final String username, final String password, final String firstName,
                            final String lastName, final String role, final String email) {
-        final User user = new User(username, password, firstName, lastName, role, email);
-        return userRepository.save(user);
+        final RandomPasswordGenerator randomPasswordGenerator = new RandomPasswordGenerator();
+        // for a completely fresh user to be generated the password value sent from the frontend must be null
+        if (password == null) {
+            char[] safePwd = randomPasswordGenerator.generatePwd();
+            String encryptedSafePwd = PasswordEncoderFactories.createDelegatingPasswordEncoder().encode(new String(safePwd));
+            final User user = new User(username, encryptedSafePwd, firstName, lastName, role, email);
+            // todo: send here the unencrypted pw to user
+            Arrays.fill(safePwd,'*');
+            return userRepository.save(user);
+        } else {
+            final User user = new User(username, password, firstName, lastName, role, email);
+            return userRepository.save(user);
+        }
     }
 
     /**
