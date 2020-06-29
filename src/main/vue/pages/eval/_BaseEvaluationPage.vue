@@ -301,18 +301,7 @@ export default {
             this.$store.dispatch('evaluation/exportResults', 1) // This should be PollId
         },
         downloadClick(pollId) {
-            this.$axios({
-                url: 'http://localhost:8000/export/files' + pollId + '.txt', // Export folder
-                method: 'GET',
-                responseType: 'blob',
-            }).then((response) => {
-                const fileURL = window.URL.createObjectURL(new Blob([response.data]))
-                const fileLink = document.createElement('a')
-                fileLink.href = fileURL
-                fileLink.setAttribute('download', 'file.pdf')
-                document.body.appendChild(fileLink)
-                fileLink.click()
-            })
+            console.log(this.$store.dispatch('evaluation/awaitPollText', 1))
         },
         /*
 

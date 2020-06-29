@@ -15,6 +15,7 @@ import gpse.umfrato.domain.question.Question;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.web.bind.annotation.*;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -73,6 +74,12 @@ public class ExportController {
         }
         output += '\n';
         return output;*/
+    }
+
+    @RequestMapping(value = "/getFile/{pollId:\\d+}", method = RequestMethod.GET) // This should be a string, I don't know
+    @ResponseBody
+    public FileSystemResource getFile(@PathVariable Long pollId) {
+        return new FileSystemResource(new File("src/main/java/gpse/umfrato/domain/export/files/"+pollId.toString()+".txt"));
     }
 
     public void writeToFile(String s, String pollId) throws FileNotFoundException {

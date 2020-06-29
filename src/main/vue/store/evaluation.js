@@ -69,4 +69,11 @@ export const actions = {
         const response = await this.$axios.post('/export/toJSONPollResult/' + pollId)
         console.log('response: ', response)
     },
+    async awaitPollText({ state, commit }, fileName) {
+        console.log('trying to find file ')
+        console.log('api/export/filename:{' + fileName + '}')
+        const response = await this.$axios.get('/export/getFile/' + fileName)
+        console.log('response: ', response)
+        return response
+    },
 }
