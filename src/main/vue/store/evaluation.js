@@ -14,7 +14,7 @@ export const getters = {
     getPolls(state) {
         return state.Polls
     },
-    getPollId(state) {
+    getFileName(state) {
         return state.Polls.pollId
     },
 }
