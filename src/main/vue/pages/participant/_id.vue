@@ -62,7 +62,7 @@
                                 <div v-else-if="question.questionType === 'ChoiceQuestion'">
                                     <!--Radio Button since only one answer possible-->
                                     <!--Only to debug, otherwise numberOfPossibleAnswer === 1-->
-                                    <div v-if="question.numberOfPossibleAnswers === 1">
+                                    <div v-if="question.numberOfPossibleAnswers === 0">
                                         <v-card-text>
                                             <v-radio-group v-model="valueList[index]">
                                                 <v-radio
@@ -94,6 +94,8 @@
                                                 dense
                                                 :label="answer"
                                                 :color="fontColor"
+                                                :value="answer"
+                                                v-model="valueList[index]"
                                                 @change="saveAnswerCheckbox($event, question, answer)"
                                             ></v-checkbox>
                                         </v-list>
@@ -250,6 +252,7 @@ export default {
             AnswerListsOfSortQuestions: [[1], [2], [3]],
             lastInput: 'Letzte Eingabe',
             valueList: [],
+            selected: [],
         }
     },
     /**
@@ -413,6 +416,16 @@ export default {
                     // for RadioButtons we need answer text and given back are the indizes
                     if (type === ChoiceQuestion && this.getCategory.questionList[i].numberOfPossibleAnswers === 1) {
                         this.valueList.push(this.getCategory.questionList[i].answerPossibilities[this.givenAnswers[i]])
+                    } else if (
+                        // ChoiceQuestions in []
+                        type === ChoiceQuestion &&
+                        this.getCategory.questionList[i].numberOfPossibleAnswers !== 1
+                    ) {
+                        const array = []
+                        for (let j = 0; j < this.givenAnswers.length; j++) {
+                            array.push(this.getCategory.questionList[i].answerPossibilities[this.givenAnswers[i]])
+                        }
+                        this.valueList.push(array)
                     } else {
                         this.valueList.push(this.givenAnswers[i])
                     }
@@ -425,7 +438,7 @@ export default {
                             this.valueList.push(0)
                             break
                         case 'ChoiceQuestion':
-                            this.valueList.push('') // This works for RadioButton, let's see if for MultipleChoice too, or else another if
+                            this.valueList.push([])
                             break
                         case 'RangeQuestion':
                             break
