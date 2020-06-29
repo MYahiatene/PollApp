@@ -47,7 +47,12 @@ public class Statistics {
         this.categoryService = categoryService;
         this.consistencyQuestionService = consistencyQuestionService;
         pollId = data.getBasePollId();
-        showParticipantsOverTime = data.getTimeDiagram();
+        if(data.getTimeDiagram() == null) {
+            showParticipantsOverTime = false;
+        }
+        else {
+            showParticipantsOverTime = data.getTimeDiagram();
+        }
         final List<Category> categories = categoryService.getAllCategories(pollId);
         if (data.getBaseQuestionIds().isEmpty()) {
             for (final Category c: categories) {
@@ -112,7 +117,7 @@ public class Statistics {
         final int participantCountFiltered = prs.size();
         LOGGER.info(prs.toString());
         final Poll p = pollService.getPoll(pollId);
-        final String response = NAME_STRING + p.getPollName() + PARTICIPANTS_STRING + "(" + participantCountFiltered + "/" + participantCountUnfiltered + ")" + "\",\"questionList\": ";
+        final String response = NAME_STRING + p.getPollName() + PARTICIPANTS_STRING + participantCountFiltered + "/" + participantCountUnfiltered + "\",\"questionList\": ";
         if (prs.isEmpty()) {
             LOGGER.warning("Leere Umfrage");
             return response + "[]}";

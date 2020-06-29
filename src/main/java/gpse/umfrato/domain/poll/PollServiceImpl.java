@@ -89,14 +89,6 @@ class PollServiceImpl implements PollService {
     }
 
     @Override public List<Poll> getLastEditedPolls() {
-        final List<Poll> allPolls = pollRepository.findAll();
-        if(allPolls.size() > 5)
-        {
-            return allPolls.subList(0,5);
-        }
-        else
-        {
-            return allPolls;
-        }
+        return pollRepository.findTop5ByOrderByLastEditAt();
     }
 }

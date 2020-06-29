@@ -6,11 +6,6 @@
             <v-toolbar-title> {{ questionTitle }} </v-toolbar-title>
 
             <v-spacer></v-spacer>
-            <!-- Here we have the BlockDialog that can be used to filter ans analyse this question or the entire poll-->
-            <v-btn :to="'/filterForm'" color="primary">
-                Analyse
-            </v-btn>
-
             <!--            this button leads to the settings page for this specific question-->
 
             <v-btn icon color="primary" @click="visualSettings = !visualSettings">

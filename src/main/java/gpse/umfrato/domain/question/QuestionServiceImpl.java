@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -109,6 +111,7 @@ public class QuestionServiceImpl implements QuestionService {
             question.setCategoryId(categoryRepository.findCategoriesByPollId(questionCmd.getPollId()).get(0).getCategoryId());
             categoryRepository.findCategoriesByPollId(questionCmd.getPollId()).get(0).getQuestionList().add(question);
             questionRepository.save(question);
+            //TODO: pollService.getPoll(questionCmd.getPollId()).setLastEditAt(new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date()));
         }
         return question;
     }

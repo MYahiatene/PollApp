@@ -20,7 +20,12 @@
                             Hier können Sie die Fragen auswählen, die in der Analyse betrachtet werden sollen.
 
                             <v-container fluid>
-                                <v-select v-model="selectedQuestions" :items="questionTitles" multiple>
+                                <v-select
+                                    v-model="selectedQuestions"
+                                    :items="questionTitles"
+                                    multiple
+                                    :no-data-text="'Keine Fragen ausgewählt'"
+                                >
                                     <template v-slot:selection="{ item, index }">
                                         <v-chip
                                             v-if="index < questionTitlesDisplayedInSelect"
@@ -238,7 +243,15 @@ export default {
             qafilter: false,
             datefilter: true,
             qafilterList: [
-                { active: true, filterId: 0, filterType: 'qaFilter', categoryId: -1, questionId: -1, answerIds: [] },
+                {
+                    active: true,
+                    filterId: 0,
+                    filterType: 'qaFilter',
+                    categoryId: -1,
+                    questionId: -1,
+                    answerIndices: [],
+                    invertFilter: false,
+                },
             ],
 
             dateFilterList: [
@@ -247,10 +260,7 @@ export default {
                     filterIndex: 0,
                     filterType: 'date',
                     endDate: '',
-                    endTime: '',
                     startDate: '',
-                    startTime: '',
-
                     invertFilter: false,
                 },
             ],
@@ -312,7 +322,7 @@ export default {
             const pollTitles = []
             console.log(this.polls)
             for (let i = 0; i < this.polls.length; i++) {
-                pollTitles.push(' (#' + this.polls[i].pollId + ') ' + this.polls[i].pollName)
+                pollTitles.push('#' + this.polls[i].pollId + ' ' + this.polls[i].pollName)
             }
             console.log(pollTitles)
             return pollTitles
@@ -327,6 +337,7 @@ export default {
         },
 
         chosenQuestionIds() {
+            console.log('chosenQuestionIds()')
             const questionIds = []
             for (let i = 0; i < this.selectedQuestions.length; i++) {
                 const poll = this.polls[this.pollIndex]
@@ -360,6 +371,7 @@ export default {
         },
 
         sessions() {
+            console.log('sessions()')
             const sessions = this.getSessions
             const titles = []
             for (let i = 0; i < sessions.length; i++) {
@@ -375,7 +387,9 @@ export default {
         this.chosenPoll = this.pollTitles[this.initialPollIndex]
         console.log(this.chosenPoll)
         console.log(this.initialPollIndex)
-        this.selectedQuestions = this.questionTitles
+        for (let i = 0; i < this.questionTitles.length; i++) {
+            this.selectedQuestions.push(this.questionTitles[i])
+        }
         this.loadSessions()
         this.updateNumberOfConsistencyQuestions()
     },
@@ -394,6 +408,7 @@ export default {
                 filterType: 'dataFilter',
                 basePollId: this.polls[this.pollIndex].pollId,
                 baseQuestionIds: this.chosenQuestionIds, // these are questionIDs
+                timeDiagram: this.showTimeDiagram,
             })
             filterData.push({
                 filterType: 'consistency',
@@ -404,29 +419,34 @@ export default {
             console.log(filterData)
             for (let i = 0; i < this.qafilterList.length; i++) {
                 console.log(i)
-                const filter = this.qafilterList[i]
-                console.log(this.qafilterList)
-                console.log(this.polls)
-                console.log(this.pollIndex)
-                filterData.push({
-                    filterType: 'questionAnswer',
-                    invertFilter: false,
-                    targetQuestionId: this.polls[this.pollIndex].categoryList[filter.categoryIndex].questionList[
-                        filter.questionIndex
-                    ].questionId,
-                    targetAnswerPossibilities: filter.answerIndices,
-                })
+                if (this.qafilterList[i].active) {
+                    console.log(this.qafilterList)
+                    console.log(this.polls)
+                    console.log(this.pollIndex)
+                    const filter = this.qafilterList[i]
+                    console.log(filter)
+                    if (filter.answerIndices.length !== 0) {
+                        filterData.push({
+                            filterType: 'questionAnswer',
+                            invertFilter: false,
+                            targetQuestionId: this.polls[this.pollIndex].categoryList[filter.categoryIndex]
+                                .questionList[filter.questionIndex].questionId,
+                            targetAnswerPossibilities: filter.answerIndices,
+                        })
+                    }
+                }
             }
             if (this.datefilter) {
                 for (let i = 0; i < this.dateFilterList.length; i++) {
                     if (this.dateFilterList[i].active) {
-                        filterData.push({
-                            filterType: 'date',
-                            invertFilter: this.dateFilterList[i].invertFilter,
-                            startDate: this.dateFilterList[i].startDate,
-                            endDate: this.dateFilterList[i].endDate,
-                            timeDiagram: this.showTimeDiagram,
-                        })
+                        if (i < -1) {
+                            filterData.push({
+                                filterType: 'date',
+                                invertFilter: this.dateFilterList[i].invertFilter,
+                                startDate: this.dateFilterList[i].startDate,
+                                endDate: this.dateFilterList[i].endDate,
+                            })
+                        }
                     }
                 }
             }
@@ -450,6 +470,7 @@ export default {
         },
 
         async updateNumberOfConsistencyQuestions() {
+            console.log('updateNumberOfConsistencyQuestions()')
             await this.$axios
                 .get('/poll/' + this.polls[this.pollIndex].pollId + '/consistencyquestionnumber')
                 .then((response) => {
@@ -469,7 +490,7 @@ export default {
                 filterType: 'qaFilter',
                 categoryId: -1,
                 questionId: -1,
-                answerIds: [],
+                answerIndices: [],
             })
         },
 
@@ -478,11 +499,12 @@ export default {
             this.qafilterList[index].active = false
         },
 
-        updateQaFilter([filterId, categoryIndex, questionIndex, answerIndices]) {
+        updateQaFilter([filterId, categoryIndex, questionIndex, answerIndices, invertFilter]) {
             console.log('updateQAFilter()')
             this.qafilterList[filterId].categoryIndex = categoryIndex
             this.qafilterList[filterId].questionIndex = questionIndex
             this.qafilterList[filterId].answerIndices = answerIndices
+            this.qafilterList[filterId].invertFilter = invertFilter
             console.log(this.qafilterList)
         },
 
@@ -512,6 +534,7 @@ export default {
             console.log(endDate)
             console.log(this.dateFilterList)
             console.log(filterIndex)
+            console.log(invertFilter)
 
             this.dateFilterList[filterIndex].startDate = startDate
             this.dateFilterList[filterIndex].endDate = endDate

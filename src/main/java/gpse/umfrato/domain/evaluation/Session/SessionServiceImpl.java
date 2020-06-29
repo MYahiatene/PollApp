@@ -62,7 +62,7 @@ public class SessionServiceImpl implements SessionService {
         session.setPollId(sessionCmd.getPollId());
         session.setSessionTitle(sessionCmd.getSessionTitle());
         session.setFilterList(filterList);
-        session.setDiagramColors(sessionCmd.getDiagramColors());
+        session.setDiagramFormat(sessionCmd.getDiagramFormat());
         session.setLastUsername(sessionCmd.getLastUsername());
         session.setLastEdited(new Date());
     }

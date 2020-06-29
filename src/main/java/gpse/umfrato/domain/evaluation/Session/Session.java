@@ -26,7 +26,7 @@ public class Session {
     private List<FilterData> filterList;
 
     @ElementCollection
-    private List<String> diagramColors;
+    private List<String> diagramFormat;
 
     private Date lastEdited;
 

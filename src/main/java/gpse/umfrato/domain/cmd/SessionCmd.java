@@ -16,7 +16,7 @@ public class SessionCmd {
 
     private List<FilterCmd> filterList;
 
-    private List<String> diagramColors;
+    private List<String> diagramFormat;
 
     private String lastUsername;
 }

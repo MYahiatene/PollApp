@@ -125,7 +125,7 @@ public class EvaluationController {
         List<Session> sessions = sessionService.getAllSessions(pollId);
         for (Session s: sessions) {
             s.setFilterList(Collections.emptyList());
-            s.setDiagramColors(Collections.emptyList());
+            s.setDiagramFormat(Collections.emptyList());
         }
         return sessions;
     }

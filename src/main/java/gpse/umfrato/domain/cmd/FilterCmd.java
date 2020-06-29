@@ -17,7 +17,7 @@ public class FilterCmd {
 
     private List<Long> baseQuestionIds;
 
-    private Boolean timeDiagram = true;
+    private Boolean timeDiagram;
 
     //QuestionFilter
     private Long targetQuestionId;

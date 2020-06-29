@@ -1,5 +1,6 @@
 <template>
     <v-card flat class="pa-2 ma-2">
+        <v-switch v-model="invertFilter" label="Invertieren" />
         <v-overflow-btn
             v-if="!askForCategory()"
             v-model="selectedCategory"
@@ -22,10 +23,9 @@
             @input="updateQuestionIndex()"
         >
         </v-overflow-btn>
-        <v-checkbox label="nicht (angeschlossen)" />
         <v-select
             v-model="selectedAnswers"
-            prefix="aus den Antworten"
+            :prefix="conditional + ' aus den Antworten'"
             :items="answerTitles"
             multiple
             :no-data-text="'Keine Fragen ausgewählt'"
@@ -81,12 +81,20 @@ export default {
             selectedQuestion: '',
             selectedAnswers: [],
             answerTitlesDisplayedInSelect: 5,
+            invertFilter: false,
         }
     },
     computed: {
         ...mapGetters({
             polls: 'evaluation/getPolls',
         }),
+        conditional() {
+            if (this.invertFilter) {
+                return 'NICHT'
+            } else {
+                return ''
+            }
+        },
         pollTitles() {
             const pollTitles = Object.assign([{}], this.polls)
             for (let i = 0; i < pollTitles.length; i++) {
@@ -184,7 +192,13 @@ export default {
             console.log(this.categoryIndex)
             console.log(this.questionIndex)
             console.log(this.answerIndices)
-            this.$emit('updateData', [this.filterId, this.categoryIndex, this.questionIndex, this.answerIndices])
+            this.$emit('updateData', [
+                this.filterId,
+                this.categoryIndex,
+                this.questionIndex,
+                this.answerIndices,
+                this.invertFilter,
+            ])
         },
         askForCategory() {
             const OnlyOneCategory = this.categories.length === 1

@@ -19,9 +19,21 @@
             <v-col>
                 <p>Zeige Antworten, die {{ conditional }} zwischen</p>
                 <p>dem {{ startDate }}</p>
-                <v-text-field label="Uhrzeit" v-model="time1" type="time" style="width: 170px;"></v-text-field>
+                <v-text-field
+                    v-model="time1"
+                    label="Uhrzeit"
+                    type="time"
+                    style="width: 170px;"
+                    @change="update()"
+                ></v-text-field>
                 <p>und dem {{ endDate }}</p>
-                <v-text-field label="Uhrzeit" v-model="time2" type="time" style="width: 170px;"></v-text-field>
+                <v-text-field
+                    v-model="time2"
+                    label="Uhrzeit"
+                    type="time"
+                    style="width: 170px;"
+                    @change="update()"
+                ></v-text-field>
                 <p>getätigt wurden.</p>
             </v-col>
         </v-row>
@@ -39,8 +51,8 @@ export default {
         inverted: false,
         startDate: 'Start - Datum',
         endDate: 'End - Datum',
-        time1: '',
-        time2: '',
+        time1: '00:00',
+        time2: '23:59',
     }),
     props: {
         filterIndex: {
@@ -51,7 +63,7 @@ export default {
     computed: {
         conditional() {
             if (this.inverted) {
-                return 'nicht'
+                return 'NICHT'
             } else {
                 return ''
             }
@@ -60,6 +72,8 @@ export default {
 
     methods: {
         update() {
+            this.time1 = this.time1.length === 0 ? '00:00' : this.time1
+            this.time2 = this.time2.length === 0 ? '23:59' : this.time2
             if (this.dates.length === 2) {
                 this.computeDates()
                 this.$emit('newDateFilter', [
@@ -75,36 +89,17 @@ export default {
             console.log('dates...:')
             console.log(this.dates)
             if (this.dates[0] && this.dates[1]) {
-                console.log('im if')
-                console.log(this.dates[0].substring(8, 9))
-                console.log(this.dates[1].substring(8, 9))
-                let datesSwitched = false
-                if (parseInt(this.dates[0].substring(0, 4), 10) > parseInt(this.dates[1].substring(0, 4), 10)) {
-                    console.log('Dates Switched at year')
-                    datesSwitched = true
-                } else if (parseInt(this.dates[0].substring(5, 7), 10) > parseInt(this.dates[1].substring(5, 7), 10)) {
-                    console.log('Dates Switched at month')
-                    datesSwitched = true
-                } else if (
-                    parseInt(this.dates[0].substring(8, 10), 10) > parseInt(this.dates[1].substring(8, 10), 10)
-                ) {
-                    console.log('Dates Switched at day')
-
-                    datesSwitched = true
-                }
-
-                if (datesSwitched) {
+                if (this.dates[0] + ' ' + this.time1 > this.dates[1] + ' ' + this.time2) {
+                    console.log('wechsel')
                     this.startDate = this.dates[1]
                     this.endDate = this.dates[0]
+                    const tmp = this.time1
+                    this.time1 = this.time2
+                    this.time2 = tmp
                 } else {
                     this.startDate = this.dates[0]
                     this.endDate = this.dates[1]
                 }
-            } else {
-                console.log('in else')
-                this.startDate = 'Start-Datum'
-                this.endDate = 'End-Datum'
-                this.$forceUpdate()
             }
         },
     },
