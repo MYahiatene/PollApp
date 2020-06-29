@@ -72,7 +72,10 @@ export const actions = {
     async awaitPollText({ state, commit }, fileName) {
         console.log('trying to find file ')
         console.log('api/export/filename:{' + fileName + '}')
-        const response = await this.$axios.get('/export/getFile/' + fileName)
+        const FileDownload = require('js-file-download')
+        const response = await this.$axios.get('/export/getFile/' + fileName).then((response) => {
+            FileDownload(response.data, fileName + '.txt')
+        })
         console.log('response: ', response)
         return response
     },

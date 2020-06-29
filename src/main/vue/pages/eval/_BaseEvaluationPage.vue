@@ -301,7 +301,7 @@ export default {
             this.$store.dispatch('evaluation/exportResults', 1) // This should be PollId
         },
         downloadClick(pollId) {
-            console.log(this.$store.dispatch('evaluation/awaitPollText', 1))
+            console.log(this.$store.dispatch('evaluation/awaitPollText', pollId))
         },
         /*
 
