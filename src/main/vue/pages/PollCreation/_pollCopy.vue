@@ -217,6 +217,9 @@ export default {
         this.pollId = this.$route.params.pollCopy
         this.getCopyPoll()
         this.getTitle()
+        this.getAnonType()
+        this.getActDate()
+        this.getDeactDate()
     },
     computed: {
         ...mapGetters({
@@ -346,6 +349,41 @@ export default {
             }
             console.log('F 333')
             return 'Titel'
+        },
+        async getAnonType() {
+            console.log('GetAnonType')
+            const response = await this.$store.dispatch('PollCreation/getAnonType', this.pollId)
+            console.log(response)
+            if (response === 'Anonym')
+                this.selectedAnonymityType = {
+                    text: 'Anonym',
+                    value: 1,
+                }
+            if (response === 'TeilAnonym')
+                this.selectedAnonymityType = {
+                    text: 'Teilanonym',
+                    value: 2,
+                }
+            if (response === 'Nichtanonym')
+                this.selectedAnonymityType = {
+                    text: 'Nicht anonym',
+                    value: 3,
+                }
+        },
+        async getActDate() {
+            console.log('GetActDate')
+            const response = await this.$store.dispatch('PollCreation/getActDate', this.pollId)
+            console.log(response)
+            this.activateDate = response
+            return response
+        },
+        async getDeactDate() {
+            console.log('GetDeactDate')
+
+            const response = await this.$store.dispatch('PollCreation/getDeactDate', this.pollId)
+            console.log(response)
+            this.deactivateDate = response
+            return response
         },
     },
 }

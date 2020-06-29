@@ -54,4 +54,37 @@ export const actions = {
         console.log('responsepollName: ', response.data)
         return response.data
     },
+
+    async getAnonType({ commit }, id) {
+        console.log('Hallo aus der pollName')
+        const response = await this.$axios.get('/getAnonType', {
+            params: {
+                pollId: id,
+            },
+        })
+        console.log('responsepollAnonStatus: ', response.data)
+        return response.data
+    },
+
+    async getActDate({ commit }, id) {
+        console.log('Hallo aus der ActDate')
+        const response = await this.$axios.get('/getActDate', {
+            params: {
+                pollId: id,
+            },
+        })
+        console.log('responsepollActDate: ', response.data)
+        return response.data
+    },
+
+    async getDeactDate({ commit }, id) {
+        console.log('Hallo aus der DeactDate')
+        const response = await this.$axios.get('/getDeactDate', {
+            params: {
+                pollId: id,
+            },
+        })
+        console.log('responsepollDeactDate: ', response.data)
+        return response.data
+    },
 }

@@ -129,5 +129,28 @@ public class PollController {
         return pollService.getPoll(String.valueOf(pollId)).getPollName();
     }
 
+    @GetMapping("/getAnonType")
+    public String getAnonType(final @RequestParam long pollId) {
+        LOGGER.info("PollID: " + String.valueOf(pollId));
+        switch(pollService.getPoll(String.valueOf(pollId)).getAnonymityStatus()) {
+            case "0": return "Anonym";
+            case "1": return "Anonym";
+            case "2": return "Teilanonym";
+            case "3": return "Nichtanonym";
+        }
+        return "Anonym";
+    }
+    @GetMapping("/getActDate")
+    public String getActDate(final @RequestParam long pollId) {
+        LOGGER.info("PollID: " + String.valueOf(pollId));
+        return pollService.getPoll(String.valueOf(pollId)).getActivatedDate();
+    }
+
+    @GetMapping("/getDeactDate")
+    public String getDeactDate(final @RequestParam long pollId) {
+        LOGGER.info("PollID: " + String.valueOf(pollId));
+        return pollService.getPoll(String.valueOf(pollId)).getDeactivatedDate();
+    }
+
 }
 
