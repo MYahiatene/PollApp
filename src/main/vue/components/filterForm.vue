@@ -77,7 +77,7 @@
                             Antwortenfilter
                         </v-expansion-panel-header>
                         <v-expansion-panel-content dense>
-                            Hier können Sie das Antwortverhalten der Teilnehmer, die Sie betrachten wollen festlegen.
+                            Hier können Sie das Antwortverhalten der Teilnehmer, die Sie betrachten wollen, festlegen.
 
                             <v-row>
                                 <v-col colls="12" lg="10">
