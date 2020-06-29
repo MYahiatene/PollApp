@@ -43,6 +43,7 @@
                                                 :color="fontColor"
                                                 :rules="textQuestionRules"
                                                 rows="1"
+                                                v-model="lastInput"
                                                 @input="saveAnswerField($event, question)"
                                             >
                                             </v-textarea>
@@ -52,6 +53,7 @@
                                                 label="Antwort"
                                                 :color="fontColor"
                                                 :rules="textQuestionRules"
+                                                v-model="lastInput"
                                                 @input="saveAnswerField($event, question)"
                                             ></v-text-field>
                                         </div>
@@ -60,7 +62,7 @@
                                 <div v-else-if="question.questionType === 'ChoiceQuestion'">
                                     <!--Radio Button since only one answer possible-->
                                     <!--Only to debug, otherwise numberOfPossibleAnswer === 1-->
-                                    <div v-if="question.numberOfPossibleAnswers === 0">
+                                    <div v-if="question.numberOfPossibleAnswers === 1">
                                         <v-card-text>
                                             <v-radio-group>
                                                 <v-radio
@@ -232,7 +234,7 @@ export default {
             categoryLength: 0,
             enabled: false,
             disableMe: false,
-            slideValueList: [0, 0],
+            slideValueList: [],
             answerObj: {
                 username: 'Anonym',
                 anonymityStatus: 'anonym',
@@ -244,6 +246,8 @@ export default {
             ownAnswers: [[]],
             rangeAnswers: [],
             AnswerListsOfSortQuestions: [[1], [2], [3]],
+            lastInput: 'Letzte Eingabe',
+            valueList: [],
         }
     },
     /**
@@ -252,6 +256,7 @@ export default {
     created() {
         this.id = this.$route.params.id
         this.showPoll()
+        this.showAnswer()
     },
 
     mounted() {
@@ -405,6 +410,31 @@ export default {
             for (let i = 0; i < this.getCategory.questionList.length; i++) {
                 this.slideValueList.push(0)
             }
+        },
+        valuesForQuestions() {
+            for (let i = 0; i < this.getCategory.questionList.length; i++) {
+                const type = this.getCategory.questionList[i].questionType
+
+                if (this.givenAnswers[i] != null) {
+                    this.valueList.push(this.givenAnswers[i])
+                } else {
+                    switch (type) {
+                        case 'TextQuestion':
+                            this.valueList.push('')
+                            break
+                        case 'SlideQuestion':
+                            this.valueList.push(0)
+                            break
+                        case 'ChoiceQuestion':
+                            break
+                        case 'RangeQuestion':
+                            break
+                        case 'SortQuestion':
+                            break
+                    }
+                }
+            }
+            console.log(this.valueList)
         },
         /**
          * Holt sich die gegebene Antwort des Textfeldes aus dem Array ownAnswers und schickt die Antwort mit der
@@ -621,35 +651,6 @@ export default {
         addValue(question, index) {
             this.slideValueList[index] = this.slideValueList[index] + question.stepSize || question.endValue
         },
-        // -------------------------------------------------------------------------------------------------------------
-        // Get or save information to/from the Backend
-        /**
-         * Calls showPoll in store/participant.js.
-         */
-        showPoll() {
-            this.$store.dispatch('participant/showPoll', this.id)
-            this.poll = this.getPoll
-            this.valuesForSlideQuestion()
-        },
-        /**
-         * Calls saveAnswers from the store with the answerobj (cmdAnswer with all given input)
-         */
-        saveAnswer() {
-            this.answerObj.username = this.getUsername
-            this.$store.dispatch('participant/saveAnswer', this.answerObj)
-        },
-        /**
-         * Calls showAnswer in store/participant. (Needed to get already given answers for multiple choice checkbox.)
-         * Right now only used to get already checked boxes for multiple choice, but since alll answers from one
-         * user are given back it can also be used for loading the page with already given answers, for non-anonym
-         * and partialy anonym users, after they saved it.
-         */
-        showAnswer() {
-            this.answerObj.username = this.getUsername
-            this.answerObj.pollId = this.getPoll[1].data.pollId
-            this.$store.dispatch('participant/showAnswer', this.answerObj)
-            this.givenAnswers = this.getAnswer
-        },
 
         /**
          * copies all the AnswerLists of SortQuestions from computedQuestionList
@@ -684,6 +685,35 @@ export default {
 
             this.$forceUpdate()
             this.saveAnswerSortQuestion(questionIndex, question)
+        },
+        // -------------------------------------------------------------------------------------------------------------
+        // Get or save information to/from the Backend
+        /**
+         * Calls showPoll in store/participant.js.
+         */
+        showPoll() {
+            this.$store.dispatch('participant/showPoll', this.id)
+            this.poll = this.getPoll
+            this.valuesForQuestions()
+        },
+        /**
+         * Calls saveAnswers from the store with the answerobj (cmdAnswer with all given input)
+         */
+        saveAnswer() {
+            this.answerObj.username = this.getUsername
+            this.$store.dispatch('participant/saveAnswer', this.answerObj)
+        },
+        /**
+         * Calls showAnswer in store/participant. (Needed to get already given answers for multiple choice checkbox.)
+         * Right now only used to get already checked boxes for multiple choice, but since alll answers from one
+         * user are given back it can also be used for loading the page with already given answers, for non-anonym
+         * and partialy anonym users, after they saved it.
+         */
+        showAnswer() {
+            this.answerObj.username = this.getUsername
+            this.answerObj.pollId = this.getPoll[1].data.pollId
+            this.$store.dispatch('participant/showAnswer', this.answerObj)
+            this.givenAnswers = this.getAnswer
         },
     },
 }
