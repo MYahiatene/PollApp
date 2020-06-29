@@ -1,7 +1,7 @@
 package gpse.umfrato.web;
 
-import gpse.umfrato.domain.ConsistencyQuestion.ConsistencyQuestion;
-import gpse.umfrato.domain.ConsistencyQuestion.ConsistencyQuestionService;
+import gpse.umfrato.domain.consistencyquestion.ConsistencyQuestion;
+import gpse.umfrato.domain.consistencyquestion.ConsistencyQuestionService;
 import gpse.umfrato.domain.cmd.ConsistencyQuestionCmd;
 import gpse.umfrato.domain.cmd.PollCmd;
 import gpse.umfrato.domain.participationlinks.ParticipationLinkService;
@@ -101,7 +101,7 @@ public class PollController {
         if (pollCmd.getAnonymityStatus().equals("1")) {
             return pollService.createAnonymUsername();
         } else {
-            return "Nina";
+            return "Nina"; //TODO: Nina muss raus!
         }
     }
 

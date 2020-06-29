@@ -62,9 +62,6 @@
                                         </v-btn>
                                     </v-row>
                                 </v-container>
-                                <v-btn :to="'/ControlQuestions'">
-                                    Konsistenzfragen bearbeiten
-                                </v-btn>
                             </v-card-text>
                         </v-card>
                     </v-col>

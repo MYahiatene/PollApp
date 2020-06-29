@@ -1,14 +1,17 @@
 package gpse.umfrato.domain.evaluation;
 
-import gpse.umfrato.domain.ConsistencyQuestion.ConsistencyQuestionService;
+import gpse.umfrato.domain.consistencyquestion.ConsistencyQuestionService;
 import gpse.umfrato.domain.answer.Answer;
 import gpse.umfrato.domain.answer.AnswerService;
 import gpse.umfrato.domain.category.Category;
 import gpse.umfrato.domain.category.CategoryService;
 import gpse.umfrato.domain.cmd.FilterCmd;
-import gpse.umfrato.domain.evaluation.filterblocks.filterimpl.ConsistencyFilter;
-import gpse.umfrato.domain.evaluation.filterblocks.filterimpl.Filter;
-import gpse.umfrato.domain.evaluation.filterblocks.filterimpl.QuestionFilter;
+import gpse.umfrato.domain.evaluation.filter.filterimpl.ConsistencyFilter;
+import gpse.umfrato.domain.evaluation.filter.filterimpl.DateFilter;
+import gpse.umfrato.domain.evaluation.filter.Filter;
+import gpse.umfrato.domain.evaluation.filter.filterimpl.QuestionFilter;
+import gpse.umfrato.domain.evaluation.filter.filterimpl.UserFilter;
+import gpse.umfrato.domain.poll.Poll;
 import gpse.umfrato.domain.poll.PollService;
 import gpse.umfrato.domain.pollresult.PollResult;
 import gpse.umfrato.domain.pollresult.PollResultService;
@@ -35,11 +38,9 @@ public class Statistics {
     private final List<Filter> filters = new ArrayList<>();
     private final Long pollId;
     private final List<Long> questionIds = new ArrayList<>();
+    private final boolean showParticipantsOverTime;
 
-    public Statistics(final AnswerService answerService, final UserService userService,
-                      final QuestionService questionService, final PollService pollService,
-                      final PollResultService pollResultService, final CategoryService categoryService,
-                      final ConsistencyQuestionService consistencyQuestionService, final FilterCmd data) {
+    public Statistics(final AnswerService answerService, final UserService userService, final QuestionService questionService, final PollService pollService, final PollResultService pollResultService, final CategoryService categoryService, final ConsistencyQuestionService consistencyQuestionService, final FilterCmd data) {
         this.answerService = answerService;
         this.userService = userService;
         this.questionService = questionService;
@@ -48,29 +49,41 @@ public class Statistics {
         this.categoryService = categoryService;
         this.consistencyQuestionService = consistencyQuestionService;
         pollId = data.getBasePollId();
+        showParticipantsOverTime = data.getTimeDiagram();
         final List<Category> categories = categoryService.getAllCategories(pollId);
         if (data.getBaseQuestionIds().isEmpty()) {
-            for (final Category c : categories) {
-                for (final Question q : questionService.getAllQuestions(c.getCategoryId())) {
+            for (final Category c: categories) {
+                for (final Question q: questionService.getAllQuestions(c.getCategoryId())) {
                     questionIds.add(q.getQuestionId());
                 }
             }
-           /* LOGGER.info(questionIds.toString());*/
+            /* LOGGER.info(questionIds.toString());*/
         } else {
             questionIds.addAll(data.getBaseQuestionIds());
         }
     }
 
     public void loadFilter(final List<FilterCmd> input) {
-        for (final FilterCmd cmd : input) {
+        for (final FilterCmd cmd: input) {
             Filter filter = null;
-            if (cmd.getFilterType().equals("questionAnswer")) {
-                filter = new QuestionFilter(pollId, cmd.getTargetQuestionId(),
-                        cmd.getTargetAnswerPossibilities(), cmd.getInvertFilter(), false);
-            }
-            else if (cmd.getFilterType().equals("consistency")) {
-                filter = new ConsistencyFilter(consistencyQuestionService.getAllConsistencyQuestions(pollId),
-                        cmd.getMinSuccesses());
+            switch (cmd.getFilterType()) {
+                case "questionAnswer":
+                    filter = new QuestionFilter(pollId, cmd.getTargetQuestionId(), cmd.getTargetAnswerPossibilities(), cmd.getInvertFilter(), false);
+                    break;
+                case "consistency":
+                    filter = new ConsistencyFilter(consistencyQuestionService.getAllConsistencyQuestions(pollId), cmd.getMinSuccesses());
+                    break;
+                case "date":
+                    filter = new DateFilter(cmd.getStartDate(), cmd.getEndDate(), cmd.getInvertFilter());
+                    break;
+                case "user":
+                    if(pollService.getPoll(pollId).getAnonymityStatus().equals("2"))
+                    {
+                        filter = new UserFilter(cmd.getUserNames(), cmd.getInvertFilter());
+                    }
+                    break;
+                default:
+                    break;
             }
             if (filter != null) {
                 filters.add(filter);
@@ -80,27 +93,24 @@ public class Statistics {
 
     public String generateDiagram() {
         if (pollId == null) {
+            LOGGER.warning("Ungültige Umfrage");
             return "{\"name\":\"Ungültige Umfrage\"}";
         }
         List<PollResult> prs = pollResultService.getPollResults(pollId);
-        if (prs.isEmpty()) {
-            LOGGER.warning("Leere Umfrage");
-            return NAME_STRING + pollService.getPoll(pollId).getPollName()
-                    + PARTICIPANTS_STRING + "(0)"
-                    + "\",\"questionList\": []}";
-        }
-        int participantCountUnfiltered = prs.size();
-        for (final Filter f : filters) {
+        final int participantCountUnfiltered = prs.size();
+        for (final Filter f: filters) {
             prs = f.filter(prs);
         }
-        int participantCountFiltered = prs.size();
+        final int participantCountFiltered = prs.size();
         LOGGER.info(prs.toString());
-        final DiagramData dd = new DiagramData(pollService.getPoll(prs.get(0).getPollId()), prs, questionIds,
-            categoryService, questionService);
-        return NAME_STRING + pollService.getPoll(pollId).getPollName()
-                + PARTICIPANTS_STRING + "(" + participantCountFiltered + "/" + participantCountUnfiltered + ")"
-                + "\",\"questionList\": "
-            + dd.toJSON() + "}";
+        final Poll p = pollService.getPoll(pollId);
+        final String response = NAME_STRING + p.getPollName() + PARTICIPANTS_STRING + "(" + participantCountFiltered + "/" + participantCountUnfiltered + ")" + "\",\"questionList\": ";
+        if (prs.isEmpty()) {
+            LOGGER.warning("Leere Umfrage");
+            return response + "[]}";
+        }
+        final DiagramData dd = new DiagramData(p, prs, showParticipantsOverTime, questionIds, categoryService, questionService);
+        return response + dd.toJSON() + "}";
     }
 
     /**
@@ -110,8 +120,7 @@ public class Statistics {
      * @param totalNumber total number of values.
      * @return relative value.
      */
-    public static double getRelativeFrequencyOfOneValue(final double value, final double totalNumber)
-        throws ArithmeticException {
+    public static double getRelativeFrequencyOfOneValue(final double value, final double totalNumber) throws ArithmeticException {
         if (totalNumber < value) {
             throw new ArithmeticException("totalNumber must be larger than value!");
         }
@@ -119,8 +128,7 @@ public class Statistics {
     }
 
     // Maybe list<pollresult>, depends
-    public static double getRelativeFrequencyOfOneValue(final String value, final double totalNumber)
-        throws ArithmeticException {
+    public static double getRelativeFrequencyOfOneValue(final String value, final double totalNumber) throws ArithmeticException {
         return getRelativeFrequencyOfOneValue(Double.parseDouble(value), totalNumber);
     }
 
@@ -176,8 +184,7 @@ public class Statistics {
                 final double totalNumber = 0;
                 final Answer nextAnswer = answersForOneUser.next();
                 for (int i = 0; i < nextAnswer.getGivenAnswerList().size(); i++) {
-                    innerValues.add(getRelativeFrequencyOfOneValue(nextAnswer.getGivenAnswerList().get(i),
-                        totalNumber));
+                    innerValues.add(getRelativeFrequencyOfOneValue(nextAnswer.getGivenAnswerList().get(i), totalNumber));
                 }
                 listOfValues.add(innerValues);
             }
@@ -225,7 +232,7 @@ public class Statistics {
     public static List<Double> modus(final List<PollResult> allValues) {
         final List<Double> modi = new ArrayList<>();
         // Iterate over answers
-        for (final PollResult allValue : allValues) {
+        for (final PollResult allValue: allValues) {
             // Iterate over questions for answer i
             for (int j = 0; j < allValue.getAnswerList().size(); j++) {
                 // If Question j from answer i is higher than the current highest set that element
@@ -283,7 +290,7 @@ public class Statistics {
 
     private List<Double> toFirstValuesList(final List<Answer> input) {
         final List<Double> allFirstValues = new ArrayList<>();
-        for (final Answer answer : input) {
+        for (final Answer answer: input) {
             final Double next = Double.parseDouble(answer.getGivenAnswerList().get(0));
             allFirstValues.add(next);
         }

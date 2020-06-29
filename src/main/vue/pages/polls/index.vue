@@ -456,7 +456,7 @@ export default {
         },
 
         async answerPoll() {
-            for (let j = 0; j < 200; j++) {
+            for (let j = 0; j < 25; j++) {
                 if (j < 200) {
                     this.progressColorB = '#006eff'
                 } else if (j < 175) {

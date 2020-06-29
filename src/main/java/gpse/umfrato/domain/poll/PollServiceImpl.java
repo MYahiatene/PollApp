@@ -13,7 +13,7 @@ import java.util.List;
 @Service
 class PollServiceImpl implements PollService {
 
-    /* default */ final CategoryRepository categoryRepository;
+    private final CategoryRepository categoryRepository;
     private final PollRepository pollRepository;
     private final CategoryService categoryService;
     private int anonymUsername = 0;
@@ -89,7 +89,7 @@ class PollServiceImpl implements PollService {
     }
 
     @Override public List<Poll> getLastEditedPolls() {
-        List<Poll> allPolls = pollRepository.findAll();
+        final List<Poll> allPolls = pollRepository.findAll();
         if(allPolls.size() > 5)
         {
             return allPolls.subList(0,5);

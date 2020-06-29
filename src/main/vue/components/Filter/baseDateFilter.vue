@@ -28,7 +28,7 @@ export default {
     data: (vm) => ({
         date: new Date().toISOString().substr(0, 10),
         dates: [],
-        min: new Date().toISOString().substr(0, 10),
+        min: '2000-01-01',
         max: '2100-01-01',
         inverted: false,
     }),

@@ -1,10 +1,9 @@
-package gpse.umfrato.domain.evaluation.filterblocks.filterimpl;
+package gpse.umfrato.domain.evaluation.filter.filterimpl;
 
-import gpse.umfrato.domain.ConsistencyQuestion.ConsistencyQuestion;
-import gpse.umfrato.domain.ConsistencyQuestion.ConsistencyQuestionService;
+import gpse.umfrato.domain.consistencyquestion.ConsistencyQuestion;
 import gpse.umfrato.domain.answer.Answer;
+import gpse.umfrato.domain.evaluation.filter.Filter;
 import gpse.umfrato.domain.pollresult.PollResult;
-import lombok.AllArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,16 +19,16 @@ public class ConsistencyFilter implements Filter {
         this.minNumberOfSuccesses = minNumberOfSuccesses;
     }
 
-    @Override public List<PollResult> filter(List<PollResult> input) {
+    @Override public List<PollResult> filter(final List<PollResult> input) {
         final List<PollResult> filteredList = new ArrayList<>();
         for (final PollResult pr: input) {
             int successNr = 0;
-            for (ConsistencyQuestion cq: consistencyQuestionList) {
+            for (final ConsistencyQuestion cq: consistencyQuestionList) {
                 int match = 0;
                 int noMatch = 0;
-                for (Answer a: pr.getAnswerList()) {
+                for (final Answer a: pr.getAnswerList()) {
                     if (a.getQuestionId().equals(cq.getQuestion1Id())) {
-                        for (String answer: a.getGivenAnswerList()) {
+                        for (final String answer: a.getGivenAnswerList()) {
                             if (cq.getQuestion1Slider()) {
                                 if (Double.parseDouble(cq.getAnswer1Indices().get(0)) <= Double.parseDouble(answer) && Double.parseDouble(cq.getAnswer1Indices().get(1)) >= Double.parseDouble(answer)) {
                                     match++;
@@ -50,9 +49,9 @@ public class ConsistencyFilter implements Filter {
                 if (match != 0 && noMatch != 0) {
                     continue;
                 }
-                for (Answer a: pr.getAnswerList()) {
+                for (final Answer a: pr.getAnswerList()) {
                     if (a.getQuestionId().equals(cq.getQuestion2Id())) {
-                        for (String answer: a.getGivenAnswerList()) {
+                        for (final String answer: a.getGivenAnswerList()) {
                             if (cq.getQuestion2Slider()) {
                                 if (Double.parseDouble(cq.getAnswer2Indices().get(0)) <= Double.parseDouble(answer) && Double.parseDouble(cq.getAnswer2Indices().get(1)) >= Double.parseDouble(answer)) {
                                     match++;
@@ -79,9 +78,5 @@ public class ConsistencyFilter implements Filter {
             }
         }
         return filteredList;
-    }
-
-    @Override public List<Double> compute(List<PollResult> input) {
-        return null;
     }
 }
