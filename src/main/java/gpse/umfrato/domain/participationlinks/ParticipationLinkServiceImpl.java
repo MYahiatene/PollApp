@@ -7,22 +7,21 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-public class ParticipationLinkImpl implements ParticipationLinkService {
+public class ParticipationLinkServiceImpl implements ParticipationLinkService {
 
     /* default */ final ParticipationLinkRepository participationLinkRepository;
 
-    public ParticipationLinkImpl(final ParticipationLinkRepository participationLinkRepository) {
+    public ParticipationLinkServiceImpl(final ParticipationLinkRepository participationLinkRepository) {
         this.participationLinkRepository = participationLinkRepository;
     }
 
     @Override
-    public ParticipationLink createParticipationLink(final Long pollId, final String username) {
+    public ParticipationLink createParticipationLink(final Long pollId, final String anonymityStatus,
+                                                     final String username) {
 
         final UUID uuid = UUID.randomUUID();
-        //final String urlUuid = "/" + uuid.toString();
-        //final URL invitationLink = new URL("http", "localhost", 8080, urlUuid);
-
-        final ParticipationLink participationLink = new ParticipationLink(pollId, username, uuid.toString());
+        final ParticipationLink participationLink = new ParticipationLink(pollId, anonymityStatus, username,
+            uuid.toString());
 
         participationLinkRepository.save(participationLink);
 
@@ -56,7 +55,7 @@ public class ParticipationLinkImpl implements ParticipationLinkService {
     @Override
     public List<ParticipationLink> getAllParticipationLinks() {
         //final List<ParticipationLink> pLinks = participationLinkRepository.findParticipationLinksByPollId(
-          //  Long.valueOf(pollId));
+        //  Long.valueOf(pollId));
 
         return participationLinkRepository.findAll();
 

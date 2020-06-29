@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.net.MalformedURLException;
+import java.util.List;
 
 @Service
 public class InitializeDatabase implements InitializingBean {
@@ -48,6 +49,8 @@ public class InitializeDatabase implements InitializingBean {
      */
     /* default */ private final UserService userService;
 
+    /* default */ private final CsvReader csvReader = new CsvReader();
+
     /**
      * This method initializes the database.
      *
@@ -76,6 +79,7 @@ public class InitializeDatabase implements InitializingBean {
         this.participationLinkService = participationLinkService;
 
         this.categoryService = categoryService;
+
     }
 
     /**
@@ -107,7 +111,6 @@ public class InitializeDatabase implements InitializingBean {
         }
 
         String path = "src/main/java/gpse/umfrato/domain/mail/testMails.csv";
-        CsvReader csvReader = new CsvReader();
-        csvReader.readEmailsFromCsv(path);
+        List<String> maillist = csvReader.readEmailsFromCsvPath(path);
     }
 }

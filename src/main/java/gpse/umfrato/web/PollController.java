@@ -25,7 +25,7 @@ public class PollController {
      * This class constructor initializes the poll service.
      *
      * @param pollService              the poll service to work with the poll
-     * @param participationLinkService
+     * @param participationLinkService the participation link service
      */
     @Autowired
     public PollController(final PollService pollService, final ParticipationLinkService participationLinkService) {
@@ -44,7 +44,10 @@ public class PollController {
     public String createPoll(final @RequestBody PollCmd pollCmd) {
         try {
             final Poll poll = pollService.createPoll(pollCmd.getCmdPoll());
-            participationLinkService.createParticipationLink(poll.getPollId(), "allUsers");
+            if (poll.getAnonymityStatus().equals("1")) {
+                participationLinkService.createParticipationLink(poll.getPollId(), poll.getAnonymityStatus(),
+                    "allusers");
+            }
             return "Poll created! with id: " + poll.getPollId().toString();
         } catch (BadRequestException | MalformedURLException e) {
             return "Poll creation failed!";

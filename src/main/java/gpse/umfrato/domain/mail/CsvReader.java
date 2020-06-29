@@ -1,5 +1,9 @@
 package gpse.umfrato.domain.mail;
 
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -11,9 +15,10 @@ import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+@Service
 public class CsvReader {
 
-    public List<String> readEmailsFromCsv(String fileName) {
+    public List<String> readEmailsFromCsvPath(String fileName) {
 
         List<String> emails = new ArrayList<>();
 
@@ -21,8 +26,24 @@ public class CsvReader {
             File file = new File(fileName);
             Scanner inputStream = new Scanner(file);
             while (inputStream.hasNext()) {
-                String data = inputStream.next();
-                emails.add(data);
+                emails.add(inputStream.next());
+            }
+            inputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return emails;
+    }
+
+    public List<String> readEmailsFromCsvFile(File csvFile) {
+
+        List<String> emails = new ArrayList<>();
+
+        try {
+            Scanner inputStream = new Scanner(csvFile);
+            while (inputStream.hasNext()) {
+                emails.add(inputStream.next());
             }
             inputStream.close();
         } catch (IOException e) {

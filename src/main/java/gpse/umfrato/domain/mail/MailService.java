@@ -1,4 +1,10 @@
 package gpse.umfrato.domain.mail;
 
-public class MailService {
+import java.util.List;
+
+public interface MailService {
+    void setMailAdresses(List<String> mailList);
+
+    List<String> getMailAdresses();
+
 }
