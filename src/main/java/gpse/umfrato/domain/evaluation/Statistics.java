@@ -82,11 +82,11 @@ public class Statistics {
                     break;
                 case "or":
                     List<Filter> orFilter = new ArrayList<>();
-                    for(Filter f:filters)
-                    {
-                        if(f.getFilterType().equals("date"))
-                        orFilter.add(f);
-                        filters.remove(f);
+                    for(Filter f:filters) {
+                        if (f.getFilterType().equals("date")) {
+                            orFilter.add(f);
+                            filters.remove(f);
+                        }
                     }
                     filter = new OrFilter(orFilter);
                     break;
