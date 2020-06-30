@@ -81,6 +81,7 @@ export const getters = {
 }
 export const mutations = {
     setDiagramData(state, data) {
+        console.log(data)
         state.DiagramData = data.data
     },
     setPollData(state, pollData) {

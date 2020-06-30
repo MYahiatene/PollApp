@@ -40,7 +40,6 @@ public class QuestionController {
     @PreAuthorize("hasAnyAuthority('Admin','Creator', 'Editor')")
     @PostMapping("/addquestion")
     public Question addQuestion(final @RequestBody QuestionCmd questionCmd) {
-        LOGGER.info(questionCmd.toString());
         return questionService.addQuestion(questionCmd);
     }
 

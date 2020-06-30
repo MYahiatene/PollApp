@@ -189,7 +189,10 @@ export default {
     },
     methods: {
         ...mapActions({ initialize: 'navigation/initialize', updatePollStatus: 'navigation/updatePollStatus' }),
-        ...mapMutations({ setPollActive: 'navigation/setPollActive', setPollFinished: 'navigation/setPollFinished',            splicePolls: 'navigation/splicePolls',
+        ...mapMutations({
+            setPollActive: 'navigation/setPollActive',
+            setPollFinished: 'navigation/setPollFinished',
+            splicePolls: 'navigation/splicePolls',
         }),
 
         async initializeLinks() {
