@@ -2,6 +2,7 @@ package gpse.umfrato.domain;
 
 import gpse.umfrato.domain.answer.AnswerService;
 import gpse.umfrato.domain.mail.CsvReader;
+import gpse.umfrato.domain.mail.MailService;
 import gpse.umfrato.domain.participationlinks.ParticipationLinkService;
 import gpse.umfrato.domain.category.CategoryService;
 import gpse.umfrato.domain.poll.PollService;
@@ -51,6 +52,8 @@ public class InitializeDatabase implements InitializingBean {
 
     /* default */ private final CsvReader csvReader = new CsvReader();
 
+    /* default */ private final MailService mailService;
+
     /**
      * This method initializes the database.
      *
@@ -66,7 +69,7 @@ public class InitializeDatabase implements InitializingBean {
     public InitializeDatabase(final UserService userService, final PollService pollService,
                               final QuestionService questionService, final AnswerService answerService,
                               final ParticipationLinkService participationLinkService,
-                              final CategoryService categoryService) {
+                              final CategoryService categoryService, final MailService mailService) {
 
         this.userService = userService;
 
@@ -79,6 +82,8 @@ public class InitializeDatabase implements InitializingBean {
         this.participationLinkService = participationLinkService;
 
         this.categoryService = categoryService;
+
+        this.mailService = mailService;
 
     }
 
@@ -112,5 +117,6 @@ public class InitializeDatabase implements InitializingBean {
 
         String path = "src/main/java/gpse/umfrato/domain/mail/testMails.csv";
         List<String> maillist = csvReader.readEmailsFromCsvPath(path);
+        mailService.setMailAdresses(maillist);
     }
 }

@@ -26,7 +26,7 @@ public class CsvController {
     }
 
     @PostMapping(value = "/sendCsv", produces = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasAuthority('Admin')")
+    //@PreAuthorize("hasAuthority('Admin')")
     public String getEmailsFromCsv(final @RequestBody CsvCmd csvCmd) {
         try {
             File file = csvCmd.getCsvFile();

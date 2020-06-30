@@ -26,7 +26,6 @@ public class ParticipationLinkController {
 
     @GetMapping("/participationLinks")
     public List<ParticipationLink> getParticipationLinks() {
-        mailService.getMailAdresses();
         return participationLinkService.getAllParticipationLinks();
     }
 }
