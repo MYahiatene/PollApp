@@ -38,7 +38,7 @@ public class CategoryController {
     @PreAuthorize("hasAnyAuthority('Admin', 'Creator', 'Editor')")
     @PostMapping("/addcategory")
     public Category addCategory(final @RequestBody CategoryCmd categoryCmd) {
-        return categoryService.createCategory(categoryCmd.getCategoryName(), Long.parseLong(categoryCmd.getPollId()));
+        return categoryService.createCategory(categoryCmd.getCategoryName(), categoryCmd.getPollId());
     }
 
     /**
@@ -60,8 +60,8 @@ public class CategoryController {
     @PreAuthorize("hasAnyAuthority('Admin', 'Creator', 'Editor')")
     @PutMapping("/deletecategory")
     public String deleteCategory(final @RequestBody CategoryCmd categoryCmd) {
-        return categoryService.deleteCategory(Long.parseLong(categoryCmd.getCategoryId()),
-            categoryCmd.getQuestionState());
+        return categoryService.deleteCategory(categoryCmd.getCategoryId(),
+            categoryCmd.getQuestionState().toString());
     }
 
     /**
@@ -72,6 +72,6 @@ public class CategoryController {
     @PreAuthorize("hasAnyAuthority('Admin', 'Creator', 'Editor')")
     @PutMapping("/editcategory")
     public void editCategory(final @RequestBody CategoryCmd categoryCmd) {
-        categoryService.editCategory(Long.parseLong(categoryCmd.getCategoryId()), categoryCmd.getCategoryName());
+        categoryService.editCategory(categoryCmd.getCategoryId(), categoryCmd.getCategoryName());
     }
 }

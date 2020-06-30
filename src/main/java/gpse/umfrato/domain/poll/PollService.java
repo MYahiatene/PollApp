@@ -24,7 +24,7 @@ public interface PollService {
      * @param id the id of the requested poll
      * @return the requested poll
      */
-    Poll getPoll(String id);
+    Poll getPoll(Long id);
 
     /**
      * This method creates a unique username for anonymous polls.
@@ -38,6 +38,8 @@ public interface PollService {
      * @return returns the poll activation status
      */
     Integer activatePoll(final Long pollId);
+
+    List<Poll> getLastEditedPolls();
 
     /**
      * This method edits a poll name.

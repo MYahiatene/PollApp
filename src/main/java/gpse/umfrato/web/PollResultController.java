@@ -41,6 +41,6 @@ public class PollResultController {
     public PollResult pollResultByUsername(final @RequestBody AnswerCmd answerCmd) {
         LOGGER.info("Hi from the PollResultController");
         LOGGER.info(answerCmd.toString());
-        return pollResultService.getPollResult(Long.parseLong(answerCmd.getPollId()), answerCmd.getUsername());
+        return pollResultService.getPollResult(answerCmd.getPollId(), answerCmd.getUsername());
     }
 }

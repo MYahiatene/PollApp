@@ -3,6 +3,7 @@ package gpse.umfrato.domain.poll;
 import gpse.umfrato.domain.category.CategoryRepository;
 import gpse.umfrato.domain.category.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
@@ -12,7 +13,7 @@ import java.util.List;
 @Service
 class PollServiceImpl implements PollService {
 
-    /* default */ final CategoryRepository categoryRepository;
+    private final CategoryRepository categoryRepository;
     private final PollRepository pollRepository;
     private final CategoryService categoryService;
     private int anonymousUsername = 0;
@@ -60,12 +61,11 @@ class PollServiceImpl implements PollService {
     /**
      * This method return a requested poll.
      *
-     * @param id the id of the requested poll
+     * @param pollId the id of the requested poll
      * @return the requested poll
      */
     @Override
-    public Poll getPoll(final String id) {
-        final Long pollId = Long.valueOf(id);
+    public Poll getPoll(final Long pollId) {
         return pollRepository.findById(pollId).orElseThrow(EntityNotFoundException::new);
     }
 
@@ -114,5 +114,8 @@ class PollServiceImpl implements PollService {
     public String deletePoll(final String pollID) {
         pollRepository.deleteById(Long.valueOf(pollID));
         return "Poll erfolgreich gelöscht";
+    }
+    @Override public List<Poll> getLastEditedPolls() {
+        return pollRepository.findTop5ByOrderByLastEditAt();
     }
 }

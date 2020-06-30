@@ -1,5 +1,8 @@
 package gpse.umfrato.web;
 
+import gpse.umfrato.domain.consistencyquestion.ConsistencyQuestion;
+import gpse.umfrato.domain.consistencyquestion.ConsistencyQuestionService;
+import gpse.umfrato.domain.cmd.ConsistencyQuestionCmd;
 import gpse.umfrato.domain.cmd.PollCmd;
 import gpse.umfrato.domain.participationlinks.ParticipationLinkService;
 import gpse.umfrato.domain.poll.Poll;
@@ -24,6 +27,7 @@ import java.util.logging.Logger;
 public class PollController {
     private final PollService pollService;
     private final ParticipationLinkService participationLinkService;
+    private final ConsistencyQuestionService consistencyQuestionService;
     private final QuestionService questionService;
 
     /**
@@ -33,11 +37,13 @@ public class PollController {
      * @param participationLinkService the participationLink service to work with.
      */
     @Autowired
-    public PollController(final PollService pollService, ParticipationLinkService participationLinkService,
-                          QuestionService questionService) {
+    public PollController(final PollService pollService, final ParticipationLinkService participationLinkService,
+                          final ConsistencyQuestionService consistencyQuestionService, QuestionService questionService) {
         this.pollService = pollService;
         this.participationLinkService = participationLinkService;
+        this.consistencyQuestionService = consistencyQuestionService;
         this.questionService = questionService;
+
     }
 
     /**
@@ -48,13 +54,13 @@ public class PollController {
      */
     @PostMapping(value = "/createpoll", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasAnyAuthority('Admin', 'Creator')")
-    public String createPoll(final @RequestBody PollCmd pollCmd) {
+    public Long createPoll(final @RequestBody PollCmd pollCmd) {
         try {
             final Poll poll = pollService.createPoll(pollCmd.getCmdPoll());
             participationLinkService.createParticipationLink(poll.getPollId(), "allUsers");
-            return "Poll created! with id: " + poll.getPollId().toString();
+            return poll.getPollId();
         } catch (BadRequestException | MalformedURLException e) {
-            return "Poll creation failed!";
+            return -1L;
         }
     }
 
@@ -87,13 +93,13 @@ public class PollController {
      */
     @GetMapping("/participant/{link}")
     public Poll getPoll(@PathVariable("link") final String link) {
-        final Poll poll = pollService.getPoll(String.valueOf(participationLinkService
-            .getPollIdFromParticipationLink(link)));
+        final Poll poll = pollService.getPoll(participationLinkService
+            .getPollIdFromParticipationLink(link));
         if (poll == null) {
             throw new BadRequestException();
+        } else {
+            return poll;
         }
-        return poll;
-
     }
 
     /**
@@ -108,8 +114,14 @@ public class PollController {
         if (pollCmd.getAnonymityStatus().equals("1")) {
             return pollService.createAnonymousUsername();
         } else {
-            return "Nina";
+            return "Nina"; //TODO: Nina muss raus!
         }
+    }
+
+    @GetMapping("relevantpolls")
+    public List<Poll> getNewestPolls()
+    {
+        return pollService.getLastEditedPolls();
     }
 
     /**
@@ -120,11 +132,47 @@ public class PollController {
      */
     @GetMapping("/getonepoll")
     public Poll getPoll(final @RequestParam long pollId) {
-        return pollService.getPoll(String.valueOf(pollId));
+        return pollService.getPoll(pollId);
     }
 
+    @PostMapping("/poll/{pollId:\\d+}/addcq")
+    public ConsistencyQuestion addConsistencyQuestion(final @PathVariable long pollId, final @RequestBody ConsistencyQuestionCmd consistencyQuestionCmd)
+    {
+        consistencyQuestionCmd.setPollId(pollId);
+        return consistencyQuestionService.createConsistencyQuestion(consistencyQuestionCmd);
+    }
+
+    @GetMapping("/poll/{pollId:\\d+}/consistencyquestions")
+    public List<ConsistencyQuestion> getConsistencyQuestions(final @PathVariable long pollId)
+    {
+        return consistencyQuestionService.getAllConsistencyQuestions(pollId);
+    }
+
+    @GetMapping("/poll/{pollId:\\d+}/consistencyquestionnumber")
+    public Integer getConsistencyQuestionCount(final @PathVariable long pollId)
+    {
+        return consistencyQuestionService.getAllConsistencyQuestions(pollId).size();
+    }
+
+    @GetMapping("/poll/{pollId:\\d+}/consistencyquestions/{question1Id:\\d+}/{question2Id:\\d+}")
+    public List<ConsistencyQuestion> getConsistencyQuestions(final @PathVariable long pollId,final @PathVariable long question1Id,final @PathVariable long question2Id)
+    {
+        return consistencyQuestionService.getAllConsistencyQuestions(question1Id,question2Id);
+    }
+
+    @PostMapping("/poll/editcq/{cqId:\\d+}")
+    public void editConsistencyQuestion(final @PathVariable long cqId, final @RequestBody ConsistencyQuestionCmd consistencyQuestionCmd)
+    {
+        consistencyQuestionService.editConsistencyQuestion(cqId,consistencyQuestionCmd);
+    }
+
+    @PostMapping("/poll/delcq/{cqId:\\d+}")
+    public void addConsistencyQuestion(final @PathVariable long cqId)
+    {
+        consistencyQuestionService.deleteConsistencyQuestion(cqId);
+    }
     @PostMapping("/poll/{pollId:\\d+}/question/{questionId:\\d+}/addAnswerPossibility")
-    public Poll addAnswerPossibility(final @PathVariable String pollId, final @PathVariable Long questionId, final @RequestBody String answer) {
+    public Poll addAnswerPossibility(final @PathVariable Long pollId, final @PathVariable Long questionId, final @RequestBody String answer) {
         String tmp = answer.substring(answer.indexOf(':'));
         Question question = questionService.getQuestion(questionId);
         questionService.setNewAnswer(question, tmp.substring(2,tmp.length()-2));
@@ -152,5 +200,6 @@ public class PollController {
     public String deletePoll(final @RequestBody PollCmd pollCmd) {
         return pollService.deletePoll(pollCmd.getPollId());
     }
+
 }
 

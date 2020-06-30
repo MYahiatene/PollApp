@@ -8,7 +8,7 @@ import lombok.Data;
 @Data
 public class CategoryCmd {
     private String categoryName;
-    private String pollId;
-    private String categoryId;
-    private String questionState;
+    private Long pollId;
+    private Long categoryId;
+    private Long questionState;
 }

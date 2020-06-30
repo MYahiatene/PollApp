@@ -22,7 +22,7 @@ public class PollResult {
 
     private String lastEditAt;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany/*(fetch = FetchType.EAGER, cascade = CascadeType.ALL)*/
     private List<Answer> answerList = new ArrayList<>();
 
     /**

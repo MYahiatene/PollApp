@@ -9,15 +9,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 @Service
 public class QuestionServiceImpl implements QuestionService {
 
-    private static final float FIVE = 5.0f;
-    private static final float ZERO_DOT_ONE = 0.1f;
-    private static final float ZERO = 0.0f;
-    private static final float ONE = 1.0f;
+    private static final double FIVE = 5.0;
+    private static final double ZERO_DOT_ONE = 0.1;
+    private static final double ZERO = 0.0;
+    private static final double ONE = 1.0;
 
 
     private static final String TEXT_QUESTION = "TextQuestion";
@@ -80,15 +82,15 @@ public class QuestionServiceImpl implements QuestionService {
                 break;
             case RANGE_QUESTION:
                 question = new Question(questionCmd.getQuestionMessage(),
-                    questionCmd.getEndValue() == ZERO ? FIVE : questionCmd.getEndValue(),
-                    questionCmd.getStartValue(), questionCmd.getStepSize() == ZERO ? ONE : questionCmd.getStepSize(),
-                    questionCmd.getBelowMessage() == null ? "" : questionCmd.getBelowMessage(),
-                    questionCmd.getAboveMessage() == null ? "" : questionCmd.getAboveMessage());
+                    questionCmd.getStartValue(), questionCmd.getEndValue(),
+                        questionCmd.getStepSize() == ZERO ? ONE : questionCmd.getStepSize(),
+                        questionCmd.getBelowMessage() == null ? "" : questionCmd.getBelowMessage(),
+                        questionCmd.getAboveMessage() == null ? "" : questionCmd.getAboveMessage());
                 break;
             case SLIDER_QUESTION:
                 question = new Question(questionCmd.getQuestionMessage(),
-                    questionCmd.getEndValue() == ZERO ? ONE : questionCmd.getEndValue(), questionCmd.getStartValue(),
-                    questionCmd.getStepSize() == ZERO ? ZERO_DOT_ONE : questionCmd.getStepSize(),
+                    questionCmd.getStartValue(), questionCmd.getEndValue(),
+                    questionCmd.getStepSize() == ZERO ? ONE : questionCmd.getStepSize(),
                     questionCmd.getBelowMessage() == null ? "" : questionCmd.getBelowMessage(),
                     questionCmd.getAboveMessage() == null ? "" : questionCmd.getAboveMessage(),
                     questionCmd.isHideValues());
@@ -108,8 +110,20 @@ public class QuestionServiceImpl implements QuestionService {
         pollRepository.findById(Long.valueOf(questionCmd.getPollId())).get().getCategoryList().get(0).getQuestionList().
             add(question);
         questionRepository.save(question);
-
-
+        return question;
+    }
+    /**
+     * This method creates a question for a poll.
+     *
+     * @return the question which is created
+     */
+    @Override
+    public Question addQuestion(final Long pollId, final Question question) {
+        question.setCategoryId(categoryRepository.findCategoriesByPollId(pollId).get(0).getCategoryId());
+        final Category category = categoryRepository.findCategoriesByPollId(pollId).get(0);
+        category.getQuestionList().add(question);
+        categoryRepository.save(category);
+        questionRepository.save(question);
         return question;
     }
 
@@ -120,12 +134,12 @@ public class QuestionServiceImpl implements QuestionService {
      * @param questionId the id of the selected question
      */
     @Override
-    public void removeQuestion(final String categoryId, final String questionId) {
+    public void removeQuestion(final Long categoryId, final Long questionId) {
         try {
-            categoryRepository.findById(Long.valueOf(categoryId))
+            categoryRepository.findById(categoryId)
                 .orElseThrow(EntityNotFoundException::new).getQuestionList().remove(questionRepository
-                .getOne(Long.valueOf(questionId)));
-            questionRepository.deleteById(Long.valueOf(questionId));
+                .getOne(questionId));
+            questionRepository.deleteById(questionId);
 
         } catch (EntityNotFoundException e) {
             e.printStackTrace();

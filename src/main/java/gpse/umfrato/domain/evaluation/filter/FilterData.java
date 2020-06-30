@@ -1,11 +1,19 @@
-package gpse.umfrato.domain.cmd;
+package gpse.umfrato.domain.evaluation.filter;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
+import javax.persistence.*;
 import java.util.List;
 
+@Entity
 @Data
-public class FilterCmd {
+@NoArgsConstructor
+public class FilterData {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long filterId;
 
     private String filterType;
 
@@ -15,16 +23,19 @@ public class FilterCmd {
 
     private Long basePollId;
 
+    @ElementCollection
     private List<Long> baseQuestionIds;
 
-    private Boolean timeDiagram;
+    private Boolean timeDiagram = true;
 
     //QuestionFilter
     private Long targetQuestionId;
 
+    @ElementCollection
     private List<String> targetAnswerPossibilities;
 
     //UserFilter
+    @ElementCollection
     private List<String> userNames;
 
     //ConsistencyFilter
@@ -35,4 +46,5 @@ public class FilterCmd {
     private String startDate;
 
     private String endDate;
+
 }

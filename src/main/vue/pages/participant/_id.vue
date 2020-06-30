@@ -141,11 +141,11 @@
                                         <!--Thumb-label is not being shown-->
                                         <div v-else-if="question.hideValues === true">
                                             <v-slider
-                                                v-model="slideValueList[index]"
-                                                min="0"
-                                                max="10"
-                                                ticks
-                                                tick-size="4"
+                                                v-model="value2"
+                                                :min="question.startValue"
+                                                :max="question.endValue"
+                                                :step="question.stepSize"
+                                                thumb-label="always"
                                                 append-icon="mdi-plus"
                                                 prepend-icon="mdi-minus"
                                                 :color="fontColor"

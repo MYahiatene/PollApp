@@ -40,6 +40,7 @@ public class QuestionController {
     @PreAuthorize("hasAnyAuthority('Admin','Creator', 'Editor')")
     @PostMapping("/addquestion")
     public Question addQuestion(final @RequestBody QuestionCmd questionCmd) {
+        LOGGER.info(questionCmd.toString());
         return questionService.addQuestion(questionCmd);
     }
 
@@ -51,8 +52,7 @@ public class QuestionController {
     @PreAuthorize("hasAnyAuthority('Admin','Creator', 'Editor')")
     @PutMapping("/removequestion")
     public void deleteQuestion(final @RequestBody QuestionCmd questionCmd) {
-        questionService.removeQuestion(String.valueOf(questionCmd.getCategoryId()),
-            String.valueOf(questionCmd.getQuestionId()));
+        questionService.removeQuestion(questionCmd.getCategoryId(), questionCmd.getQuestionId());
     }
 
     /**
