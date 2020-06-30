@@ -127,7 +127,7 @@ export default {
                 firstName: '',
                 lastName: '',
             },
-            roles: ['Admin', 'Umfrageersteller', 'Umfragebearbeiter', 'Teilnehmer'],
+            roles: ['Admin', 'Creator', 'Editor', 'User'],
             headers: [
                 { text: 'Username', value: 'username', align: 'start' },
                 {
@@ -237,7 +237,7 @@ export default {
                 username: newUser.username,
                 firstName: newUser.firstName,
                 lastName: newUser.lastName,
-                password: 'pwd',
+                password: null,
                 email: newUser.email,
                 role: newUser.role,
             }

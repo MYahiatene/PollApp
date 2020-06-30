@@ -87,7 +87,13 @@ import java.util.logging.Logger;
     @Override public List<Answer> getAnswerFromOneQuestion(final Long questionId) {
         return answerRepository.findAnswerByQuestionId(questionId);
     }
-
+    /**
+     * This method returns all answers from a selected question.
+     *
+     * @param pollId the id of the poll
+     * @param username the id of the user
+     * @return all answers from a question in a list
+     */
     @Override public List<String> getAllAnswersFromPollByUser(final Long pollId, final String username) {
         return null;
     }

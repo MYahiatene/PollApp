@@ -40,6 +40,9 @@
         <v-row v-if="openUpper" no-gutters>
             <v-text-field label="Maximumbeschriftung" v-model="upperText" hint="bspw. 'mehr als X'"></v-text-field>
         </v-row>
+        <v-row no-gutters>
+            <v-switch v-model="hideValues" label="Werte ausblenden"></v-switch>
+        </v-row>
         <!--<v-row no-gutters>
             <v-switch label="'Möchte ich nicht beantworten' erlauben" v-model="noAnswer"></v-switch>
         </v-row>-->
@@ -51,7 +54,7 @@
 import { mapGetters, mapMutations } from 'vuex'
 
 export default {
-    name: 'RangeQuestion',
+    name: 'SlideQuestion',
     props: { pollData: { type: Array }, questionData: { type: Object }, buildIndex: { type: Number } },
     data() {
         return {
@@ -82,6 +85,7 @@ export default {
             setStep: 'questionOverview/setStepSize',
             setLower: 'questionOverview/setBelowMessage',
             setUpper: 'questionOverview/setAboveMessage',
+            setHideValues: 'questionOverview/setHideValues',
             // setNA: 'pollOverview/setIntervalNoAnswer',
         }),
         clearLower() {
@@ -137,14 +141,22 @@ export default {
                 this.setUpper(value)
             },
         },
-        /* noAnswer: {
+        hideValues: {
             get() {
-                return this.getQuestion.intervalNoAnswer
+                return this.getQuestion.hideValues
             },
             set(value) {
-                this.setNA(value)
+                this.setHideValues(value)
             },
-        }, */
+        },
+        /* noAnswer: {
+                get() {
+                    return this.getQuestion.intervalNoAnswer
+                },
+                set(value) {
+                    this.setNA(value)
+                },
+            }, */
     },
 }
 </script>

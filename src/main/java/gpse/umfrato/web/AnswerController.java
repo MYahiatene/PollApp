@@ -8,6 +8,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * The answer controller used to process answer specific requests.
+ */
 @RequestMapping(value = "/api", method = RequestMethod.GET)
 @RestController
 @CrossOrigin
@@ -17,9 +20,9 @@ public class AnswerController {
 
 
     /**
-     * This class constructor initializes the objects.
+     * This class constructor injects the answer service component.
      *
-     * @param answerService      the answer service
+     * @param answerService takes the answer service
      */
     @Autowired
     public AnswerController(final AnswerService answerService) {
@@ -41,7 +44,7 @@ public class AnswerController {
 
     /**
      * This method deletes an answer.
-     * @param answerCmd the needed information is saved in the answerCmd object
+     * @param answerCmd the needed information is saved in the answerCmd object.
      */
     @PostMapping("/question/{questionId:\\d+}/deleteanswer")
     public void deleteAnswer(final @RequestBody AnswerCmd answerCmd) {

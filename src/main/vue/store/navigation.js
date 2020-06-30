@@ -25,6 +25,9 @@ export const mutations = {
             }
         }
     },
+    splicePolls(state, index) {
+        state.Polls.splice(index, 1)
+    },
 }
 export const actions = {
     async initialize({ commit }) {

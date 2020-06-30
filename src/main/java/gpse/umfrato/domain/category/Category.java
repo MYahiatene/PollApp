@@ -21,6 +21,9 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long categoryId;
 
+    /**
+     * This attribute represents the name of the category.
+     */
     private String categoryName;
 
     /**
@@ -31,9 +34,15 @@ public class Category {
     /**
      * This attribute represents a question list with all questions of this poll.
      */
+    @Column(unique = true)
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Question> questionList = new ArrayList<>();
 
+    /**
+     * The constructor of the class category.
+     * @param name the name of the category
+     * @param pollId the poll id of the category
+     */
     public Category(final String name, final Long pollId) {
         this.categoryName = name;
         this.pollId = pollId;

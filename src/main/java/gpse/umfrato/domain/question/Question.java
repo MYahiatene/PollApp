@@ -62,6 +62,7 @@ public class Question {
     @Lob
     private String questionMessage;
 
+    @OrderColumn
     @ElementCollection
     private List<String> answerPossibilities = new ArrayList<>();
 
@@ -150,6 +151,17 @@ public class Question {
         this.belowMessage = belowMessage;
         this.aboveMessage = aboveMessage;
         this.hideValues = hideValues;
+    }
+
+    /**
+     * The question constructor if the question type is SortQuestion.
+     * @param questionMessage the message of the question
+     * @param answerPossibilities the answer possibilities of this question
+     */
+    public Question(final String questionMessage, final List<String> answerPossibilities) {
+        this.questionMessage = questionMessage;
+        this.questionType = "SortQuestion";
+        this.answerPossibilities = answerPossibilities;
     }
 }
 

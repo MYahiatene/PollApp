@@ -10,6 +10,7 @@ import gpse.umfrato.domain.pollresult.PollResultService;
 import gpse.umfrato.domain.question.QuestionService;
 import gpse.umfrato.domain.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -55,6 +56,7 @@ public class EvaluationController {
      * @param input first filter must be of type DataFilter containing the Poll to analyse
      * @return a string in json format with all the data to display
      */
+    @PreAuthorize("hasAnyAuthority('Admin','Creator')")
     @PostMapping("/generateDiagram")
     public String populateDiagram(final @RequestBody List<FilterCmd> input) {
         LOGGER.info(input.toString());
