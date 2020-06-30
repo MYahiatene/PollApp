@@ -55,7 +55,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .sessionManagement()
             .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         // this enables h2 console for debugging purposes(bad for security)
-        // http.headers().frameOptions().disable();
+        http.headers().frameOptions().disable();
     }
 
     /**

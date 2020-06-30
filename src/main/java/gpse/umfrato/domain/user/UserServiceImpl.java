@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Logger;
 
 @Primary
 @Service
@@ -41,7 +42,7 @@ class UserServiceImpl implements UserService {
             String encryptedSafePwd = PasswordEncoderFactories.createDelegatingPasswordEncoder().encode(new String(safePwd));
             final User user = new User(username, encryptedSafePwd, firstName, lastName, role, email);
             // todo: send here the unencrypted pw to user
-            Arrays.fill(safePwd,'*');
+            Arrays.fill(safePwd, '*');
             return userRepository.save(user);
         } else {
             final User user = new User(username, password, firstName, lastName, role, email);

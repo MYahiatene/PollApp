@@ -62,7 +62,7 @@
                                 <div v-else-if="question.questionType === 'ChoiceQuestion'">
                                     <!--Radio Button since only one answer possible-->
                                     <!--Only to debug, otherwise numberOfPossibleAnswer === 1-->
-                                    <div v-if="question.numberOfPossibleAnswers === 0">
+                                    <div v-if="question.numberOfPossibleAnswers === 1">
                                         <v-card-text>
                                             <v-radio-group v-model="valueList[index]">
                                                 <v-radio
