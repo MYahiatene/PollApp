@@ -17,6 +17,7 @@ import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.web.bind.annotation.*;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -43,13 +44,15 @@ public class ExportController {
         this.exportService = exportService;
     }
 
-    /**New Idea: Convert to JSON first and then to CSV, it sure ain't pretty but if it works it's fine*/
+    /**
+     * New Idea: Convert to JSON first and then to CSV, it sure ain't pretty but if it works it's fine
+     */
 
     @PostMapping("/toCSVPoll")
-    public String toCSVManual(final @RequestBody Poll poll){
+    public String toCSVManual(final @RequestBody Poll poll) {
         return exportService.toCSVManual(poll);
-    /**Name, PollID, Creator, Anonymität, Kategorie 1, Kategorie 1, Kategorie 2*//*
-    *//**TestPoll, 1, Tbettmann, 1, Frage 1, Frage 2, Frage 1 aus Kat. 2*//*
+        /**Name, PollID, Creator, Anonymität, Kategorie 1, Kategorie 1, Kategorie 2*//*
+         *//**TestPoll, 1, Tbettmann, 1, Frage 1, Frage 2, Frage 1 aus Kat. 2*//*
         String output = "";
         output += "Name,PollID,PollCreator,Anonymitätsstatus";
         int amountOfArgumentsBeforeCategories = 4;
@@ -76,20 +79,22 @@ public class ExportController {
         return output;*/
     }
 
-    @RequestMapping(value = "/getFile/{pollId:\\d+}", method = RequestMethod.GET) // This should be a string, I don't know
+    @RequestMapping(value = "/getFile/{pollId:\\d+}", method = RequestMethod.GET)
+    // This should be a string, I don't know
     @ResponseBody
     public FileSystemResource getFile(@PathVariable Long pollId) {
-        return new FileSystemResource(new File("src/main/java/gpse/umfrato/domain/export/files/"+pollId.toString()+".txt"));
+        return new FileSystemResource(new File("src/main/java/gpse/umfrato/domain/export/files/" + pollId.toString() + ".txt"));
     }
 
-    @RequestMapping(value = "/getResult/{pollId:\\d+}", method = RequestMethod.GET) // This should be a string, I don't know
+    @RequestMapping(value = "/getResult/{pollId:\\d+}", method = RequestMethod.GET)
+    // This should be a string, I don't know
     @ResponseBody
     public FileSystemResource getResult(@PathVariable Long pollId) {
-        return new FileSystemResource(new File("src/main/java/gpse/umfrato/domain/export/files/Results"+pollId.toString()+".txt"));
+        return new FileSystemResource(new File("src/main/java/gpse/umfrato/domain/export/files/Results" + pollId.toString() + ".txt"));
     }
 
     public void writeToFile(String s, String pollId) throws FileNotFoundException {
-        File file = new File("src/main/java/gpse/umfrato/domain/export/files/"+pollId+".txt");
+        File file = new File("src/main/java/gpse/umfrato/domain/export/files/" + pollId + ".txt");
         PrintWriter out = new PrintWriter(file);
         out.println(s);
     }
@@ -127,7 +132,7 @@ public class ExportController {
     @PostMapping("/toJSONPollResult/{pollId:\\d+}")
     public String toJSONResult(final @PathVariable Long pollID) throws Exception {
         List<PollResult> results = pollResultService.getPollResults(pollID);
-        writeToFile(exportService.toJSON(results), "Results"+pollID.toString());
+        writeToFile(exportService.toJSON(results), "Results" + pollID.toString());
         return exportService.toJSON(results);
 /*        ObjectMapper objectMapper = new ObjectMapper()
             .findAndRegisterModules();
@@ -152,7 +157,7 @@ public class ExportController {
     }
 
     @PostMapping("/toJSONWithPollResult")
-    public String createExportJSON(Poll poll, List<PollResult> result){
+    public String createExportJSON(Poll poll, List<PollResult> result) {
         return exportService.createExportJSON(poll, result);
 /*        JSONObject combined = new JSONObject();
         try {
@@ -170,16 +175,8 @@ public class ExportController {
         return null;*/
     }
 
-    private String FormatCSVField(String data)
-    {
-        return String.format("\"{0}\"",
-            data.replace("\"", "\"\"\"")
-                .replace("\n", "")
-                .replace("\r", "")
-        );
-    }
 
-    public String addHeaders(Long pollId){
+    public String addHeaders(Long pollId) {
         Poll pollToConvert = pollService.getPoll(pollId);
         List<Category> categories = pollToConvert.getCategoryList();
         ListIterator<Category> categoryIterator = categories.listIterator();
@@ -187,10 +184,10 @@ public class ExportController {
         String columnNamesList = pollToConvert.getPollName(); /**Table headers*/
         /**Structure: PollID, PollName, AnonymityStatus, PollCreator*/
         columnNamesList += pollToConvert.getPollId() + ',' + pollToConvert.getPollName() + ',' + pollToConvert.getAnonymityStatus() + ',' + pollToConvert.getPollCreator() + ',';
-        while(categoryIterator.hasNext()) {
+        while (categoryIterator.hasNext()) {
             Category singularCategory = categoryIterator.next(); //Page
             ListIterator<Question> questionIterator = singularCategory.getQuestionList().listIterator();
-            while(questionIterator.hasNext()) {
+            while (questionIterator.hasNext()) {
                 Question singularQuestion = questionIterator.next();
                 String singularQuestionMessage = singularQuestion.getQuestionMessage();
                 /**TODO: Maybe Object to String will work, I don't know*/
@@ -202,13 +199,15 @@ public class ExportController {
 
     /**So how does it work?: */
     /**Function iterates over the list of pollResults first filling the first row of Elements with the Questions and then filling the rest with the actual PollResults.*/
-    /**TODO: Implement way to know what kind of question this was*/
+    /**
+     * TODO: Implement way to know what kind of question this was
+     */
 
     @PostMapping("/answers/{pollId:\\d+}")
     public String convertPollWithResultsToCSV(final @PathVariable Long pollId) {
         Poll pollToConvert = pollService.getPoll(pollId);
         List<Category> categories = pollToConvert.getCategoryList();
-        ListIterator<Category> categoryIterator = categories.listIterator();
+        categories.listIterator();
         String columnNamesList = addHeaders(pollId);
         /**This is what does the work I guess*/
 
@@ -222,14 +221,14 @@ public class ExportController {
 
         /**IMPORTANT: Structure: PollID; PollTaker; PollResultID; LastEditAt; List of Answers*/
         // No need give the headers Like: id, Name on builder.append
-        builder.append(columnNamesList +"\n");
+        builder.append(columnNamesList + "\n");
         List<PollResult> results = pollResultService.getPollResults(pollId); /**TODO: WICHTIG KEINE LISTE VON POLLRESULTS*/
         ListIterator<PollResult> resultIterator = results.listIterator();
-        while(resultIterator.hasNext()) {
+        while (resultIterator.hasNext()) {
             PollResult singularResult = resultIterator.next();
             ListIterator<Answer> answerIterator = singularResult.getAnswerList().listIterator();
             builder.append(singularResult.getPollId() + ',' + singularResult.getPollTaker() + ',' + singularResult.getPollResultId() + ',' + singularResult.getLastEditAt());
-            while(answerIterator.hasNext()) {
+            while (answerIterator.hasNext()) {
                 Answer singularAnswer = answerIterator.next();
                 /**Iterate over list to make every Answer one column in the csv table*/
                 builder.append(answerToCSV(singularAnswer) + ',');
@@ -249,10 +248,10 @@ public class ExportController {
         ListIterator<Category> categoryIterator = categories.listIterator();
 
         String columnNamesList = pollToConvert.getPollName(); /**Table headers*/
-        while(categoryIterator.hasNext()) {
+        while (categoryIterator.hasNext()) {
             Category singularCategory = categoryIterator.next(); //Page
             ListIterator<Question> questionIterator = singularCategory.getQuestionList().listIterator();
-            while(questionIterator.hasNext()) {
+            while (questionIterator.hasNext()) {
                 Question singularQuestion = questionIterator.next();
                 String singularQuestionMessage = singularQuestion.getQuestionMessage();
                 columnNamesList += '\n' + singularQuestionMessage; /**I think it works that way, should give out "PollID, Frage1, Frage2, Frage3, ... regardless of category"*/
@@ -271,7 +270,7 @@ public class ExportController {
 
 
         // No need give the headers Like: id, Name on builder.append
-        builder.append(columnNamesList +"\n");
+        builder.append(columnNamesList + "\n");
         pw.write(builder.toString());
         pw.close();
         LOGGER.info("done!");
@@ -282,7 +281,7 @@ public class ExportController {
     public String answerToCSV(Answer input) {
         ListIterator<String> answerIterator = input.getGivenAnswerList().listIterator();
         String output = "";
-        while(answerIterator.hasNext()) {
+        while (answerIterator.hasNext()) {
             String answerForSingularQuestion = answerIterator.next();
             output += answerForSingularQuestion + ",";
         }
