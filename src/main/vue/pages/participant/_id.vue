@@ -217,7 +217,6 @@
 <script>
 import { mapGetters } from 'vuex'
 import draggable from 'vuedraggable'
-import ChoiceQuestion from '../../components/ChoiceQuestion'
 
 export default {
     name: 'Participant',
@@ -252,7 +251,6 @@ export default {
             AnswerListsOfSortQuestions: [[1], [2], [3]],
             lastInput: 'Letzte Eingabe',
             valueList: [],
-            selected: [],
         }
     },
     /**
@@ -420,9 +418,15 @@ export default {
                     else if (type === 'ChoiceQuestion' || type === 'RangeQuestion') {
                         const array = []
                         for (let j = 0; j < this.givenAnswers.length; j++) {
-                            array.push(this.getCategory.questionList[i].answerPossibilities[this.givenAnswers[i]])
+                            array.push(this.computedQuestionList[i].answerPossibilities[this.givenAnswers[i]])
                         }
                         this.valueList.push(array)
+                    } else if (type === 'SortQuestion') {
+                        const array = []
+                        for (let j = 0; j < this.givenAnswers.length; j++) {
+                            array.push(this.computedQuestionList[i].answerPossibilities[this.givenAnswers[i]])
+                        }
+                        this.AnswerListsOfSortQuestions[i] = array
                     } else {
                         this.valueList.push(this.givenAnswers[i])
                     }
