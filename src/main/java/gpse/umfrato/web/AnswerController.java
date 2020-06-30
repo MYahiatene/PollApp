@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.function.Supplier;
+import java.util.logging.Logger;
 
 /**
  * The answer controller used to process answer specific requests.
@@ -15,7 +17,7 @@ import java.util.List;
 @RestController
 @CrossOrigin
 public class AnswerController {
-
+    static final Logger LOGGER = Logger.getLogger("AnswerController");
     private final AnswerService answerService;
 
 
@@ -38,6 +40,7 @@ public class AnswerController {
      */
     @PostMapping("/poll/{pollId:\\d+}/addanswer") // {pollId:\d+}
     public void addAnswer(final @PathVariable Long pollId, final @RequestBody AnswerCmd answerCmd) {
+        LOGGER.info("Im AnswerController");
         answerService.giveAnswer(answerCmd.getUsername(), pollId,
             answerCmd.getQuestionId(), answerCmd.getAnswerList());
     }

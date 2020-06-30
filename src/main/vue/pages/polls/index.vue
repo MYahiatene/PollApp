@@ -27,7 +27,6 @@
                                 </v-btn>
                             </v-toolbar>
                         </template>
-
                         <v-container>
                             <template>
                                 <v-data-table
@@ -82,7 +81,6 @@
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import AuthGate from '../../components/AuthGate'
-
 export default {
     name: 'Navigation',
     components: { AuthGate },
@@ -169,7 +167,6 @@ export default {
         this.initialize()
         this.initializeLinks()
     },
-
     methods: {
         ...mapActions({ initialize: 'navigation/initialize', activatePoll2: 'navigation/activatePoll' }),
         ...mapMutations({

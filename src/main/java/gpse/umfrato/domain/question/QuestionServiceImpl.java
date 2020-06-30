@@ -231,5 +231,13 @@ public class QuestionServiceImpl implements QuestionService {
         return question;
     }
 
+    @Override
+    public void setNewAnswer(final Question question, final String answer) {
+        List<String> list = question.getAnswerPossibilities();
+        list.add(answer);
+        question.setAnswerPossibilities(list);
+        questionRepository.save(question);
+    }
+
 
 }

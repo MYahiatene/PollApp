@@ -54,4 +54,5 @@ public interface QuestionService {
      */
     Question changeCategory(final Long questionId, final Long newCategoryId, final Long newIndex);
 
+    void setNewAnswer(final Question question, final String answer);
 }

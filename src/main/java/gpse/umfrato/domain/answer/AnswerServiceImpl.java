@@ -40,7 +40,7 @@ import java.util.logging.Logger;
     @Override public Answer giveAnswer(final String username, final Long pollId, final String questionId,
                                        final List<String> answerList) {
         final Answer answer = new Answer(answerList, questionId);
-        LOGGER.info(answer.toString());
+        // LOGGER.info(answer.toString());
         PollResult pollResult = pollResultRepository.findPollResultByPollIdAndPollTaker(pollId, username);
         if (pollResult == null) {
             pollResult = new PollResult(pollId, username);
@@ -61,7 +61,7 @@ import java.util.logging.Logger;
         final DateFormat df = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
         final Date dateobj = new Date();
         pollResult.setLastEditAt(df.format(dateobj));
-        LOGGER.info(pollResult.toString());
+        // LOGGER.info(pollResult.toString());
         pollResultRepository.save(pollResult);
         return answer;
     }

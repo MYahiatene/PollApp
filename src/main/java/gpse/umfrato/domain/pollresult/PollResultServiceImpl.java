@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.ListIterator;
+import java.util.function.Supplier;
 import java.util.logging.Logger;
 
 @Service
@@ -71,7 +72,14 @@ public class PollResultServiceImpl implements PollResultService {
      */
     @Override
     public PollResult getPollResult(final Long pollId, final String pollTaker) {
-        return pollResultRepository.findPollResultByPollIdAndPollTaker(pollId, pollTaker);
+        // Das funktioniert!
+        LOGGER.info(pollId + pollTaker);
+        // LOGGER.info(pollResultRepository.findPollResultByPollIdAndPollTaker(pollId, pollTaker).toString());
+        try {
+            return pollResultRepository.findPollResultByPollIdAndPollTaker(pollId, pollTaker);
+        } catch(NullPointerException e) {
+            return null;
+        }
     }
 
 }
