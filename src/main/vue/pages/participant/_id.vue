@@ -197,16 +197,33 @@
                 </v-row>
                 <v-row>
                     <v-col cols="8">
-                        <!-- button to get to the previous category, if there is no previous one, the button is disabled,
+                        <div v-if="getPoll[1].data.anonymityStatus !== '1'">
+                            <!-- button to get to the previous category, if there is no previous one, the button is disabled,
                          else, the previous category is loaded by getPreviousCategory() if clicked -->
-                        <v-btn class="pl-4" :disabled="hasNoPrevious" @click="getPreviousCategory()"
-                            >Vorherige Seite
-                        </v-btn>
-                        <!-- button to get to the next category, same principle as the one above -->
-                        <v-btn class="pl-4" :disabled="hasNoNext" @click="getNextCategory()">Nächste Seite</v-btn>
-                        <v-btn :color="fontColor" nuxt to="/AfterParticipated">
-                            Absenden
-                        </v-btn>
+                            <v-btn class="pl-4" :disabled="hasNoPrevious" @click="getPreviousCategory()"
+                                >Vorherige Seite
+                            </v-btn>
+                            <!-- button to get to the next category, same principle as the one above -->
+                            <v-btn class="pl-4" :disabled="hasNoNext" @click="getNextCategory()">Nächste Seite</v-btn>
+                            <v-btn class="float-right" :color="fontColor" nuxt to="/AfterParticipated">
+                                Absenden
+                            </v-btn>
+                            <v-btn class="float-right" :color="fontColor" nuxt to="/AfterSaved">
+                                Speichern
+                            </v-btn>
+                        </div>
+                        <div v-else>
+                            <!-- button to get to the previous category, if there is no previous one, the button is disabled,
+                         else, the previous category is loaded by getPreviousCategory() if clicked -->
+                            <v-btn class="pl-4" :disabled="hasNoPrevious" @click="getPreviousCategory()"
+                                >Vorherige Seite
+                            </v-btn>
+                            <!-- button to get to the next category, same principle as the one above -->
+                            <v-btn class="pl-4" :disabled="hasNoNext" @click="getNextCategory()">Nächste Seite</v-btn>
+                            <v-btn :color="fontColor" nuxt to="/AfterParticipated">
+                                Absenden
+                            </v-btn>
+                        </div>
                     </v-col>
                 </v-row>
             </v-content>
@@ -406,6 +423,10 @@ export default {
         },
     },
     methods: {
+        /**
+         * This method creates valueList which for every question type, but sortQuestion is used as v-model to show
+         * already given answers by the user, or nothing at all, if there are no previous given answers.
+         */
         valuesForQuestions() {
             for (let i = 0; i < this.getCategory.questionList.length; i++) {
                 const type = this.getCategory.questionList[i].questionType
@@ -450,18 +471,6 @@ export default {
                 }
             }
             console.log(this.valueList)
-        },
-        radioValue(question, answer) {
-            /* for (let i = 0; i < question.answerPossibilities.length; i++) {
-                if (question.answerPossibilities[i] === answer) {
-                    if (this.valueList[this.index][0] === i) {
-                        return 'selected'
-                    } else {
-                        return ''
-                    }
-                }
-            } */
-            return 'selected'
         },
         /**
          * Holt sich die gegebene Antwort des Textfeldes aus dem Array ownAnswers und schickt die Antwort mit der
@@ -716,7 +725,7 @@ export default {
         // -------------------------------------------------------------------------------------------------------------
         // Get or save information to/from the Backend
         /**
-         * Calls showPoll in store/participant.js.
+         * Calls showPoll in store/participant.js and valuesForQuestion to get the given Answers
          */
         showPoll() {
             this.$store.dispatch('participant/showPoll', this.id)
