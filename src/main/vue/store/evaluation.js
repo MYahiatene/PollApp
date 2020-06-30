@@ -3,8 +3,44 @@ export const state = () => ({
     Polls: [],
     FilterList: [],
     pollId: -1,
+    DiagramFormat: [],
+    defaultDiagramFormat: {
+        backgroundColors: ['#aaaaaa'],
+        backgroundColor: '#aaaaaa',
+        multipleColors: false,
+        diagramType: 'bar',
+        showDiagram: true,
+        showTable: true,
+    },
     Sessions: [],
 })
+
+function formatToString(format) {
+    const short = {
+        q: format.questionId,
+        d: format.showDiagram,
+        t: format.diagramType,
+        b: format.backgroundColors,
+        c: format.backgroundColor,
+        m: format.multipleColors,
+        r: format.showTable,
+    }
+    return JSON.stringify(short)
+}
+
+function stringToFormat(string) {
+    const short = JSON.parse(string)
+    return {
+        questionId: short.q,
+        showDiagram: short.d,
+        diagramType: short.t,
+        backgroundColors: short.b,
+        backgroundColor: short.c,
+        multipleColors: short.m,
+        showTable: short.r,
+    }
+}
+
 export const getters = {
     getDiagramData(state) {
         console.log(state.DiagramData)
@@ -22,23 +58,60 @@ export const getters = {
     getSessions(state) {
         return state.Sessions
     },
+    getDiagramFormat(state) {
+        return (id) => {
+            for (let i = 0; i < state.DiagramFormat.length; i++) {
+                if (state.DiagramFormat[i].questionId === id) {
+                    return state.DiagramFormat[i]
+                }
+            }
+            for (let i = 0; i < state.DiagramData.questionList.length; i++) {
+                if (state.DiagramData.questionList[i].questionId === id) {
+                    const defaultFormat = JSON.parse(JSON.stringify(state.defaultDiagramFormat))
+                    const colors = state.defaultDiagramFormat.backgroundColors
+                    for (let q = colors.length; q < state.DiagramData.questionList[i].answerPossibilities.length; q++) {
+                        defaultFormat.backgroundColors.push(String(colors[q % colors.length]))
+                    }
+                    return defaultFormat
+                }
+            }
+            return state.defaultDiagramFormat
+        }
+    },
 }
 export const mutations = {
     setDiagramData(state, data) {
         state.DiagramData = data.data
-        console.log('DD')
-        console.log(state.DiagramData)
     },
     setPollData(state, pollData) {
         state.Polls = pollData.data
-        console.log('PD')
-        console.log(state.Polls)
     },
     saveFilter(state, filterList) {
         state.FilterList = filterList
     },
     setSessions(state, data) {
         state.Sessions = data.data
+    },
+    setDiagramFormatsFromServer(state, formatList) {
+        state.defaultDiagramFormat = stringToFormat(formatList[0])
+        if (formatList.length > 1) {
+            state.DiagramFormat = stringToFormat(formatList.slice(1))
+        }
+    },
+    setDiagramFormats(state, { useOnAll, format }) {
+        if (useOnAll) {
+            state.DiagramFormat = []
+        }
+        state.defaultDiagramFormat = format
+    },
+    setDiagramFormat(state, format) {
+        for (let i = 0; i < state.DiagramFormat.length; i++) {
+            if (state.DiagramFormat[i].questionId === format.questionId) {
+                state.DiagramFormat[i] = format
+                return
+            }
+        }
+        state.DiagramFormat.push(format)
     },
     setPollID(state, id) {
         state.pollId = id
@@ -53,10 +126,6 @@ export const mutations = {
 }
 export const actions = {
     async initialize({ commit }, pollId) {
-        console.log('INIT')
-        console.log(pollId)
-        console.log(this.$axios.defaults.headers)
-        console.log('getPolls from Server')
         commit('setPollID', pollId)
         const pollData = await this.$axios.get('/poll')
         commit('setPollData', pollData)
@@ -67,7 +136,6 @@ export const actions = {
                 baseQuestionIds: [],
             },
         ])
-        console.log(data)
         commit('setDiagramData', data)
     },
     async updateData({ state, commit }) {
@@ -77,33 +145,31 @@ export const actions = {
                 console.log(reason)
             })
             .then((response) => {
-                console.log(response)
                 commit('setDiagramData', response)
             })
     },
     async sendFilter({ state, commit }, filterList) {
-        console.log('in store!')
         commit('saveFilter', filterList)
-        console.log(filterList)
         await this.$axios
             .post('/evaluation/generateDiagram', filterList)
             .catch((reason) => {
                 console.log(reason)
             })
             .then((response) => {
-                console.log(response)
                 commit('setDiagramData', response)
             })
-        console.log('store durch')
     },
     async saveSession({ state, commit }, sessionInfo) {
-        console.log('saveSession()')
-        console.log(sessionInfo)
+        const formats = []
+        formats.push(formatToString(state.defaultDiagramFormat))
+        for (let i = 0; i < state.DiagramFormat.length; i++) {
+            formats.push(formatToString(state.DiagramFormat[i]))
+        }
         const payload = {
             pollId: state.pollId,
             sessionTitle: sessionInfo.sessionTitle,
             lastUsername: sessionInfo.lastUsername,
-            diagramColors: [],
+            diagramFormat: formats,
             filterList: state.FilterList,
         }
         await this.$axios
@@ -136,6 +202,7 @@ export const actions = {
             .then((response) => {
                 console.log(response)
                 commit('saveFilter', response.data.filterList)
+                commit('setDiagramFormatsFromServer', response.data.diagramFormat)
             })
             .catch((reason) => {
                 console.log(reason)

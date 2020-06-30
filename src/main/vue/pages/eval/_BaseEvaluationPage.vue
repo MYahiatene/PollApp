@@ -31,7 +31,10 @@ that each display a basic evaluation of one specific question-->
                         <!--             Here we open a setting window
         where the user can change the visual settings of every question at the same time-->
                         <v-card
-                            ><visual-evaluation-settings :one-question="false" @update-all-Visuals="updateVisuals">
+                            ><visual-evaluation-settings
+                                :change-default="true"
+                                @done=";(dialog = false), (widgetKey += 1)"
+                            >
                             </visual-evaluation-settings
                         ></v-card>
                     </v-dialog>
@@ -147,17 +150,11 @@ that each display a basic evaluation of one specific question-->
                                         <!--                                 Here we have the ChoiceQuestionEvaluationWidgets    -->
                                         <ChoiceQuestionEvaluationWidget
                                             :key="widgetKey"
-                                            :show-table="showTable"
-                                            :show-diagram="showDiagram"
                                             :question-id="question.id"
                                             :question-title="question.title"
                                             :answer-possibilities="question.answerPossibilities"
                                             :data="question.data"
                                             :calculated="question.calculated"
-                                            :background-colors="defaultColors"
-                                            :background-color="defaultColor"
-                                            :multiple-colors="multipleColors"
-                                            :diagram-type="defaultDiagramType"
                                         ></ChoiceQuestionEvaluationWidget>
                                     </div>
 
@@ -258,6 +255,7 @@ export default {
         items2() {
             const i2 = []
             for (let i = 0; i < this.items.length; i++) {
+                // TODO: Title fixen
                 i2[i] = {
                     answerPossibilities: this.items[i].answerPossibilities,
                     data: this.items[i].data,

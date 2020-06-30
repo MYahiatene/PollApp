@@ -18,14 +18,9 @@
                     <v-card>
                         <!--                    the visual settings the widget gets the current settings passed as props-->
                         <visual-evaluation-settings
-                            :one-question="true"
-                            :chosen-diagram="diagramType"
-                            :chosen-diagram-colors="choppedBackgroundColors"
-                            :chosen-diagram-color="backgroundColor"
-                            :multiple-colors="multipleColors"
-                            :show-diagram="showDiagram"
-                            :show-table="showTable"
-                            v-on:update-Visuals="updateVisuals"
+                            :question-id="questionId"
+                            :change-default="false"
+                            @done=";(visualSettings = false), (diagramKey += 1)"
                         ></visual-evaluation-settings>
                     </v-card>
                 </v-col>
@@ -39,7 +34,7 @@
                         <BarChartView :chartdata="chartdataSet" :options="barChartOptions"></BarChartView>
                     </div>
                     <!--                     the height is set to 60% of the screen-->
-                    <div v-if="diagramType === 'pie'" :key="diagramKey" style="height: 60vh;">
+                    <div v-else-if="diagramType === 'pie'" :key="diagramKey" style="height: 60vh;">
                         <PieChartView :chartdata="chartdataSet" :options="pieChartOptions"></PieChartView>
                     </div>
                 </v-col>
@@ -66,6 +61,7 @@
 </template>
 
 <script>
+import { mapGetters, mapMutations } from 'vuex'
 import BarChartView from './BarChartView'
 import PieChartView from './PieChartView'
 import visualEvaluationSettings from './visualEvaluationSettings'
@@ -74,9 +70,6 @@ export default {
     components: { BarChartView, PieChartView, visualEvaluationSettings },
     // these props are past in by the parent component
     props: {
-        diagramType: {
-            type: String,
-        },
         questionId: {
             type: Number,
         },
@@ -89,32 +82,8 @@ export default {
         data: {
             type: Array,
         },
-
         calculated: {
             type: Object,
-        },
-
-        backgroundColors: {
-            type: Array,
-        },
-
-        backgroundColor: {
-            type: String,
-            default: '#aaaaaa',
-        },
-
-        multipleColors: {
-            type: Boolean,
-            default: false,
-        },
-
-        showTable: {
-            type: Boolean,
-            default: true,
-        },
-        showDiagram: {
-            type: Boolean,
-            default: true,
         },
     },
     name: 'ChoiceQuestionEvaluationWidget',
@@ -167,9 +136,29 @@ export default {
             { text: 'Relative Häufigkeit', value: 'rel', sortable: false },
         ],
     }),
-
     computed: {
         // here we compute the data for the table
+        ...mapGetters({
+            getFormat: 'evaluation/getDiagramFormat',
+        }),
+        diagramType() {
+            return this.getFormat(this.questionId).diagramType
+        },
+        backgroundColors() {
+            return this.getFormat(this.questionId).backgroundColors
+        },
+        backgroundColor() {
+            return this.getFormat(this.questionId).backgroundColor
+        },
+        multipleColors() {
+            return this.getFormat(this.questionId).multipleColors
+        },
+        showTable() {
+            return this.getFormat(this.questionId).showTable
+        },
+        showDiagram() {
+            return this.getFormat(this.questionId).showDiagram
+        },
         items() {
             const h = []
             for (let i = 0; i < this.answerPossibilities.length; i++) {
@@ -181,29 +170,18 @@ export default {
         // here we compute the data for the visual diagram, writing it into a format the components can process.
         // We either give one color or an array of colors
         chartdataSet() {
-            if (this.multipleColors) {
-                return {
-                    labels: this.answerPossibilities,
-                    datasets: [
-                        {
-                            label: this.questionTitle,
-                            backgroundColor: this.choppedBackgroundColors,
-                            data: this.data,
-                        },
-                    ],
-                }
-            } else {
-                return {
-                    labels: this.answerPossibilities,
-                    datasets: [
-                        {
-                            label: this.questionTitle,
-                            backgroundColor: this.backgroundColor,
-                            data: this.data,
-                        },
-                    ],
-                }
+            const data = {
+                labels: this.answerPossibilities,
+                datasets: [
+                    {
+                        label: this.questionTitle,
+                        backgroundColor: this.multipleColors ? this.choppedBackgroundColors : this.backgroundColor,
+                        data: this.data,
+                    },
+                ],
             }
+            console.log(data)
+            return data
         },
         /*
 
@@ -226,7 +204,11 @@ export default {
       the diagram key is added to force the widget to actually update the color
 
        */
-        updateVisuals(showDiagram, diagramType, diagramColors, diagramColor, multipleColors, showTable) {
+        ...mapMutations({
+            setFormat: 'evaluation/getDiagramFormat',
+        }),
+
+        /* updateVisuals(showDiagram, diagramType, diagramColors, diagramColor, multipleColors, showTable) {
             this.showDiagram = showDiagram
             this.diagramType = diagramType
 
@@ -247,9 +229,8 @@ export default {
             } else {
                 this.diagramKey = diagramColor
             }
-
             this.visualsUpdated = true
-        },
+        }, */
     },
 }
 </script>

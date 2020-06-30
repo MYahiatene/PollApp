@@ -335,24 +335,20 @@ export default {
         ...mapGetters({
             polls: 'evaluation/getPolls',
             getSessions: 'evaluation/getSessions',
+            getUsername: 'login/getUsername',
         }),
 
         pollTitles() {
             console.log('pollTitles()')
             const pollTitles = []
-            console.log(this.polls)
             for (let i = 0; i < this.polls.length; i++) {
                 pollTitles.push('#' + this.polls[i].pollId + ' ' + this.polls[i].pollName)
             }
-            console.log(pollTitles)
             return pollTitles
         },
 
         pollIndex() {
             console.log('pollIndex()')
-            console.log(this.chosenPoll)
-            console.log(this.pollTitles)
-            console.log(this.pollTitles.indexOf(this.chosenPoll))
             return this.pollTitles.indexOf(this.chosenPoll)
         },
 
@@ -378,15 +374,12 @@ export default {
                 return []
             }
             const questionTitles = []
-            console.log(this.polls)
-            console.log(this.pollIndex)
             for (let i = 0; i < this.polls[this.pollIndex].categoryList.length; i++) {
                 for (let j = 0; j < this.polls[this.pollIndex].categoryList[i].questionList.length; j++) {
                     questionTitles.push(this.polls[this.pollIndex].categoryList[i].questionList[j].questionMessage)
                 }
             }
             console.log('questionTitles: ')
-            console.log(questionTitles)
             return questionTitles
         },
 
@@ -402,11 +395,7 @@ export default {
     },
     mounted() {
         console.log('mounted()')
-        console.log(this.initialPollIndex)
-        console.log(this.pollTitles)
         this.chosenPoll = this.pollTitles[this.initialPollIndex]
-        console.log(this.chosenPoll)
-        console.log(this.initialPollIndex)
         for (let i = 0; i < this.questionTitles.length; i++) {
             this.selectedQuestions.push(this.questionTitles[i])
         }
@@ -419,6 +408,7 @@ export default {
             saveSession: 'evaluation/saveSession',
             loadSessions: 'evaluation/loadSessions',
             loadSession: 'evaluation/loadSession',
+            updateData: 'evaluation/updateData',
         }),
 
         async saveToStore() {
@@ -434,17 +424,9 @@ export default {
                 filterType: 'consistency',
                 minSuccesses: this.minConsistencyValue, // von 0 (aus) bis zur Länge der Konsistenzfragen
             })
-            console.log('Jo')
-            console.log(this.qafilterList)
-            console.log(filterData)
             for (let i = 0; i < this.qafilterList.length; i++) {
-                console.log(i)
                 if (this.qafilterList[i].active) {
-                    console.log(this.qafilterList)
-                    console.log(this.polls)
-                    console.log(this.pollIndex)
                     const filter = this.qafilterList[i]
-                    console.log(filter)
                     if (filter.answerIndices.length !== 0) {
                         filterData.push({
                             filterType: 'questionAnswer',
@@ -483,9 +465,7 @@ export default {
             //         })
             //     }
             // }
-            console.log(filterData)
             await this.sendFilter(filterData)
-            console.log('save filter was called')
             this.$emit('close-event')
         },
 
@@ -525,7 +505,6 @@ export default {
             this.qafilterList[filterId].questionIndex = questionIndex
             this.qafilterList[filterId].answerIndices = answerIndices
             this.qafilterList[filterId].invertFilter = invertFilter
-            console.log(this.qafilterList)
         },
 
         addDateFilter() {
@@ -543,24 +522,17 @@ export default {
 
         deleteDateFilter(index) {
             console.log('deleteDateFilter()')
-            console.log(index)
             this.dateFilterList[index].active = false
             this.$forceUpdate()
         },
 
         updateDateFilter([filterIndex, startDate, endDate, invertFilter]) {
             console.log('updateDateFilter()')
-            console.log(startDate)
-            console.log(endDate)
-            console.log(this.dateFilterList)
-            console.log(filterIndex)
-            console.log(invertFilter)
 
             this.dateFilterList[filterIndex].startDate = startDate
             this.dateFilterList[filterIndex].endDate = endDate
 
             this.dateFilterList[filterIndex].invertFilter = invertFilter
-            console.log(this.dateFilterList)
         },
 
         saveThisSession() {
@@ -568,12 +540,12 @@ export default {
             this.saveToStore()
             const payload = {
                 sessionTitle: this.sessionTitle,
-                lastUsername: 'Jan',
+                lastUsername: this.getUsername,
             }
             this.saveSession(payload)
         },
 
-        loadOneSession() {
+        async loadOneSession() {
             console.log('loadOneSession()')
             let id = -1
             const sessions = this.getSessions
@@ -582,11 +554,15 @@ export default {
                     id = sessions[i].sessionId
                 }
             }
-            this.loadSession(id)
+            if (id !== -1) {
+                await this.loadSession(id)
+                await this.updateData()
+                this.$emit('close-event')
+                this.dialog = false
+            }
         },
 
         updateConsistencyOn() {
-
             this.consistencyOn = !(this.minConsistencyValue === 0)
         },
     },
