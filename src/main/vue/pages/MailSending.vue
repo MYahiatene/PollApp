@@ -2,15 +2,21 @@
     <div class="container">
         <div class="large-12 medium-12 small-12 cell">
             <label>
-                CSV Datei mit E-Mail Adressen hochladen:
-                <input id="file" ref="file" type="file" @change="handleFileUpload()" />
+                <v-card class="mr-0" max-width="700" tile>
+                    CSV Datei mit E-Mail Adressen hochladen:
+                    <input id="file" ref="file" type="file" @change="handleFileUpload()" />
+                </v-card>
+                <v-btn @click="submitFile()">CSV hochladen</v-btn>
             </label>
-            <v-btn @click="submitFile()">Submit</v-btn>
         </div>
         <template>
             <div>
-                <input id="itemForm" @keypress.enter="addEmail" />
-                <v-btn @click="addEmail">Add eMail</v-btn>
+                <v-row>
+                    <v-card class="mr-0" max-width="400" tile>
+                        <input id="itemForm" placeholder="E-Mail Adresse" @keypress.enter="addEmail" />
+                    </v-card>
+                    <v-btn @click="addEmail">Add eMail</v-btn>
+                </v-row>
             </div>
             <v-col align="start" justify="start">
                 <v-row align="start" justify="start">
@@ -53,6 +59,7 @@
 "
                         ></textarea>
                     </v-card>
+                    <v-btn @click="sendEmail">E-Mail senden</v-btn>
                 </v-row>
             </div>
         </template>
@@ -98,6 +105,14 @@ export default {
                 .catch(function () {
                     console.log('Failed.')
                 })
+        },
+        sendEmail() {
+            console.log('Email Sending test')
+            const obj = {
+                mailList: this.items,
+                csvFile: '',
+            }
+            instance.post('/sendEmail', obj).catch()
         },
         handleFileUpload() {
             this.file = this.$refs.file.files[0]
