@@ -112,7 +112,14 @@ export default {
                 mailList: this.items,
                 csvFile: '',
             }
-            instance.post('/sendEmail', obj).catch()
+            instance
+                .post('/sendEmail', obj)
+                .then(function () {
+                    console.log('Email sending succedeed.')
+                })
+                .catch(function () {
+                    console.log('Email sending failed.')
+                })
         },
         handleFileUpload() {
             this.file = this.$refs.file.files[0]

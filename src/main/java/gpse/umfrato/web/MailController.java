@@ -33,20 +33,20 @@ public class MailController {
             List<String> mails = csvCmd.getMailList();
 
             final SimpleMailMessage message = new SimpleMailMessage();
-            System.out.println("---------SIZE:" + mails.size());
-            /*for (String mail : mails) {
+            //System.out.println("---------SIZE:" + mails.size());
+            for (String mail : mails) {
                 final UUID uuid = UUID.randomUUID();
                 final String urlUuid = "/" + uuid.toString();
                 final URL invitationLink = new URL("http", "localhost", DEFAULT_PORT, urlUuid);
 
                 //message.setFrom("gpseteam5.1@gmail.com");
-                System.out.println(mail);
+                //System.out.println(mail);
                 message.setTo(mail);
                 message.setSubject("Einladung zur Umfrage - Umfrato Reply");
                 message.setText("Hi, I'm a test mail! \nYour link is \n\n" + invitationLink + "\n\nThank you!");
 
                 this.mailSender.send(message);
-            }*/
+            }
 
             return "Email sent.";
 
@@ -54,11 +54,11 @@ public class MailController {
 
             return "Email sending failed.";
 
-        } /*catch (MalformedURLException e) {
+        } catch (MalformedURLException e) {
 
             return "Creating unique value failed.";
 
-        }*/
+        }
 
     }
 
