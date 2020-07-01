@@ -75,6 +75,7 @@ public class EvaluationController {
     @PostMapping("/generateDiagram")
     public String populateDiagram(final @RequestBody List<FilterCmd> input) {
         LOGGER.info(input.toString());
+
         if (input.isEmpty()) {
             return "?";
         }

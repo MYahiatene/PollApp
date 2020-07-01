@@ -1,6 +1,7 @@
 package gpse.umfrato.domain.poll;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import gpse.umfrato.domain.category.Category;
 import gpse.umfrato.domain.question.Question;
 import lombok.Data;

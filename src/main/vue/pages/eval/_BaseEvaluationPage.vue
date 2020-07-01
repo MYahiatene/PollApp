@@ -178,6 +178,11 @@ that each display a basic evaluation of one specific question-->
                 <v-card-title>Der Server hat noch nicht geantwortet</v-card-title>
             </v-card>
         </v-container>
+        <v-container>
+            <v-btn class="pl-4" @click="exportAnswers()">Antworten exportieren </v-btn>
+            <v-btn class="pl-4" @click="exportResults()">Antworten exportieren </v-btn>
+            <button @click="downloadWithVueResource">Download file with Vue</button>
+        </v-container>
     </v-container>
 </template>
 
@@ -294,6 +299,16 @@ export default {
     methods: {
         ...mapActions({ initialize: 'evaluation/initialize', updateData: 'evaluation/updateData' }),
 
+        exportAnswers() {
+            this.$store.dispatch('evaluation/exportAnswers', 1) // This should be PollId
+            this.downloadClick(1)
+        },
+        exportResults() {
+            this.$store.dispatch('evaluation/exportResults', 1) // This should be PollId
+        },
+        downloadClick(pollId) {
+            console.log(this.$store.dispatch('evaluation/awaitPollText', pollId))
+        },
         /*
 
       this method is emitted by the settings window.
