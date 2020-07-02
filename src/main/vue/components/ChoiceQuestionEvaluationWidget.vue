@@ -7,10 +7,44 @@
 
             <v-spacer></v-spacer>
             <!--            this button leads to the settings page for this specific question-->
-
-            <v-btn icon color="primary" @click="visualSettings = !visualSettings">
-                <v-icon> mdi-brush </v-icon>
-            </v-btn>
+            <v-tooltip bottom>
+                <template v-slot:activator="{ on, attrs }">
+                    <v-btn
+                        icon
+                        :color="relativ ? 'accent' : 'primary'"
+                        v-bind="attrs"
+                        v-on="on"
+                        @click=";(relativ = !relativ), (diagramKey += 1)"
+                    >
+                        <v-icon>
+                            %
+                        </v-icon>
+                    </v-btn>
+                </template>
+                <span>Relative bzw. Absolute Häufigkeit umschalten</span>
+            </v-tooltip>
+            <v-tooltip bottom>
+                <template v-slot:activator="{ on, attrs }">
+                    <v-btn
+                        icon
+                        :color="cumulated ? 'accent' : 'primary'"
+                        v-bind="attrs"
+                        v-on="on"
+                        @click=";(cumulated = !cumulated), (diagramKey += 1)"
+                    >
+                        <v-icon> mdi-sigma</v-icon>
+                    </v-btn>
+                </template>
+                <span>Kumulierte Häufigkeit an- und ausschalten</span>
+            </v-tooltip>
+            <v-tooltip bottom>
+                <template v-slot:activator="{ on, attrs }">
+                    <v-btn icon color="primary" v-bind="attrs" v-on="on" @click="visualSettings = !visualSettings">
+                        <v-icon> mdi-brush </v-icon>
+                    </v-btn>
+                </template>
+                <span>Digrammfarben anpassen</span>
+            </v-tooltip>
         </v-app-bar>
         <v-container>
             <v-row v-if="visualSettings">
@@ -79,7 +113,7 @@ export default {
         answerPossibilities: {
             type: Array,
         },
-        data: {
+        dataInput: {
             type: Array,
         },
         calculated: {
@@ -94,6 +128,8 @@ export default {
         // these options are needed to display a visual diagram, they are passed as props into that component
 
         // bar charts dont have a legend
+        cumulated: false,
+        relativ: false,
         barChartOptions: {
             legend: {
                 display: false,
@@ -141,6 +177,33 @@ export default {
         ...mapGetters({
             getFormat: 'evaluation/getDiagramFormat',
         }),
+        data() {
+            console.log(this.dataInput)
+            console.log(this.relativ)
+            console.log(this.cumulated)
+            if (this.dataInput.length === 0) {
+                return []
+            }
+            let baseData = []
+            if (this.relativ) {
+                for (let i = 0; i < this.calculated.relative.length; i++) {
+                    baseData.push(this.calculated.relative[i] * 100)
+                }
+            } else {
+                baseData = this.dataInput
+            }
+            console.log(baseData)
+            const data = []
+            data.push(baseData[0])
+            for (let i = 1; i < baseData.length; i++) {
+                let last = 0
+                if (this.cumulated) {
+                    last = data[i - 1]
+                }
+                data.push(last + baseData[i])
+            }
+            return data
+        },
         diagramType() {
             return this.getFormat(this.questionId).diagramType
         },
@@ -163,7 +226,7 @@ export default {
             const h = []
             for (let i = 0; i < this.answerPossibilities.length; i++) {
                 const percentage = Math.round(this.calculated.relative[i] * 100)
-                h.push({ antwort: this.answerPossibilities[i], abs: this.data[i], rel: percentage + '%' })
+                h.push({ antwort: this.answerPossibilities[i], abs: this.dataInput[i], rel: percentage + '%' })
             }
             return h
         },

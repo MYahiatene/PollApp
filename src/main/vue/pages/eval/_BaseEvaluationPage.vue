@@ -77,7 +77,8 @@ that each display a basic evaluation of one specific question-->
                         :search="search"
                         :sort-by="'id'"
                         :sort-desc="sortDesc"
-                        no-data-text="Keine Teilnehmer"
+                        no-data-text="Keine Teilnehmer gefunden"
+                        no-results-text="Keine passenden Fragen gefunden"
                         hide-default-footer
                     >
                         <template v-slot:header>
@@ -155,7 +156,7 @@ that each display a basic evaluation of one specific question-->
                                             :question-id="question.id"
                                             :question-title="question.title"
                                             :answer-possibilities="question.answerPossibilities"
-                                            :data="question.data"
+                                            :data-input="question.data"
                                             :calculated="question.calculated"
                                         ></ChoiceQuestionEvaluationWidget>
                                     </div>

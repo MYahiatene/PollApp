@@ -45,6 +45,8 @@
                                     :custom-filter="filterOnlyCapsText"
                                     class="elevation-1"
                                     multi-sort
+                                    no-data-text="Es gibt noch keine Umfragen"
+                                    no-results-text="Keine passenden Umfragen gefunden"
                                     :footer-props="footerProps"
                                 >
                                     <template v-slot:item.status="{ item }">
@@ -115,7 +117,6 @@ export default {
                 { text: '', value: 'status', sortable: false },
                 { text: '', value: 'action1', sortable: false },
                 { text: '', value: 'action2', sortable: false },
-                { text: '', value: 'delete', sortable: false },
                 { text: 'Umfrage', value: 'pollName' },
                 { text: 'Erstellt von', value: 'pollCreator' },
                 { text: 'Status', value: 'pollStatusString' },
@@ -161,19 +162,16 @@ export default {
                     data[i].action1Icon = 'mdi-pencil'
                     data[i].action2Icon = 'mdi-delete'
                     data[i].statusIcon = 'mdi-play'
-                    data[i].deleteIcon = 'mdi-delete'
                 } else if (this.items[i].pollStatus === 1) {
                     data[i].pollStatusString = 'Aktiv'
                     data[i].action1Icon = 'mdi-magnify'
                     data[i].action2Icon = 'mdi-link-variant'
                     data[i].statusIcon = 'mdi-stop'
-                    data[i].deleteIcon = 'mdi-delete'
                 } else if (this.items[i].pollStatus === 2) {
                     data[i].pollStatusString = 'Beendet'
                     data[i].action1Icon = 'mdi-magnify'
                     data[i].action2Icon = 'mdi-delete'
                     data[i].statusIcon = 'mdi-content-duplicate'
-                    data[i].deleteIcon = 'mdi-delete'
                 }
             }
             return data
@@ -212,7 +210,7 @@ export default {
         itemAction2(item) {
             if (item.pollStatus === 1) {
                 this.setLink(item)
-            } else if (confirm('Umfrage entgültig löschen?')) {
+            } else {
                 this.deletePoll(item)
             }
         },
@@ -515,9 +513,10 @@ export default {
                 })
             }
         },
+
         deletePoll(item) {
             const index = this.items.indexOf(item)
-            const del = confirm('Sind sie sich sicher, dass sie diese Umfrage löschen möchten?')
+            const del = confirm('Sind sie sich sicher, dass sie diese Umfrage entgültig löschen möchten?')
             if (del) {
                 this.splicePolls(index)
                 this.$axios.put('/deletepoll', { pollId: item.pollId })
