@@ -134,24 +134,23 @@
                                                 :track-color="backgroundColor"
                                                 @click:append="addValue(question, index)"
                                                 @click:prepend="subValue(question, index)"
-                                                @change="saveAnswerSliderQuestion($event, question)"
+                                                @change="saveAnswerSliderQuestion($event, question, index)"
                                             >
                                             </v-slider>
                                         </div>
                                         <!--Thumb-label is not being shown-->
                                         <div v-else-if="question.hideValues === true">
                                             <v-slider
-                                                v-model="value2"
+                                                v-model="valueList[index]"
                                                 :min="question.startValue"
                                                 :max="question.endValue"
                                                 :step="question.stepSize"
-                                                thumb-label="always"
                                                 append-icon="mdi-plus"
                                                 prepend-icon="mdi-minus"
                                                 :color="fontColor"
                                                 :track-color="backgroundColor"
-                                                @click:append="addValue"
-                                                @click:prepend="subValue"
+                                                @click:append="addValue(question, index)"
+                                                @click:prepend="subValue(question, index)"
                                                 @change="saveAnswerSliderQuestion($event, question)"
                                             >
                                             </v-slider>
@@ -607,6 +606,7 @@ export default {
          * @param question The question object, so it can get the QuestionID
          */
         saveAnswerField(e, question) {
+            console.log('textMultiline: ', question.textMultiline)
             const answerList = []
             let answer = ''
             let stringcounter = 0
@@ -637,14 +637,15 @@ export default {
          * @param e (Change-Event)
          * @param question The question object, so it can get the QuestionID
          */
-        saveAnswerSliderQuestion(e, question) {
+        saveAnswerSliderQuestion(e, question, index) {
             this.answerObj.answerList = [e]
             this.answerObj.pollId = this.getPoll[1].data.pollId
             this.answerObj.questionId = question.questionId
             console.log('startValue', question.startValue)
             console.log('endValue', question.endValue)
             console.log('stepSize', question.stepSize)
-            console.log('value', this.slideValueList)
+            console.log('value', e)
+            console.log('valueList', this.valueList[index])
 
             this.saveAnswer()
         },
@@ -677,6 +678,8 @@ export default {
          */
         subValue(question, index) {
             console.log(this.valueList[index])
+            // TODO: doesn't update, so value doesn't show on slider, but does change to "correct value, after click on
+            // other slider...
             this.valueList[index] = this.valueList[index] - question.stepSize || question.startValue
             console.log(this.valueList[index])
         },
