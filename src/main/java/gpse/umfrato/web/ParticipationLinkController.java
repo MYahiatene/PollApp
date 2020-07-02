@@ -9,11 +9,13 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.logging.Logger;
 
+/**
+ * The ParticipationLink controller used to process participationLink specific requests.
+ */
 @RequestMapping(value = "/api", method = RequestMethod.GET)
 @RestController
 @CrossOrigin
 public class ParticipationLinkController {
-    /* default */ static final Logger LOGGER = Logger.getLogger("ParticipationLinkController");
     private final ParticipationLinkService participationLinkService;
     private final MailService mailService;
 

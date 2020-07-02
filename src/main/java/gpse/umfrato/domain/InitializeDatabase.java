@@ -3,9 +3,12 @@ package gpse.umfrato.domain;
 import gpse.umfrato.domain.answer.AnswerService;
 import gpse.umfrato.domain.mail.CsvReader;
 import gpse.umfrato.domain.mail.MailService;
+import gpse.umfrato.domain.category.Category;
 import gpse.umfrato.domain.participationlinks.ParticipationLinkService;
 import gpse.umfrato.domain.category.CategoryService;
+import gpse.umfrato.domain.poll.Poll;
 import gpse.umfrato.domain.poll.PollService;
+import gpse.umfrato.domain.question.Question;
 import gpse.umfrato.domain.question.QuestionService;
 import gpse.umfrato.domain.user.UserService;
 import org.springframework.beans.factory.InitializingBean;
@@ -16,6 +19,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.net.MalformedURLException;
 import java.util.List;
+import java.util.Arrays;
 
 @Service
 public class InitializeDatabase implements InitializingBean {
@@ -70,7 +74,6 @@ public class InitializeDatabase implements InitializingBean {
                               final QuestionService questionService, final AnswerService answerService,
                               final ParticipationLinkService participationLinkService,
                               final CategoryService categoryService, final MailService mailService) {
-
         this.userService = userService;
 
         this.pollService = pollService;
@@ -98,9 +101,6 @@ public class InitializeDatabase implements InitializingBean {
         final String dummyPassword = "{bcrypt}$2a$10$WoG5Z4YN9Z37EWyNCkltyeFr6PtrSXSLMeFWOeDUwcanht5CIJgPa";
         try {
             userService.loadUserByUsername(tbettmannUserName);
-
-            //questionService.addQuestion(one, "testFrage", Arrays.asList("Frage1", "Frage2", "Frage3"), "freitext");
-            //answerService.giveAnswer(testUsername, one, "3", Arrays.asList("Ja", "Nein"));
         } catch (UsernameNotFoundException e) {
             userService.createUser(tbettmannUserName, dummyPassword, "Tobias", "Bettmann",
                 "Admin", "tbettmann@reply.de");

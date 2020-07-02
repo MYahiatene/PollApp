@@ -29,7 +29,7 @@
             ></v-text-field>
         </v-row>
         <v-row no-gutters>
-            <v-switch v-model="openLower" label="Offene unterer Grenze" @change="clearLower()"></v-switch>
+            <v-switch v-model="openLower" label="Offene untere Grenze" @change="clearLower()"></v-switch>
         </v-row>
         <v-row v-if="openLower" no-gutters>
             <v-text-field label="Minimumbeschriftung" v-model="lowerText" hint="bspw. 'weniger als X'"></v-text-field>
@@ -40,9 +40,9 @@
         <v-row v-if="openUpper" no-gutters>
             <v-text-field label="Maximumbeschriftung" v-model="upperText" hint="bspw. 'mehr als X'"></v-text-field>
         </v-row>
-        <v-row no-gutters>
+        <!--<v-row no-gutters>
             <v-switch label="'Möchte ich nicht beantworten' erlauben" v-model="noAnswer"></v-switch>
-        </v-row>
+        </v-row>-->
     </v-container>
 </template>
 
@@ -72,17 +72,17 @@ export default {
         }
     },
     mounted() {
-        this.openLower = this.getQuestion.intervalUpperText
-        this.openUpper = this.getQuestion.intervalLowerText
+        this.openLower = this.getQuestion.belowMessage
+        this.openUpper = this.getQuestion.aboveMessage
     },
     methods: {
         ...mapMutations({
-            setStart: 'pollOverview/setIntervalStart',
-            setFinish: 'pollOverview/setIntervalFinish',
-            setStep: 'pollOverview/setIntervalStep',
-            setLower: 'pollOverview/setIntervalLowerText',
-            setUpper: 'pollOverview/setIntervalUpperText',
-            setNA: 'pollOverview/setIntervalNoAnswer',
+            setStart: 'questionOverview/setStartValue',
+            setFinish: 'questionOverview/setEndValue',
+            setStep: 'questionOverview/setStepSize',
+            setLower: 'questionOverview/setBelowMessage',
+            setUpper: 'questionOverview/setAboveMessage',
+            // setNA: 'pollOverview/setIntervalNoAnswer',
         }),
         clearLower() {
             if (!this.openLower) {
@@ -96,10 +96,10 @@ export default {
         },
     },
     computed: {
-        ...mapGetters({ getQuestion: 'pollOverview/getQuestion' }),
+        ...mapGetters({ getQuestion: 'questionOverview/getQuestion' }),
         startValue: {
             get() {
-                return this.getQuestion.intervalStart
+                return this.getQuestion.startValue
             },
             set(value) {
                 this.setStart(value)
@@ -107,7 +107,7 @@ export default {
         },
         endValue: {
             get() {
-                return this.getQuestion.intervalFinish
+                return this.getQuestion.endValue
             },
             set(value) {
                 this.setFinish(value)
@@ -115,7 +115,7 @@ export default {
         },
         stepValue: {
             get() {
-                return this.getQuestion.intervalStep
+                return this.getQuestion.stepSize
             },
             set(value) {
                 this.setStep(value)
@@ -123,7 +123,7 @@ export default {
         },
         lowerText: {
             get() {
-                return this.getQuestion.intervalLowerText
+                return this.getQuestion.belowMessage
             },
             set(value) {
                 this.setLower(value)
@@ -131,20 +131,20 @@ export default {
         },
         upperText: {
             get() {
-                return this.getQuestion.intervalUpperText
+                return this.getQuestion.aboveMessage
             },
             set(value) {
                 this.setUpper(value)
             },
         },
-        noAnswer: {
+        /* noAnswer: {
             get() {
                 return this.getQuestion.intervalNoAnswer
             },
             set(value) {
                 this.setNA(value)
             },
-        },
+        }, */
     },
 }
 </script>
