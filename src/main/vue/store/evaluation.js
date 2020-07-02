@@ -78,6 +78,16 @@ export const actions = {
         console.log('response: ', response)
     },
 
+    async exportCSV({ state, commit }, pollId) {
+        console.log('export start!')
+
+        console.log('/api/export/toCSVPoll/{pollId:' + pollId + '}')
+
+        const response = await this.$axios.post('/export/toCSVPoll/' + pollId)
+
+        console.log('response: ', response)
+    },
+
     async awaitPollText({ state, commit }, fileName) {
         console.log('trying to find file ')
 
@@ -99,7 +109,29 @@ export const actions = {
         console.log('api/export/filename:{' + fileName + '}')
         const FileDownload = require('js-file-download')
         const response = await this.$axios.get('/export/getResult/' + fileName).then((response) => {
-            FileDownload(JSON.stringify(response), 'Results' + fileName + '.txt')
+            FileDownload(JSON.stringify(response.data), 'Results' + fileName + '.txt')
+        })
+        console.log('response: ', response)
+        return response
+    },
+
+    async awaitPollResultCsv({ state, commit }, fileName) {
+        console.log('trying to find file ')
+        console.log('api/export/filename:{' + fileName + '}')
+        const FileDownload = require('js-file-download')
+        const response = await this.$axios.get('/export/getCSV/' + fileName).then((response) => {
+            FileDownload(
+                JSON.stringify(response.data)
+                    .replace(/\\n/g, '\n')
+                    .replace(/\\'/g, "'")
+                    .replace(/\\"/g, '"')
+                    .replace(/\\&/g, '&')
+                    .replace(/\\r/g, '\r')
+                    .replace(/\\t/g, '\t')
+                    .replace(/\\b/g, '\b')
+                    .replace(/\\f/g, '\f'),
+                'CSV' + fileName + '.csv'
+            )
         })
         console.log('response: ', response)
         return response

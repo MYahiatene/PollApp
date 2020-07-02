@@ -196,6 +196,7 @@ that each display a basic evaluation of one specific question-->
         <v-container>
             <v-btn class="pl-4" @click="exportAnswers()">Antworten exportieren </v-btn>
             <v-btn class="pl-4" @click="exportResults()">Antworten exportieren </v-btn>
+            <v-btn class="pl-4" @click="exportCSV()">Antworten exportierenCSV </v-btn>
             <button @click="downloadWithVueResource">Download file with Vue</button>
         </v-container>
     </v-container>
@@ -295,16 +296,29 @@ export default {
 
         exportAnswers() {
             this.$store.dispatch('evaluation/exportAnswers', 1) // This should be PollId
-
             this.downloadClick(1)
         },
 
         exportResults() {
             this.$store.dispatch('evaluation/exportResults', 1) // This should be PollId
+            this.downloadClickResult(1)
+        },
+
+        exportCSV() {
+            this.$store.dispatch('evaluation/exportCSV', 1) // This should be PollId
+            this.downloadClickCSV(1)
         },
 
         downloadClick(pollId) {
             console.log(this.$store.dispatch('evaluation/awaitPollText', pollId))
+        },
+
+        downloadClickResult(pollId) {
+            console.log(this.$store.dispatch('evaluation/awaitPollResultText', pollId))
+        },
+
+        downloadClickCSV(pollId) {
+            console.log(this.$store.dispatch('evaluation/awaitPollResultCsv', pollId))
         },
 
         /*

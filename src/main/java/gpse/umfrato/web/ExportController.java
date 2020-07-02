@@ -45,9 +45,7 @@ public class ExportController {
 
     /**New Idea: Convert to JSON first and then to CSV, it sure ain't pretty but if it works it's fine*/
 
-    @PostMapping("/toCSVPoll")
-    public String toCSVManual(final @RequestBody Poll poll){
-        return exportService.toCSVManual(poll);
+
     /**Name, PollID, Creator, Anonymität, Kategorie 1, Kategorie 1, Kategorie 2*//*
     *//**TestPoll, 1, Tbettmann, 1, Frage 1, Frage 2, Frage 1 aus Kat. 2*//*
         String output = "";
@@ -74,7 +72,6 @@ public class ExportController {
         }
         output += '\n';
         return output;*/
-    }
 
     @RequestMapping(value = "/getFile/{pollId:\\d+}", method = RequestMethod.GET) // This should be a string, I don't know
     @ResponseBody
@@ -88,12 +85,37 @@ public class ExportController {
         return new FileSystemResource(new File("src/main/java/gpse/umfrato/domain/export/files/Results"+pollId.toString()+".txt"));
     }
 
+    @RequestMapping(value = "/getCSV/{pollId:\\d+}", method = RequestMethod.GET) // This should be a string, I don't know
+    @ResponseBody
+    public FileSystemResource getCSV(@PathVariable Long pollId) {
+        return new FileSystemResource(new File("src/main/java/gpse/umfrato/domain/export/files/CSV"+pollId.toString()+".txt"));
+    }
+
     public void writeToFile(String s, String pollId) throws FileNotFoundException {
         File file = new File("src/main/java/gpse/umfrato/domain/export/files/"+pollId+".txt");
         PrintWriter out = new PrintWriter(file);
         out.println(s);
         out.close();
         out.flush();
+    }
+
+    public void writeToFileCSV(String s, String pollId) throws FileNotFoundException {
+        File file = new File("src/main/java/gpse/umfrato/domain/export/files/"+pollId+".txt");
+        PrintWriter out = new PrintWriter(file);
+        System.out.println("Indizes: ");
+        for(String index : s.split("■")) {
+            out.println(index);
+            System.out.println(index);
+        }
+        out.close();
+        out.flush();
+    }
+
+    @PostMapping("/toCSVPoll/{pollId:\\d+}")
+    public String toCSVManual(final @PathVariable Long pollId) throws Exception{
+        Poll poll = pollService.getPoll(pollId);
+        writeToFileCSV(exportService.toCSVManual(poll), "CSV"+pollId.toString()); /**Needs to be different because of newline chars*/
+        return exportService.toCSVManual(poll);
     }
 
     @PostMapping("/toJSONPoll/{pollId:\\d+}")
@@ -127,9 +149,9 @@ public class ExportController {
     }
 
     @PostMapping("/toJSONPollResult/{pollId:\\d+}")
-    public String toJSONResult(final @PathVariable Long pollID) throws Exception {
-        List<PollResult> results = pollResultService.getPollResults(pollID);
-        writeToFile(exportService.toJSON(results), "Results"+pollID.toString());
+    public String toJSONResult(final @PathVariable Long pollId) throws Exception {
+        List<PollResult> results = pollResultService.getPollResults(pollId);
+        writeToFile(exportService.toJSON(results), "Results"+pollId.toString());
         return exportService.toJSON(results);
 /*        ObjectMapper objectMapper = new ObjectMapper()
             .findAndRegisterModules();
