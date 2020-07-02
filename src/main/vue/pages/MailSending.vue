@@ -38,7 +38,6 @@
                                     :counter="counter ? counter : false"
                                     :filled="filled"
                                     :flat="flat"
-                                    :hint="hint"
                                     :label="labelSubject"
                                     :loading="loading"
                                     :no-resize="noResize"

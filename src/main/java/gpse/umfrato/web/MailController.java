@@ -1,6 +1,7 @@
 package gpse.umfrato.web;
 
 import gpse.umfrato.domain.cmd.MailCmd;
+import gpse.umfrato.domain.participationlinks.ParticipationLinkService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
@@ -20,10 +21,12 @@ public class MailController {
     /* default */ static final int DEFAULT_PORT = 8080;
 
     private JavaMailSender mailSender;
+    private ParticipationLinkService participationLinkService;
 
     @Autowired
-    public MailController(final JavaMailSender javaMailSender) {
+    public MailController(final JavaMailSender javaMailSender, final ParticipationLinkService participationLinkService) {
         this.mailSender = javaMailSender;
+        this.participationLinkService = participationLinkService;
     }
 
     @PostMapping(value = "/sendEmail")
@@ -42,6 +45,7 @@ public class MailController {
                 message.setTo(mail);
                 message.setSubject(mailCmd.getEmailSubject());
                 message.setText(mailText);
+
 
                 this.mailSender.send(message);
 

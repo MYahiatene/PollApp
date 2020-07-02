@@ -8,6 +8,7 @@ import java.util.List;
 
 @Data
 public class MailCmd {
+    private Long pollId;
     private List<String> csvFile;
     private List<String> mailList;
     private String emailSubject;
