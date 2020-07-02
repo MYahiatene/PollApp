@@ -76,6 +76,15 @@ public class UserController {
         return HTTP_POST;
     }
 
+    @PostMapping("addParticipatedPollToUser")
+    public void addParticipatedPollToUser(final String username, final Long pollId) {
+        try {
+            userService.addParticipatedPoll(username, pollId);
+        } catch (BadRequestException e) {
+
+        }
+    }
+
     /**
      * This method returns a list with all users.
      *

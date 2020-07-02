@@ -3,6 +3,7 @@ package gpse.umfrato.domain.user;
 import gpse.umfrato.domain.password.RandomPasswordGenerator;
 import gpse.umfrato.web.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.logging.LoggerGroup;
 import org.springframework.context.annotation.Primary;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -18,6 +19,7 @@ import java.util.logging.Logger;
 @Service
 class UserServiceImpl implements UserService {
 
+    private static final Logger LOGGER = Logger.getLogger("UserServiceImpl");
     private final UserRepository userRepository;
 
     @Autowired
@@ -36,16 +38,17 @@ class UserServiceImpl implements UserService {
     public User createUser(final String username, final String password, final String firstName,
                            final String lastName, final String role, final String email) {
         final RandomPasswordGenerator randomPasswordGenerator = new RandomPasswordGenerator();
+        final List<Long> participated = new ArrayList<>();
         // for a completely fresh user to be generated the password value sent from the frontend must be null
         if (password == null) {
             char[] safePwd = randomPasswordGenerator.generatePwd();
             String encryptedSafePwd = PasswordEncoderFactories.createDelegatingPasswordEncoder().encode(new String(safePwd));
-            final User user = new User(username, encryptedSafePwd, firstName, lastName, role, email);
+            final User user = new User(username, encryptedSafePwd, firstName, lastName, role, email, participated);
             // todo: send here the unencrypted pw to user
             Arrays.fill(safePwd, '*');
             return userRepository.save(user);
         } else {
-            final User user = new User(username, password, firstName, lastName, role, email);
+            final User user = new User(username, password, firstName, lastName, role, email, participated);
             return userRepository.save(user);
         }
     }
@@ -88,6 +91,21 @@ class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
+    /**
+     * This method adds a pollId to the partcicipated List of a user
+     *
+     * @param username the username of the user
+     * @param pollId pollId of the poll, the user just clicked Absenden on
+     */
+    @Override
+    public void addParticipatedPoll(final String username, final Long pollId) {
+        final User user = userRepository.getOne(username);
+        final List<Long> tmp = user.getParticipated();
+        tmp.add(pollId);
+        user.setParticipated(tmp);
+        LOGGER.info(tmp.toString());
+        userRepository.save(user);
+    }
     /**
      * This method deletes the user in the repository based on the id username.
      *

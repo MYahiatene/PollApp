@@ -11,6 +11,7 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.logging.Logger;
 
 @Entity
 @Data
@@ -20,6 +21,7 @@ public class User implements UserDetails {
      * The serial version of the object user.
      */
     private static final long serialVersionUID = 0L;
+    private static final java.util.logging.Logger LOGGER = Logger.getLogger("User");
 
     /**
      * This attribute represents the username of the user.
@@ -56,7 +58,16 @@ public class User implements UserDetails {
     private List<String> roles = new ArrayList<>();
 
     /**
+     * This attributes is a list of all the pollIds that the user already partcipated (click on Absenden)
+     * and is not allowed to change his/her answers again.
+     */
+    @JsonIgnore
+    @ElementCollection(fetch = FetchType.EAGER)
+    private List<Long> participated = new ArrayList<>();
+
+    /**
      * This constructor receives the required parameter for the user object.
+     * Participated is empty, when new User is created.
      *
      * @param username  the username of user
      * @param firstName the first name of user
@@ -64,15 +75,17 @@ public class User implements UserDetails {
      * @param password  the password of user
      * @param role      user roles
      * @param email     users email
+     * @param participated
      */
     public User(final String username, final String password, final String firstName,
-                final String lastName, final String role, final String email) {
+                final String lastName, final String role, final String email, final List<Long> participated) {
         this.username = username;
         this.firstName = firstName;
         this.lastName = lastName;
         this.password = password;
         this.roles.add(role);
         this.email = email;
+        this.participated = participated;
     }
 
     /**

@@ -168,6 +168,13 @@ export const actions = {
         this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('user-token')
         return this.$axios.post('/poll/' + answerObj.pollId + '/addanswer', answerObj)
     },
+
+    saveParticipatedPoll(state, username, pollId) {
+        this.$axios.defaults.baseURL = 'http://localhost:8088/api/'
+        this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('user-token')
+        return this.$axios.post('/addParticipatedPollToUser', username, pollId)
+    },
+
     async saveAnswerPossibility(state, answer) {
         console.log('pollId: ', answer[2])
         console.log('questionId: ', answer[1])
