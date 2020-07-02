@@ -58,27 +58,42 @@ export const actions = {
     },
     async exportAnswers({ state, commit }, pollId) {
         /** Export von einem Poll */
+
         console.log('export start!')
+
         console.log('/api/export/toJSONPoll/{pollId:' + pollId + '}')
+
         const response = await this.$axios.post('/export/toJSONPoll/' + pollId)
+
         console.log('response: ', response)
     },
+
     async exportResults({ state, commit }, pollId) {
         console.log('export start!')
+
         console.log('/api/export/toJSONPollResult/{pollId:' + pollId + '}')
+
         const response = await this.$axios.post('/export/toJSONPollResult/' + pollId)
+
         console.log('response: ', response)
     },
+
     async awaitPollText({ state, commit }, fileName) {
         console.log('trying to find file ')
+
         console.log('api/export/filename:{' + fileName + '}')
+
         const FileDownload = require('js-file-download')
+
         const response = await this.$axios.get('/export/getFile/' + fileName).then((response) => {
-            FileDownload(response.data, fileName + '.txt')
+            FileDownload(JSON.stringify(response), fileName + '.txt')
         })
+
         console.log('response: ', response)
+
         return response
     },
+
     async awaitPollResultText({ state, commit }, fileName) {
         console.log('trying to find file ')
         console.log('api/export/filename:{' + fileName + '}')

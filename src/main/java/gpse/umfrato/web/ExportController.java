@@ -92,6 +92,8 @@ public class ExportController {
         File file = new File("src/main/java/gpse/umfrato/domain/export/files/"+pollId+".txt");
         PrintWriter out = new PrintWriter(file);
         out.println(s);
+        out.close();
+        out.flush();
     }
 
     @PostMapping("/toJSONPoll/{pollId:\\d+}")

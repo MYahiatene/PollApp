@@ -295,14 +295,18 @@ export default {
 
         exportAnswers() {
             this.$store.dispatch('evaluation/exportAnswers', 1) // This should be PollId
+
             this.downloadClick(1)
         },
+
         exportResults() {
             this.$store.dispatch('evaluation/exportResults', 1) // This should be PollId
         },
+
         downloadClick(pollId) {
             console.log(this.$store.dispatch('evaluation/awaitPollText', pollId))
         },
+
         /*
 
       this method is emitted by the settings window.
