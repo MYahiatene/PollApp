@@ -65,9 +65,10 @@ export const getters = {
     },
     getDiagramFormat(state) {
         return (id) => {
+            console.log('suche nach ' + id)
             for (let i = 0; i < state.DiagramFormat.length; i++) {
                 if (state.DiagramFormat[i].questionId === id) {
-                    console.log('i')
+                    console.log('custom ' + i)
                     console.log(state.DiagramFormat[i])
                     return state.DiagramFormat[i]
                 }
@@ -109,24 +110,31 @@ export const mutations = {
     setDiagramFormatsFromServer(state, formatList) {
         console.log('reset')
         console.log(formatList)
+        state.DiagramFormat = []
         state.defaultDiagramFormat = stringToFormat(formatList[0])
         if (formatList.length > 1) {
             state.DiagramFormat.push(stringToFormat(formatList.slice(1)))
         }
     },
     setDiagramFormats(state, { useOnAll, format }) {
+        console.log('setDiagramFormats()')
+        console.log(format)
         if (useOnAll) {
             state.DiagramFormat = []
         }
         state.defaultDiagramFormat = format
     },
     setDiagramFormat(state, format) {
+        console.log('setDiagramFormat()')
+        console.log(format)
         for (let i = 0; i < state.DiagramFormat.length; i++) {
             if (state.DiagramFormat[i].questionId === format.questionId) {
                 state.DiagramFormat[i] = format
+                console.log('saved custom')
                 return
             }
         }
+        console.log('saved default')
         state.DiagramFormat.push(format)
     },
     setPollID(state, id) {
