@@ -99,7 +99,7 @@ export const actions = {
         console.log('api/export/filename:{' + fileName + '}')
         const FileDownload = require('js-file-download')
         const response = await this.$axios.get('/export/getResult/' + fileName).then((response) => {
-            FileDownload(response.data, 'Results' + fileName + '.txt')
+            FileDownload(JSON.stringify(response), 'Results' + fileName + '.txt')
         })
         console.log('response: ', response)
         return response
