@@ -14,7 +14,7 @@
                         <v-btn @click="addEmail">Hinzufügen</v-btn>
                     </v-card-actions>
                 </v-col>
-                <v-col>
+                <v-col cols="12" md="6">
                     <v-card>
                         <v-list>
                             <v-subheader>E-MAIL ADRESSEN</v-subheader>
@@ -72,7 +72,9 @@
                                     :solo="solo"
                                 ></v-textarea>
                                 <v-row justify="end">
-                                    <v-btn justify="end" @click="sendEmail">E-Mail senden</v-btn>
+                                    <v-btn justify="end" @click="sendEmail"
+                                        >E-Mail senden und weiter zum Fragen erstellen</v-btn
+                                    >
                                 </v-row>
                             </v-sheet>
                         </v-col>
@@ -122,16 +124,8 @@ export default {
             rowHeightSubject: '1',
         }
     },
-    mounted() {
-        // this.initializeMailList()
-    },
+
     methods: {
-        async initializeMailList() {
-            await this.$axios.get('/emailList').then((response) => {
-                this.emailAdresses = response.data
-                console.log(response.data)
-            })
-        },
         submitFile() {
             // const reader = new FileReader()
             this.$axios.defaults.baseURL = 'http://127.0.0.1:8088/api'
