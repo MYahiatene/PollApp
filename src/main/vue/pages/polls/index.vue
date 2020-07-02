@@ -59,6 +59,11 @@
                                             {{ item.action2Icon }}
                                         </v-icon>
                                     </template>
+                                    <template v-slot:item.invite="{ item }">
+                                        <v-icon @click="inviteAction(item)">
+                                            {{ item.inviteIcon }}
+                                        </v-icon>
+                                    </template>
                                     <template v-slot:item.delete="{ item }">
                                         <v-icon @click="deletePoll(item)">
                                             mdi-delete
@@ -105,6 +110,7 @@ export default {
             contextActions: [
                 { title: 'Beantworten', link: '/' },
                 { title: 'Bearbeiten', link: '/polls/' },
+                { title: 'Einladen', link: '/invite/' },
                 { title: 'Aktivieren', link: '/' },
                 { title: 'Löschen', link: '/' },
             ],
@@ -112,6 +118,7 @@ export default {
                 { text: '', value: 'status', sortable: false },
                 { text: '', value: 'action1', sortable: false },
                 { text: '', value: 'action2', sortable: false },
+                { text: '', value: 'invite', sortable: false },
                 { text: '', value: 'delete', sortable: false },
                 { text: 'Umfrage', value: 'pollName' },
                 { text: 'Erstellt von', value: 'pollCreator' },
@@ -159,18 +166,21 @@ export default {
                     data[i].action2Icon = 'mdi-delete'
                     data[i].statusIcon = 'mdi-play'
                     data[i].deleteIcon = 'mdi-delete'
+                    data[i].inviteIcon = 'mdi-account-plus'
                 } else if (this.items[i].pollStatus === 1) {
                     data[i].pollStatusString = 'Aktiv'
                     data[i].action1Icon = 'mdi-magnify'
                     data[i].action2Icon = 'mdi-link-variant'
                     data[i].statusIcon = 'mdi-stop'
                     data[i].deleteIcon = 'mdi-delete'
+                    data[i].inviteIcon = 'mdi-account-plus'
                 } else if (this.items[i].pollStatus === 2) {
                     data[i].pollStatusString = 'Beendet'
                     data[i].action1Icon = 'mdi-magnify'
                     data[i].action2Icon = 'mdi-delete'
                     data[i].statusIcon = 'mdi-content-duplicate'
                     data[i].deleteIcon = 'mdi-delete'
+                    data[i].inviteIcon = 'mdi-account-plus'
                 }
                 const categories = this.items[i].categoryList
                 data[i].categoryCount = categories.length
@@ -227,6 +237,9 @@ export default {
             } else if (confirm('Umfrage entgültig löschen?')) {
                 this.deletePoll(item)
             }
+        },
+        inviteAction(item) {
+            this.$router.push('/invite/' + item.pollId)
         },
         showValue(item, key) {
             alert(item[key])
