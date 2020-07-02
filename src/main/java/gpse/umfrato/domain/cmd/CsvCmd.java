@@ -10,4 +10,5 @@ import java.util.List;
 public class CsvCmd {
     private List<String> csvFile;
     private List<String> mailList;
+    private String emailMessage;
 }
