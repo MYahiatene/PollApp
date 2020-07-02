@@ -35,7 +35,7 @@
                                     <v-card-text>
                                         <!--:rules="textQuestionRules"-->
                                         <!--question.textMultiline ===-->
-                                        <div v-if="true">
+                                        <div v-if="question.textMultiline === true">
                                             <v-textarea
                                                 label="Antwort"
                                                 auto-grow
@@ -676,16 +676,16 @@ export default {
          * It's called by click on + Icon at a Range Question.
          */
         subValue(question, index) {
-            console.log(this.slideValueList[index])
-            this.slideValueList[index] = this.slideValueList[index] - question.stepSize || question.startValue
-            console.log(this.slideValueList[index])
+            console.log(this.valueList[index])
+            this.valueList[index] = this.valueList[index] - question.stepSize || question.startValue
+            console.log(this.valueList[index])
         },
         /**
          * Moves the slider one step to the right, if possible.
          * It's called by click on + Icon at a Range Question.
          */
         addValue(question, index) {
-            this.slideValueList[index] = this.slideValueList[index] + question.stepSize || question.endValue
+            this.valueList[index] = this.valueList[index] + question.stepSize || question.endValue
         },
 
         /**
