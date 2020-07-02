@@ -54,16 +54,7 @@ public class ParticipationLinkServiceImpl implements ParticipationLinkService {
 
     @Override
     public List<ParticipationLink> getAllParticipationLinks() {
-        //final List<ParticipationLink> pLinks = participationLinkRepository.findParticipationLinksByPollId(
-        //  Long.valueOf(pollId));
-
         return participationLinkRepository.findAll();
-
-        /*if (pLinks.isEmpty()) {
-            throw new BadRequestException();
-        }*/
-
-        //return pLinks;
     }
 
     @Override

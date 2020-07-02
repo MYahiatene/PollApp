@@ -12,4 +12,7 @@ public interface ParticipationLinkService {
     String getUserFromParticipationLink(String participationLink);
 
     List<ParticipationLink> getAllParticipationLinks();
+
+    List<ParticipationLink> getAllParticipationLinks(Long pollId);
+
 }

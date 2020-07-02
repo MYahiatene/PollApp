@@ -72,9 +72,7 @@
                                     :solo="solo"
                                 ></v-textarea>
                                 <v-row justify="end">
-                                    <v-btn justify="end" @click="sendEmail"
-                                        >E-Mail senden und weiter zum Fragen erstellen</v-btn
-                                    >
+                                    <v-btn justify="end" @click="sendEmail">E-Mail senden</v-btn>
                                 </v-row>
                             </v-sheet>
                         </v-col>
