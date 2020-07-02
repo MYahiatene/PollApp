@@ -205,7 +205,6 @@ export default {
             showDiagram: false,
         }
     },
-
     methods: {
         ...mapMutations({
             setDiagramFormat: 'evaluation/setDiagramFormat',
@@ -225,8 +224,11 @@ export default {
             if (this.changeDefault) {
                 this.setDiagramFormats({ useOnAll: this.useOnAll, format })
             } else {
+                console.log('pushFormat')
                 this.setDiagramFormat(format)
+                console.log('pushedFormat')
             }
+            console.log('done')
             this.$emit('done')
         },
 

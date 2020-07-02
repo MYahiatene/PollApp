@@ -178,12 +178,6 @@ export default {
             getFormat: 'evaluation/getDiagramFormat',
         }),
         data() {
-            console.log(this.dataInput)
-            console.log(this.relativ)
-            console.log(this.cumulated)
-            if (this.dataInput.length === 0) {
-                return []
-            }
             let baseData = []
             if (this.relativ) {
                 for (let i = 0; i < this.calculated.relative.length; i++) {
@@ -192,15 +186,12 @@ export default {
             } else {
                 baseData = this.dataInput
             }
-            console.log(baseData)
             const data = []
-            data.push(baseData[0])
-            for (let i = 1; i < baseData.length; i++) {
-                let last = 0
-                if (this.cumulated) {
-                    last = data[i - 1]
+            if (baseData.length !== 0) {
+                data.push(baseData[0])
+                for (let i = 1; i < baseData.length; i++) {
+                    data.push((this.cumulated ? data[i - 1] : 0) + baseData[i])
                 }
-                data.push(last + baseData[i])
             }
             return data
         },
