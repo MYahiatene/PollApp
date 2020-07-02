@@ -176,8 +176,11 @@ export default {
                 this.incorrectPw = false
                 this.dialog = false
 
+                const bcrypt = require('bcrypt')
+                const saltRounds = 10
+                const hash = bcrypt.hashSync(this.newPassword1, saltRounds)
                 this.userObj.username = this.account.username
-                this.userObj.password = this.newPassword1
+                this.userObj.password = hash // hash
 
                 // this.$store.dispatch('account/changePassword', this.userObj)
                 // this.failStatus = this.getFailStatus
