@@ -236,7 +236,7 @@ export default {
          * When "Speichern" is clicked and the Passwords are the same, the password is saved and updated
          * and if not the dialog doesn't close and gives you an error message.
          */
-        saveEmail() {
+        async saveEmail() {
             this.dialog2 = false
 
             this.userObj.username = this.account.username
@@ -245,7 +245,10 @@ export default {
             this.$axios.defaults.baseURL = 'http://localhost:8088/api/'
             this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('user-token')
             console.log(this.userObj)
-            this.$axios.put('/changeEmail', this.userObj)
+            await this.$axios.put('/changeEmail', this.userObj)
+
+            // users and account need to be reloaded to show changed email
+            await this.loadUserData()
         },
     },
 }
