@@ -44,6 +44,8 @@ that each display a basic evaluation of one specific question-->
 
                     <!--            This button will lead to the Page where we can filter and analyse the data-->
                     <v-spacer />
+                    <session-manager @close-event="widgetKey += 1"></session-manager>
+                    <v-spacer @close-event="widgetKey += 1" />
                     <filter-form :initial-poll-index="getPollIndex" @close-event="widgetKey += 1"></filter-form>
 
                     <!--                   title of the poll-->
@@ -192,10 +194,12 @@ import ChoiceQuestionEvaluationWidget from '../../components/ChoiceQuestionEvalu
 import visualEvaluationSettings from '../../components/visualEvaluationSettings'
 import TextQuestionEvaluationWidget from '../../components/TextQuestionEvaluationWidget'
 import FilterForm from '../../components/filterForm'
+import SessionManager from '../../components/SessionManager'
 
 export default {
     name: 'BaseEvaluationPage',
     components: {
+        SessionManager,
         FilterForm,
         AuthGate,
         ChoiceQuestionEvaluationWidget,
@@ -230,6 +234,7 @@ export default {
     },
     created() {
         this.initialize(this.$route.params.BaseEvaluationPage)
+        this.loadSessions()
     },
     computed: {
         ...mapGetters({
@@ -296,7 +301,11 @@ export default {
         },
     },
     methods: {
-        ...mapActions({ initialize: 'evaluation/initialize', updateData: 'evaluation/updateData' }),
+        ...mapActions({
+            initialize: 'evaluation/initialize',
+            updateData: 'evaluation/updateData',
+            loadSessions: 'evaluation/loadSessions',
+        }),
 
         exportAnswers() {
             this.$store.dispatch('evaluation/exportAnswers', 1) // This should be PollId

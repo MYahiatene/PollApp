@@ -3,8 +3,10 @@ export const state = () => ({
     Polls: [],
     FilterList: [],
     pollId: -1,
+    currentSession: -1,
     DiagramFormat: [],
     defaultDiagramFormat: {
+        questionId: -1,
         backgroundColors: ['#aaaaaa'],
         backgroundColor: '#aaaaaa',
         multipleColors: false,
@@ -52,6 +54,9 @@ export const getters = {
     getParticipants(state) {
         return state.DiagramData.particpantCount
     },
+    getCurrentSession(state) {
+        return state.currentSession
+    },
     getPolls(state) {
         return state.Polls
     },
@@ -62,6 +67,8 @@ export const getters = {
         return (id) => {
             for (let i = 0; i < state.DiagramFormat.length; i++) {
                 if (state.DiagramFormat[i].questionId === id) {
+                    console.log('i')
+                    console.log(state.DiagramFormat[i])
                     return state.DiagramFormat[i]
                 }
             }
@@ -72,9 +79,12 @@ export const getters = {
                     for (let q = colors.length; q < state.DiagramData.questionList[i].answerPossibilities.length; q++) {
                         defaultFormat.backgroundColors.push(String(colors[q % colors.length]))
                     }
+                    console.log('default')
+                    console.log(defaultFormat)
                     return defaultFormat
                 }
             }
+            console.log('super-gau')
             return state.defaultDiagramFormat
         }
     },
@@ -93,10 +103,15 @@ export const mutations = {
     setSessions(state, data) {
         state.Sessions = data.data
     },
+    setCurrentSession(state, sessionId) {
+        state.currentSession = sessionId
+    },
     setDiagramFormatsFromServer(state, formatList) {
+        console.log('reset')
+        console.log(formatList)
         state.defaultDiagramFormat = stringToFormat(formatList[0])
         if (formatList.length > 1) {
-            state.DiagramFormat = stringToFormat(formatList.slice(1))
+            state.DiagramFormat.push(stringToFormat(formatList.slice(1)))
         }
     },
     setDiagramFormats(state, { useOnAll, format }) {
@@ -128,7 +143,7 @@ export const mutations = {
 export const actions = {
     async initialize({ commit }, pollId) {
         commit('setPollID', pollId)
-        const pollData = await this.$axios.get('/poll')
+        const pollData = await this.$axios.get('/bigPoll')
         commit('setPollData', pollData)
         const data = await this.$axios.post('/evaluation/generateDiagram', [
             {
@@ -168,6 +183,7 @@ export const actions = {
         }
         const payload = {
             pollId: state.pollId,
+            sessionId: sessionInfo.sessionId,
             sessionTitle: sessionInfo.sessionTitle,
             lastUsername: sessionInfo.lastUsername,
             diagramFormat: formats,
@@ -182,7 +198,6 @@ export const actions = {
                 console.log(reason)
             })
     },
-
     async loadSessions({ state, commit }) {
         console.log('getSessions()')
         await this.$axios
@@ -195,15 +210,41 @@ export const actions = {
                 console.log(reason)
             })
     },
-
     async loadSession({ state, commit }, sessionId) {
         console.log('loadSession(' + sessionId + ')')
         await this.$axios
             .get('/evaluation/loadSession/' + sessionId)
             .then((response) => {
                 console.log(response)
+                commit('setCurrentSession', sessionId)
                 commit('saveFilter', response.data.filterList)
                 commit('setDiagramFormatsFromServer', response.data.diagramFormat)
+            })
+            .catch((reason) => {
+                console.log(reason)
+            })
+    },
+    async deleteSession({ state, commit }, sessionId) {
+        console.log('loadSession(' + sessionId + ')')
+        await this.$axios
+            .get('/evaluation/deleteSession/' + sessionId)
+            .then((response) => {
+                console.log(response)
+                if (sessionId === state.currentSession) {
+                    commit('setCurrentSession', -1)
+                    commit('saveFilter', [])
+                    commit('setDiagramFormatsFromServer', [
+                        {
+                            questionId: -1,
+                            backgroundColors: ['#aaaaaa'],
+                            backgroundColor: '#aaaaaa',
+                            multipleColors: false,
+                            diagramType: 'bar',
+                            showDiagram: true,
+                            showTable: true,
+                        },
+                    ])
+                }
             })
             .catch((reason) => {
                 console.log(reason)

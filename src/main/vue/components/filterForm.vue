@@ -187,40 +187,6 @@
                             </div>
                         </v-expansion-panel-content>
                     </v-expansion-panel>
-                    <v-spacer />
-                    <v-expansion-panel>
-                        <v-expansion-panel-header>
-                            Sessionmanagement
-                        </v-expansion-panel-header>
-                        <v-expansion-panel-content>
-                            Hier können Sie Auswertungs-Sessions speichern und laden.
-                            <v-row>
-                                <v-col cols="6">
-                                    <v-overflow-btn
-                                        v-model="choosenSessionTitle"
-                                        label="Session zum laden wählen"
-                                        editable
-                                        :items="sessions"
-                                    >
-                                    </v-overflow-btn>
-                                    <v-btn color="primary" @click="loadOneSession()">
-                                        Laden
-                                    </v-btn>
-                                </v-col>
-                                <v-col cols="6">
-                                    <v-text-field
-                                        v-model="sessionTitle"
-                                        label="Sessiontitel"
-                                        hint="Sie sollten jeder Session einen Namen geben, um sie später unterscheiden zu können."
-                                    >
-                                    </v-text-field>
-                                    <v-btn color="primary" @click="saveToStore(), saveThisSession()">
-                                        Speichern
-                                    </v-btn>
-                                </v-col>
-                            </v-row>
-                        </v-expansion-panel-content>
-                    </v-expansion-panel>
                 </v-expansion-panels>
             </template>
             <v-card-actions>
@@ -257,8 +223,6 @@ export default {
             applyConsistency: false,
             minConsistencyValue: 0,
             maxConsistencyValue: 0,
-            sessionTitle: '',
-            choosenSessionTitle: '',
             qafilter: false,
             datefilter: true,
             qafilterList: [
@@ -335,7 +299,6 @@ export default {
         ...mapGetters({
             polls: 'evaluation/getPolls',
             getSessions: 'evaluation/getSessions',
-            getUsername: 'login/getUsername',
         }),
 
         pollTitles() {
@@ -382,16 +345,6 @@ export default {
             console.log('questionTitles: ')
             return questionTitles
         },
-
-        sessions() {
-            console.log('sessions()')
-            const sessions = this.getSessions
-            const titles = []
-            for (let i = 0; i < sessions.length; i++) {
-                titles.push(sessions[i].sessionTitle)
-            }
-            return titles
-        },
     },
     mounted() {
         console.log('mounted()')
@@ -399,15 +352,11 @@ export default {
         for (let i = 0; i < this.questionTitles.length; i++) {
             this.selectedQuestions.push(this.questionTitles[i])
         }
-        this.loadSessions()
         this.updateNumberOfConsistencyQuestions()
     },
     methods: {
         ...mapActions({
             sendFilter: 'evaluation/sendFilter',
-            saveSession: 'evaluation/saveSession',
-            loadSessions: 'evaluation/loadSessions',
-            loadSession: 'evaluation/loadSession',
             updateData: 'evaluation/updateData',
         }),
 
@@ -534,34 +483,6 @@ export default {
 
             this.dateFilterList[filterIndex].invertFilter = invertFilter
         },
-
-        saveThisSession() {
-            console.log('saveThisSession()')
-            this.saveToStore()
-            const payload = {
-                sessionTitle: this.sessionTitle,
-                lastUsername: this.getUsername,
-            }
-            this.saveSession(payload)
-        },
-
-        async loadOneSession() {
-            console.log('loadOneSession()')
-            let id = -1
-            const sessions = this.getSessions
-            for (let i = 0; i < sessions.length; i++) {
-                if (sessions[i].sessionTitle === this.choosenSessionTitle) {
-                    id = sessions[i].sessionId
-                }
-            }
-            if (id !== -1) {
-                await this.loadSession(id)
-                await this.updateData()
-                this.$emit('close-event')
-                this.dialog = false
-            }
-        },
-
         updateConsistencyOn() {
             this.consistencyOn = !(this.minConsistencyValue === 0)
         },
