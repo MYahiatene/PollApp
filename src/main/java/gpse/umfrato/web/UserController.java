@@ -57,6 +57,7 @@ public class UserController {
     @PreAuthorize("hasAuthority('Admin')")
     @PutMapping("editUser")
     public String editUser(final @RequestBody EditUserCmd editUserCmd) {
+        LOGGER.info("UserCmd" + editUserCmd);
         try {
             userService.editUser(editUserCmd.getUsername(), editUserCmd.getFirstName(), editUserCmd.getLastName(),
                 editUserCmd.getRole(), editUserCmd.getEmail());

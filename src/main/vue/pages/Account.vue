@@ -240,11 +240,11 @@ export default {
             this.dialog2 = false
 
             this.userObj.username = this.account.username
-            this.userObj.mail = this.email
-            // console.log(this.userObj.mail)
+            this.userObj.email = this.email
 
             this.$axios.defaults.baseURL = 'http://localhost:8088/api/'
             this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('user-token')
+            console.log(this.userObj)
             this.$axios.put('/changeEmail', this.userObj)
         },
     },
