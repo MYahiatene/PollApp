@@ -67,18 +67,18 @@
 </template>
 
 <script>
-const axios = require('axios')
+/* const axios = require('axios')
 const instance = axios.create({
     baseURL: 'http://127.0.0.1:8088/api/',
     timeout: 1000,
     // headers: { 'X-Custom-Header': 'foobar' },
-    headers: { 'Content-Type': 'multipart/form-data' },
-})
+    // headers: { 'Content-Type': 'multipart/form-data' },
+}) */
 export default {
     data() {
         return {
-            file: '',
-            items: [{ text: 'eins' }, { text: 'zwei' }, { text: 'drei' }],
+            file: null,
+            items: null,
         }
     },
     mounted() {
@@ -92,44 +92,64 @@ export default {
             })
         },
         submitFile() {
+            // const reader = new FileReader()
+            this.$axios.defaults.baseURL = 'http://127.0.0.1:8088/api'
+            this.$axios.defaults.headers.common = {
+                Authorization:
+                    'Bearer ' +
+                    'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InRiZXR0bWFubiIsImV4cCI6MTU5NDMwMzI5MCwicm9sIjpbIkFkbWluIl19._83mp73eHuu5JP8gtDIC3Jho5V7_pA-R-2pLOuRKfLe_NPtO5VtPjn3jBtBCfqJI_aaRjquFgeA5s7Y8JRAxvQ',
+            }
             console.log('submitFile test')
-            const formData = new FormData()
+            const papa = require('papaparse')
 
-            formData.append('file', this.file, 'mailcsv')
-            console.log(formData)
-            instance
-                .post('/sendCsv', formData)
+            papa.parse(this.file, {
+                complete: (results) => {
+                    console.log(results.data[0])
+                    this.items = results.data[0]
+                    this.$axios.post('/sendCsv', this.items).catch()
+                    console.log(this.items)
+                },
+            })
+
+            // console.log(formData.getAll('file'))
+            /* this.$axios
+                .post('/sendCsv', formData.get('file'))
                 .then(function () {
                     console.log('Success.')
                 })
                 .catch(function () {
                     console.log('Failed.')
-                })
+                }) */
         },
         sendEmail() {
+            this.$axios.defaults.baseURL = 'http://127.0.0.1:8088/api'
+            this.$axios.defaults.headers.common = {
+                Authorization:
+                    'Bearer ' +
+                    'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InRiZXR0bWFubiIsImV4cCI6MTU5NDMwMzI5MCwicm9sIjpbIkFkbWluIl19._83mp73eHuu5JP8gtDIC3Jho5V7_pA-R-2pLOuRKfLe_NPtO5VtPjn3jBtBCfqJI_aaRjquFgeA5s7Y8JRAxvQ',
+            }
             console.log('Email Sending test')
+            console.log(this.items)
             const obj = {
                 mailList: this.items,
-                csvFile: '',
+                // csvFile: '',
             }
-            instance
+            this.$axios
                 .post('/sendEmail', obj)
                 .then(function () {
                     console.log('Email sending succedeed.')
                 })
-                .catch(function () {
-                    console.log('Email sending failed.')
-                })
+                .catch((error) => console.log(error))
         },
         handleFileUpload() {
             this.file = this.$refs.file.files[0]
         },
         addEmail() {
             const input = document.getElementById('itemForm')
-
             if (input.value !== '') {
                 this.items.push({
-                    text: input.value,
+                    // text: String(input.value),
+                    text: 'test',
                 })
                 input.value = ''
             }

@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.File;
 import java.util.List;
 
-@RequestMapping(value = "/api", method = RequestMethod.GET)
+@RequestMapping("/api")
 @RestController
 @CrossOrigin
 public class CsvController {
@@ -25,12 +25,12 @@ public class CsvController {
         this.csvReader = csvReader;
     }
 
-    @PostMapping(value = "/sendCsv", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/sendCsv")
     //@PreAuthorize("hasAuthority('Admin')")
     public String getEmailsFromCsv(final @RequestBody CsvCmd csvCmd) {
         try {
-            File file = csvCmd.getCsvFile();
-            mailService.setMailAdresses(csvReader.readEmailsFromCsvFile(file));
+            List<String> file = csvCmd.getCsvFile();
+            mailService.setMailAdresses(csvReader.readEmailsFromList(file));
             return "Creating mail list finished!";
         } catch (BadRequestException e) {
             return "Creating mail list failed!";

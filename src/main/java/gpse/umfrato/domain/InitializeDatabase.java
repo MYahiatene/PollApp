@@ -116,7 +116,7 @@ public class InitializeDatabase implements InitializingBean {
         }
 
         String path = "src/main/java/gpse/umfrato/domain/mail/testMails.csv";
-        List<String> maillist = csvReader.readEmailsFromCsvPath(path);
-        mailService.setMailAdresses(maillist);
+        /*List<String> maillist = csvReader.readEmailsFromCsvPath(path);
+        mailService.setMailAdresses(maillist);*/
     }
 }

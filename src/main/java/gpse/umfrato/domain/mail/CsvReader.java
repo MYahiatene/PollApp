@@ -36,19 +36,9 @@ public class CsvReader {
         return emails;
     }
 
-    public List<String> readEmailsFromCsvFile(File csvFile) {
+    public List<String> readEmailsFromList(List<String> mailArrayList) {
 
-        List<String> emails = new ArrayList<>();
-
-        try {
-            Scanner inputStream = new Scanner(csvFile);
-            while (inputStream.hasNext()) {
-                emails.add(inputStream.next());
-            }
-            inputStream.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        List<String> emails = mailArrayList;
 
         return emails;
     }
