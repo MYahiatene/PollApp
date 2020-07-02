@@ -50,7 +50,7 @@
                 :min="questions[questionIndex].startValue"
                 :max="questions[questionIndex].endValue"
                 :step="questions[questionIndex].stepSize"
-                thumb-label="always"
+                :thumb-label="true"
             >
                 <template v-slot:prepend>
                     <v-text-field
