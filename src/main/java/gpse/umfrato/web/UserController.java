@@ -78,6 +78,11 @@ public class UserController {
         return userService.getAllUsers();
     }
 
+    @GetMapping("/usersNonAdmin")
+    public List<User> getUsersNonAdmin() {
+        return userService.getAllUsers();
+    }
+
     /**
      * This method returns a requested user.
      *

@@ -175,7 +175,7 @@ export default {
                     Authorization: 'Bearer ' + this.token,
                 },
             })
-            await instance.get('/users').then((response) => {
+            await instance.get('/usersNonAdmin').then((response) => {
                 this.users = response.data
                 this.users.forEach((ele) => {
                     ele.role = ele.authorities[0].authority
