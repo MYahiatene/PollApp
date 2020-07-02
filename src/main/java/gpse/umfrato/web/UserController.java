@@ -128,4 +128,16 @@ public class UserController {
             return 0;
         }
     }
+
+    @PutMapping("/changeEmail")
+    public void changeEmail(final @RequestBody UserCmd userCmd) {
+        // userCmd.email is here null... Why?
+        LOGGER.info("UserCmd" + userCmd);
+        try{
+            userService.changeEmail(userCmd.getUsername(), userCmd.getEmail());
+        }
+        catch(BadRequestException e){
+            LOGGER.info("Could not Change Email");
+        }
+    }
 }

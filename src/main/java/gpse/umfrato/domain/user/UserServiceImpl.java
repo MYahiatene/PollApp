@@ -105,4 +105,12 @@ class UserServiceImpl implements UserService {
         LOGGER.info("All done in UserServiceImpl");
     }
 
+    @Override
+    public void changeEmail(final String username, final String email) {
+        final User user = userRepository.getOne(username);
+        user.setEmail(email);
+        userRepository.save(user);
+        LOGGER.info("Changed Password!");
+    }
+
 }

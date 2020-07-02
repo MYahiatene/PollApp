@@ -18,15 +18,15 @@
                     >
                     <v-container>
                         <span class="font-weight-bold">
-                            E-Mail:
-                        </span>
-                        {{ account.email }}</v-container
-                    >
-                    <v-container>
-                        <span class="font-weight-bold">
                             Rolle:
                         </span>
                         {{ account.role }}</v-container
+                    >
+                    <v-container>
+                        <span class="font-weight-bold">
+                            E-Mail:
+                        </span>
+                        {{ account.email }} <v-icon @click="dialog2 = true">mdi-pencil</v-icon></v-container
                     >
                 </v-container>
                 <v-dialog v-model="dialog" persistent max-width="600px">
@@ -74,6 +74,31 @@
                         </v-card-actions>
                     </v-card>
                 </v-dialog>
+                <v-dialog v-model="dialog2" persistent max-width="600px">
+                    <v-card>
+                        <v-card-title>
+                            E-Mail ändern
+                        </v-card-title>
+                        <v-card-text>
+                            <v-container>
+                                <v-row>
+                                    <v-col cols="12">
+                                        <v-text-field
+                                            v-model="email"
+                                            label="Neue E-Mail Adresse"
+                                            required
+                                        ></v-text-field>
+                                    </v-col>
+                                </v-row>
+                            </v-container>
+                        </v-card-text>
+                        <v-card-actions>
+                            <v-spacer></v-spacer>
+                            <v-btn color="primary" text @click="closeEmail">Abbrechen</v-btn>
+                            <v-btn color="primary" text @click="saveEmail">Speichern</v-btn>
+                        </v-card-actions>
+                    </v-card>
+                </v-dialog>
             </v-card>
         </v-container>
     </div>
@@ -90,14 +115,17 @@ export default {
             users: [],
             authenticated: false,
             dialog: false,
+            dialog2: false,
             showPassword1: false,
             showPassword2: false,
             newPassword1: '',
             newPassword2: '',
+            email: '',
             incorrectPw: false,
             userObj: {
                 username: '',
                 password: '',
+                mail: '',
             },
             failStatus: -1,
         }
@@ -146,12 +174,15 @@ export default {
             await instance.get('/users').then((response) => {
                 this.users = response.data
                 this.users.forEach((ele) => {
+                    // console.log('element in users:')
+                    // console.log(ele)
                     ele.role = ele.authorities[0].authority
                 })
             })
             this.getAccount()
         },
         getAccount() {
+            console.log(this.users)
             for (let i = 0; i < this.users.length; i++) {
                 if ((this.users[i].username = this.getUsername)) {
                     this.account = this.users[i]
@@ -176,11 +207,11 @@ export default {
                 this.incorrectPw = false
                 this.dialog = false
 
-                const bcrypt = require('bcrypt')
+                /* const bcrypt = require('bcrypt')
                 const saltRounds = 10
-                const hash = bcrypt.hashSync(this.newPassword1, saltRounds)
+                const hash = bcrypt.hashSync(this.newPassword1, saltRounds) */
                 this.userObj.username = this.account.username
-                this.userObj.password = hash // hash
+                this.userObj.password = this.newPassword1 // hash
 
                 // this.$store.dispatch('account/changePassword', this.userObj)
                 // this.failStatus = this.getFailStatus
@@ -194,6 +225,27 @@ export default {
             } else {
                 this.incorrectPw = true
             }
+        },
+        /**
+         * When "Abbrechen" is clicked nothing happens, the changes will be discarded and the dialog will close.
+         */
+        closeEmail() {
+            this.dialog2 = false
+        },
+        /**
+         * When "Speichern" is clicked and the Passwords are the same, the password is saved and updated
+         * and if not the dialog doesn't close and gives you an error message.
+         */
+        saveEmail() {
+            this.dialog2 = false
+
+            this.userObj.username = this.account.username
+            this.userObj.mail = this.email
+            // console.log(this.userObj.mail)
+
+            this.$axios.defaults.baseURL = 'http://localhost:8088/api/'
+            this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('user-token')
+            this.$axios.put('/changeEmail', this.userObj)
         },
     },
 }
