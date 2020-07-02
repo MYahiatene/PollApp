@@ -1,21 +1,14 @@
 package gpse.umfrato.web;
 
-import gpse.umfrato.domain.cmd.CsvCmd;
-import gpse.umfrato.domain.mail.MailConfig;
-import gpse.umfrato.domain.participationlinks.ParticipationLink;
-import org.springframework.http.MediaType;
+import gpse.umfrato.domain.cmd.MailCmd;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.awt.*;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 @RequestMapping("/api")
@@ -34,19 +27,21 @@ public class MailController {
     }
 
     @PostMapping(value = "/sendEmail")
-    public String sendEmail(final @RequestBody CsvCmd csvCmd) {
+    public String sendEmail(final @RequestBody MailCmd mailCmd) {
 
         try {
 
             final SimpleMailMessage message = new SimpleMailMessage();
-            for (String mail : csvCmd.getMailList()) {
+            for (String mail : mailCmd.getMailList()) {
                 final UUID uuid = UUID.randomUUID();
                 final String urlUuid = "/" + uuid.toString();
                 final URL invitationLink = new URL("http", "localhost", DEFAULT_PORT, urlUuid);
 
+                String mailText = mailCmd.getEmailMessage();
+                mailText = mailText.replace("{link}", invitationLink.toString());
                 message.setTo(mail);
-                message.setSubject("Einladung zur Umfrage - Umfrato Reply");
-                message.setText("Hi, I'm a test mail! \nYour link is \n\n" + invitationLink + "\n\nThank you!");
+                message.setSubject(mailCmd.getEmailSubject());
+                message.setText(mailText);
 
                 this.mailSender.send(message);
 

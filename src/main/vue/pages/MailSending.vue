@@ -168,6 +168,7 @@ export default {
             console.log(this.items)
             const obj = {
                 mailList: this.items,
+                emailSubject: this.mailSubject,
                 emailMessage: this.mailText,
             }
             this.$axios
