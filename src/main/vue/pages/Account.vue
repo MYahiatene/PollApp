@@ -164,6 +164,10 @@ export default {
             return this.token
         },
         async loadUserData() {
+            // so funktioniert es auch nicht...
+            /* this.$axios.defaults.baseURL = 'http://localhost:8088/api/'
+            this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('user-token')
+            await this.$axios.get('/users').then((response) => { */
             this.token = this.authenticate
             const instance = this.$axios.create({
                 baseURL: 'http://127.0.0.1:8088/api',
@@ -174,11 +178,12 @@ export default {
             await instance.get('/users').then((response) => {
                 this.users = response.data
                 this.users.forEach((ele) => {
-                    // console.log('element in users:')
-                    // console.log(ele)
                     ele.role = ele.authorities[0].authority
                 })
             })
+            // nach genau dem selben Code, wird auf der Adminseite hier die usernames richtig ausgegeben, aber
+            // hier ist überall username tbettmann... Wieso?
+            console.log('users', this.users)
             this.getAccount()
         },
         getAccount() {
