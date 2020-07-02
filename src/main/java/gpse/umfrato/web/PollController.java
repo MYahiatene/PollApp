@@ -58,8 +58,7 @@ public class PollController {
         try {
             final Poll poll = pollService.createPoll(pollCmd.getCmdPoll());
             if (poll.getAnonymityStatus().equals("1")) {
-                participationLinkService.createParticipationLink(poll.getPollId(), poll.getAnonymityStatus(),
-                    "allusers");
+                participationLinkService.createParticipationLink();
             }
             return poll.getPollId();
         } catch (BadRequestException | MalformedURLException e) {

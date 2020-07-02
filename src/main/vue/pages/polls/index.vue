@@ -180,7 +180,6 @@ export default {
                     data[i].action2Icon = 'mdi-delete'
                     data[i].statusIcon = 'mdi-content-duplicate'
                     data[i].deleteIcon = 'mdi-delete'
-                    data[i].inviteIcon = 'mdi-account-plus'
                 }
                 const categories = this.items[i].categoryList
                 data[i].categoryCount = categories.length

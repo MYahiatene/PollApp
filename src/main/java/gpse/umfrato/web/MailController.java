@@ -35,17 +35,35 @@ public class MailController {
         try {
 
             final SimpleMailMessage message = new SimpleMailMessage();
+
+            URL invitationLink = participationLinkService.createParticipationLink();
+
             for (String mail : mailCmd.getMailList()) {
-                final UUID uuid = UUID.randomUUID();
-                final String urlUuid = "/" + uuid.toString();
-                final URL invitationLink = new URL("http", "localhost", DEFAULT_PORT, urlUuid);
+
+                if (mailCmd.getAnonymityStatus().equals("3")) { // 3 = nicht anonym
+
+                    invitationLink = participationLinkService.createParticipationLink();
+                    participationLinkService.saveParticipationLink(mailCmd.getPollId(), mail,
+                        invitationLink.toString());
+
+                } else if (mailCmd.getAnonymityStatus().equals("2")) { // 2 = teilanonym, Username ist unique Key
+
+                    invitationLink = participationLinkService.createParticipationLink();
+                    participationLinkService.saveParticipationLink(mailCmd.getPollId(), invitationLink.toString(),
+                        invitationLink.toString());
+
+                } else { // 1 = anonym, es ist jedes mal der selbe Link
+
+                    participationLinkService.saveParticipationLink(mailCmd.getPollId(), invitationLink.toString(),
+                        invitationLink.toString());
+
+                }
 
                 String mailText = mailCmd.getEmailMessage();
                 mailText = mailText.replace("{link}", invitationLink.toString());
                 message.setTo(mail);
                 message.setSubject(mailCmd.getEmailSubject());
                 message.setText(mailText);
-
 
                 this.mailSender.send(message);
 

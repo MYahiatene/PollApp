@@ -1,11 +1,15 @@
 package gpse.umfrato.domain.participationlinks;
 
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 
 public interface ParticipationLinkService {
-    ParticipationLink createParticipationLink(Long pollId, String anonymityStatus, String username)
-        throws MalformedURLException;
+
+
+    URL createParticipationLink() throws MalformedURLException;
+
+    void saveParticipationLink(Long pollId, String emailAdress, String generatedLink);
 
     Long getPollIdFromParticipationLink(String participationLink);
 

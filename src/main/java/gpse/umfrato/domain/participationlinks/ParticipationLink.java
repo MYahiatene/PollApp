@@ -22,16 +22,13 @@ public class ParticipationLink {
 
     private Long pollId;
 
-    private String anonymityStatus;
-
     private String username;
 
     private String participationLink;
 
-    public ParticipationLink(final long pollId, final String anonymityStatus, final String username, final String participationLink) {
+    public ParticipationLink(final long pollId, final String mailAdress, final String participationLink) {
         this.pollId = pollId;
-        this.anonymityStatus = anonymityStatus;
-        this.username = username;
+        this.username = mailAdress;
         this.participationLink = participationLink;
     }
 }

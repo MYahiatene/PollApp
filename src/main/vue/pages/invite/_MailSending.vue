@@ -90,6 +90,7 @@ export default {
             file: null,
             items: [],
             message: '',
+            poll: [],
 
             autoGrow: true,
             autofocus: true,
@@ -122,8 +123,30 @@ export default {
             rowHeightSubject: '1',
         }
     },
-
+    created() {
+        this.loadPoll()
+    },
+    copmuted: {
+        pollId() {
+            return parseInt(this.$route.params.MailSending)
+        },
+    },
     methods: {
+        async loadPoll() {
+            await this.$axios
+                .get('/getonepoll', {
+                    params: {
+                        pollId: this.$route.params.MailSending,
+                    },
+                })
+                .then((response) => {
+                    this.poll = response.data
+                    console.log(this.poll)
+                })
+                .catch((error) => {
+                    console.log(error)
+                })
+        },
         submitFile() {
             // const reader = new FileReader()
             this.$axios.defaults.baseURL = 'http://127.0.0.1:8088/api'
@@ -161,6 +184,8 @@ export default {
                 mailList: this.items,
                 emailSubject: this.mailSubject,
                 emailMessage: this.mailText,
+                pollId: this.poll.pollId,
+                anonymityStatus: this.poll.anonymityStatus,
             }
             this.$axios
                 .post('/sendEmail', obj)
