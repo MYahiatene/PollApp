@@ -197,7 +197,10 @@ that each display a basic evaluation of one specific question-->
             <v-btn class="pl-4" @click="exportAnswers()">Antworten exportieren </v-btn>
             <v-btn class="pl-4" @click="exportResults()">Antworten exportieren </v-btn>
             <v-btn class="pl-4" @click="exportCSV()">Antworten exportierenCSV </v-btn>
-            <button @click="downloadWithVueResource">Download file with Vue</button>
+            <v-col cols="12" md="4">
+                Datei hochladen
+                <input type="file" @change="uploadFile" />
+            </v-col>
         </v-container>
     </v-container>
 </template>
@@ -241,6 +244,7 @@ export default {
             page: 1,
             itemsPerPage: 2,
             sortBy: 'id',
+            file: '',
         }
     },
     mounted() {
@@ -319,6 +323,17 @@ export default {
 
         downloadClickCSV(pollId) {
             console.log(this.$store.dispatch('evaluation/awaitPollResultCsv', pollId))
+        },
+
+        uploadFile(e) {
+            const file = e.target.files[0]
+            const reader = new FileReader()
+            reader.readAsText(file)
+            reader.onload = (e) => {
+                console.log('File: ', file)
+                console.log('FileE: ', e.target.result)
+                console.log(this.$store.dispatch('evaluation/importPoll', e.target.result))
+            }
         },
 
         /*

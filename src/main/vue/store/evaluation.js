@@ -96,7 +96,7 @@ export const actions = {
         const FileDownload = require('js-file-download')
 
         const response = await this.$axios.get('/export/getFile/' + fileName).then((response) => {
-            FileDownload(JSON.stringify(response), fileName + '.txt')
+            FileDownload(JSON.stringify(response.data), fileName + '.txt')
         })
 
         console.log('response: ', response)
@@ -133,6 +133,13 @@ export const actions = {
                 'CSV' + fileName + '.csv'
             )
         })
+        console.log('response: ', response)
+        return response
+    },
+
+    async importPoll({ state, commit }, file) {
+        console.log('Loaded file: ', file)
+        const response = await this.$axios.post('/export/importPoll/' + file)
         console.log('response: ', response)
         return response
     },

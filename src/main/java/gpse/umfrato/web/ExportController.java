@@ -134,9 +134,10 @@ public class ExportController {
         }*/
     }
 
-    @PostMapping("/importPoll")
-    public Poll fromJSONToPoll(final @RequestBody String json) throws Exception {
-        return exportService.fromJSONToPoll(json);
+    @PostMapping("/importPoll/{file:[\\s\\S]+}")
+    public Poll fromJSONToPoll(final @PathVariable String file) throws Exception {
+        System.out.println(file);
+        return exportService.fromJSONToPoll(file);
 /*        try {
             ObjectMapper objectMapper = new ObjectMapper();
             Poll poll = objectMapper.readValue(json, Poll.class);
