@@ -121,7 +121,7 @@ export const actions = {
         const FileDownload = require('js-file-download')
         const response = await this.$axios.get('/export/getCSV/' + fileName).then((response) => {
             FileDownload(
-                JSON.stringify(response.data)
+                response.data
                     .replace(/\\n/g, '\n')
                     .replace(/\\'/g, "'")
                     .replace(/\\"/g, '"')

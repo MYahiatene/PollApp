@@ -25,7 +25,7 @@ public class ExportServiceImpl implements ExportService {
         int amountOfArgumentsBeforeCategories = 4;
         for(Category category : poll.getCategoryList())
             output += ',' + category.getCategoryName() + ',' + "Antwortmöglichkeiten";
-        output += '■';
+        output += '\n';
         output += poll.getPollName() + ',' + poll.getPollId() + ',' + poll.getPollCreator() + ',' + poll.getAnonymityStatus();
         for(Category category : poll.getCategoryList()) {
             for (Question question : category.getQuestionList()) {
@@ -36,12 +36,12 @@ public class ExportServiceImpl implements ExportService {
                     output += question.getStartValue() + ".." + question.getEndValue() + " in Inkrementen von " + question.getStepSize();
                 if(question.getQuestionType() == "SliderQuestion")
                     output += question.getStartValue() + ".." + question.getEndValue() + " in Inkrementen von " + question.getStepSize();
-                output += '■';
+                output += '\n';
                 for(int i = 0; i<amountOfArgumentsBeforeCategories-1; i++) /**Needs to be -1 because of output + escapeSpecial... that comma can't go away*/
                     output += ',';
             }
         }
-        output += '■';
+        output += '\n';
         return output;
     }
     @Override

@@ -103,8 +103,9 @@ public class ExportController {
         File file = new File("src/main/java/gpse/umfrato/domain/export/files/"+pollId+".txt");
         PrintWriter out = new PrintWriter(file);
         System.out.println("Indizes: ");
-        for(String index : s.split("■")) {
-            out.println(index);
+        for(String index : s.split("\n")) {
+            out.append(index);
+            out.append('\n');
             System.out.println(index);
         }
         out.close();
