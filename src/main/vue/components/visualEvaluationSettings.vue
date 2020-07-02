@@ -92,10 +92,10 @@ it passes the attributes:
                             @click="updateCurrentChip(index)"
                             large
                         >
-                            Farbe {{ index + 1 }}</v-chip
+                            {{ answerTitles[index] }}</v-chip
                         >
                         <v-chip v-else class="ma-1" :color="color" @click="updateCurrentChip(index)">
-                            Farbe {{ index + 1 }}</v-chip
+                            {{ answerTitles[index] }}</v-chip
                         >
                     </div>
                 </draggable>
@@ -134,6 +134,9 @@ it passes the attributes:
         <v-row v-if="changeDefault" no-gutters>
             <v-switch v-model="useOnAll" label="Auf alle Diagramme anwenden"> </v-switch>
         </v-row>
+        <p v-if="changeDefault && useOnAll">
+            Momentan werden nur die Diagramme verändert, die bisher noch nicht bearbeitet wurden.
+        </p>
         <!-- Button that will send the picked data to the parent component -->
         <v-row no-gutters>
             <v-btn color="success" @click="saveDiagramFormat">
@@ -298,6 +301,7 @@ export default {
     computed: {
         ...mapGetters({
             getFormat: 'evaluation/getDiagramFormat',
+            polls: 'evaluation/getPolls',
         }),
         initialDiagramType() {
             return this.getFormat(this.questionId).diagramType
@@ -322,6 +326,47 @@ export default {
             return (
                 'border-color:' + this.$vuetify.theme.currentTheme.info + '; border-style: solid; border-width: thick;'
             )
+        },
+        answerTitles() {
+            const a = []
+            for (let i = 0; i < this.polls.length; i++) {
+                console.log(i)
+                for (let j = 0; j < this.polls[i].categoryList.length; j++) {
+                    console.log(j)
+                    for (let k = 0; k < this.polls[i].categoryList[j].questionList.length; k++) {
+                        console.log(k)
+                        if (this.polls[i].categoryList[j].questionList[k].questionId === this.questionId) {
+                            console.log('if')
+                            for (
+                                let l = 0;
+                                l < this.polls[i].categoryList[j].questionList[k].answerPossibilities.length;
+                                l++
+                            ) {
+                                if (this.polls[i].categoryList[j].questionList[k].answerPossibilities[l].length < 5) {
+                                    a.push(
+                                        '  ' +
+                                            this.polls[i].categoryList[j].questionList[k].answerPossibilities[l] +
+                                            '  '
+                                    )
+                                } else if (
+                                    this.polls[i].categoryList[j].questionList[k].answerPossibilities[l].length > 30
+                                ) {
+                                    a.push(
+                                        this.polls[i].categoryList[j].questionList[k].answerPossibilities[l].substr(
+                                            0,
+                                            27
+                                        ) + '...'
+                                    )
+                                } else {
+                                    a.push(this.polls[i].categoryList[j].questionList[k].answerPossibilities[l])
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            return a
         },
     },
 }

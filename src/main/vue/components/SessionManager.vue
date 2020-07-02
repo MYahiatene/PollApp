@@ -1,11 +1,11 @@
 <template>
-    <v-dialog overlay-color="background" v-model="dialog" width="800" overlay-opacity="0.7">
+    <v-dialog overlay-color="background" v-model="dialog" width="800" overlay-opacity="1">
         <template v-slot:activator="{ on }">
             <v-btn color="primary" v-on="on" class="ma-2">
                 Sessions
             </v-btn>
         </template>
-        <v-card>
+        <v-card class="pa-3">
             <v-card-title>
                 Sessionmanagement
             </v-card-title>
@@ -22,10 +22,10 @@
                 hide-default-footer
             >
                 <template v-slot:header>
-                    <v-toolbar>
+                    <v-toolbar class="pa-1">
                         <v-text-field
-                            class="pa-5"
-                            filled
+                            class="pd-n2 ma-2"
+                            dense
                             v-model="search"
                             clearable
                             hint="Vergangene Sessions durchsuchen"
@@ -33,9 +33,9 @@
                             label="Durchsuchen"
                         ></v-text-field>
                         <v-text-field
-                            class="ma-5"
+                            class="pd-n2 ma-2"
                             v-model="sessionTitle"
-                            filled
+                            dense
                             clearable
                             label="Session speichern"
                             hint="Geben Sie dieser Session einen Namen"

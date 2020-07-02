@@ -153,23 +153,6 @@ export default {
             },
         },
 
-        // pie charts dont have a grid in the background
-
-        pieChartOptions: {
-            responsive: true,
-            maintainAspectRatio: false,
-            segmentShowStroke: false,
-            // elements: {
-            //     arc: {
-            //         borderColor: '#00000000',
-            //         borderWidth: 0
-            //     },
-            // },
-            scales: {
-                yAxes: [{ display: false }],
-            },
-        },
-
         // indicates that the setting window is closed by default
         visualSettings: false,
         // headers for the table
@@ -255,6 +238,24 @@ export default {
                 c[i] = this.backgroundColors[i % this.backgroundColors.length]
             }
             return c
+        },
+
+        // pie charts dont have a grid in the background
+
+        pieChartOptions() {
+            return {
+                responsive: true,
+                maintainAspectRatio: false,
+                segmentShowStroke: false,
+                elements: {
+                    arc: {
+                        borderColor: this.$vuetify.theme.currentTheme.vCardColor,
+                    },
+                },
+                scales: {
+                    yAxes: [{ display: false }],
+                },
+            }
         },
     },
     methods: {
