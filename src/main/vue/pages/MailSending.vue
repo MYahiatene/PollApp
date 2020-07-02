@@ -97,22 +97,16 @@ export default {
 
             papa.parse(this.file, {
                 complete: (results) => {
-                    console.log(results.data[0])
-                    this.items = results.data[0]
+                    // console.log(results.data[0][1])
+                    for (let i = 0; i < results.data.length; i++) {
+                        for (let j = 0; j < results.data[i].length; j++) {
+                            this.items.push(results.data[i][j])
+                        }
+                    }
                     this.$axios.post('/sendCsv', this.items).catch()
-                    console.log(this.items)
+                    // console.log(this.items)
                 },
             })
-
-            // console.log(formData.getAll('file'))
-            /* this.$axios
-                .post('/sendCsv', formData.get('file'))
-                .then(function () {
-                    console.log('Success.')
-                })
-                .catch(function () {
-                    console.log('Failed.')
-                }) */
         },
         sendEmail() {
             this.$axios.defaults.baseURL = 'http://127.0.0.1:8088/api'

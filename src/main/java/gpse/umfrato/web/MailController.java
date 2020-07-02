@@ -2,6 +2,7 @@ package gpse.umfrato.web;
 
 import gpse.umfrato.domain.cmd.CsvCmd;
 import gpse.umfrato.domain.mail.MailConfig;
+import gpse.umfrato.domain.participationlinks.ParticipationLink;
 import org.springframework.http.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.MailException;
@@ -43,13 +44,12 @@ public class MailController {
                 final String urlUuid = "/" + uuid.toString();
                 final URL invitationLink = new URL("http", "localhost", DEFAULT_PORT, urlUuid);
 
-                //message.setFrom("gpseteam5.1@gmail.com");
-                //System.out.println(mail);
                 message.setTo(mail);
                 message.setSubject("Einladung zur Umfrage - Umfrato Reply");
                 message.setText("Hi, I'm a test mail! \nYour link is \n\n" + invitationLink + "\n\nThank you!");
 
                 this.mailSender.send(message);
+
             }
 
             return "Email sent.";
