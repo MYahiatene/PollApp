@@ -7,11 +7,14 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
+import java.util.Calendar;
 import java.util.List;
+import java.util.logging.Logger;
 
 @Service
 class PollServiceImpl implements PollService {
 
+    /* default */ static final Logger LOGGER = Logger.getLogger("PollServiceImpl");
     /* default */ final CategoryRepository categoryRepository;
     private final PollRepository pollRepository;
     private final CategoryService categoryService;
@@ -72,6 +75,7 @@ class PollServiceImpl implements PollService {
      */
     @Override
     public Poll getPoll(final String id) {
+        LOGGER.info(id);
         final Long pollId = Long.valueOf(id);
         return pollRepository.findById(pollId).orElseThrow(EntityNotFoundException::new);
     }
@@ -93,5 +97,16 @@ class PollServiceImpl implements PollService {
         poll.setPollStatus(poll.getPollStatus() + 1);
         pollRepository.save(poll);
         return poll.getPollStatus();
+    }
+
+    @Override
+    public String parseDate(final Calendar date) {
+        final String day =  String.valueOf(date.get(Calendar.DATE));
+        final String month =  String.valueOf(date.get(Calendar.MONTH));
+        final String year =  String.valueOf(date.get(Calendar.YEAR)-1900);
+        final String hour =  String.valueOf(date.get(Calendar.HOUR_OF_DAY));
+        final String minute =  String.valueOf(date.get(Calendar.MINUTE));
+        LOGGER.info(day + "." + month + "." + year + "&" + hour + ":" + minute);
+        return day + "." + month + "." + year + "&" + hour + ":" + minute;
     }
 }

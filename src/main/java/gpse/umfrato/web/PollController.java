@@ -5,14 +5,21 @@ import gpse.umfrato.domain.participationlinks.ParticipationLinkService;
 import gpse.umfrato.domain.poll.Poll;
 import gpse.umfrato.domain.poll.PollService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.MalformedURLException;
+import java.util.Calendar;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.logging.Logger;
 
+// @Configuration
+// @EnableScheduling
 @RequestMapping(value = "/api", method = RequestMethod.GET)
 @RestController
 @CrossOrigin
@@ -61,6 +68,7 @@ public class PollController {
     @PreAuthorize("hasAuthority('Admin')")
     public String createCopyPoll(final @RequestBody PollCmd pollCmd) {
         try {
+            LOGGER.info("pollCmd: " + pollCmd);
             final Poll poll = pollService.createCopyPoll(pollCmd.getCmdPoll());
             participationLinkService.createParticipationLink(poll.getPollId(), "allUsers");
             LOGGER.info(poll.toString());
@@ -132,6 +140,7 @@ public class PollController {
     @GetMapping("/getAnonType")
     public String getAnonType(final @RequestParam long pollId) {
         LOGGER.info("PollID: " + String.valueOf(pollId));
+        LOGGER.info("anonymity status: " + pollService.getPoll(String.valueOf(pollId)).getAnonymityStatus());
         switch(pollService.getPoll(String.valueOf(pollId)).getAnonymityStatus()) {
             case "0": return "Anonym";
             case "1": return "Anonym";
@@ -143,14 +152,26 @@ public class PollController {
     @GetMapping("/getActDate")
     public String getActDate(final @RequestParam long pollId) {
         LOGGER.info("PollID: " + String.valueOf(pollId));
-        return pollService.getPoll(String.valueOf(pollId)).getActivatedDate();
+        final Calendar date = pollService.getPoll(String.valueOf(pollId)).getActivatedDate();
+        return pollService.parseDate(date);
     }
 
     @GetMapping("/getDeactDate")
     public String getDeactDate(final @RequestParam long pollId) {
         LOGGER.info("PollID: " + String.valueOf(pollId));
-        return pollService.getPoll(String.valueOf(pollId)).getDeactivatedDate();
+        final Calendar date = pollService.getPoll(String.valueOf(pollId)).getDeactivatedDate();
+        return pollService.parseDate(date);
     }
+    @Scheduled(fixedDelay = 6000)
+    public void updateActivationPolls() {
+        LOGGER.info("updateActivationPolls");
+        /* final ListIterator<Poll> it = getPolls().listIterator();
+        while(it.hasNext()) {
+            Poll poll = it.next();
+            //if(poll.getActivatedDate())
+        } */
+    }
+
 
 }
 

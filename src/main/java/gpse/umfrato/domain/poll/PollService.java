@@ -1,5 +1,6 @@
 package gpse.umfrato.domain.poll;
 
+import java.util.Calendar;
 import java.util.List;
 
 public interface PollService {
@@ -35,5 +36,7 @@ public interface PollService {
     String createAnonymUsername();
 
     Integer activatePoll(final Long pollId);
+
+    public String parseDate(final Calendar date);
 
 }

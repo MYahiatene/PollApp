@@ -7,7 +7,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -45,12 +48,12 @@ public class Poll {
      * This attribute represents the date when the poll was activated.
      */
     // use Instant instead , cause of time zone
-    private String activatedDate;
+    private Calendar activatedDate;
 
     /**
      * This attribute represents the date when the poll was deactivated.
      */
-    private String deactivatedDate;
+    private Calendar deactivatedDate;
 
     /**
      * This attribute represents the status of the anonymity if it is anonymous, part-anonymous
@@ -95,6 +98,10 @@ public class Poll {
      */
     private boolean categoryChange;
 
+    private boolean isActivated;
+
+    private boolean isDeactivated;
+
     /**
      * This attribute represents a question list with all questions of this poll.
      */
@@ -125,11 +132,13 @@ public class Poll {
      * @param logo            the logo displayed on the website
      * @param visibility      whether or not a rolling question number should be displayed
      * @param categoryChange  whether or not it is possible to go to an already answered category
+     * @param isActivated
+     * @param isDeactivated
      */
     public Poll(final String pollCreator, final String anonymityStatus, final String pollName, final String createdAt,
-                final String activatedAt, final String deactivatedAt, final int pollStatus,
+                final Calendar activatedAt, final Calendar deactivatedAt, final int pollStatus,
                 final String backgroundColor, final String fontColor, final String logo, final boolean visibility,
-                final boolean categoryChange) {
+                final boolean categoryChange, final boolean isActivated, final boolean isDeactivated) {
         this.pollName = pollName;
         this.pollCreator = pollCreator;
         this.anonymityStatus = anonymityStatus;
@@ -142,5 +151,7 @@ public class Poll {
         this.logo = logo;
         this.visibility = visibility;
         this.categoryChange = categoryChange;
+        this.isActivated = isActivated;
+        this.isDeactivated = isDeactivated;
     }
 }

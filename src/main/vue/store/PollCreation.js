@@ -5,6 +5,7 @@ export const state = () => ({
 })
 export const getters = {
     getPoll: (state) => {
+        console.log('getPoll in js')
         return state.poll
     },
 }
@@ -45,7 +46,6 @@ export const actions = {
     },
 
     async getPollName({ commit }, id) {
-        console.log('Hallo aus der pollName')
         const response = await this.$axios.get('/getPollName', {
             params: {
                 pollId: id,
@@ -56,7 +56,6 @@ export const actions = {
     },
 
     async getAnonType({ commit }, id) {
-        console.log('Hallo aus der pollName')
         const response = await this.$axios.get('/getAnonType', {
             params: {
                 pollId: id,
@@ -67,7 +66,6 @@ export const actions = {
     },
 
     async getActDate({ commit }, id) {
-        console.log('Hallo aus der ActDate')
         const response = await this.$axios.get('/getActDate', {
             params: {
                 pollId: id,
@@ -78,7 +76,6 @@ export const actions = {
     },
 
     async getDeactDate({ commit }, id) {
-        console.log('Hallo aus der DeactDate')
         const response = await this.$axios.get('/getDeactDate', {
             params: {
                 pollId: id,
