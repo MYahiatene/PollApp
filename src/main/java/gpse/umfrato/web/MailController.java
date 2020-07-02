@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.awt.*;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -35,23 +36,21 @@ public class MailController {
     public String sendEmail(final @RequestBody CsvCmd csvCmd) {
 
         try {
-            //List<String> mails = csvCmd.getMailList();
 
             final SimpleMailMessage message = new SimpleMailMessage();
-            //System.out.println("---------SIZE:" + mails.size());
-            //for (String mail : mails) {
+            for (String mail : csvCmd.getMailList()) {
                 final UUID uuid = UUID.randomUUID();
                 final String urlUuid = "/" + uuid.toString();
                 final URL invitationLink = new URL("http", "localhost", DEFAULT_PORT, urlUuid);
 
                 //message.setFrom("gpseteam5.1@gmail.com");
                 //System.out.println(mail);
-                message.setTo("test@gmail.com");
+                message.setTo(mail);
                 message.setSubject("Einladung zur Umfrage - Umfrato Reply");
                 message.setText("Hi, I'm a test mail! \nYour link is \n\n" + invitationLink + "\n\nThank you!");
 
                 this.mailSender.send(message);
-            //}
+            }
 
             return "Email sent.";
 

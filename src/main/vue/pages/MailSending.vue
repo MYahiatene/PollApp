@@ -38,7 +38,7 @@
                             <ul>
                                 <li v-for="(item, index) in items" :key="item.id">
                                     <v-btn x-small color="red" @click="deleteEmail(index)">X</v-btn>
-                                    {{ item.text }}
+                                    {{ item }}
                                 </li>
                             </ul>
                         </v-list>
@@ -67,22 +67,15 @@
 </template>
 
 <script>
-/* const axios = require('axios')
-const instance = axios.create({
-    baseURL: 'http://127.0.0.1:8088/api/',
-    timeout: 1000,
-    // headers: { 'X-Custom-Header': 'foobar' },
-    // headers: { 'Content-Type': 'multipart/form-data' },
-}) */
 export default {
     data() {
         return {
             file: null,
-            items: null,
+            items: [],
         }
     },
     mounted() {
-        this.initializeMailList()
+        // this.initializeMailList()
     },
     methods: {
         async initializeMailList() {
@@ -132,7 +125,6 @@ export default {
             console.log(this.items)
             const obj = {
                 mailList: this.items,
-                // csvFile: '',
             }
             this.$axios
                 .post('/sendEmail', obj)
@@ -147,10 +139,8 @@ export default {
         addEmail() {
             const input = document.getElementById('itemForm')
             if (input.value !== '') {
-                this.items.push({
-                    // text: String(input.value),
-                    text: 'test',
-                })
+                this.items.push(input.value)
+                console.log(input.value)
                 input.value = ''
             }
         },
