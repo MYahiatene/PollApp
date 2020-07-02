@@ -24,6 +24,7 @@
         >
         </v-overflow-btn>
         <v-select
+            v-if="questions[questionIndex] && !(questions[questionIndex].questionType === 'SliderQuestion')"
             v-model="selectedAnswers"
             :prefix="conditional + ' aus den Antworten'"
             :items="answerTitles"
@@ -42,6 +43,40 @@
                 >
             </template>
         </v-select>
+        <div v-if="questions[questionIndex] && questions[questionIndex].questionType === 'SliderQuestion'">
+            eine Antwort in folgendem Bereich
+            <v-range-slider
+                v-model="range"
+                :min="questions[questionIndex].startValue"
+                :max="questions[questionIndex].endValue"
+                :step="questions[questionIndex].stepSize"
+                thumb-label="always"
+            >
+                <template v-slot:prepend>
+                    <v-text-field
+                        :value="range[0]"
+                        class="mt-0 pt-0"
+                        hide-details
+                        single-line
+                        type="number"
+                        style="width: 60px;"
+                        @change="$set(range, 0, $event)"
+                    ></v-text-field>
+                </template>
+                <template v-slot:append>
+                    <v-text-field
+                        :value="range[1]"
+                        class="mt-0 pt-0"
+                        hide-details
+                        single-line
+                        type="number"
+                        style="width: 60px;"
+                        @change="$set(range, 1, $event)"
+                    ></v-text-field>
+                </template>
+            </v-range-slider>
+        </div>
+
         ausgewählt haben.
     </v-card>
 </template>
@@ -82,6 +117,7 @@ export default {
             selectedAnswers: [],
             answerTitlesDisplayedInSelect: 5,
             invertFilter: false,
+            range: [0, 0],
         }
     },
     computed: {
@@ -117,8 +153,13 @@ export default {
                 return []
             } else {
                 const l = []
-                for (let i = 0; i < this.categories[this.categoryIndex].questionList.length; i++) {
-                    l[i] = this.categories[this.categoryIndex].questionList[i].questionMessage
+                for (let i = 0; i < this.questions.length; i++) {
+                    if (
+                        !(this.questions[i].questionType === 'TextQuestion') &&
+                        !(this.questions[i].questionType === 'SortQuestion')
+                    ) {
+                        l.push(this.questions[i].questionMessage)
+                    }
                 }
                 return l
             }
@@ -127,7 +168,18 @@ export default {
             if (this.categoryIndex === -1) {
                 return []
             } else {
-                return this.categories[this.categoryIndex].questionList
+                const c = []
+                for (let i = 0; i < this.categories[this.categoryIndex].questionList.length; i++) {
+                    if (
+                        this.categories[this.categoryIndex].questionList[i].questionType !== 'TextQuestion' &&
+                        this.categories[this.categoryIndex].questionList[i].questionType !== 'SortQuestion'
+                    ) {
+                        c.push(this.categories[this.categoryIndex].questionList[i])
+                    }
+                }
+                console.log('questions: ')
+                console.log(c)
+                return c
             }
         },
         answerTitles() {

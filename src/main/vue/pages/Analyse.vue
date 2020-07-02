@@ -27,9 +27,8 @@
 <script>
 import { mapGetters } from 'vuex'
 import AuthGate from '../components/AuthGate'
-import BarChart from '../components/BarChart'
 export default {
-    components: { AuthGate, BarChart },
+    components: { AuthGate },
     computed: {
         ...mapGetters({
             isAuthenticated: 'login/isAuthenticated',
