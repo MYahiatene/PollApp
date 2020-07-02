@@ -158,6 +158,13 @@ export default {
         pieChartOptions: {
             responsive: true,
             maintainAspectRatio: false,
+            segmentShowStroke: false,
+            // elements: {
+            //     arc: {
+            //         borderColor: '#00000000',
+            //         borderWidth: 0
+            //     },
+            // },
             scales: {
                 yAxes: [{ display: false }],
             },

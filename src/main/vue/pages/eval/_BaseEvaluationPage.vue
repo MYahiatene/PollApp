@@ -45,25 +45,28 @@ that each display a basic evaluation of one specific question-->
                     <!--            This button will lead to the Page where we can filter and analyse the data-->
                     <v-spacer />
                     <session-manager @close-event="widgetKey += 1"></session-manager>
-                    <v-spacer @close-event="widgetKey += 1" />
                     <filter-form :initial-poll-index="getPollIndex" @close-event="widgetKey += 1"></filter-form>
 
                     <!--                   title of the poll-->
 
                     <!--            here we have a sub menu, that can hold a list of different options or setings-->
-                    <v-menu bottom left>
-                        <template v-slot:activator="{ on }">
-                            <v-btn icon color="primary" v-on="on">
-                                <v-icon>mdi-dots-vertical</v-icon>
-                            </v-btn>
-                        </template>
 
-                        <v-list>
-                            <v-list-item v-for="(item, i) in menuItems" :key="i">
-                                <v-list-item-title @click="dialog = true">{{ item.title }}</v-list-item-title>
-                            </v-list-item>
-                        </v-list>
-                    </v-menu>
+                    <v-btn icon color="primary">
+                        <v-icon @click="dialog = true">mdi-brush</v-icon>
+                    </v-btn>
+                    <!--                    <v-menu bottom left>-->
+                    <!--                        <template v-slot:activator="{ on }">-->
+                    <!--                            <v-btn icon color="primary">-->
+                    <!--                                <v-icon @click="dialog = true">mdi-dots-vertical</v-icon>-->
+                    <!--                            </v-btn>-->
+                    <!--                        </template>-->
+
+                    <!--                        <v-list>-->
+                    <!--                            <v-list-item v-for="(item, i) in menuItems" :key="i">-->
+                    <!--                                <v-list-item-title @click="dialog = true">{{ item.title }}</v-list-item-title>-->
+                    <!--                            </v-list-item>-->
+                    <!--                        </v-list>-->
+                    <!--                    </v-menu>-->
                 </v-toolbar>
             </v-row>
 

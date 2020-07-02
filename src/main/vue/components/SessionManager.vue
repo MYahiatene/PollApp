@@ -1,7 +1,7 @@
 <template>
     <v-dialog overlay-color="background" v-model="dialog" width="800" overlay-opacity="0.7">
         <template v-slot:activator="{ on }">
-            <v-btn color="primary" v-on="on">
+            <v-btn color="primary" v-on="on" class="ma-2">
                 Sessions
             </v-btn>
         </template>

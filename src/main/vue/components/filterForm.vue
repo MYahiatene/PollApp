@@ -1,7 +1,7 @@
 <template>
     <v-dialog v-model="dialog" overlay-color="background" persistent width="500" overlay-opacity="0.95" fullscreen>
         <template v-slot:activator="{ on }">
-            <v-btn color="primary" v-on="on">
+            <v-btn color="primary" v-on="on" class="ma-2">
                 Analyse
             </v-btn>
         </template>

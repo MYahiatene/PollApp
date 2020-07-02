@@ -9,9 +9,12 @@ it passes the attributes:
 -->
     <v-container class="ma-3">
         <v-row>
-            <p>
+            <p v-if="!changeDefault">
                 Hier können die Design-Einstellungen für eine Auswahlfrage verändert werden.
             </p>
+            <h3>
+                Hier können die Design-Einstellungen für Auswahlfragen generell gesetzt werden.
+            </h3>
         </v-row>
         <!--switch for "ShowDiagram"-->
         <v-row no-gutters>
