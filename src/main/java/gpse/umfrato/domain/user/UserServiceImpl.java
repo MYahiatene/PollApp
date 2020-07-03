@@ -1,5 +1,6 @@
 package gpse.umfrato.domain.user;
 
+import gpse.umfrato.domain.mail.MailService;
 import gpse.umfrato.domain.password.RandomPasswordGenerator;
 import gpse.umfrato.web.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,10 +20,12 @@ import java.util.logging.Logger;
 class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final MailService mailService;
 
     @Autowired
-    public UserServiceImpl(final UserRepository userRepository) {
+    public UserServiceImpl(final UserRepository userRepository, final MailService mailService) {
         this.userRepository = userRepository;
+        this.mailService = mailService;
     }
 
     /**
@@ -36,18 +39,31 @@ class UserServiceImpl implements UserService {
     public User createUser(final String username, final String password, final String firstName,
                            final String lastName, final String role, final String email) {
         final RandomPasswordGenerator randomPasswordGenerator = new RandomPasswordGenerator();
+        final User user;
         // for a completely fresh user to be generated the password value sent from the frontend must be null
         if (password == null) {
             char[] safePwd = randomPasswordGenerator.generatePwd();
             String encryptedSafePwd = PasswordEncoderFactories.createDelegatingPasswordEncoder().encode(new String(safePwd));
-            final User user = new User(username, encryptedSafePwd, firstName, lastName, role, email);
-            // todo: send here the unencrypted pw to user
+            user = new User(username, encryptedSafePwd, firstName, lastName, role, email);
+
+            String pwd = new String(safePwd);
+            String mailSubject = "Login Daten für Umfrato";
+            String mailMessage = "Sehr geehrte/r Frau/Herr " + lastName + ",\n\n" +
+                "anbei finden Sie Ihre neuen Login Daten. \n\n" +
+                "Username: " + username + "\n" +
+                "Password: " + pwd + "\n\n" +
+                "Mit freundlichen Grüßen\nIhr Umfrato Team";
+
+            mailService.sendMail(mailSubject, mailMessage, email);
+
             Arrays.fill(safePwd, '*');
-            return userRepository.save(user);
         } else {
-            final User user = new User(username, password, firstName, lastName, role, email);
-            return userRepository.save(user);
+            user = new User(username, password, firstName, lastName, role, email);
         }
+
+
+        return userRepository.save(user);
+
     }
 
     /**

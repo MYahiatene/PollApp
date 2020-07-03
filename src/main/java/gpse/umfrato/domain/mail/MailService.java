@@ -7,4 +7,6 @@ public interface MailService {
 
     List<String> getMailAdresses();
 
+    void sendMail(String mailSubject, String mailText, String emailAdress);
+
 }

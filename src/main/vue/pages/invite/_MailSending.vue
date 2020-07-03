@@ -191,6 +191,7 @@ export default {
                     console.log('Email sending succedeed.')
                 })
                 .catch((error) => console.log(error))
+            this.$router.push('/polls')
         },
         handleFileUpload() {
             this.file = this.$refs.file.files[0]
