@@ -1,22 +1,6 @@
 <template>
     <div>
-        <v-container v-if="authenticated === false">
-            <v-card class="mx-auto" max-width="400" outlined>
-                <v-list-item three-line>
-                    <v-list-item-content class="center">
-                        <v-list-item-title class="headline mb-1">Zugriff verweigert</v-list-item-title>
-                        <v-list-item-subtitle>Bitte loggen Sie sich ein</v-list-item-subtitle>
-                    </v-list-item-content>
-                </v-list-item>
-
-                <v-card-actions>
-                    <v-spacer></v-spacer>
-                    <div class="my-2">
-                        <v-btn depressed color="secondary" to="/Login">Login</v-btn>
-                    </div>
-                </v-card-actions>
-            </v-card>
-        </v-container>
+        <AuthGate v-if="isAuthenticated !== true"></AuthGate>
         <v-container v-else>
             <v-card class="mx-auto" max-width="800" tile>
                 <v-card-title class="justify-center"> Willkommen, {{ account.firstName }}! </v-card-title>
@@ -123,8 +107,10 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import AuthGate from '../components/AuthGate'
 export default {
     name: 'Account',
+    components: { AuthGate },
     data() {
         return {
             token: '',
@@ -152,6 +138,7 @@ export default {
             authenticate: 'administration/getToken',
             getUsername: 'login/getUsername',
             getFailStatus: 'account/getFailStatus',
+            isAuthenticated: 'login/isAuthenticated',
         }),
     },
     created() {
@@ -232,11 +219,9 @@ export default {
                 /* const bcrypt = require('bcrypt')
                 const saltRounds = 10
                 const hash = bcrypt.hashSync(this.newPassword1, saltRounds) */
+                // wird im Backend EnCrypted
                 this.userObj.username = this.account.username
-                this.userObj.password = '{noop}' + this.newPassword1 // hash
-
-                // this.$store.dispatch('account/changePassword', this.userObj)
-                // this.failStatus = this.getFailStatus
+                this.userObj.password = this.newPassword1
 
                 this.$axios.defaults.baseURL = 'http://localhost:8088/api/'
                 this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('user-token')
