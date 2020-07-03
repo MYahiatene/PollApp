@@ -281,12 +281,26 @@ public class QuestionServiceImpl implements QuestionService {
         while(iterator.hasNext()) {
             Question newQuestion = null;
             Question question = iterator.next();
-            QuestionCmd cmd = new QuestionCmd(pollId, question.getEndValue(), question.getStartValue(),
-                question.getStepSize(), question.getBelowMessage(), question.getAboveMessage(), question.isHideValues(),
-                question.isTextMultiline(), question.getTextMinimum(), question.getTextMaximum(),
-                question.isTextMinBool(), question.isTextMaxBool(), question.isHasConsistencyRelationship(),
-                categoryId, question.getQuestionMessage(), question.getAnswerPossibilities(),
-                question.getQuestionType(), question.isUserAnswers(), question.getNumberOfPossibleAnswers());
+            QuestionCmd cmd = new QuestionCmd();
+            cmd.setPollId(pollId);
+            cmd.setEndValue(question.getEndValue());
+            cmd.setStartValue(question.getStartValue());
+            cmd.setStepSize(question.getStepSize());
+            cmd.setBelowMessage(question.getBelowMessage());
+            cmd.setAboveMessage(question.getAboveMessage());
+            cmd.setHideValues(question.isHideValues());
+            cmd.setTextMultiline(question.isTextMultiline());
+            cmd.setTextMinimum(question.getTextMinimum());
+            cmd.setTextMaximum(question.getTextMaximum());
+            cmd.setTextMinBool(question.isTextMinBool());
+            cmd.setTextMaxBool(question.isTextMaxBool());
+            // question.isHasConsistencyRelationship(),
+            cmd.setCategoryId(question.getCategoryId());
+            cmd.setQuestionMessage(question.getQuestionMessage());
+            cmd.setAnswerPossibilities(question.getAnswerPossibilities());
+            cmd.setQuestionType(question.getQuestionType());
+            cmd.setUserAnswers(question.isUserAnswers());
+            cmd.setNumberOfPossibleAnswers(question.getNumberOfPossibleAnswers());
             if (question.getQuestionType().equals(CHOICE_QUESTION)) {
                 newQuestion = addChoiceQuestion(question, pollId);
             } else {

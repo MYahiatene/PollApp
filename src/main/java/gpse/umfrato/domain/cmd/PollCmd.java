@@ -4,7 +4,9 @@ import gpse.umfrato.domain.poll.Poll;
 import lombok.Data;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.ParsePosition;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.Calendar;
 import java.util.Date;
@@ -54,7 +56,17 @@ public class PollCmd {
         LOGGER.info("isActivated: " + activated);
         LOGGER.info("activatedAt: " + activatedAt);
         Calendar activationDate = Calendar.getInstance();
-        activationDate.set(Integer.parseInt(activatedAt.substring(activatedAt.indexOf('.',3)+1,
+        Calendar deactivationDate = Calendar.getInstance();
+        try {
+            DateFormat df = new SimpleDateFormat("dd.MM.yyyy&HH:mm");
+            Date activation = df.parse(activatedAt);
+            activationDate.setTime(activation);
+            Date deactivation = df.parse(deactivatedAt);
+            deactivationDate.setTime(deactivation);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        /* activationDate.set(Integer.parseInt(activatedAt.substring(activatedAt.indexOf('.',3)+1,
             activatedAt.indexOf('&'))) + 1900, Integer.parseInt(activatedAt.substring(activatedAt.indexOf('.') + 1,
             activatedAt.indexOf('.', 3))),
             Integer.parseInt(activatedAt.substring(0, activatedAt.indexOf('.'))),
@@ -67,7 +79,7 @@ public class PollCmd {
             Integer.parseInt(deactivatedAt.substring(0, deactivatedAt.indexOf('.'))),
             Integer.parseInt(deactivatedAt.substring(deactivatedAt.indexOf('&')+1, deactivatedAt.indexOf(':'))),
             Integer.parseInt(deactivatedAt.substring(deactivatedAt.indexOf(':') + 1)));
-        LOGGER.info("activationDate: " + activationDate);
+        LOGGER.info("activationDate: " + activationDate); */
         final Poll poll = new Poll(pollCreator, anonymityStatus, pollName, pollCreatedAt, activationDate,
             deactivationDate, pollStatus, backgroundColor, fontColor, logo, visibility, categoryChange, activated,
             deactivated);

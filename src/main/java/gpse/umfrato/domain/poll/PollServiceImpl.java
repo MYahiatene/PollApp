@@ -17,7 +17,6 @@ class PollServiceImpl implements PollService {
 
     /* default */ static final Logger LOGGER = Logger.getLogger("PollServiceImpl");
     /* default */ final CategoryRepository categoryRepository;
-    private final CategoryRepository categoryRepository;
     private final PollRepository pollRepository;
     private final CategoryService categoryService;
     private int anonymousUsername = 0;

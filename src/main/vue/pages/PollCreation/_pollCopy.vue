@@ -275,7 +275,7 @@ export default {
                     .then((result) => {
                         this.newPollId = result.data
                     })
-                this.$axios.post('/copycategories/' + this.poll.pollId + '/' + newId.data).catch()
+                this.$axios.post('/copycategories/' + this.poll.pollId + '/' + this.newPollId.data).catch()
             } else {
                 await this.$axios
                     .post('/createpoll', obj)

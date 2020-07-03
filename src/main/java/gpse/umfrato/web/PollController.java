@@ -105,10 +105,10 @@ public class PollController {
         try {
             LOGGER.info("pollCmd: " + pollCmd);
             final Poll poll = pollService.createCopyPoll(pollCmd.getCmdPoll());
-            participationLinkService.createParticipationLink(poll.getPollId(), "allUsers");
+            // TODO: participationLinkService.createParticipationLink(poll.getPollId(), "allUsers");
             LOGGER.info(poll.toString());
             return poll.getPollId().toString();
-        } catch (BadRequestException | MalformedURLException e) {
+        } catch (BadRequestException e) { // | MalformedURLException e) {
             return null;
         }
     }
@@ -253,11 +253,6 @@ public class PollController {
     @PutMapping("/deletepoll")
     public String deletePoll(final @RequestBody PollCmd pollCmd) {
         return pollService.deletePoll(pollCmd.getPollId());
-    }
-
-    @GetMapping("/getonepoll")
-    public Poll getPoll(final @RequestParam long pollId) {
-        return pollService.getPoll(pollId);
     }
 
     @GetMapping("/getPollName")

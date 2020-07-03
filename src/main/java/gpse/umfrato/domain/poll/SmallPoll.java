@@ -7,6 +7,8 @@ import gpse.umfrato.domain.pollresult.PollResultService;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -26,9 +28,9 @@ public class SmallPoll {
 
     private String lastEditFrom;
 
-    private String activatedDate;
+    private Calendar activatedDate;
 
-    private String deactivatedDate;
+    private Calendar deactivatedDate;
 
     private String anonymityStatus;
 
@@ -48,6 +50,7 @@ public class SmallPoll {
 
     private String computedSubtitle;
 
+    @SuppressWarnings({"checkstyle:LeftCurly", "checkstyle:RightCurly"})
     public SmallPoll(Poll original, PollResultService pollResultService, ParticipationLinkService participationLinkService)
     {
         this.pollId = original.getPollId();
@@ -77,6 +80,7 @@ public class SmallPoll {
             this.expectedParticipantCount = participationLinkService.getAllParticipationLinks(pollId).size();
         }
         StringBuilder sb = new StringBuilder();
+        SimpleDateFormat df = new SimpleDateFormat("dd.MM.yyyy HH:mm");
         if(pollStatus == 0) {
             sb.append(questionCount);
             if (questionCount == 1) {
@@ -94,7 +98,7 @@ public class SmallPoll {
         }
         else if(pollStatus == 1)
         {
-            sb.append("Umfrage aktiv seit ").append(activatedDate)
+            sb.append("Umfrage aktiv seit ").append(df.format(activatedDate.getTime()))
                     .append(". Bisherige Teilnehmer: ").append(participantCount);
             if(!anonymityStatus.equals("1"))
             {
@@ -102,11 +106,11 @@ public class SmallPoll {
                         .append(participantCount.doubleValue() / expectedParticipantCount.doubleValue() * 100.0)
                         .append("%)");
             }
-            sb.append(" Wird zum ").append(deactivatedDate).append(" deaktiviert.");
+            sb.append(" Wird zum ").append(df.format(deactivatedDate.getTime())).append(" deaktiviert.");
         }
         else if(pollStatus == 2)
         {
-            sb.append("Umfrage deaktiviert seit ").append(deactivatedDate)
+            sb.append("Umfrage deaktiviert seit ").append(df.format(deactivatedDate.getTime()))
                     .append(". Teilnehmer: ").append(participantCount);
             if(!anonymityStatus.equals("1"))
             {

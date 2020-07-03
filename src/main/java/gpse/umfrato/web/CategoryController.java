@@ -28,7 +28,7 @@ public class CategoryController {
      * @param categoryService
      */
     @Autowired
-    public CategoryController(final CategoryService categoryService, final QuestionService questionService, {
+    public CategoryController(final CategoryService categoryService, final QuestionService questionService) {
         this.categoryService = categoryService;
         this.questionService = questionService;
     }

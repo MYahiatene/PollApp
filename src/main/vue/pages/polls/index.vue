@@ -77,6 +77,8 @@
                                     <template v-slot:item.delete="{ item }">
                                         <v-icon @click="deletePoll(item)">
                                             mdi-delete
+                                        </v-icon>
+                                    </template>
                                     <template v-slot:item.link="{ item }">
                                         <v-icon v-if="item.pollStatus === 1" @click="setLink(item)">
                                             mdi-link-variant
