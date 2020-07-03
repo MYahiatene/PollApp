@@ -1,6 +1,6 @@
 <template>
     <v-card flat class="pa-2 ma-2">
-        <v-switch v-model="invertFilter" label="Invertieren" />
+        <v-switch v-model="invertFilter" label="Invertieren" @change="updateData" />
         <v-overflow-btn
             v-if="!askForCategory()"
             v-model="selectedCategory"
@@ -51,6 +51,7 @@
                 :max="questions[questionIndex].endValue"
                 :step="questions[questionIndex].stepSize"
                 :thumb-label="true"
+                @change="updateData"
             >
                 <template v-slot:prepend>
                     <v-text-field
@@ -60,7 +61,7 @@
                         single-line
                         type="number"
                         style="width: 60px;"
-                        @change="$set(range, 0, $event)"
+                        @change="$set(range, 0, $event), updateData"
                     ></v-text-field>
                 </template>
                 <template v-slot:append>
@@ -71,7 +72,7 @@
                         single-line
                         type="number"
                         style="width: 60px;"
-                        @change="$set(range, 1, $event)"
+                        @change="$set(range, 1, $event), updateData"
                     ></v-text-field>
                 </template>
             </v-range-slider>
@@ -244,13 +245,19 @@ export default {
             console.log(this.categoryIndex)
             console.log(this.questionIndex)
             console.log(this.answerIndices)
-            this.$emit('updateData', [
-                this.filterId,
-                this.categoryIndex,
-                this.questionIndex,
-                this.answerIndices,
-                this.invertFilter,
-            ])
+            if (this.questionIndex !== -1) {
+                this.$emit('updateData', [
+                    this.filterId,
+                    this.categoryIndex,
+                    this.questionIndex,
+                    this.questions[this.questionIndex].questionId,
+                    this.questions[this.questionIndex].questionType === 'SliderQuestion'
+                        ? this.range
+                        : this.answerIndices,
+                    this.questions[this.questionIndex].questionType === 'SliderQuestion',
+                    this.invertFilter,
+                ])
+            }
         },
         askForCategory() {
             const OnlyOneCategory = this.categories.length === 1

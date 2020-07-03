@@ -1,23 +1,27 @@
 import Vue from 'vue'
 
-export const state = () => ({
-    DiagramData: {},
-    Polls: [],
-    FilterList: [],
-    pollId: -1,
-    currentSession: -1,
-    DiagramFormat: [],
-    defaultDiagramFormat: {
-        questionId: -1,
-        backgroundColors: ['#aaaaaa'],
-        backgroundColor: '#aaaaaa',
-        multipleColors: false,
-        diagramType: 'bar',
-        showDiagram: true,
-        showTable: true,
-    },
-    Sessions: [],
-})
+const generateDefaultState = () => {
+    return {
+        DiagramData: {},
+        Polls: [],
+        FilterList: [],
+        pollId: -1,
+        currentSession: -1,
+        DiagramFormat: [],
+        defaultDiagramFormat: {
+            questionId: -1,
+            backgroundColors: ['#aaaaaa'],
+            backgroundColor: '#aaaaaa',
+            multipleColors: false,
+            diagramType: 'bar',
+            showDiagram: true,
+            showTable: true,
+        },
+        Sessions: [],
+    }
+}
+
+export const state = generateDefaultState()
 
 function formatToString(format) {
     const short = {
@@ -67,11 +71,11 @@ export const getters = {
     },
     getDiagramFormat(state) {
         return (id) => {
-            console.log('suche nach ' + id)
+            // console.log('suche nach ' + id)
             for (let i = 0; i < state.DiagramFormat.length; i++) {
                 if (state.DiagramFormat[i].questionId === id) {
-                    console.log('custom ' + i)
-                    console.log(state.DiagramFormat[i])
+                    // console.log('custom ' + i)
+                    // console.log(state.DiagramFormat[i])
                     return JSON.parse(JSON.stringify(state.DiagramFormat[i]))
                 }
             }
@@ -82,17 +86,20 @@ export const getters = {
                     for (let q = colors.length; q < state.DiagramData.questionList[i].answerPossibilities.length; q++) {
                         defaultFormat.backgroundColors.push(String(colors[q % colors.length]))
                     }
-                    console.log('default')
-                    console.log(defaultFormat)
+                    // console.log('default')
+                    // console.log(defaultFormat)
                     return defaultFormat
                 }
             }
-            console.log('super-gau')
+            // console.log('super-gau')
             return JSON.parse(JSON.stringify(state.defaultDiagramFormat))
         }
     },
 }
 export const mutations = {
+    resetState(state) {
+        Object.assign(state, generateDefaultState())
+    },
     setDiagramData(state, data) {
         console.log(data)
         state.DiagramData = data.data
@@ -110,8 +117,8 @@ export const mutations = {
         state.currentSession = sessionId
     },
     setDiagramFormatsFromServer(state, formatList) {
-        console.log('reset')
-        console.log(formatList)
+        // console.log('reset')
+        // console.log(formatList)
         state.DiagramFormat = []
         state.defaultDiagramFormat = stringToFormat(formatList[0])
         if (formatList.length > 1) {
@@ -119,24 +126,24 @@ export const mutations = {
         }
     },
     setDiagramFormats(state, { useOnAll, format }) {
-        console.log('setDiagramFormats()')
-        console.log(format)
+        // console.log('setDiagramFormats()')
+        // console.log(format)
         if (useOnAll) {
             state.DiagramFormat = []
         }
         state.defaultDiagramFormat = format
     },
     setDiagramFormat(state, format) {
-        console.log('setDiagramFormat()')
-        console.log(format)
+        // console.log('setDiagramFormat()')
+        // console.log(format)
         for (let i = 0; i < state.DiagramFormat.length; i++) {
             if (state.DiagramFormat[i].questionId === format.questionId) {
                 Vue.set(state.DiagramFormat, i, format)
-                console.log('saved custom')
+                // console.log('saved custom')
                 return
             }
         }
-        console.log('saved default')
+        // console.log('saved default')
         state.DiagramFormat.push(format)
     },
     setPollID(state, id) {

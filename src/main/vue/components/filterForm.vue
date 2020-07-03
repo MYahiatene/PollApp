@@ -376,29 +376,39 @@ export default {
             for (let i = 0; i < this.qafilterList.length; i++) {
                 if (this.qafilterList[i].active) {
                     const filter = this.qafilterList[i]
+                    console.log('saveQAFilter')
+                    console.log(this.polls)
+                    console.log(this.pollIndex)
+                    console.log(filter)
                     if (filter.answerIndices.length !== 0) {
                         filterData.push({
                             filterType: 'questionAnswer',
-                            invertFilter: false,
-                            targetQuestionId: this.polls[this.pollIndex].categoryList[filter.categoryIndex]
-                                .questionList[filter.questionIndex].questionId,
+                            invertFilter: filter.invertFilter,
+                            targetQuestionId: filter.questionId,
                             targetAnswerPossibilities: filter.answerIndices,
+                            isSlider: filter.isSlider,
                         })
                     }
                 }
             }
             if (this.datefilter) {
+                let numberOfDateFilters = 0
+                console.log(this.dateFilterList)
                 for (let i = 0; i < this.dateFilterList.length; i++) {
                     if (this.dateFilterList[i].active) {
-                        if (i < -1) {
-                            filterData.push({
-                                filterType: 'date',
-                                invertFilter: this.dateFilterList[i].invertFilter,
-                                startDate: this.dateFilterList[i].startDate,
-                                endDate: this.dateFilterList[i].endDate,
-                            })
-                        }
+                        numberOfDateFilters += 1
+                        filterData.push({
+                            filterType: 'date',
+                            invertFilter: this.dateFilterList[i].invertFilter,
+                            startDate: this.dateFilterList[i].startDate,
+                            endDate: this.dateFilterList[i].endDate,
+                        })
                     }
+                }
+                if (numberOfDateFilters > 1) {
+                    filterData.push({
+                        filterType: 'or',
+                    })
                 }
             }
             console.log(filterData)
@@ -439,6 +449,7 @@ export default {
                 filterType: 'qaFilter',
                 categoryId: -1,
                 questionId: -1,
+                isSlider: false,
                 answerIndices: [],
             })
         },
@@ -448,11 +459,13 @@ export default {
             this.qafilterList[index].active = false
         },
 
-        updateQaFilter([filterId, categoryIndex, questionIndex, answerIndices, invertFilter]) {
+        updateQaFilter([filterId, categoryIndex, questionIndex, questionId, answerIndices, isSlider, invertFilter]) {
             console.log('updateQAFilter()')
             this.qafilterList[filterId].categoryIndex = categoryIndex
             this.qafilterList[filterId].questionIndex = questionIndex
+            this.qafilterList[filterId].questionId = questionId
             this.qafilterList[filterId].answerIndices = answerIndices
+            this.qafilterList[filterId].isSlider = isSlider
             this.qafilterList[filterId].invertFilter = invertFilter
         },
 
@@ -477,11 +490,11 @@ export default {
 
         updateDateFilter([filterIndex, startDate, endDate, invertFilter]) {
             console.log('updateDateFilter()')
-
+            console.log(invertFilter)
             this.dateFilterList[filterIndex].startDate = startDate
             this.dateFilterList[filterIndex].endDate = endDate
-
             this.dateFilterList[filterIndex].invertFilter = invertFilter
+            console.log(this.dateFilterList)
         },
         updateConsistencyOn() {
             this.consistencyOn = !(this.minConsistencyValue === 0)

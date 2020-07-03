@@ -22,7 +22,7 @@ public class Session {
 
     private String sessionTitle;
 
-    @OneToMany
+    @OneToMany(orphanRemoval = true)
     private List<FilterData> filterList;
 
     @ElementCollection

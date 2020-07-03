@@ -40,13 +40,9 @@ public class FilterServiceImpl implements FilterService {
     }
 
     private void cmdsToFilters(List<FilterCmd> filterCmds, List<FilterData> filter) {
-        for(FilterData fd: filter)
-        {
-            //TODO: vielleicht nochmal schön machen?
-            filterRepository.deleteById(fd.getFilterId());
-        }
         for(FilterCmd cmd: filterCmds)
         {
+            System.out.println(cmd);
             FilterData fd = new FilterData();
             fd.setFilterType(cmd.getFilterType());
             fd.setInvertFilter(cmd.getInvertFilter());
@@ -60,6 +56,7 @@ public class FilterServiceImpl implements FilterService {
                 case "questionAnswer":
                     fd.setTargetQuestionId(cmd.getTargetQuestionId());
                     fd.setTargetAnswerPossibilities(cmd.getTargetAnswerPossibilities());
+                    fd.setIsSlider(cmd.getIsSlider());
                     break;
                 case "consistency":
                     fd.setMinSuccesses(cmd.getMinSuccesses());

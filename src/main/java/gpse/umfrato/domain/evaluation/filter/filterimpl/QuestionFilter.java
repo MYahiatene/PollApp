@@ -44,7 +44,13 @@ private final boolean requireAbsoluteMatch;
                     if (workWithIntervall) {
                         match = true;
                         for (final String ga: a.getGivenAnswerList()) {
-                            double value = Double.parseDouble(ga);
+                            double value;
+                            try {
+                                value = Double.parseDouble(ga);
+                            }catch (NumberFormatException e) {
+                                match = false;
+                                break;
+                            }
                             if (value < lowerBorder || upperBorder < value) {
                                 match = false;
                                 break;

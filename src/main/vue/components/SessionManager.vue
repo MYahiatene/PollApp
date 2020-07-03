@@ -174,6 +174,7 @@ export default {
                     lastUsername: this.getUsername,
                 }
                 await this.saveSession(payload)
+                this.sessionTitle = ''
                 await this.loadSessions()
             }
         },

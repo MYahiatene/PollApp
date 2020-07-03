@@ -192,7 +192,7 @@ that each display a basic evaluation of one specific question-->
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
 import AuthGate from '../../components/AuthGate'
 import ChoiceQuestionEvaluationWidget from '../../components/ChoiceQuestionEvaluationWidget'
 import visualEvaluationSettings from '../../components/visualEvaluationSettings'
@@ -237,6 +237,7 @@ export default {
         }
     },
     created() {
+        this.reset()
         this.initialize(this.$route.params.BaseEvaluationPage)
         this.loadSessions()
     },
@@ -320,6 +321,9 @@ export default {
         },
     },
     methods: {
+        ...mapMutations({
+            reset: 'evaluation/resetState',
+        }),
         ...mapActions({
             initialize: 'evaluation/initialize',
             updateData: 'evaluation/updateData',
