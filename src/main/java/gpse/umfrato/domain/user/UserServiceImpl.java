@@ -99,6 +99,7 @@ class UserServiceImpl implements UserService {
      */
     @Override
     public void addParticipatedPoll(final String username, final Long pollId) {
+        LOGGER.info("username" + username + "pollId" + pollId);
         final User user = userRepository.getOne(username);
         final List<Long> tmp = user.getParticipated();
         tmp.add(pollId);

@@ -204,7 +204,8 @@
                             </v-btn>
                             <!-- button to get to the next category, same principle as the one above -->
                             <v-btn class="pl-4" :disabled="hasNoNext" @click="getNextCategory()">Nächste Seite</v-btn>
-                            <v-btn class="float-right" :color="fontColor" @click="saveParticipatedPoll()" nuxt to="/AfterParticipated">
+                            <!--@click="saveParticipatedPoll()-->
+                            <v-btn class="float-right" :color="fontColor" nuxt to="/AfterParticipated">
                                 Absenden
                             </v-btn>
                             <v-btn class="float-right" :color="fontColor" nuxt to="/AfterSaved">
@@ -219,7 +220,8 @@
                             </v-btn>
                             <!-- button to get to the next category, same principle as the one above -->
                             <v-btn class="pl-4" :disabled="hasNoNext" @click="getNextCategory()">Nächste Seite</v-btn>
-                            <v-btn :color="fontColor" @click="saveParticipatedPoll()" nuxt to="/AfterParticipated">
+                            <!--@click="saveParticipatedPoll()-->
+                            <v-btn :color="fontColor" nuxt to="/AfterParticipated">
                                 Absenden
                             </v-btn>
                         </div>
@@ -756,10 +758,14 @@ export default {
         },
 
         saveParticipatedPoll() {
-            const username = this.getUsername
-            const pollId = this.getPoll[1].data.pollId
-            this.$store.dispatch('participant/saveParticipatedPoll', username, pollId)
-        }
+            console.log('Ich werde aufgerufen!')
+            console.log(this.getUsername)
+            const userObj = {
+                username: this.getUsername,
+                pollId: this.getPoll[1].data.pollId,
+            }
+            this.$store.dispatch('participant/saveParticipatedPoll', userObj)
+        },
     },
 }
 </script>

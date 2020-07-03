@@ -2,6 +2,7 @@ package gpse.umfrato.web;
 
 import gpse.umfrato.domain.cmd.DeleteUserCmd;
 import gpse.umfrato.domain.cmd.EditUserCmd;
+import gpse.umfrato.domain.cmd.ParticipatedUserCmd;
 import gpse.umfrato.domain.cmd.UserCmd;
 import gpse.umfrato.domain.password.RandomPasswordGenerator;
 import gpse.umfrato.domain.user.User;
@@ -77,9 +78,10 @@ public class UserController {
     }
 
     @PostMapping("addParticipatedPollToUser")
-    public void addParticipatedPollToUser(final String username, final Long pollId) {
+    public void addParticipatedPollToUser(final @RequestBody ParticipatedUserCmd participatedUserCmd) {
         try {
-            userService.addParticipatedPoll(username, pollId);
+            LOGGER.info("username" + participatedUserCmd.getUsername() + "pollId" + participatedUserCmd.getPollId());
+            userService.addParticipatedPoll(participatedUserCmd.getUsername(), participatedUserCmd.getPollId());
         } catch (BadRequestException e) {
 
         }
