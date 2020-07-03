@@ -17,7 +17,7 @@
                 </v-card-actions>
             </v-card>
         </v-container>
-        <v-container>
+        <v-container v-else>
             <v-card class="mx-auto" max-width="800" tile>
                 <v-card-title class="justify-center"> Willkommen, {{ account.firstName }}! </v-card-title>
                 <v-container class="ma-1">
@@ -206,7 +206,7 @@ export default {
         getAccount() {
             console.log(this.users)
             for (let i = 0; i < this.users.length; i++) {
-                if ((this.users[i].username = this.getUsername)) {
+                if (this.users[i].username === this.getUsername) {
                     this.account = this.users[i]
                     console.log(this.account)
                 }
