@@ -49,7 +49,7 @@ public class SessionServiceImpl implements SessionService {
 
     @Override
     public Session editSession(SessionCmd sessionCmd) {
-        Session session = sessionRepository.findById(sessionCmd.getSessionId()).orElseThrow(EntityNotFoundException ::new);
+        Session session = sessionRepository.getOne(sessionCmd.getSessionId());
         cmdToSession(sessionCmd,filterService.updateFitlerList(sessionCmd.getFilterList(),session.getFilterList()),session);
         sessionRepository.save(session);
         return session;

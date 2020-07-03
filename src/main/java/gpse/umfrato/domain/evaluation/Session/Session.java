@@ -1,5 +1,6 @@
 package gpse.umfrato.domain.evaluation.Session;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import gpse.umfrato.domain.evaluation.filter.FilterData;
 import gpse.umfrato.domain.user.User;
 import lombok.Data;
@@ -12,6 +13,7 @@ import java.util.List;
 @Entity
 @Data
 @NoArgsConstructor
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Session {
 
     @Id
@@ -22,7 +24,7 @@ public class Session {
 
     private String sessionTitle;
 
-    @OneToMany(orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
     private List<FilterData> filterList;
 
     @ElementCollection
