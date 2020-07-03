@@ -41,7 +41,7 @@ public class MailController {
 
             String invitationLink;
 
-            for (String mail : mailCmd.getMailList()) {
+            for (final String mail : mailCmd.getMailList()) {
 
                 if (mailCmd.getAnonymityStatus().equals("3")) { // 3 = nicht anonym
 
@@ -57,8 +57,8 @@ public class MailController {
 
                 } else { // 1 = anonym, es ist jedes mal der selbe Link
 
-                    List<ParticipationLink> participationLinks = participationLinkService.getAllParticipationLinks(mailCmd.getPollId());
-                    invitationLink = participationLinks.get(0).getParticipationLink();
+                    final List<ParticipationLink> participationLinks = participationLinkService.getAllParticipationLinks(mailCmd.getPollId());
+                    invitationLink = participationLinks.get(0).getGeneratedParticipationLink();
                     participationLinkService.saveParticipationLink(mailCmd.getPollId(), mail, invitationLink
                     );
 
@@ -92,13 +92,13 @@ public class MailController {
     public String sendRemindEmail(final @RequestBody MailCmd mailCmd) {
         try {
 
-            List<ParticipationLink> participationList = participationLinkService.getAllParticipationLinks(mailCmd.getPollId());
+            final List<ParticipationLink> participationList = participationLinkService.getAllParticipationLinks(mailCmd.getPollId());
             final SimpleMailMessage message = new SimpleMailMessage();
 
-            for (ParticipationLink participationLink : participationList) {
+            for (final ParticipationLink participationLink : participationList) {
                 if (participationLink.getUsername().contains("@") && participationLink.getUsername().contains(".")) {
                     String mailText = mailCmd.getEmailMessage();
-                    mailText = mailText.replace("{link}", participationLink.getParticipationLink());
+                    mailText = mailText.replace("{link}", participationLink.getGeneratedParticipationLink());
                     message.setTo(participationLink.getUsername());
                     message.setSubject(mailCmd.getEmailSubject());
                     message.setText(mailText);

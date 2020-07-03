@@ -26,7 +26,7 @@ public class CsvController {
     //@PreAuthorize("hasAuthority('Admin')")
     public String getEmailsFromCsv(final @RequestBody MailCmd mailCmd) {
         try {
-            List<String> file = mailCmd.getCsvFile();
+            final List<String> file = mailCmd.getCsvFile();
             mailService.setMailAdresses(csvReader.readEmailsFromList(file));
             return "Creating mail list finished!";
         } catch (BadRequestException e) {

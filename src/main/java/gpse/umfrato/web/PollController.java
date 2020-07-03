@@ -58,7 +58,7 @@ public class PollController {
         try {
             final Poll poll = pollService.createPoll(pollCmd.getCmdPoll());
             if (poll.getAnonymityStatus().equals("1")) {
-                String link = participationLinkService.createParticipationLink().toString();
+                final String link = participationLinkService.createParticipationLink().toString();
                 participationLinkService.saveParticipationLink(poll.getPollId(), "allUsers", link);
             }
             return poll.getPollId();

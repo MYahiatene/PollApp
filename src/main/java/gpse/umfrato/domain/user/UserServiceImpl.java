@@ -43,12 +43,12 @@ class UserServiceImpl implements UserService {
         // for a completely fresh user to be generated the password value sent from the frontend must be null
         if (password == null) {
             char[] safePwd = randomPasswordGenerator.generatePwd();
-            String encryptedSafePwd = PasswordEncoderFactories.createDelegatingPasswordEncoder().encode(new String(safePwd));
+            final String encryptedSafePwd = PasswordEncoderFactories.createDelegatingPasswordEncoder().encode(new String(safePwd));
             user = new User(username, encryptedSafePwd, firstName, lastName, role, email);
 
-            String pwd = new String(safePwd);
-            String mailSubject = "Login Daten für Umfrato";
-            String mailMessage = "Sehr geehrte/r Frau/Herr " + lastName + ",\n\n" +
+            final String pwd = new String(safePwd);
+            final String mailSubject = "Login Daten für Umfrato";
+            final String mailMessage = "Sehr geehrte/r Frau/Herr " + lastName + ",\n\n" +
                 "anbei finden Sie Ihre neuen Login Daten. \n\n" +
                 "Username: " + username + "\n" +
                 "Password: " + pwd + "\n\n" +

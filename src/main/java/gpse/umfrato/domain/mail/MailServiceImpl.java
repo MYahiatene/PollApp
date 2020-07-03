@@ -9,7 +9,7 @@ import java.util.List;
 
 @Service
 public class MailServiceImpl implements MailService {
-    List<String> mailAdresses;
+    private List<String> mailAdresses;
     private JavaMailSender javaMailSender;
 
     @Autowired
@@ -18,7 +18,7 @@ public class MailServiceImpl implements MailService {
     }
 
     @Override
-    public void setMailAdresses(List<String> mailList) {
+    public void setMailAdresses(final List<String> mailList) {
         this.mailAdresses = mailList;
     }
 
@@ -28,9 +28,9 @@ public class MailServiceImpl implements MailService {
     }
 
     @Override
-    public void sendMail(String mailSubject, String mailMessage, String emailAdress) {
+    public void sendMail(final String mailSubject, final String mailMessage, final String emailAdress) {
         final SimpleMailMessage message = new SimpleMailMessage();
-        String mailText = mailMessage;
+        final String mailText = mailMessage;
         message.setTo(emailAdress);
         message.setSubject(mailSubject);
         message.setText(mailText);

@@ -54,10 +54,6 @@ public class InitializeDatabase implements InitializingBean {
      */
     /* default */ private final UserService userService;
 
-    /* default */ private final CsvReader csvReader = new CsvReader();
-
-    /* default */ private final MailService mailService;
-
     /**
      * This method initializes the database.
      *
@@ -73,7 +69,7 @@ public class InitializeDatabase implements InitializingBean {
     public InitializeDatabase(final UserService userService, final PollService pollService,
                               final QuestionService questionService, final AnswerService answerService,
                               final ParticipationLinkService participationLinkService,
-                              final CategoryService categoryService, final MailService mailService) {
+                              final CategoryService categoryService) {
         this.userService = userService;
 
         this.pollService = pollService;
@@ -85,8 +81,6 @@ public class InitializeDatabase implements InitializingBean {
         this.participationLinkService = participationLinkService;
 
         this.categoryService = categoryService;
-
-        this.mailService = mailService;
 
     }
 
@@ -115,8 +109,5 @@ public class InitializeDatabase implements InitializingBean {
                 "Teilnehmer", "mmueller@gmx.de");
         }
 
-        String path = "src/main/java/gpse/umfrato/domain/mail/testMails.csv";
-        /*List<String> maillist = csvReader.readEmailsFromCsvPath(path);
-        mailService.setMailAdresses(maillist);*/
     }
 }

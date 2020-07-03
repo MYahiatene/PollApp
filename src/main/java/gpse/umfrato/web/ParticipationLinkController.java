@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.logging.Logger;
 
 /**
  * The ParticipationLink controller used to process participationLink specific requests.
@@ -17,13 +16,10 @@ import java.util.logging.Logger;
 @CrossOrigin
 public class ParticipationLinkController {
     private final ParticipationLinkService participationLinkService;
-    private final MailService mailService;
 
     @Autowired
-    public ParticipationLinkController(final ParticipationLinkService participationLinkService,
-                                       final MailService mailService) {
+    public ParticipationLinkController(final ParticipationLinkService participationLinkService) {
         this.participationLinkService = participationLinkService;
-        this.mailService = mailService;
     }
 
     @GetMapping("/participationLinks")

@@ -43,7 +43,7 @@ public class ParticipationLinkServiceImpl implements ParticipationLinkService {
         final List<ParticipationLink> participationLinks = participationLinkRepository.findAll();
 
         for (final ParticipationLink p : participationLinks) {
-            if (p.getParticipationLink().equals(participationLink)) {
+            if (p.getGeneratedParticipationLink().equals(participationLink)) {
                 return p.getPollId();
             }
         }
@@ -55,7 +55,7 @@ public class ParticipationLinkServiceImpl implements ParticipationLinkService {
         final List<ParticipationLink> participationLinks = participationLinkRepository.findAll();
 
         for (final ParticipationLink p : participationLinks) {
-            if (p.getParticipationLink().equals(participationLink)) {
+            if (p.getGeneratedParticipationLink().equals(participationLink)) {
                 return p.getUsername();
             }
         }

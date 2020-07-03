@@ -24,11 +24,11 @@ public class ParticipationLink {
 
     private String username;
 
-    private String participationLink;
+    private String generatedParticipationLink;
 
     public ParticipationLink(final long pollId, final String mailAdress, final String participationLink) {
         this.pollId = pollId;
         this.username = mailAdress;
-        this.participationLink = participationLink;
+        this.generatedParticipationLink = participationLink;
     }
 }
