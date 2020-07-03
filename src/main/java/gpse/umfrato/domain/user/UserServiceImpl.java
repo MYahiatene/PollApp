@@ -19,6 +19,7 @@ import java.util.logging.Logger;
 class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private static final Logger LOGGER = Logger.getLogger("UserServiceImpl");
 
     @Autowired
     public UserServiceImpl(final UserRepository userRepository) {
@@ -108,6 +109,23 @@ class UserServiceImpl implements UserService {
     public UserDetails loadUserByUsername(final String username) {
         return userRepository.findById(username)
             .orElseThrow(() -> new UsernameNotFoundException("Username " + username + " not found."));
+    }
+
+    @Override
+    public void changePassword(final String username, final String password) {
+        final User user = userRepository.getOne(username);
+        LOGGER.info("username, password" + username + password);
+        user.setPassword(password);
+        userRepository.save(user);
+        LOGGER.info("All done in UserServiceImpl");
+    }
+
+    @Override
+    public void changeEmail(final String username, final String email) {
+        final User user = userRepository.getOne(username);
+        user.setEmail(email);
+        userRepository.save(user);
+        LOGGER.info("Changed Password!");
     }
 
 }

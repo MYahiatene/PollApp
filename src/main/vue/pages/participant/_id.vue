@@ -670,6 +670,9 @@ export default {
             console.log('AnswerObj.answerList:')
             console.log(this.answerObj.answerList)
             this.saveAnswer()
+
+            // TODO: when this works: showAnswer before every question and ask if null/undefined, to get already given answers
+            // or just call once in beginning?
         },
         /**
          * Moves the slider one step to the left, if possible.

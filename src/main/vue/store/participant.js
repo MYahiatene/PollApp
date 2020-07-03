@@ -87,6 +87,7 @@ export const mutations = {
      * @param answer Index of the checked box/answerPossibilities
      */
     setAnswer: (state, answer) => {
+        // TODO: state.answer = answer
         state.answer.push(answer)
     },
     /**

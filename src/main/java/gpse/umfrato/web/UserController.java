@@ -67,6 +67,7 @@ public class UserController {
     @PreAuthorize("hasAuthority('Admin')")
     @PutMapping("editUser")
     public String editUser(final @RequestBody EditUserCmd editUserCmd) {
+        LOGGER.info("UserCmd" + editUserCmd);
         try {
             userService.editUser(editUserCmd.getUsername(), editUserCmd.getFirstName(), editUserCmd.getLastName(),
                 editUserCmd.getRole(), editUserCmd.getEmail());
@@ -87,6 +88,11 @@ public class UserController {
         return userService.getAllUsers();
     }
 
+    @GetMapping("/usersNonAdmin")
+    public List<User> getUsersNonAdmin() {
+        return userService.getAllUsers();
+    }
+
     /**
      * This method returns a requested user.
      *
@@ -100,7 +106,7 @@ public class UserController {
     }
 
     /**
-     * Checks if the users token has the authority "Admin".
+     * Checks if the users token has the authority admin.
      */
     @PreAuthorize("hasAuthority('Admin')")
     @GetMapping("/checkToken")
@@ -127,6 +133,37 @@ public class UserController {
     public String deleteUser(final @RequestBody DeleteUserCmd deleteUserCmd) {
         userService.deleteUser(deleteUserCmd.getUsername());
         return "test";
+    }
+
+    /**
+     * Changes the password in the database.
+     *
+     * @param userCmd
+     * @return 1 or 0; depending if it workes or not
+     */
+    @PutMapping("/changePassword")
+    public int changePassword(final @RequestBody UserCmd userCmd) {
+        LOGGER.info("UserCmd" + userCmd);
+        try{
+            userService.changePassword(userCmd.getUsername(), userCmd.getPassword());
+            return 1;
+        }
+        catch(BadRequestException e){
+            LOGGER.info("Could not Change Password");
+            return 0;
+        }
+    }
+
+    @PutMapping("/changeEmail")
+    public void changeEmail(final @RequestBody UserCmd userCmd) {
+        // userCmd.email is here null... Why?
+        LOGGER.info("UserCmd" + userCmd);
+        try{
+            userService.changeEmail(userCmd.getUsername(), userCmd.getEmail());
+        }
+        catch(BadRequestException e){
+            LOGGER.info("Could not Change Email");
+        }
     }
 
     // todo: test function only
