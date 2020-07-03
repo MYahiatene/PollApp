@@ -1,5 +1,22 @@
 <template>
     <div>
+        <v-container v-if="authenticated === false">
+            <v-card class="mx-auto" max-width="400" outlined>
+                <v-list-item three-line>
+                    <v-list-item-content class="center">
+                        <v-list-item-title class="headline mb-1">Zugriff verweigert</v-list-item-title>
+                        <v-list-item-subtitle>Bitte loggen Sie sich ein</v-list-item-subtitle>
+                    </v-list-item-content>
+                </v-list-item>
+
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <div class="my-2">
+                        <v-btn depressed color="secondary" to="/Login">Login</v-btn>
+                    </div>
+                </v-card-actions>
+            </v-card>
+        </v-container>
         <v-container>
             <v-card class="mx-auto" max-width="800" tile>
                 <v-card-title class="justify-center"> Willkommen, {{ account.firstName }}! </v-card-title>
