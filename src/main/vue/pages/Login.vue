@@ -47,7 +47,9 @@ export default {
     methods: {
         ...mapActions({ requestToken: 'login/requestToken' }),
         async requestToken() {
-            await this.$store.dispatch('login/requestToken', this.auth)
+            await this.$store.dispatch('login/requestToken', this.auth).catch((reason) => {
+                console.log(reason)
+            })
             if (this.authenticated) {
                 await this.$router.push('/')
             }

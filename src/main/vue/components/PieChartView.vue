@@ -6,16 +6,11 @@ export default {
     extends: Pie,
     props: {
         chartdata: {
-            labels: {
-                type: Array,
-            },
-            datasets: {
-                type: Array,
-            },
+            labels: {},
+            datasets: {},
         },
         options: {},
     },
-
     mounted() {
         this.renderChart(this.chartdata, this.options)
     },

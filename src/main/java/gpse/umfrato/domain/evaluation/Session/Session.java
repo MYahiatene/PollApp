@@ -22,11 +22,14 @@ public class Session {
 
     private String sessionTitle;
 
-    @OneToMany
+    @OneToMany(orphanRemoval = true)
     private List<FilterData> filterList;
 
     @ElementCollection
     private List<String> diagramFormat;
+
+    @ElementCollection
+    private List<String> diagramOptions;
 
     private Date lastEdited;
 

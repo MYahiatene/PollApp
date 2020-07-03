@@ -35,8 +35,8 @@ that each display a basic evaluation of one specific question-->
                                 :change-default="true"
                                 @done=";(dialog = false), (widgetKey += 1)"
                             >
-                            </visual-evaluation-settings
-                        ></v-card>
+                            </visual-evaluation-settings>
+                        </v-card>
                     </v-dialog>
                     <v-col cols="4">
                         <v-card-title> {{ pollName }} </v-card-title>
@@ -44,24 +44,69 @@ that each display a basic evaluation of one specific question-->
 
                     <!--            This button will lead to the Page where we can filter and analyse the data-->
                     <v-spacer />
+                    <session-manager @close-event="widgetKey += 1"></session-manager>
                     <filter-form :initial-poll-index="getPollIndex" @close-event="widgetKey += 1"></filter-form>
 
                     <!--                   title of the poll-->
 
                     <!--            here we have a sub menu, that can hold a list of different options or setings-->
-                    <v-menu bottom left>
-                        <template v-slot:activator="{ on }">
-                            <v-btn icon color="primary" v-on="on">
-                                <v-icon>mdi-dots-vertical</v-icon>
+                    <v-tooltip bottom>
+                        <template v-slot:activator="{ on, attrs }">
+                            <v-btn
+                                icon
+                                :color="relativ ? 'accent' : 'primary'"
+                                v-bind="attrs"
+                                v-on="on"
+                                @click=";(relativ = !relativ), (diagramKey += 1)"
+                            >
+                                <v-icon>
+                                    %
+                                </v-icon>
                             </v-btn>
                         </template>
+                        <span>Global Relative bzw. Absolute Häufigkeit umschalten</span>
+                    </v-tooltip>
+                    <v-tooltip bottom>
+                        <template v-slot:activator="{ on, attrs }">
+                            <v-btn
+                                icon
+                                :color="cumulated ? 'accent' : 'primary'"
+                                v-bind="attrs"
+                                v-on="on"
+                                @click=";(cumulated = !cumulated), (diagramKey += 1)"
+                            >
+                                <v-icon> mdi-sigma</v-icon>
+                            </v-btn>
+                        </template>
+                        <span>Global Kumulierte Häufigkeit an- und ausschalten</span>
+                    </v-tooltip>
+                    <v-tooltip bottom>
+                        <template v-slot:activator="{ on, attrs }">
+                            <v-btn
+                                icon
+                                color="primary"
+                                v-bind="attrs"
+                                v-on="on"
+                                @click="visualSettings = !visualSettings"
+                            >
+                                <v-icon @click="dialog = true">mdi-brush</v-icon>
+                            </v-btn>
+                        </template>
+                        <span>Globale Digrammfarben anpassen</span>
+                    </v-tooltip>
+                    <!--                    <v-menu bottom left>-->
+                    <!--                        <template v-slot:activator="{ on }">-->
+                    <!--                            <v-btn icon color="primary">-->
+                    <!--                                <v-icon @click="dialog = true">mdi-dots-vertical</v-icon>-->
+                    <!--                            </v-btn>-->
+                    <!--                        </template>-->
 
-                        <v-list>
-                            <v-list-item v-for="(item, i) in menuItems" :key="i">
-                                <v-list-item-title @click="dialog = true">{{ item.title }}</v-list-item-title>
-                            </v-list-item>
-                        </v-list>
-                    </v-menu>
+                    <!--                        <v-list>-->
+                    <!--                            <v-list-item v-for="(item, i) in menuItems" :key="i">-->
+                    <!--                                <v-list-item-title @click="dialog = true">{{ item.title }}</v-list-item-title>-->
+                    <!--                            </v-list-item>-->
+                    <!--                        </v-list>-->
+                    <!--                    </v-menu>-->
                 </v-toolbar>
             </v-row>
 
@@ -75,7 +120,8 @@ that each display a basic evaluation of one specific question-->
                         :search="search"
                         :sort-by="'id'"
                         :sort-desc="sortDesc"
-                        no-data-text="Keine Teilnehmer"
+                        no-data-text="Keine Teilnehmer gefunden"
+                        no-results-text="Keine passenden Fragen gefunden"
                         hide-default-footer
                     >
                         <template v-slot:header>
@@ -153,7 +199,7 @@ that each display a basic evaluation of one specific question-->
                                             :question-id="question.id"
                                             :question-title="question.title"
                                             :answer-possibilities="question.answerPossibilities"
-                                            :data="question.data"
+                                            :data-input="question.data"
                                             :calculated="question.calculated"
                                         ></ChoiceQuestionEvaluationWidget>
                                     </div>
@@ -186,16 +232,18 @@ that each display a basic evaluation of one specific question-->
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
 import AuthGate from '../../components/AuthGate'
 import ChoiceQuestionEvaluationWidget from '../../components/ChoiceQuestionEvaluationWidget'
 import visualEvaluationSettings from '../../components/visualEvaluationSettings'
 import TextQuestionEvaluationWidget from '../../components/TextQuestionEvaluationWidget'
 import FilterForm from '../../components/filterForm'
+import SessionManager from '../../components/SessionManager'
 
 export default {
     name: 'BaseEvaluationPage',
     components: {
+        SessionManager,
         FilterForm,
         AuthGate,
         ChoiceQuestionEvaluationWidget,
@@ -229,7 +277,14 @@ export default {
         }
     },
     created() {
+        this.reset()
         this.initialize(this.$route.params.BaseEvaluationPage)
+        this.loadSessions()
+    },
+    watch: {
+        currentTheme() {
+            this.widgetKey += 1
+        },
     },
     computed: {
         ...mapGetters({
@@ -238,7 +293,35 @@ export default {
             isAuthenticated: 'login/isAuthenticated',
             participants: 'evaluation/getParticipants',
             getPolls: 'evaluation/getPolls',
+            getDiagramOption: 'evaluation/getDiagramOption',
         }),
+        cumulated: {
+            get() {
+                return this.getDiagramOption(-1).cumulated
+            },
+            set(value) {
+                this.setDiagramOptions({
+                    questionId: -1,
+                    cumulated: value,
+                    relativ: this.relativ,
+                })
+            },
+        },
+        relativ: {
+            get() {
+                return this.getDiagramOption(-1).relativ
+            },
+            set(value) {
+                this.setDiagramOptions({
+                    questionId: -1,
+                    cumulated: this.cumulated,
+                    relativ: value,
+                })
+            },
+        },
+        currentTheme() {
+            return this.$vuetify.theme.dark
+        },
 
         // computes the number of pages
         numberOfPages() {
@@ -258,13 +341,19 @@ export default {
 
         items2() {
             const i2 = []
+            let c = -1
+            console.log(this.items)
             for (let i = 0; i < this.items.length; i++) {
-                // TODO: Title fixen
+                if (this.items[i].title === 'Teilnahmen über Zeit') {
+                    c = 0
+                }
+            }
+            for (let i = 0; i < this.items.length; i++) {
                 i2[i] = {
                     answerPossibilities: this.items[i].answerPossibilities,
                     data: this.items[i].data,
                     id: this.items[i].id,
-                    title: 'Frage ' + (i + 1) + ': ' + this.items[i].title,
+                    title: (c === i ? '' : 'Frage ' + (i - c) + ': ') + this.items[i].title,
                     calculated: this.items[i].calculated,
                     type: this.items[i].type,
                     questionID: i, // we need the index in the list
@@ -296,7 +385,15 @@ export default {
         },
     },
     methods: {
-        ...mapActions({ initialize: 'evaluation/initialize', updateData: 'evaluation/updateData' }),
+        ...mapMutations({
+            reset: 'evaluation/resetState',
+            setDiagramOptions: 'evaluation/setDiagramOptions',
+        }),
+        ...mapActions({
+            initialize: 'evaluation/initialize',
+            updateData: 'evaluation/updateData',
+            loadSessions: 'evaluation/loadSessions',
+        }),
 
         exportAnswers() {
             this.$store.dispatch('evaluation/exportAnswers', 1) // This should be PollId

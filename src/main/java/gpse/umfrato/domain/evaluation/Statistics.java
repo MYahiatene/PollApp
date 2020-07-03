@@ -20,6 +20,10 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicReferenceArray;
 import java.util.logging.Logger;
 
+/**
+ * this class represents the entire evaluation process from gathering data,
+ * filtering and processing it and converting it to JSON for transfer to the frontend.
+ */
 public class Statistics {
 
     private static final String NAME_STRING = "{\"name\":\"";
@@ -71,7 +75,7 @@ public class Statistics {
             Filter filter = null;
             switch (cmd.getFilterType()) {
                 case "questionAnswer":
-                    filter = new QuestionFilter(pollId, cmd.getTargetQuestionId(), cmd.getTargetAnswerPossibilities(), cmd.getInvertFilter(), false);
+                    filter = new QuestionFilter(pollId, cmd.getTargetQuestionId(), cmd.getTargetAnswerPossibilities(), cmd.getInvertFilter(),cmd.getIsSlider(),  false);
                     break;
                 case "consistency":
                     filter = new ConsistencyFilter(consistencyQuestionService.getAllConsistencyQuestions(pollId), cmd.getMinSuccesses());

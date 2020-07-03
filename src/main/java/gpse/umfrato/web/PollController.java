@@ -7,6 +7,8 @@ import gpse.umfrato.domain.cmd.PollCmd;
 import gpse.umfrato.domain.participationlinks.ParticipationLinkService;
 import gpse.umfrato.domain.poll.Poll;
 import gpse.umfrato.domain.poll.PollService;
+import gpse.umfrato.domain.poll.SmallPoll;
+import gpse.umfrato.domain.pollresult.PollResultService;
 import gpse.umfrato.domain.question.Question;
 import gpse.umfrato.domain.question.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +17,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.MalformedURLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -26,6 +29,7 @@ import java.util.logging.Logger;
 @CrossOrigin
 public class PollController {
     private final PollService pollService;
+    private final PollResultService pollResultService;
     private final ParticipationLinkService participationLinkService;
     private final ConsistencyQuestionService consistencyQuestionService;
     private final QuestionService questionService;
@@ -37,9 +41,11 @@ public class PollController {
      * @param participationLinkService the participationLink service to work with.
      */
     @Autowired
-    public PollController(final PollService pollService, final ParticipationLinkService participationLinkService,
+    public PollController(final PollService pollService, final PollResultService pollResultService,
+                          final ParticipationLinkService participationLinkService,
                           final ConsistencyQuestionService consistencyQuestionService, QuestionService questionService) {
         this.pollService = pollService;
+        this.pollResultService = pollResultService;
         this.participationLinkService = participationLinkService;
         this.consistencyQuestionService = consistencyQuestionService;
         this.questionService = questionService;
@@ -65,11 +71,26 @@ public class PollController {
     }
 
     /**
+     * This method returns a list with information about every poll.
+     *
+     * @return a list with information about every poll.
+     */
+    @GetMapping("/poll")
+    public List<SmallPoll> getSmallPolls() {
+        List<SmallPoll> polls = new ArrayList<>();
+        for(Poll p: pollService.getAllPolls())
+        {
+            polls.add(new SmallPoll(p,pollResultService,participationLinkService));
+        }
+        return polls;
+    }
+
+    /**
      * This method returns a list with all polls.
      *
      * @return a list with all polls.
      */
-    @GetMapping("/poll")
+    @GetMapping("/bigPoll")
     public List<Poll> getPolls() {
         return pollService.getAllPolls();
     }
@@ -119,9 +140,14 @@ public class PollController {
     }
 
     @GetMapping("relevantpolls")
-    public List<Poll> getNewestPolls()
+    public List<SmallPoll> getNewestPolls()
     {
-        return pollService.getLastEditedPolls();
+        List<SmallPoll> relevantPolls = new ArrayList<>();
+        for(Poll p: pollService.getLastEditedPolls())
+        {
+            relevantPolls.add(new SmallPoll(p,pollResultService,participationLinkService));
+        }
+        return relevantPolls;
     }
 
     /**

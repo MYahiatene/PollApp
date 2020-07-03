@@ -98,57 +98,49 @@ export default {
     },
     methods: {
         async getPolls() {
-            let pollData = []
-            await this.$axios
-                .get('/relevantpolls')
-                .then((response) => {
-                    console.log(response)
-                    pollData = response.data
-                })
-                .catch((reason) => {
-                    console.log(reason)
-                })
-            const data = []
-            for (let i = 0; i < pollData.length; i++) {
-                if (pollData[i].pollStatus === 0) {
-                    const categories = pollData[i].categoryList
-                    let questionCount = 0
-                    for (let j = 0; j < categories.length; j++) {
-                        const count = questionCount
-                        questionCount = count + categories[j].questionList.length
+            if (this.isAuthenticated) {
+                let pollData = []
+                await this.$axios
+                    .get('/relevantpolls')
+                    .then((response) => {
+                        console.log(response)
+                        pollData = response.data
+                    })
+                    .catch((reason) => {
+                        console.log(reason)
+                    })
+                const data = []
+                for (let i = 0; i < pollData.length; i++) {
+                    if (pollData[i].pollStatus === 0) {
+                        data.push({
+                            title: pollData[i].pollName,
+                            id: pollData[i].pollId,
+                            subtitle: pollData[i].computedSubtitle,
+                            iconAction: 'mdi-pencil',
+                            actionLink: '/polls/' + pollData[i].pollId,
+                        })
+                    } else if (pollData[i].pollStatus === 1) {
+                        data.push({
+                            title: pollData[i].pollName,
+                            id: pollData[i].pollId,
+                            subtitle: pollData[i].computedSubtitle,
+                            iconAction: 'mdi-magnify',
+                            actionLink: '/eval/' + pollData[i].pollId,
+                        })
+                    } else if (pollData[i].pollStatus === 2) {
+                        data.push({
+                            title: pollData[i].pollName,
+                            id: pollData[i].pollId,
+                            subtitle: pollData[i].computedSubtitle,
+                            iconAction: 'mdi-magnify',
+                            actionLink: '/eval/' + pollData[i].pollId,
+                        })
                     }
-                    data.push({
-                        title: pollData[i].pollName,
-                        id: pollData[i].pollId,
-                        subtitle:
-                            'Fragen: ' +
-                            questionCount +
-                            ', Zuletzt bearbeitet: ' +
-                            pollData[i].lastEditAt +
-                            ' von ' +
-                            pollData[i].lastEditedFrom,
-                        iconAction: 'mdi-pencil',
-                        actionLink: '/polls/' + pollData[i].pollId,
-                    })
-                } else if (pollData[i].pollStatus === 1) {
-                    data.push({
-                        title: pollData[i].pollName,
-                        id: pollData[i].pollId,
-                        subtitle: 'Aktiv seit: ' + pollData[i].activatedDate,
-                        iconAction: 'mdi-magnify',
-                        actionLink: '/eval/' + pollData[i].pollId,
-                    })
-                } else if (pollData[i].pollStatus === 2) {
-                    data.push({
-                        title: pollData[i].pollName,
-                        id: pollData[i].pollId,
-                        subtitle: 'Beendet seit: ' + pollData[i].deactivatedDate,
-                        iconAction: 'mdi-magnify',
-                        actionLink: '/eval/' + pollData[i].pollId,
-                    })
                 }
+                this.polls = data
+            } else {
+                this.polls = []
             }
-            this.polls = data
         },
     },
 }

@@ -9,9 +9,12 @@ it passes the attributes:
 -->
     <v-container class="ma-3">
         <v-row>
-            <p>
+            <p v-if="!changeDefault">
                 Hier können die Design-Einstellungen für eine Auswahlfrage verändert werden.
             </p>
+            <h3 v-else>
+                Hier können die Design-Einstellungen für Auswahlfragen generell gesetzt werden.
+            </h3>
         </v-row>
         <!--switch for "ShowDiagram"-->
         <v-row no-gutters>
@@ -86,13 +89,20 @@ it passes the attributes:
                             v-if="index === currentChipIndex"
                             class="ma-1"
                             :color="color"
+                            style="min-width: 2cm; text-align-all: center;"
                             @click="updateCurrentChip(index)"
                             large
                         >
-                            Farbe {{ index + 1 }}</v-chip
+                            {{ answerTitles[index] }}</v-chip
                         >
-                        <v-chip v-else class="ma-1" :color="color" @click="updateCurrentChip(index)">
-                            Farbe {{ index + 1 }}</v-chip
+                        <v-chip
+                            v-else
+                            class="ma-1"
+                            :color="color"
+                            style="min-width: 2cm; text-align: center;"
+                            @click="updateCurrentChip(index)"
+                        >
+                            {{ answerTitles[index] }}</v-chip
                         >
                     </div>
                 </draggable>
@@ -131,6 +141,9 @@ it passes the attributes:
         <v-row v-if="changeDefault" no-gutters>
             <v-switch v-model="useOnAll" label="Auf alle Diagramme anwenden"> </v-switch>
         </v-row>
+        <p v-if="changeDefault && useOnAll">
+            Momentan werden nur die Diagramme verändert, die bisher noch nicht bearbeitet wurden.
+        </p>
         <!-- Button that will send the picked data to the parent component -->
         <v-row no-gutters>
             <v-btn color="success" @click="saveDiagramFormat">
@@ -151,11 +164,11 @@ export default {
     },
     // these props can be passed by the parent component
     props: {
-        // is this a settings window for one particular question or all questions?
         questionId: {
             type: Number,
             default: -1,
         },
+        // is this a settings window for one particular question or all questions?
         changeDefault: {
             type: Boolean,
             default: false,
@@ -205,14 +218,13 @@ export default {
             showDiagram: false,
         }
     },
-
     methods: {
         ...mapMutations({
             setDiagramFormat: 'evaluation/setDiagramFormat',
             setDiagramFormats: 'evaluation/setDiagramFormats',
         }),
 
-        saveDiagramFormat() {
+        async saveDiagramFormat() {
             const format = {
                 questionId: this.questionId,
                 showDiagram: this.showDiagram,
@@ -225,8 +237,11 @@ export default {
             if (this.changeDefault) {
                 this.setDiagramFormats({ useOnAll: this.useOnAll, format })
             } else {
-                this.setDiagramFormat(format)
+                console.log('pushFormat')
+                await this.setDiagramFormat(format)
+                console.log('pushedFormat')
             }
+            console.log('done')
             this.$emit('done')
         },
 
@@ -293,6 +308,8 @@ export default {
     computed: {
         ...mapGetters({
             getFormat: 'evaluation/getDiagramFormat',
+            polls: 'evaluation/getPolls',
+            diagramData: 'evaluation/getDiagramData',
         }),
         initialDiagramType() {
             return this.getFormat(this.questionId).diagramType
@@ -317,6 +334,65 @@ export default {
             return (
                 'border-color:' + this.$vuetify.theme.currentTheme.info + '; border-style: solid; border-width: thick;'
             )
+        },
+        answerTitles() {
+            console.log(this.polls)
+            console.log(this.questionId)
+            const a = []
+            /* for (let i = 0; i < this.polls.length; i++) {
+                console.log(i)
+                for (let j = 0; j < this.polls[i].categoryList.length; j++) {
+                    console.log(j)
+                    for (let k = 0; k < this.polls[i].categoryList[j].questionList.length; k++) {
+                        console.log(k)
+                        if (this.polls[i].categoryList[j].questionList[k].questionId === this.questionId) {
+                            console.log('if')
+                            for (
+                                let l = 0;
+                                l < this.polls[i].categoryList[j].questionList[k].answerPossibilities.length;
+                                l++
+                            ) {
+                                if (this.polls[i].categoryList[j].questionList[k].answerPossibilities[l].length < 5) {
+                                    a.push(
+                                        '  ' +
+                                            this.polls[i].categoryList[j].questionList[k].answerPossibilities[l] +
+                                            '  '
+                                    )
+                                } else if (
+                                    this.polls[i].categoryList[j].questionList[k].answerPossibilities[l].length > 30
+                                ) {
+                                    a.push(
+                                        this.polls[i].categoryList[j].questionList[k].answerPossibilities[l].substr(
+                                            0,
+                                            27
+                                        ) + '...'
+                                    )
+                                } else {
+                                    a.push(this.polls[i].categoryList[j].questionList[k].answerPossibilities[l])
+                                }
+                            }
+                        }
+                    }
+                }
+            } */
+            console.log(this.diagramData)
+            console.log(this.questionId)
+            for (let i = 0; i < this.diagramData.length; i++) {
+                console.log(i)
+                if (this.diagramData[i].id === this.questionId) {
+                    for (let j = 0; j < this.diagramData[i].answerPossibilities.length; j++) {
+                        if (this.diagramData[i].answerPossibilities[j].length < 5) {
+                            a.push('  ' + this.diagramData[i].answerPossibilities[j] + '  ')
+                        } else if (this.diagramData[i].answerPossibilities[j].length > 30) {
+                            a.push(this.diagramData[i].answerPossibilities[j].substr(0, 27) + '...')
+                        } else {
+                            a.push(this.diagramData[i].answerPossibilities[j])
+                        }
+                    }
+                }
+            }
+            console.log(a)
+            return a
         },
     },
 }
