@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.logging.Logger;
 
 /**
  * This class represents the entire evaluation data needed to display the filtered data in the frontend .
@@ -29,6 +30,7 @@ public class DiagramData {
 
     public static final String DIVIDER_STRING = " / ";
     private static final String HYPHEN = " - ";
+    private static final Logger LOGGER = Logger.getLogger("DiagramData");
 
     private final List<QuestionData> questionList = new ArrayList<>();
     @JsonIgnore
@@ -221,7 +223,7 @@ public class DiagramData {
         public void statistics() {
 
             if (answerPossibilities.size() != data.get(0).size()) {
-                System.out.println("Fehlerhafte Daten");
+                LOGGER.info("Fehlerhafte Daten");
 
             }
             // initializing a array that has size nxn with n = number of items
@@ -280,7 +282,7 @@ public class DiagramData {
                         if (lowestMeanPositionValue >= arrayOfValues.get(i).meanPositionValue) {
                             if (lowestMeanPositionValue == arrayOfValues.get(i).meanPositionValue) {
                                 if (firstItem != i) {
-                                    System.out.println("item " + i + "is duplicate to " + firstItem);
+                                    LOGGER.info("item " + i + "is duplicate to " + firstItem);
                                     arrayOfValues.get(i).twin = firstItem;
                                 }
                             }
