@@ -42,7 +42,6 @@ public class FilterServiceImpl implements FilterService {
     private void cmdsToFilters(List<FilterCmd> filterCmds, List<FilterData> filter) {
         for(FilterCmd cmd: filterCmds)
         {
-            System.out.println(cmd);
             FilterData fd = new FilterData();
             fd.setFilterType(cmd.getFilterType());
             fd.setInvertFilter(cmd.getInvertFilter());

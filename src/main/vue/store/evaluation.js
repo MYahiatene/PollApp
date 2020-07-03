@@ -17,6 +17,12 @@ const generateDefaultState = () => {
             showDiagram: true,
             showTable: true,
         },
+        DiagramOptions: [],
+        defaultDiagramOptions: {
+            questionId: -1,
+            cumulated: false,
+            relative: false,
+        },
         Sessions: [],
     }
 }
@@ -68,6 +74,20 @@ export const getters = {
     },
     getSessions(state) {
         return state.Sessions
+    },
+    getDiagramOption(state) {
+        console.log('getDiagramOptions()')
+        return (id) => {
+            console.log('suche diagramoption ' + id)
+            for (let i = 0; i < state.DiagramOptions.length; i++) {
+                if (state.DiagramOptions[i].questionId === id) {
+                    console.log('custom ' + i)
+                    console.log(state.DiagramOptions[i])
+                    return JSON.parse(JSON.stringify(state.DiagramOptions[i]))
+                }
+            }
+            return JSON.parse(JSON.stringify(state.defaultDiagramOptions))
+        }
     },
     getDiagramFormat(state) {
         return (id) => {
@@ -143,8 +163,38 @@ export const mutations = {
                 return
             }
         }
-        // console.log('saved default')
+        console.log('saved default')
         state.DiagramFormat.push(format)
+    },
+    setDiagramOptionsFromServer(state, optionList) {
+        console.log('reset')
+        console.log(optionList)
+        state.DiagramOptions = []
+        state.defaultDiagramOptions = stringToFormat(optionList[0])
+        if (optionList.length > 1) {
+            state.DiagramOptions.push(stringToFormat(optionList.slice(1)))
+        }
+    },
+    setDiagramOptions(state, payload) {
+        console.log('setDiagramOptiosn()')
+        console.log(payload)
+        if (payload.useOnAll) {
+            state.DiagramOptions = []
+        }
+        state.defaultDiagramOptions = payload.option
+    },
+    setDiagramOption(state, option) {
+        console.log('setDiagramOption()')
+        console.log(option)
+        for (let i = 0; i < state.DiagramOptions.length; i++) {
+            if (state.DiagramOptions[i].questionId === option.questionId) {
+                Vue.set(state.DiagramOptions, i, option)
+                console.log('saved custom')
+                return
+            }
+        }
+        console.log('saved default')
+        state.DiagramOptions.push(option)
     },
     setPollID(state, id) {
         state.pollId = id
@@ -202,12 +252,18 @@ export const actions = {
         for (let i = 0; i < state.DiagramFormat.length; i++) {
             formats.push(formatToString(state.DiagramFormat[i]))
         }
+        const options = []
+        options.push(JSON.stringify(state.defaultDiagramOptions))
+        for (let i = 0; i < state.DiagramOptions.length; i++) {
+            options.push(JSON.stringify(state.DiagramOptions[i]))
+        }
         const payload = {
             pollId: state.pollId,
             sessionId: sessionInfo.sessionId,
             sessionTitle: sessionInfo.sessionTitle,
             lastUsername: sessionInfo.lastUsername,
             diagramFormat: formats,
+            diagramOptions: options,
             filterList: state.FilterList,
         }
         await this.$axios
@@ -240,6 +296,7 @@ export const actions = {
                 commit('setCurrentSession', sessionId)
                 commit('saveFilter', response.data.filterList)
                 commit('setDiagramFormatsFromServer', response.data.diagramFormat)
+                commit('setDiagramOptionsFromServer', response.data.diagramOptions)
             })
             .catch((reason) => {
                 console.log(reason)
