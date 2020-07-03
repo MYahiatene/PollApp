@@ -64,12 +64,20 @@
             <v-row v-if="showDiagram">
                 <v-col cols="12" lg="12">
                     <!--                    we check in diagramType which one the user wants-->
-                    <div v-if="diagramType === 'bar'" :key="diagramKey">
-                        <BarChartView :chartdata="chartdataSet" :options="barChartOptions"></BarChartView>
+                    <div v-if="diagramType === 'bar'">
+                        <BarChartView
+                            :chartdata="chartdataSet"
+                            :options="barChartOptions"
+                            :key="diagramKey"
+                        ></BarChartView>
                     </div>
                     <!--                     the height is set to 60% of the screen-->
-                    <div v-else-if="diagramType === 'pie'" :key="diagramKey" style="height: 60vh;">
-                        <PieChartView :chartdata="chartdataSet" :options="pieChartOptions"></PieChartView>
+                    <div v-else-if="diagramType === 'pie'" style="height: 60vh;">
+                        <PieChartView
+                            :chartdata="chartdataSet"
+                            :options="pieChartOptions"
+                            :key="diagramKey"
+                        ></PieChartView>
                     </div>
                 </v-col>
             </v-row>
@@ -123,7 +131,7 @@ export default {
     data: () => ({
         // key that forces the diagram to update
         // (value is set on the color of the diagram and update whenever updateVisuals is called)
-        diagramKey: '',
+        diagramKey: 0,
         // these options are needed to display a visual diagram, they are passed as props into that component
 
         // bar charts dont have a legend
@@ -166,7 +174,8 @@ export default {
         ...mapGetters({
             getFormat: 'evaluation/getDiagramFormat',
         }),
-        data() {
+        chartData() {
+            console.log('chartData()')
             let baseData = []
             if (this.relativ) {
                 for (let i = 0; i < this.calculated.relative.length; i++) {
@@ -185,13 +194,21 @@ export default {
             return data
         },
         diagramType() {
-            return this.getFormat(this.questionId).diagramType
+            const dt = this.getFormat(this.questionId).diagramType
+            console.log(dt)
+            return dt
         },
         backgroundColors() {
-            return this.getFormat(this.questionId).backgroundColors
+            console.log('backgroundColor()')
+            const bcs = this.getFormat(this.questionId).backgroundColors
+            console.log(bcs)
+            return bcs
         },
         backgroundColor() {
-            return this.getFormat(this.questionId).backgroundColor
+            console.log('backgroundColor()')
+            const bc = this.getFormat(this.questionId).backgroundColor
+            console.log(bc)
+            return bc
         },
         multipleColors() {
             return this.getFormat(this.questionId).multipleColors
@@ -213,13 +230,14 @@ export default {
         // here we compute the data for the visual diagram, writing it into a format the components can process.
         // We either give one color or an array of colors
         chartdataSet() {
+            console.log('chartdataSet()')
             const data = {
                 labels: this.answerPossibilities,
                 datasets: [
                     {
                         label: this.questionTitle,
                         backgroundColor: this.multipleColors ? this.choppedBackgroundColors : this.backgroundColor,
-                        data: this.data,
+                        data: this.chartData,
                     },
                 ],
             }
@@ -232,6 +250,7 @@ export default {
        */
 
         choppedBackgroundColors() {
+            console.log('choppedBackgroundColors()')
             const c = []
             for (let i = 0; i < this.answerPossibilities.length; i++) {
                 c[i] = this.backgroundColors[i % this.backgroundColors.length]

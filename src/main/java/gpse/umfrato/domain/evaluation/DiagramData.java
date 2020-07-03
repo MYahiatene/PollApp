@@ -20,6 +20,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * This class represents the entire evaluation data needed to display the filtered data in the frontend .
+ * It consists of a list of QuestionData each representing one question or diagram and the data needed to display it
+ */
 public class DiagramData {
 
     public static final String DIVIDER_STRING = " / ";
@@ -51,7 +55,9 @@ public class DiagramData {
         String toJSON();
     }
 
-    @Getter @Setter protected static class ChoiceData implements QuestionData {
+    @Getter
+    @Setter
+    protected static class ChoiceData implements QuestionData {
         private long id;
         private String title;
         private String type;

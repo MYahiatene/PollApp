@@ -1,3 +1,5 @@
+import Vue from 'vue'
+
 export const state = () => ({
     DiagramData: {},
     Polls: [],
@@ -86,7 +88,7 @@ export const getters = {
                 }
             }
             console.log('super-gau')
-            return state.defaultDiagramFormat
+            return JSON.parse(JSON.stringify(state.defaultDiagramFormat))
         }
     },
 }
@@ -129,7 +131,7 @@ export const mutations = {
         console.log(format)
         for (let i = 0; i < state.DiagramFormat.length; i++) {
             if (state.DiagramFormat[i].questionId === format.questionId) {
-                state.DiagramFormat[i] = format
+                Vue.set(state.DiagramFormat, i, format)
                 console.log('saved custom')
                 return
             }
