@@ -101,15 +101,17 @@ public class PollController {
      */
     @PostMapping(value = "/createcopypoll", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasAuthority('Admin')")
-    public String createCopyPoll(final @RequestBody PollCmd pollCmd) {
+    public Long createCopyPoll(final @RequestBody PollCmd pollCmd) {
         try {
             LOGGER.info("pollCmd: " + pollCmd);
             final Poll poll = pollService.createCopyPoll(pollCmd.getCmdPoll());
-            // TODO: participationLinkService.createParticipationLink(poll.getPollId(), "allUsers");
-            LOGGER.info(poll.toString());
-            return poll.getPollId().toString();
-        } catch (BadRequestException e) { // | MalformedURLException e) {
-            return null;
+            if (poll.getAnonymityStatus().equals("1")) {
+                final String link = participationLinkService.createParticipationLink().toString();
+                participationLinkService.saveParticipationLink(poll.getPollId(), "allUsers", link);
+            }
+            return poll.getPollId();
+        } catch (BadRequestException | MalformedURLException e) {
+            return -1L;
         }
     }
 
@@ -214,6 +216,7 @@ public class PollController {
         return consistencyQuestionService.getAllConsistencyQuestions(question1Id,question2Id);
     }
 
+    @SuppressWarnings("checkstyle:LeftCurly")
     @PostMapping("/poll/editcq/{cqId:\\d+}")
     public void editConsistencyQuestion(final @PathVariable long cqId, final @RequestBody ConsistencyQuestionCmd consistencyQuestionCmd)
     {

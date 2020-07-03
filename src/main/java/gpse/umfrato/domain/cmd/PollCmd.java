@@ -66,20 +66,6 @@ public class PollCmd {
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        /* activationDate.set(Integer.parseInt(activatedAt.substring(activatedAt.indexOf('.',3)+1,
-            activatedAt.indexOf('&'))) + 1900, Integer.parseInt(activatedAt.substring(activatedAt.indexOf('.') + 1,
-            activatedAt.indexOf('.', 3))),
-            Integer.parseInt(activatedAt.substring(0, activatedAt.indexOf('.'))),
-            Integer.parseInt(activatedAt.substring(activatedAt.indexOf('&')+1, activatedAt.indexOf(':'))),
-            Integer.parseInt(activatedAt.substring(activatedAt.indexOf(':') + 1)));
-        Calendar deactivationDate = Calendar.getInstance();
-        deactivationDate.set(Integer.parseInt(deactivatedAt.substring(deactivatedAt.indexOf('.',3)+1,
-            deactivatedAt.indexOf('&'))) + 1900, Integer.parseInt(deactivatedAt.substring(deactivatedAt.indexOf('.') + 1,
-            deactivatedAt.indexOf('.', 3))),
-            Integer.parseInt(deactivatedAt.substring(0, deactivatedAt.indexOf('.'))),
-            Integer.parseInt(deactivatedAt.substring(deactivatedAt.indexOf('&')+1, deactivatedAt.indexOf(':'))),
-            Integer.parseInt(deactivatedAt.substring(deactivatedAt.indexOf(':') + 1)));
-        LOGGER.info("activationDate: " + activationDate); */
         final Poll poll = new Poll(pollCreator, anonymityStatus, pollName, pollCreatedAt, activationDate,
             deactivationDate, pollStatus, backgroundColor, fontColor, logo, visibility, categoryChange, activated,
             deactivated);

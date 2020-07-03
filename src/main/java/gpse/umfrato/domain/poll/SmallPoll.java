@@ -28,9 +28,9 @@ public class SmallPoll {
 
     private String lastEditFrom;
 
-    private Calendar activatedDate;
+    private String activatedDate;
 
-    private Calendar deactivatedDate;
+    private String deactivatedDate;
 
     private String anonymityStatus;
 
@@ -53,14 +53,15 @@ public class SmallPoll {
     @SuppressWarnings({"checkstyle:LeftCurly", "checkstyle:RightCurly"})
     public SmallPoll(Poll original, PollResultService pollResultService, ParticipationLinkService participationLinkService)
     {
+        SimpleDateFormat df = new SimpleDateFormat("dd.MM.yyyy HH:mm");
         this.pollId = original.getPollId();
         this.pollName = original.getPollName();
         this.pollCreator = original.getPollCreator();
         this.creationDate = original.getCreationDate();
         this.lastEditAt = original.getLastEditAt();
         this.lastEditFrom = original.getLastEditFrom();
-        this.activatedDate = original.getActivatedDate();
-        this.deactivatedDate = original.getDeactivatedDate();
+        this.activatedDate = df.format(original.getActivatedDate().getTime());
+        this.deactivatedDate = df.format(original.getDeactivatedDate().getTime());
         this.anonymityStatus = original.getAnonymityStatus();
         this.pollStatus = original.getPollStatus();
         this.participationLinks = participationLinkService.getAllParticipationLinks(pollId);
@@ -80,7 +81,6 @@ public class SmallPoll {
             this.expectedParticipantCount = participationLinkService.getAllParticipationLinks(pollId).size();
         }
         StringBuilder sb = new StringBuilder();
-        SimpleDateFormat df = new SimpleDateFormat("dd.MM.yyyy HH:mm");
         if(pollStatus == 0) {
             sb.append(questionCount);
             if (questionCount == 1) {
@@ -98,7 +98,7 @@ public class SmallPoll {
         }
         else if(pollStatus == 1)
         {
-            sb.append("Umfrage aktiv seit ").append(df.format(activatedDate.getTime()))
+            sb.append("Umfrage aktiv seit ").append(activatedDate)
                     .append(". Bisherige Teilnehmer: ").append(participantCount);
             if(!anonymityStatus.equals("1"))
             {
@@ -106,11 +106,11 @@ public class SmallPoll {
                         .append(participantCount.doubleValue() / expectedParticipantCount.doubleValue() * 100.0)
                         .append("%)");
             }
-            sb.append(" Wird zum ").append(df.format(deactivatedDate.getTime())).append(" deaktiviert.");
+            sb.append(" Wird zum ").append(deactivatedDate).append(" deaktiviert.");
         }
         else if(pollStatus == 2)
         {
-            sb.append("Umfrage deaktiviert seit ").append(df.format(deactivatedDate.getTime()))
+            sb.append("Umfrage deaktiviert seit ").append(deactivatedDate)
                     .append(". Teilnehmer: ").append(participantCount);
             if(!anonymityStatus.equals("1"))
             {

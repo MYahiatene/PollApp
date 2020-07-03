@@ -19,6 +19,7 @@ import java.util.logging.Logger;
 @Service
 public class QuestionServiceImpl implements QuestionService {
 
+    /* default */ static final Logger LOGGER = Logger.getLogger("QuestionServiceImpl");
     private static final double FIVE = 5.0;
     private static final double ZERO_DOT_ONE = 0.1;
     private static final double ZERO = 0.0;
@@ -242,9 +243,9 @@ public class QuestionServiceImpl implements QuestionService {
         final Category newCategory = categoryRepository.getOne(newCategoryId);
         oldCategory.getQuestionList().remove(question);
         question.setCategoryId(newCategoryId);
-        newCategory.getQuestionList().add(newIndex.intValue(), question);
+        newCategory.getQuestionList().add(question);
         categoryRepository.save(oldCategory);
-        categoryRepository.save(newCategory);
+            categoryRepository.save(newCategory);
         return question;
     }
 
@@ -258,6 +259,8 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     public Question addChoiceQuestion (final Question question, final Long pollId) {
+        LOGGER.info("start addChoiceQuestion");
+        LOGGER.info("question: " + question);
         Question newQuestion = null;
         newQuestion = new Question(question.getQuestionMessage(), new ArrayList<>(),
             question.getNumberOfPossibleAnswers(), question.isUserAnswers());
@@ -301,7 +304,7 @@ public class QuestionServiceImpl implements QuestionService {
             cmd.setQuestionType(question.getQuestionType());
             cmd.setUserAnswers(question.isUserAnswers());
             cmd.setNumberOfPossibleAnswers(question.getNumberOfPossibleAnswers());
-            if (question.getQuestionType().equals(CHOICE_QUESTION)) {
+            if (question.getQuestionType().equals(CHOICE_QUESTION) || question.getQuestionType().equals(SORT_QUESTION)) {
                 newQuestion = addChoiceQuestion(question, pollId);
             } else {
                 newQuestion = addQuestion(cmd);

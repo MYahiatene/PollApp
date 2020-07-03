@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.ListIterator;
+import java.util.logging.Logger;
 
 /**
  * The category controller used to process category specific requests.
@@ -19,6 +20,7 @@ import java.util.ListIterator;
 @CrossOrigin
 public class CategoryController {
 
+    /* default */ static final Logger LOGGER = Logger.getLogger("CategoryController");
     private final CategoryService categoryService;
     private final QuestionService questionService;
 
@@ -83,6 +85,7 @@ public class CategoryController {
     @PreAuthorize("hasAuthority('Admin')")
     public String copyCategories(final @PathVariable Long oldPollId, final @PathVariable long newPollId) {
         try {
+            LOGGER.info("start copy categories, old pollId:" + oldPollId + " newPollId: " + newPollId);
             final List<Category> categories = categoryService.getAllCategories(Long.valueOf(oldPollId));
             final ListIterator<Category> iterator = categories.listIterator();
             while(iterator.hasNext()) {

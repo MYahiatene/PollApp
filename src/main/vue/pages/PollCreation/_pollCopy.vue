@@ -269,13 +269,16 @@ export default {
             }
             console.log('obj: ', obj)
             if (this.pollId !== '0') {
+                console.log('klappt')
                 await this.$axios
                     .post('/createcopypoll', obj)
                     .catch()
                     .then((result) => {
                         this.newPollId = result.data
                     })
-                this.$axios.post('/copycategories/' + this.poll.pollId + '/' + this.newPollId.data).catch()
+                console.log('klappt noch')
+                await this.$axios.post('/copycategories/' + this.poll.pollId + '/' + this.newPollId).catch()
+                console.log('klappt nicht mehr')
             } else {
                 await this.$axios
                     .post('/createpoll', obj)

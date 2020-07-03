@@ -2,6 +2,7 @@ package gpse.umfrato.domain.poll;
 
 import gpse.umfrato.domain.category.CategoryRepository;
 import gpse.umfrato.domain.category.CategoryService;
+import lombok.extern.java.Log;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -137,25 +139,24 @@ class PollServiceImpl implements PollService {
 
     @Override
     public String parseDate(final Calendar date) {
-        final String day =  String.valueOf(date.get(Calendar.DATE));
-        final String month =  String.valueOf(date.get(Calendar.MONTH));
-        final String year =  String.valueOf(date.get(Calendar.YEAR)-1900);
-        final String hour =  String.valueOf(date.get(Calendar.HOUR_OF_DAY));
-        final String minute =  String.valueOf(date.get(Calendar.MINUTE));
-        LOGGER.info(day + "." + month + "." + year + "&" + hour + ":" + minute);
-        return day + "." + month + "." + year + "&" + hour + ":" + minute;
+        SimpleDateFormat df = new SimpleDateFormat("dd.MM.yyyy&HH:mm");
+        final String res = df.format(date.getTime());
+        LOGGER.info("reformated Calendar: " + res);
+        return res;
     }
 
     @Override
     public Poll checkActivationAndDeactivation(final Poll poll) {
-        LOGGER.info("begin check with poll: " + poll);
+        LOGGER.info("begin check");
         Calendar now = Calendar.getInstance();
-        now.set(Calendar.MONTH, now.get(Calendar.MONTH)+1);
-        LOGGER.info(now.toString());
+        // now.set(Calendar.MONTH, now.get(Calendar.MONTH)+1);
+        LOGGER.info("now: " + now.toString());
+        LOGGER.info("poll: " + poll.getActivatedDate());
+        LOGGER.info("Vergleich: " + poll.getActivatedDate().before(now));
         if(poll.isActivated() && poll.getPollStatus() == 0) {
             LOGGER.info("isActivated");
             LOGGER.info(poll.getActivatedDate().toString());
-            if (poll.getActivatedDate().equals(now) || poll.getActivatedDate().before(now)) {
+            if (poll.getActivatedDate().before(now)) {
                 LOGGER.info("activate");
                 final int pollStatus = activatePoll(poll.getPollId());
                 LOGGER.info("pollStatus: " + pollStatus);
@@ -163,7 +164,7 @@ class PollServiceImpl implements PollService {
         }
         if(poll.isDeactivated() && poll.getPollStatus() == 1) {
             LOGGER.info("isDeactivated");
-            if (poll.getDeactivatedDate().equals(now) || poll.getDeactivatedDate().before(now)) {
+            if (poll.getDeactivatedDate().before(now)) {
                 LOGGER.info("deactivate");
                 final int pollStatus = activatePoll(poll.getPollId());
                 LOGGER.info("pollStatus: " + pollStatus);
