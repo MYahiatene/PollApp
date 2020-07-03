@@ -84,7 +84,7 @@ public class UserController {
             LOGGER.info("username" + participatedUserCmd.getUsername() + "pollId" + participatedUserCmd.getPollId());
             userService.addParticipatedPoll(participatedUserCmd.getUsername(), participatedUserCmd.getPollId());
         } catch (BadRequestException e) {
-
+            LOGGER.info("Bad Request Exception");
         }
     }
 
