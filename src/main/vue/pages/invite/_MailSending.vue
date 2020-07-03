@@ -148,13 +148,6 @@ export default {
                 })
         },
         submitFile() {
-            // const reader = new FileReader()
-            this.$axios.defaults.baseURL = 'http://127.0.0.1:8088/api'
-            this.$axios.defaults.headers.common = {
-                Authorization:
-                    'Bearer ' +
-                    'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InRiZXR0bWFubiIsImV4cCI6MTU5NDMwMzI5MCwicm9sIjpbIkFkbWluIl19._83mp73eHuu5JP8gtDIC3Jho5V7_pA-R-2pLOuRKfLe_NPtO5VtPjn3jBtBCfqJI_aaRjquFgeA5s7Y8JRAxvQ',
-            }
             const papa = require('papaparse')
 
             papa.parse(this.file, {
@@ -170,12 +163,6 @@ export default {
             })
         },
         sendEmail() {
-            this.$axios.defaults.baseURL = 'http://127.0.0.1:8088/api'
-            this.$axios.defaults.headers.common = {
-                Authorization:
-                    'Bearer ' +
-                    'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InRiZXR0bWFubiIsImV4cCI6MTU5NDMwMzI5MCwicm9sIjpbIkFkbWluIl19._83mp73eHuu5JP8gtDIC3Jho5V7_pA-R-2pLOuRKfLe_NPtO5VtPjn3jBtBCfqJI_aaRjquFgeA5s7Y8JRAxvQ',
-            }
             console.log('Email Sending test')
             console.log(this.items)
             const obj = {
