@@ -1,6 +1,6 @@
 <template>
     <div>
-        <v-switch v-model="inverted" label="Invertieren"> </v-switch>
+        <v-switch v-model="inverted" label="Invertieren" @change="update()"> </v-switch>
         <v-row>
             <v-col>
                 <v-date-picker

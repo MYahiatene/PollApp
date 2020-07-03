@@ -34,6 +34,8 @@ public class FilterData {
     @ElementCollection
     private List<String> targetAnswerPossibilities;
 
+    private Boolean isSlider;
+
     //UserFilter
     @ElementCollection
     private List<String> userNames;

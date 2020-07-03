@@ -18,5 +18,7 @@ public class SessionCmd {
 
     private List<String> diagramFormat;
 
+    private List<String> diagramOptions;
+
     private String lastUsername;
 }

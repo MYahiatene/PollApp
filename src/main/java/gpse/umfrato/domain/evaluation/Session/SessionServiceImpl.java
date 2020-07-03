@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -33,11 +34,7 @@ public class SessionServiceImpl implements SessionService {
     @Override
     public void deleteSession(long sessionId) {
         Session s = sessionRepository.findById(sessionId).orElseThrow(EntityNotFoundException ::new);
-        for(FilterData fd:s.getFilterList())
-        {
-            filterService.deleteFilterData(fd.getFilterId());
-        }
-        sessionRepository.deleteById(sessionId);
+        sessionRepository.deleteById(s.getSessionId());
     }
 
     @Override
@@ -63,6 +60,7 @@ public class SessionServiceImpl implements SessionService {
         session.setSessionTitle(sessionCmd.getSessionTitle());
         session.setFilterList(filterList);
         session.setDiagramFormat(sessionCmd.getDiagramFormat());
+        session.setDiagramOptions(sessionCmd.getDiagramOptions());
         session.setLastUsername(sessionCmd.getLastUsername());
         session.setLastEdited(new Date());
     }

@@ -12,7 +12,6 @@ public class FilterCmd {
     private Boolean invertFilter;
 
     //DataFilter
-
     private Long basePollId;
 
     private List<Long> baseQuestionIds;
@@ -24,6 +23,8 @@ public class FilterCmd {
 
     private List<String> targetAnswerPossibilities;
 
+    private Boolean isSlider;
+
     //UserFilter
     private List<String> userNames;
 
@@ -31,7 +32,6 @@ public class FilterCmd {
     private Integer minSuccesses;
 
     //DateFilter
-
     private String startDate;
 
     private String endDate;

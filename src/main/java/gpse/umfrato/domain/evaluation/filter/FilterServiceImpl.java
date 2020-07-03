@@ -40,11 +40,6 @@ public class FilterServiceImpl implements FilterService {
     }
 
     private void cmdsToFilters(List<FilterCmd> filterCmds, List<FilterData> filter) {
-        for(FilterData fd: filter)
-        {
-            //TODO: vielleicht nochmal schön machen?
-            filterRepository.deleteById(fd.getFilterId());
-        }
         for(FilterCmd cmd: filterCmds)
         {
             FilterData fd = new FilterData();
@@ -60,6 +55,7 @@ public class FilterServiceImpl implements FilterService {
                 case "questionAnswer":
                     fd.setTargetQuestionId(cmd.getTargetQuestionId());
                     fd.setTargetAnswerPossibilities(cmd.getTargetAnswerPossibilities());
+                    fd.setIsSlider(cmd.getIsSlider());
                     break;
                 case "consistency":
                     fd.setMinSuccesses(cmd.getMinSuccesses());

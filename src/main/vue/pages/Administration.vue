@@ -199,6 +199,7 @@ export default {
                     ele.role = ele.authorities[0].authority
                 })
             })
+            console.log('users', this.users)
         },
         editUser(item) {
             this.editedIndex = this.users.indexOf(item)

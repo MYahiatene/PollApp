@@ -20,7 +20,7 @@
             </div>
             <!--            Login Button-->
             <div v-if="isAuthenticated">
-                <v-btn text :to="'/Login'"> <v-icon>mdi-account</v-icon> {{ getUsername }} </v-btn>
+                <v-btn text :to="'/Account'"> <v-icon>mdi-account</v-icon> {{ getUsername }} </v-btn>
             </div>
             <div v-else>
                 <v-btn text :to="'/Login'"> <v-icon>mdi-account</v-icon> Login </v-btn>

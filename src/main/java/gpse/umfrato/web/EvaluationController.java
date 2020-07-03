@@ -122,6 +122,11 @@ public class EvaluationController {
         return sessionService.getSession(sessionId);
     }
 
+    @PostMapping("/deleteSession/{sessionId:\\d+}")
+    public void deleteEvaluation(final @PathVariable Long sessionId) {
+        sessionService.deleteSession(sessionId);
+    }
+
     @GetMapping("/getSessions/{pollId:\\d+}")
     public List<Session> getSessions(final @PathVariable Long pollId) {
         List<Session> sessions = sessionService.getAllSessions(pollId);
