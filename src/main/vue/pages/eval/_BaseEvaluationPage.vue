@@ -171,6 +171,14 @@ that each display a basic evaluation of one specific question-->
                                         >
                                         </textQuestionEvaluationWidget>
                                     </div>
+
+                                    <div v-else-if="question.type === 'sort'">
+                                        <SortQuestionEvaluationWidget
+                                            :questionID="question.questionID"
+                                            :questionTitle="question.title"
+                                        >
+                                        </SortQuestionEvaluationWidget>
+                                    </div>
                                     <v-spacer></v-spacer>
                                 </v-col>
                             </v-row>
@@ -199,6 +207,7 @@ import visualEvaluationSettings from '../../components/visualEvaluationSettings'
 import TextQuestionEvaluationWidget from '../../components/TextQuestionEvaluationWidget'
 import FilterForm from '../../components/filterForm'
 import SessionManager from '../../components/SessionManager'
+import SortQuestionEvaluationWidget from '../SortQuestionEvaluationWidget'
 
 export default {
     name: 'BaseEvaluationPage',
@@ -209,12 +218,14 @@ export default {
         ChoiceQuestionEvaluationWidget,
         visualEvaluationSettings,
         TextQuestionEvaluationWidget,
+        SortQuestionEvaluationWidget,
     },
     data() {
         return {
             // key that forces the diagram to update
             // (value is set on the color of the diagram and update whenever updateVisuals is called)
             widgetKey: '',
+            sortWidgetKey: '',
             // the dialog (setting window) is closed by default
             dialog: false,
             // default settings for the visual settings, they are passed as props into the choiceQuestionEvaluationWidgets
@@ -240,6 +251,8 @@ export default {
         this.reset()
         this.initialize(this.$route.params.BaseEvaluationPage)
         this.loadSessions()
+        console.log('DD:')
+        console.log(this.diagramData)
     },
     watch: {
         currentTheme() {
@@ -393,6 +406,7 @@ export default {
             await this.updateData()
             // forces the diagrams to update
             this.widgetKey += 1
+            this.sortWidgetKey += 1
         },
     },
 }
