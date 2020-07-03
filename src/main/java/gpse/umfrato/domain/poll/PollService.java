@@ -37,6 +37,8 @@ public interface PollService {
 
     Integer activatePoll(final Long pollId);
 
-    public String parseDate(final Calendar date);
+    String parseDate(final Calendar date);
+
+    Poll checkActivationAndDeactivation(final Poll poll);
 
 }

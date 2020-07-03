@@ -98,9 +98,9 @@ public class Poll {
      */
     private boolean categoryChange;
 
-    private boolean isActivated;
+    private boolean activated;
 
-    private boolean isDeactivated;
+    private boolean deactivated;
 
     /**
      * This attribute represents a question list with all questions of this poll.
@@ -132,13 +132,13 @@ public class Poll {
      * @param logo            the logo displayed on the website
      * @param visibility      whether or not a rolling question number should be displayed
      * @param categoryChange  whether or not it is possible to go to an already answered category
-     * @param isActivated
-     * @param isDeactivated
+     * @param activated
+     * @param deactivated
      */
     public Poll(final String pollCreator, final String anonymityStatus, final String pollName, final String createdAt,
                 final Calendar activatedAt, final Calendar deactivatedAt, final int pollStatus,
                 final String backgroundColor, final String fontColor, final String logo, final boolean visibility,
-                final boolean categoryChange, final boolean isActivated, final boolean isDeactivated) {
+                final boolean categoryChange, final boolean activated, final boolean deactivated) {
         this.pollName = pollName;
         this.pollCreator = pollCreator;
         this.anonymityStatus = anonymityStatus;
@@ -151,7 +151,7 @@ public class Poll {
         this.logo = logo;
         this.visibility = visibility;
         this.categoryChange = categoryChange;
-        this.isActivated = isActivated;
-        this.isDeactivated = isDeactivated;
+        this.activated = activated;
+        this.deactivated = deactivated;
     }
 }

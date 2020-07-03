@@ -18,8 +18,6 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.logging.Logger;
 
-// @Configuration
-// @EnableScheduling
 @RequestMapping(value = "/api", method = RequestMethod.GET)
 @RestController
 @CrossOrigin
@@ -50,6 +48,8 @@ public class PollController {
     @PreAuthorize("hasAuthority('Admin')")
     public String createPoll(final @RequestBody PollCmd pollCmd) {
         try {
+            LOGGER.info("isActivated: " + pollCmd.isActivated());
+            LOGGER.info("pollCmd: " + pollCmd);
             final Poll poll = pollService.createPoll(pollCmd.getCmdPoll());
             participationLinkService.createParticipationLink(poll.getPollId(), "allUsers");
             return "Poll created! with id: " + poll.getPollId().toString();
@@ -162,15 +162,26 @@ public class PollController {
         final Calendar date = pollService.getPoll(String.valueOf(pollId)).getDeactivatedDate();
         return pollService.parseDate(date);
     }
-    @Scheduled(fixedDelay = 6000)
+    /* @Scheduled(fixedRate = 60000)
     public void updateActivationPolls() {
         LOGGER.info("updateActivationPolls");
-        /* final ListIterator<Poll> it = getPolls().listIterator();
+        LOGGER.info("all polls: " + pollService.getAllPolls());
+        final ListIterator<Poll> it = pollService.getAllPolls().listIterator();
         while(it.hasNext()) {
             Poll poll = it.next();
-            //if(poll.getActivatedDate())
-        } */
-    }
+            Calendar now = Calendar.getInstance();
+            LOGGER.info("current time: " + now);
+            LOGGER.info("poll: " + poll);
+            if(poll.isActivated() && poll.getPollStatus() == 0) {
+                LOGGER.info("isActivated");
+                if (poll.getActivatedDate().equals(now) || poll.getActivatedDate().before(now)) {
+                    LOGGER.info("activate");
+                    final int pollStatus = pollService.activatePoll(poll.getPollId());
+                    LOGGER.info("pollStatus: " + pollStatus);
+                }
+            }
+        }
+    } */
 
 
 }

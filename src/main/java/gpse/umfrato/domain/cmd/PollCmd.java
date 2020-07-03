@@ -8,9 +8,12 @@ import java.text.ParsePosition;
 import java.time.Instant;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.logging.Logger;
 
 @Data
 public class PollCmd {
+
+    /* default */ static final Logger LOGGER = Logger.getLogger("PollCmd");
 
     private String pollId;
 
@@ -40,11 +43,13 @@ public class PollCmd {
 
     private boolean categoryChange;
 
-    private boolean isActivated;
+    private boolean activated;
 
-    private boolean isDeactivated;
+    private boolean deactivated;
 
     public Poll getCmdPoll() {
+        LOGGER.info("isActivated: " + activated);
+        LOGGER.info("activatedAt: " + activatedAt);
         Calendar activationDate = Calendar.getInstance();
         activationDate.set(Integer.parseInt(activatedAt.substring(activatedAt.indexOf('.',3)+1,
             activatedAt.indexOf('&'))) + 1900, Integer.parseInt(activatedAt.substring(activatedAt.indexOf('.') + 1,
@@ -59,9 +64,10 @@ public class PollCmd {
             Integer.parseInt(deactivatedAt.substring(0, deactivatedAt.indexOf('.'))),
             Integer.parseInt(deactivatedAt.substring(deactivatedAt.indexOf('&')+1, deactivatedAt.indexOf(':'))),
             Integer.parseInt(deactivatedAt.substring(deactivatedAt.indexOf(':') + 1)));
+        LOGGER.info("activationDate: " + activationDate);
         final Poll poll = new Poll(pollcreator, anonymityStatus, pollname, pollCreatedAt, activationDate,
-            deactivationDate, pollStatus, backgroundColor, fontColor, logo, visibility, categoryChange, isActivated,
-            isDeactivated);
+            deactivationDate, pollStatus, backgroundColor, fontColor, logo, visibility, categoryChange, activated,
+            deactivated);
         return poll;
     }
 

@@ -245,9 +245,9 @@ export default {
         async sendData() {
             this.activated = this.activateDate.concat('&', this.activatedTime)
             this.deactivated = this.deactivateDate.concat('&', this.deactivatedTime)
+            console.log('isActivated: ', this.switch1)
+            console.log('isDeactivated: ', this.switch2)
             const obj = {
-                isActivated: this.switch1,
-                isDeactivated: this.switch2,
                 pollcreator: this.getUsername,
                 anonymityStatus: this.selectedAnonymityType,
                 pollname: this.title,
@@ -260,6 +260,8 @@ export default {
                 backgroundColor: this.backgroundColor,
                 fontColor: this.fontColor,
                 logo: this.logo,
+                activated: this.switch1,
+                deactivated: this.switch2,
             }
             console.log('obj: ', obj)
             if (this.pollId !== '0') {

@@ -2,13 +2,13 @@ package gpse.umfrato.domain.poll;
 
 import gpse.umfrato.domain.category.CategoryRepository;
 import gpse.umfrato.domain.category.CategoryService;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
-import java.util.Calendar;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Logger;
 
 @Service
@@ -45,7 +45,6 @@ class PollServiceImpl implements PollService {
     public Poll createPoll(final Poll poll) {
         pollRepository.save(poll);
         categoryService.createCategory("Standardkategorie", poll.getPollId());
-
         return poll;
     }
 
@@ -63,8 +62,13 @@ class PollServiceImpl implements PollService {
      */
     @Override
     public List<Poll> getAllPolls() {
-        final List<Poll> poll = pollRepository.findAll();
-        return poll;
+        final List<Poll> polls = pollRepository.findAll();
+        final ListIterator<Poll> it = polls.listIterator();
+        List<Poll> finalPolls = new ArrayList<>();
+        while (it.hasNext()) {
+            finalPolls.add(checkActivationAndDeactivation(it.next()));
+        }
+        return finalPolls;
     }
 
     /**
@@ -77,7 +81,8 @@ class PollServiceImpl implements PollService {
     public Poll getPoll(final String id) {
         LOGGER.info(id);
         final Long pollId = Long.valueOf(id);
-        return pollRepository.findById(pollId).orElseThrow(EntityNotFoundException::new);
+        Poll poll = pollRepository.findById(pollId).orElseThrow(EntityNotFoundException::new);
+        return checkActivationAndDeactivation(poll);
     }
 
     /**
@@ -108,5 +113,31 @@ class PollServiceImpl implements PollService {
         final String minute =  String.valueOf(date.get(Calendar.MINUTE));
         LOGGER.info(day + "." + month + "." + year + "&" + hour + ":" + minute);
         return day + "." + month + "." + year + "&" + hour + ":" + minute;
+    }
+
+    @Override
+    public Poll checkActivationAndDeactivation(final Poll poll) {
+        LOGGER.info("begin check with poll: " + poll);
+        Calendar now = Calendar.getInstance();
+        now.set(Calendar.MONTH, now.get(Calendar.MONTH)+1);
+        LOGGER.info(now.toString());
+        if(poll.isActivated() && poll.getPollStatus() == 0) {
+            LOGGER.info("isActivated");
+            LOGGER.info(poll.getActivatedDate().toString());
+            if (poll.getActivatedDate().equals(now) || poll.getActivatedDate().before(now)) {
+                LOGGER.info("activate");
+                final int pollStatus = activatePoll(poll.getPollId());
+                LOGGER.info("pollStatus: " + pollStatus);
+            }
+        }
+        if(poll.isDeactivated() && poll.getPollStatus() == 1) {
+            LOGGER.info("isDeactivated");
+            if (poll.getDeactivatedDate().equals(now) || poll.getDeactivatedDate().before(now)) {
+                LOGGER.info("deactivate");
+                final int pollStatus = activatePoll(poll.getPollId());
+                LOGGER.info("pollStatus: " + pollStatus);
+            }
+        }
+        return pollRepository.findById(poll.getPollId()).orElseThrow(EntityNotFoundException::new);
     }
 }
