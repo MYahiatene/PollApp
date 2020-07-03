@@ -4,37 +4,35 @@ import lombok.Data;
 
 import java.util.List;
 
-@Data public class FilterCmd {
+@Data
+public class FilterCmd {
 
     private String filterType;
 
-    private boolean invertFilter;
+    private Boolean invertFilter;
 
     //DataFilter
+    private Long basePollId;
 
-    private String basePollId;
+    private List<Long> baseQuestionIds;
 
-    private List<String> baseQuestionIds;
+    private Boolean timeDiagram;
 
     //QuestionFilter
-    private String targetPollId;
-
-    private String targetQuestionId;
+    private Long targetQuestionId;
 
     private List<String> targetAnswerPossibilities;
 
+    private Boolean isSlider;
+
     //UserFilter
-    private String targetUserId;
+    private List<String> userNames;
 
-    private String targetUserAttribute;
+    //ConsistencyFilter
+    private Integer minSuccesses;
 
-    //StatisticsFilter
-    private String function;
+    //DateFilter
+    private String startDate;
 
-    //LogicFilter
-    private String logicFunction;
-
-    private String filterA;
-
-    private String filterB;
+    private String endDate;
 }

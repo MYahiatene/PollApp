@@ -1,5 +1,3 @@
-
-
 export default {
     mode: 'universal',
 
@@ -69,6 +67,7 @@ export default {
                     background2: '#101214',
                     softAccent: '#072d38',
                     header: '#151b24',
+                    vCardColor: '#222222'
                 },
                 light: {
                     background: '#eefcfa',
@@ -87,17 +86,18 @@ export default {
                     //
                     background2: '#a0b4b8',
                     softAccent: '#8dc4c3',
-                    header: '#698f96'
+                    header: '#698f96',
+                    vCardColor: '#ffffff'
                 },
             },
         },
     },
-// added to allow devtools
+    // added to allow devtools
     vue: {
         config: {
             productionTip: false,
-            devtools: true
-        }
+            devtools: true,
+        },
     },
     /*
      ** Build configuration

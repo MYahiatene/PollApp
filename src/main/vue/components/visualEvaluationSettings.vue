@@ -9,9 +9,12 @@ it passes the attributes:
 -->
     <v-container class="ma-3">
         <v-row>
-            <p>
+            <p v-if="!changeDefault">
                 Hier können die Design-Einstellungen für eine Auswahlfrage verändert werden.
             </p>
+            <h3 v-else>
+                Hier können die Design-Einstellungen für Auswahlfragen generell gesetzt werden.
+            </h3>
         </v-row>
         <!--switch for "ShowDiagram"-->
         <v-row no-gutters>
@@ -42,7 +45,7 @@ it passes the attributes:
         <!--        This allows us to assemble an array of colors using draggable chips and a color picker -->
 
         <v-row v-show="showDiagram && setMultipleColors">
-            <v-col v-if="!oneQuestion">
+            <v-col v-if="changeDefault">
                 <!--                this is rendered if we are in a settings window for one specific question-->
                 <draggable :list="colorList">
                     <div v-for="(color, index) in colorList" :key="index">
@@ -86,13 +89,20 @@ it passes the attributes:
                             v-if="index === currentChipIndex"
                             class="ma-1"
                             :color="color"
+                            style="min-width: 2cm; text-align-all: center;"
                             @click="updateCurrentChip(index)"
                             large
                         >
-                            Farbe {{ index + 1 }}</v-chip
+                            {{ answerTitles[index] }}</v-chip
                         >
-                        <v-chip v-else class="ma-1" :color="color" @click="updateCurrentChip(index)">
-                            Farbe {{ index + 1 }}</v-chip
+                        <v-chip
+                            v-else
+                            class="ma-1"
+                            :color="color"
+                            style="min-width: 2cm; text-align: center;"
+                            @click="updateCurrentChip(index)"
+                        >
+                            {{ answerTitles[index] }}</v-chip
                         >
                     </div>
                 </draggable>
@@ -128,35 +138,15 @@ it passes the attributes:
         </v-row>
 
         <!-- if we edit the settings for all questions we are asked to confirm, if we want already eddited questions to be changed-->
-        <v-row v-if="!oneQuestion" no-gutters>
-            <v-switch v-model="useOnAll" label="Auf alle Diagramme anwenden?"> </v-switch>
+        <v-row v-if="changeDefault" no-gutters>
+            <v-switch v-model="useOnAll" label="Auf alle Diagramme anwenden"> </v-switch>
         </v-row>
+        <p v-if="changeDefault && useOnAll">
+            Momentan werden nur die Diagramme verändert, die bisher noch nicht bearbeitet wurden.
+        </p>
         <!-- Button that will send the picked data to the parent component -->
         <v-row no-gutters>
-            <v-btn
-                color="success"
-                @click="
-                    $emit(
-                        'update-Visuals',
-                        showDiagram,
-                        chosenDiagram,
-                        colorList,
-                        setChosenDiagramColor,
-                        setMultipleColors,
-                        showTable
-                    ),
-                        $emit(
-                            'update-all-Visuals',
-                            showDiagram,
-                            chosenDiagram,
-                            colorList,
-                            setChosenDiagramColor,
-                            setMultipleColors,
-                            showTable,
-                            useOnAll
-                        )
-                "
-            >
+            <v-btn color="success" @click="saveDiagramFormat">
                 Anwenden
             </v-btn>
         </v-row>
@@ -164,6 +154,7 @@ it passes the attributes:
 </template>
 
 <script>
+import { mapGetters, mapMutations } from 'vuex'
 import draggable from 'vuedraggable'
 
 export default {
@@ -173,43 +164,31 @@ export default {
     },
     // these props can be passed by the parent component
     props: {
+        questionId: {
+            type: Number,
+            default: -1,
+        },
         // is this a settings window for one particular question or all questions?
-        oneQuestion: {
+        changeDefault: {
             type: Boolean,
             default: false,
-        },
-        showDiagram: {
-            type: Boolean,
-        },
-        chosenDiagram: {
-            type: String,
-            default: 'bar',
-        },
-        chosenDiagramColors: {
-            type: Array,
-            default: () => ['#aaaaaa'],
-        },
-        chosenDiagramColor: {
-            type: String,
-            default: '#aaaaaa',
-        },
-
-        multipleColors: {
-            type: Boolean,
-            default: false,
-        },
-        showTable: {
-            type: Boolean,
         },
     },
     mounted() {
-        this.chosenDiagramAsWord = this.diagramTypesInWords[this.diagramTypes.indexOf(this.chosenDiagram)]
-        this.chosenDiagramColorAsWord = this.diagramColorsInWords[this.diagramColors.indexOf(this.chosenDiagramColor)]
-        this.setChosenDiagramColor = this.chosenDiagramColor
-        this.colorList = this.chosenDiagramColors
-        this.setMultipleColors = this.multipleColors
+        const format = this.getFormat(this.questionId)
+        console.log('los gehts ' + this.questionId)
+        console.log(format)
+        this.diagramType = String(this.initialDiagramType)
+        this.showTable = Boolean(this.initialShowTable)
+        this.showDiagram = Boolean(this.initialShowDiagram)
+        this.chosenDiagramAsWord = this.diagramTypesInWords[this.diagramTypes.indexOf(this.initialDiagramType)]
+        this.chosenDiagramColorAsWord = this.diagramColorsInWords[
+            this.diagramColors.indexOf(this.initialBackgroundColor)
+        ]
+        this.setChosenDiagramColor = String(this.getFormat(this.questionId).backgroundColor)
+        this.colorList = [...this.initialBackgroundColors]
+        this.setMultipleColors = Boolean(this.initialMultipleColors)
     },
-
     data() {
         return {
             chosenDiagramAsWord: '',
@@ -220,7 +199,7 @@ export default {
             chosenDiagramColorAsWord: '',
 
             diagramColorsInWords: ['Grau', 'Petrol', 'Grün', 'Violet', 'Türkis'],
-            diagramColors: ['#aaaaaa', '#114955', '#8EC136', '#551044', '#26A599'],
+            diagramColors: ['#aaaaaa', '#114955', '#8ec136', '#551044', '#26A599'],
 
             setChosenDiagramColor: '',
 
@@ -233,31 +212,61 @@ export default {
             currentChipColor: '',
 
             useOnAll: false,
+
+            diagramType: '',
+            showTable: false,
+            showDiagram: false,
         }
     },
-
     methods: {
+        ...mapMutations({
+            setDiagramFormat: 'evaluation/setDiagramFormat',
+            setDiagramFormats: 'evaluation/setDiagramFormats',
+        }),
+
+        async saveDiagramFormat() {
+            const format = {
+                questionId: this.questionId,
+                showDiagram: this.showDiagram,
+                diagramType: this.diagramType,
+                backgroundColors: this.colorList,
+                backgroundColor: this.setChosenDiagramColor,
+                multipleColors: this.setMultipleColors,
+                showTable: this.showTable,
+            }
+            if (this.changeDefault) {
+                this.setDiagramFormats({ useOnAll: this.useOnAll, format })
+            } else {
+                console.log('pushFormat')
+                await this.setDiagramFormat(format)
+                console.log('pushedFormat')
+            }
+            console.log('done')
+            this.$emit('done')
+        },
+
         // updates the setChosenDiagramColor, when it was picked through the overflow button
         changeDiagramColor() {
             this.setChosenDiagramColor = this.diagramColors[
                 this.diagramColorsInWords.indexOf(this.chosenDiagramColorAsWord)
             ]
         },
+
         // updates the chosenDiagram, when it was picked through the overflow button
         changeDiagramType() {
-            this.chosenDiagram = this.diagramTypes[this.diagramTypesInWords.indexOf(this.chosenDiagramAsWord)]
+            this.diagramType = this.diagramTypes[this.diagramTypesInWords.indexOf(this.chosenDiagramAsWord)]
         },
 
         computeDiagram() {
-            this.chosenDiagramAsWord = this.diagramTypesInWords[this.diagramTypes.indexOf(this.chosenDiagram)]
+            this.chosenDiagramAsWord = this.diagramTypesInWords[this.diagramTypes.indexOf(this.diagramType)]
         },
+
         // resets the value of chosenDiagramColorAsWord, so nothing is displayed in overflow button once you pick a color in the color picker
         resetChosenDiagramColor() {
             this.chosenDiagramColorAsWord = ''
         },
 
         // if we add a new chip, we declare it the current chip, that can be edited
-
         newColor() {
             this.colorList.push('#aaaaaa')
             this.currentChipIndex = this.colorList.length - 1
@@ -265,7 +274,6 @@ export default {
         },
 
         // if we delete a chip, the currentChipIndex needs to be decreased, if the deleted chip was in front of it
-
         deleteColor(index) {
             if (index > -1) {
                 this.colorList.splice(index, 1)
@@ -298,11 +306,93 @@ export default {
     },
 
     computed: {
+        ...mapGetters({
+            getFormat: 'evaluation/getDiagramFormat',
+            polls: 'evaluation/getPolls',
+            diagramData: 'evaluation/getDiagramData',
+        }),
+        initialDiagramType() {
+            return this.getFormat(this.questionId).diagramType
+        },
+        initialBackgroundColors() {
+            return this.getFormat(this.questionId).backgroundColors
+        },
+        initialBackgroundColor() {
+            return this.getFormat(this.questionId).backgroundColor
+        },
+        initialMultipleColors() {
+            return this.getFormat(this.questionId).multipleColors
+        },
+        initialShowTable() {
+            return this.getFormat(this.questionId).showTable
+        },
+        initialShowDiagram() {
+            return this.getFormat(this.questionId).showDiagram
+        },
         // here we can give a chip an outline to set it apart
         styleForChosenChip() {
             return (
                 'border-color:' + this.$vuetify.theme.currentTheme.info + '; border-style: solid; border-width: thick;'
             )
+        },
+        answerTitles() {
+            console.log(this.polls)
+            console.log(this.questionId)
+            const a = []
+            /* for (let i = 0; i < this.polls.length; i++) {
+                console.log(i)
+                for (let j = 0; j < this.polls[i].categoryList.length; j++) {
+                    console.log(j)
+                    for (let k = 0; k < this.polls[i].categoryList[j].questionList.length; k++) {
+                        console.log(k)
+                        if (this.polls[i].categoryList[j].questionList[k].questionId === this.questionId) {
+                            console.log('if')
+                            for (
+                                let l = 0;
+                                l < this.polls[i].categoryList[j].questionList[k].answerPossibilities.length;
+                                l++
+                            ) {
+                                if (this.polls[i].categoryList[j].questionList[k].answerPossibilities[l].length < 5) {
+                                    a.push(
+                                        '  ' +
+                                            this.polls[i].categoryList[j].questionList[k].answerPossibilities[l] +
+                                            '  '
+                                    )
+                                } else if (
+                                    this.polls[i].categoryList[j].questionList[k].answerPossibilities[l].length > 30
+                                ) {
+                                    a.push(
+                                        this.polls[i].categoryList[j].questionList[k].answerPossibilities[l].substr(
+                                            0,
+                                            27
+                                        ) + '...'
+                                    )
+                                } else {
+                                    a.push(this.polls[i].categoryList[j].questionList[k].answerPossibilities[l])
+                                }
+                            }
+                        }
+                    }
+                }
+            } */
+            console.log(this.diagramData)
+            console.log(this.questionId)
+            for (let i = 0; i < this.diagramData.length; i++) {
+                console.log(i)
+                if (this.diagramData[i].id === this.questionId) {
+                    for (let j = 0; j < this.diagramData[i].answerPossibilities.length; j++) {
+                        if (this.diagramData[i].answerPossibilities[j].length < 5) {
+                            a.push('  ' + this.diagramData[i].answerPossibilities[j] + '  ')
+                        } else if (this.diagramData[i].answerPossibilities[j].length > 30) {
+                            a.push(this.diagramData[i].answerPossibilities[j].substr(0, 27) + '...')
+                        } else {
+                            a.push(this.diagramData[i].answerPossibilities[j])
+                        }
+                    }
+                }
+            }
+            console.log(a)
+            return a
         },
     },
 }

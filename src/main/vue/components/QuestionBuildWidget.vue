@@ -33,7 +33,7 @@
                     <v-row>
                         <v-col cols="9"></v-col>
                         <v-col cols="2">
-                            <v-btn @click="createQuestion">
+                            <v-btn @click="createQuestion" :disabled="questionMessageBool">
                                 <v-icon color="primary" left>
                                     mdi-plus
                                 </v-icon>
@@ -52,10 +52,12 @@ import { mapActions, mapGetters, mapMutations } from 'vuex'
 import ChoiceQuestion from './ChoiceQuestion'
 import TextQuestion from './TextQuestion'
 import RangeQuestion from './RangeQuestion'
+import SortQuestion from './SortQuestion'
+import SliderQuestion from './SliderQuestion'
 
 export default {
     name: 'QuestionBuildWidget',
-    components: { ChoiceQuestion, TextQuestion, RangeQuestion },
+    components: { ChoiceQuestion, TextQuestion, SortQuestion, RangeQuestion, SliderQuestion },
     props: {
         categoryData: { type: Array },
     },
@@ -71,6 +73,18 @@ export default {
                     text: 'Freitextfrage',
                     value: 'TextQuestion',
                 },
+                {
+                    text: 'Sortierfrage',
+                    value: 'SortQuestion',
+                },
+                {
+                    text: 'Sliderfrage',
+                    value: 'SliderQuestion',
+                },
+                {
+                    text: 'Reichweitenfrage',
+                    value: 'RangeQuestion',
+                },
             ],
         }
     },
@@ -81,6 +95,11 @@ export default {
             getQuestionMessage: 'questionOverview/getQuestionMessage',
             getBuildIndex: 'questionOverview/getBuildIndex',
         }),
+        questionMessageBool: {
+            get() {
+                return !(this.questionType.length && this.questionMessageModel.length)
+            },
+        },
         buildIndex: {
             get() {
                 return this.getBuildIndex
@@ -111,9 +130,8 @@ export default {
     },
     methods: {
         createQuestion() {
-            console.log('BuildIndex:\n')
-            console.log(this.buildIndex)
             if (this.buildIndex === 1) {
+                console.log(this.getQuestion.answerPossibilities)
                 this.$axios
                     .post('/addquestion', {
                         pollId: this.$route.params.QuestionOverview,
@@ -127,6 +145,12 @@ export default {
                         textMinBool: this.getQuestion.textMinBool,
                         textMaximum: this.getQuestion.textMaximum,
                         textMaxBool: this.getQuestion.textMaxBool,
+                        endValue: this.getQuestion.endValue,
+                        startValue: this.getQuestion.startValue,
+                        stepSize: this.getQuestion.stepSize,
+                        belowMessage: this.getQuestion.belowMessage,
+                        aboveMessage: this.getQuestion.aboveMessage,
+                        hideValues: this.getQuestion.hideValues,
                     })
                     .then((response) => {
                         this.categoryData[0].questionList.push(response.data)
@@ -145,6 +169,12 @@ export default {
                     textMinBool: this.getQuestion.textMinBool,
                     textMaximum: this.getQuestion.textMaximum,
                     textMaxBool: this.getQuestion.textMaxBool,
+                    endValue: this.getQuestion.endValue,
+                    startValue: this.getQuestion.startValue,
+                    stepSize: this.getQuestion.stepSize,
+                    belowMessage: this.getQuestion.belowMessage,
+                    aboveMessage: this.getQuestion.aboveMessage,
+                    hideValues: this.getQuestion.hideValues,
                 })
             }
             console.log('BuildIndex:\n')

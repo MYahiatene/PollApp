@@ -127,7 +127,7 @@ export default {
                 firstName: '',
                 lastName: '',
             },
-            roles: ['Admin', 'Umfrageersteller', 'Umfragebearbeiter', 'Teilnehmer'],
+            roles: ['Admin', 'Creator', 'Editor', 'User'],
             headers: [
                 { text: 'Username', value: 'username', align: 'start' },
                 {
@@ -199,6 +199,7 @@ export default {
                     ele.role = ele.authorities[0].authority
                 })
             })
+            console.log('users', this.users)
         },
         editUser(item) {
             this.editedIndex = this.users.indexOf(item)
@@ -237,7 +238,7 @@ export default {
                 username: newUser.username,
                 firstName: newUser.firstName,
                 lastName: newUser.lastName,
-                password: 'pwd',
+                password: null,
                 email: newUser.email,
                 role: newUser.role,
             }

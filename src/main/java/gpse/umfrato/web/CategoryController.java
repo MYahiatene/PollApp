@@ -3,45 +3,54 @@ package gpse.umfrato.web;
 import gpse.umfrato.domain.category.Category;
 import gpse.umfrato.domain.category.CategoryService;
 import gpse.umfrato.domain.cmd.CategoryCmd;
-import gpse.umfrato.domain.cmd.PollCmd;
-import gpse.umfrato.domain.poll.Poll;
-import gpse.umfrato.domain.poll.PollService;
 import gpse.umfrato.domain.question.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.MalformedURLException;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.logging.Logger;
 
-@RequestMapping(value = "/api")
+/**
+ * The category controller used to process category specific requests.
+ */
+@RequestMapping("/api")
 @RestController
 @CrossOrigin
 public class CategoryController {
 
-    static final Logger LOGGER = Logger.getLogger("CategoryController");
-    private static final String TEST = "Test";
     private final CategoryService categoryService;
     private final QuestionService questionService;
-    // nur vorübergehend:
-    private final PollService pollService;
 
+    /**
+     * The constructor is used inject the category service.
+     *
+     * @param categoryService
+     */
     @Autowired
-    public CategoryController(final CategoryService categoryService, final QuestionService questionService,
-                              final PollService pollService) {
+    public CategoryController(final CategoryService categoryService, final QuestionService questionService, {
         this.categoryService = categoryService;
         this.questionService = questionService;
-        this.pollService = pollService;
     }
 
+    /**
+     * This method adds a category.
+     *
+     * @param categoryCmd the Cmd includes the name and the poll id of the new category.
+     * @return returns the new category object.
+     */
+    @PreAuthorize("hasAnyAuthority('Admin', 'Creator', 'Editor')")
     @PostMapping("/addcategory")
     public Category addCategory(final @RequestBody CategoryCmd categoryCmd) {
-        return categoryService.createCategory(categoryCmd.getName(), Long.parseLong(categoryCmd.getPollId()));
+        return categoryService.createCategory(categoryCmd.getCategoryName(), categoryCmd.getPollId());
     }
 
+    /**
+     * This method returns all the categories belonging to one poll.
+     *
+     * @param pollId the id of the poll.
+     * @return returns all the categories.
+     */
     @GetMapping("/getallcategories")
     public List<Category> getCategories(final @RequestParam long pollId) {
         return categoryService.getAllCategories(pollId);
@@ -50,30 +59,24 @@ public class CategoryController {
     /**
      * Deletes a category in the data base.
      *
-     * @param categoryCmd the Cmd of category
+     * @param categoryCmd the Cmd of category.
      */
-    @PreAuthorize("hasAuthority('Admin')")
+    @PreAuthorize("hasAnyAuthority('Admin', 'Creator', 'Editor')")
     @PutMapping("/deletecategory")
     public String deleteCategory(final @RequestBody CategoryCmd categoryCmd) {
-        categoryService.deleteCategory(Long.parseLong(categoryCmd.getCategoryId()));
-        return TEST;
-    }
-
-    @PutMapping("/editcategory")
-    public void editCategory(final @RequestBody CategoryCmd categoryCmd) {
-        categoryService.editCategory(Long.valueOf(categoryCmd.getCategoryId()), categoryCmd.getName());
+        return categoryService.deleteCategory(categoryCmd.getCategoryId(),
+            categoryCmd.getQuestionState().toString());
     }
 
     /**
-     * Deletes a category in the data base.
+     * This method changes the name of the category.
      *
-     * @param categoryCmd the Cmd of Category
+     * @param categoryCmd the Cmd includes the required id and the new name of the catgegory.
      */
-    @PreAuthorize("hasAuthority('Admin')")
-    @PutMapping("/deletecategoryandquestions")
-    public String deleteCategoryAndQuestions(final @RequestBody CategoryCmd categoryCmd) {
-        categoryService.deleteCategoryAndQuestions(Long.valueOf(categoryCmd.getCategoryId()));
-        return TEST;
+    @PreAuthorize("hasAnyAuthority('Admin', 'Creator', 'Editor')")
+    @PutMapping("/editcategory")
+    public void editCategory(final @RequestBody CategoryCmd categoryCmd) {
+        categoryService.editCategory(categoryCmd.getCategoryId(), categoryCmd.getCategoryName());
     }
 
     @PostMapping(value = "/copycategories/{oldPollId:\\d+}/{newPollId:\\d+}")

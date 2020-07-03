@@ -165,7 +165,10 @@
                 </v-container>
 
                 <br />
-                <v-btn :disabled="!valid" color="success" class="mr-4" @click="sendData()">Erstellen</v-btn>
+                <v-btn :disabled="!valid" color="success" class="mr-4" @click="goHome()">Erstellen</v-btn>
+                <v-btn :disabled="!valid" color="success" class="mr-4" @click="goToNewPoll()"
+                    >Erstellen und bearbeiten</v-btn
+                >
             </v-form>
         </v-container>
     </v-card>
@@ -191,6 +194,7 @@ export default {
             backgroundColor: null,
             fontColor: null,
             logo: null,
+            newPollId: -1,
             activateDate: this.formatDate(new Date().toISOString().substr(0, 10)),
             deactivateDate: this.formatDate(new Date().toISOString().substr(0, 10)),
             creationDate: this.formatDate(new Date().toISOString().substr(0, 10)),
@@ -248,9 +252,9 @@ export default {
             console.log('isActivated: ', this.switch1)
             console.log('isDeactivated: ', this.switch2)
             const obj = {
-                pollcreator: this.getUsername,
+                pollCreator: this.getUsername,
                 anonymityStatus: this.selectedAnonymityType,
-                pollname: this.title,
+                pollName: this.title,
                 pollCreatedAt: this.creationDate,
                 activatedAt: this.activated,
                 deactivatedAt: this.deactivated,
@@ -265,13 +269,30 @@ export default {
             }
             console.log('obj: ', obj)
             if (this.pollId !== '0') {
-                const newId = await this.$axios.post('/createcopypoll', obj).catch()
-                console.log('newId: ', newId.data)
+                await this.$axios
+                    .post('/createcopypoll', obj)
+                    .catch()
+                    .then((result) => {
+                        this.newPollId = result.data
+                    })
                 this.$axios.post('/copycategories/' + this.poll.pollId + '/' + newId.data).catch()
             } else {
-                this.$axios.post('/createpoll', obj).catch()
+                await this.$axios
+                    .post('/createpoll', obj)
+                    .catch()
+                    .then((result) => {
+                        this.newPollId = result.data
+                    })
             }
             this.$router.push('/polls')
+        },
+        async goHome() {
+            await this.sendData()
+            await this.$router.push('/polls')
+        },
+        async goToNewPoll() {
+            await this.sendData()
+            await this.$router.push('/polls/' + this.newPollId)
         },
         formatDate(date) {
             console.log('formatDate')

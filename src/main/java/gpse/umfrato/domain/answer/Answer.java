@@ -40,9 +40,9 @@ public class Answer {
      * @param messageList    the answer message
      * @param questionId the question id where the answer is assigned
      */
-    public Answer(final List<String> messageList, final String questionId) {
+    public Answer(final List<String> messageList, final Long questionId) {
         this.givenAnswerList = messageList;
-        this.questionId = Long.valueOf(questionId);
+        this.questionId = questionId;
     }
 
 

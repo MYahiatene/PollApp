@@ -2,6 +2,9 @@ package gpse.umfrato.domain.cmd;
 
 import lombok.Data;
 
+/**
+ * The command design class for editing a user.
+ */
 @Data
 public class EditUserCmd {
 

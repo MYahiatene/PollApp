@@ -10,6 +10,9 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.logging.Logger;
 
+/**
+ * The command design class for polls.
+ */
 @Data
 public class PollCmd {
 
@@ -17,7 +20,7 @@ public class PollCmd {
 
     private String pollId;
 
-    private String pollcreator;
+    private String pollCreator;
 
     private String pollCreatedAt;
 
@@ -35,7 +38,7 @@ public class PollCmd {
 
     private String logo;
 
-    private String pollname;
+    private String pollName;
 
     private int pollStatus;
 
@@ -65,7 +68,7 @@ public class PollCmd {
             Integer.parseInt(deactivatedAt.substring(deactivatedAt.indexOf('&')+1, deactivatedAt.indexOf(':'))),
             Integer.parseInt(deactivatedAt.substring(deactivatedAt.indexOf(':') + 1)));
         LOGGER.info("activationDate: " + activationDate);
-        final Poll poll = new Poll(pollcreator, anonymityStatus, pollname, pollCreatedAt, activationDate,
+        final Poll poll = new Poll(pollCreator, anonymityStatus, pollName, pollCreatedAt, activationDate,
             deactivationDate, pollStatus, backgroundColor, fontColor, logo, visibility, categoryChange, activated,
             deactivated);
         return poll;

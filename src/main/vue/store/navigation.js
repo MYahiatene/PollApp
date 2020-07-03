@@ -1,6 +1,5 @@
 export const state = () => ({
     Polls: [],
-    ParticipationLinks: [],
     error: '',
 })
 export const getters = {
@@ -25,21 +24,25 @@ export const mutations = {
             }
         }
     },
+    splicePolls(state, index) {
+        state.Polls.splice(index, 1)
+    },
 }
 export const actions = {
-    async initialize({ commit }) {
+    async initialize({ commit, state }) {
         let error = ''
         const data = await this.$axios.get('/poll').catch((reason) => {
             console.log(reason)
             error = reason
         })
         if (error.length === 0) {
+            console.log(data)
             commit('setPolls', data)
         } else {
             commit('saveError', error)
         }
     },
-    async activatePoll({ commit }, pollId) {
+    async updatePollStatus({ commit }, pollId) {
         let error = ''
         const data = await this.$axios.post('/activatePoll/' + pollId).catch((reason) => {
             console.log(reason)

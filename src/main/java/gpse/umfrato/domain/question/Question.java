@@ -17,11 +17,11 @@ public class Question {
 
     // needed for RangeQuestions
 
-    private float endValue;
+    private double startValue;
 
-    private float startValue;
+    private double endValue;
 
-    private float stepSize;
+    private double stepSize;
 
     // needed for Slide and RangeQuestions
 
@@ -62,6 +62,7 @@ public class Question {
     @Lob
     private String questionMessage;
 
+    @OrderColumn
     @ElementCollection
     private List<String> answerPossibilities = new ArrayList<>();
 
@@ -110,16 +111,14 @@ public class Question {
 
     /**
      * This rangeQuestion constructor receives a question message and saves in the question object.
-     *
-     * @param question     the question message
-     * @param endValue     the end Value of a range, for rangeQuestions
+     *  @param question     the question message
      * @param startValue   the start Value of a range, for rangeQuestions
+     * @param endValue     the end Value of a range, for rangeQuestions
      * @param stepSize     the size of the steps between the start and end value of a rangeQuestion
      * @param belowMessage the message for the meaning of the start value of a range Question
      * @param aboveMessage the message for the meaning of the end value of a range Question
      */
-    public Question(final String question, final float endValue, final float startValue,
-                    final float stepSize, final String belowMessage, final String aboveMessage) {
+    public Question(final String question, final double startValue, final double endValue, final double stepSize, final String belowMessage, final String aboveMessage) {
         this.questionMessage = question;
         this.questionType = "RangeQuestion";
         this.endValue = endValue;
@@ -131,17 +130,15 @@ public class Question {
 
     /**
      * This sliderQuestion constructor receives a question message and saves in the question object.
-     *
-     * @param question     the question message
-     * @param endValue     the end Value of a range, for rangeQuestions
+     *  @param question     the question message
      * @param startValue   the start Value of a range, for rangeQuestions
+     * @param endValue     the end Value of a range, for rangeQuestions
      * @param stepSize     the size of the steps between the start and end value of a rangeQuestion
      * @param belowMessage the message for the meaning of the start value of a range Question
      * @param aboveMessage the message for the meaning of the end value of a range Question
      * @param hideValues   for the slide question,if it shows the chosen value
      */
-    public Question(final String question, final float endValue, final float startValue, final float stepSize,
-                    final String belowMessage, final String aboveMessage, final Boolean hideValues) {
+    public Question(final String question, final double startValue, final double endValue, final double stepSize, final String belowMessage, final String aboveMessage, final Boolean hideValues) {
         this.questionMessage = question;
         this.questionType = "SliderQuestion";
         this.endValue = endValue;
@@ -150,6 +147,17 @@ public class Question {
         this.belowMessage = belowMessage;
         this.aboveMessage = aboveMessage;
         this.hideValues = hideValues;
+    }
+
+    /**
+     * The question constructor if the question type is SortQuestion.
+     * @param questionMessage the message of the question
+     * @param answerPossibilities the answer possibilities of this question
+     */
+    public Question(final String questionMessage, final List<String> answerPossibilities) {
+        this.questionMessage = questionMessage;
+        this.questionType = "SortQuestion";
+        this.answerPossibilities = answerPossibilities;
     }
 }
 

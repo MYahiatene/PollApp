@@ -1,6 +1,7 @@
 package gpse.umfrato.domain.poll;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import gpse.umfrato.domain.category.Category;
 import gpse.umfrato.domain.question.Question;
 import lombok.Data;
@@ -36,13 +37,20 @@ public class Poll {
     /**
      * This attribute represents the date when the poll was created.
      */
+    //TODO: zu Date machen?
     private String creationDate;
 
     /**
      * This attribute represents the date when the poll was edited the last time.
      */
-    @JsonIgnore
+    // @JsonIgnore
     private String lastEditAt;
+
+    /**
+     * This attribute represents the user who edited the poll the last time.
+     */
+    // @JsonIgnore
+    private String lastEditFrom;
 
     /**
      * This attribute represents the date when the poll was activated.
@@ -103,17 +111,11 @@ public class Poll {
     private boolean deactivated;
 
     /**
-     * This attribute represents a question list with all questions of this poll.
-     */
-    @OneToMany(cascade = CascadeType.ALL)
-    private List<Question> questionList = new ArrayList<>();
-
-    /**
      * This attribute represents the link to reach the poll if it is activated.
      */
     private String participationLink;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(orphanRemoval = true)
     private List<Category> categoryList = new ArrayList<>();
 
 

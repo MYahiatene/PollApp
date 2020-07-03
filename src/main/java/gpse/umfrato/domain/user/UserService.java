@@ -45,4 +45,19 @@ public interface UserService extends UserDetailsService {
      * @param username the username of the user
      */
     void deleteUser(final String username);
+
+    /**
+     * This method changes a password.
+     *
+     * @param password
+     */
+    void changePassword(final String username, final String password);
+
+    /**
+     * This method changes the email of a  user.
+     *
+     * @param username
+     * @param email
+     */
+    void changeEmail(final String username, final String email);
 }
