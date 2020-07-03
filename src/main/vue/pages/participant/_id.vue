@@ -1,78 +1,105 @@
 <template>
     <!--Build page after PollData from created() method is here-->
     <div v-if="getPoll[1] !== undefined">
-        <v-container>
-            <!--When/After the PollData "arrived" show the logo-->
-            <div v-if="getPoll[1].data.logo !== null">
-                <img :src="getPoll[1].data.logo" alt="failedToLoadLogo" height="275" />
-            </div>
-            <v-content>
-                <v-row> </v-row>
-                <v-row>
-                    <v-col cols="8">
-                        <v-card>
-                            <h1 class="my-3 pa-5" :style="fontColorText">
-                                {{ getPoll[1].data.pollName }}
-                            </h1>
-                        </v-card>
-                        <!-- loads the questions from the current category in a list-->
-                        <v-list
-                            v-for="(question, index) in computedQuestionList"
-                            :key="question.questionId"
-                            :color="backgroundColor"
-                            two-line
-                        >
-                            <!-- every question is in a Kard and consists of the questionMessageand the way to answer
+        <div v-if="participated === false">
+            <v-container>
+                <!--When/After the PollData "arrived" show the logo-->
+                <div v-if="getPoll[1].data.logo !== null">
+                    <img :src="getPoll[1].data.logo" alt="failedToLoadLogo" height="275" />
+                </div>
+                <v-content>
+                    <v-row> </v-row>
+                    <v-row>
+                        <v-col cols="8">
+                            <v-card>
+                                <h1 class="my-3 pa-5" :style="fontColorText">
+                                    {{ getPoll[1].data.pollName }}
+                                </h1>
+                            </v-card>
+                            <!-- loads the questions from the current category in a list-->
+                            <v-list
+                                v-for="(question, index) in computedQuestionList"
+                                :key="question.questionId"
+                                :color="backgroundColor"
+                                two-line
+                            >
+                                <!-- every question is in a Kard and consists of the questionMessageand the way to answer
                             it, and depending on the settings of the poll, the number of questions -->
-                            <v-card class="mx-auto">
-                                <v-card-title class="col" :style="fontColorText">
-                                    <!--the visibility of the index of the current questions in relation to the total
+                                <v-card class="mx-auto">
+                                    <v-card-title class="col" :style="fontColorText">
+                                        <!--the visibility of the index of the current questions in relation to the total
                                     number of questions, given in the settings of the poll-->
-                                    <div v-if="getVisibility">{{ (index+1) }}/{{ getNumberOfQuestions }}</div>
-                                    <div class="ps-4">{{ question.questionMessage }}</div>
-                                </v-card-title>
-                                <div v-if="question.questionType === 'TextQuestion'">
-                                    <v-card-text>
-                                        <!--:rules="textQuestionRules"-->
-                                        <!--question.textMultiline ===-->
-                                        <div v-if="question.textMultiline === true">
-                                            <v-textarea
-                                                label="Antwort"
-                                                auto-grow
-                                                counter
-                                                :color="fontColor"
-                                                :rules="textQuestionRules"
-                                                rows="1"
-                                                v-model="valueList[index]"
-                                                @input="saveAnswerField($event, question)"
-                                            >
-                                            </v-textarea>
+                                        <div v-if="getVisibility">{{ (index+1) }}/{{ getNumberOfQuestions }}</div>
+                                        <div class="ps-4">{{ question.questionMessage }}</div>
+                                    </v-card-title>
+                                    <div v-if="question.questionType === 'TextQuestion'">
+                                        <v-card-text>
+                                            <!--:rules="textQuestionRules"-->
+                                            <!--question.textMultiline ===-->
+                                            <div v-if="question.textMultiline === true">
+                                                <v-textarea
+                                                    label="Antwort"
+                                                    auto-grow
+                                                    counter
+                                                    :color="fontColor"
+                                                    :rules="textQuestionRules"
+                                                    rows="1"
+                                                    v-model="valueList[index]"
+                                                    @input="saveAnswerField($event, question)"
+                                                >
+                                                </v-textarea>
+                                            </div>
+                                            <div v-else>
+                                                <v-text-field
+                                                    label="Antwort"
+                                                    :color="fontColor"
+                                                    :rules="textQuestionRules"
+                                                    v-model="valueList[index]"
+                                                    @input="saveAnswerField($event, question)"
+                                                ></v-text-field>
+                                            </div>
+                                        </v-card-text>
+                                    </div>
+                                    <div v-else-if="question.questionType === 'ChoiceQuestion'">
+                                        <!--Radio Button since only one answer possible-->
+                                        <!--Only to debug, otherwise numberOfPossibleAnswer === 1-->
+                                        <div v-if="question.numberOfPossibleAnswers === 1">
+                                            <v-card-text>
+                                                <v-radio-group v-model="valueList[index]">
+                                                    <v-radio
+                                                        v-for="answer in question.answerPossibilities"
+                                                        :key="answer.text"
+                                                        :label="`${answer}`"
+                                                        :value="answer"
+                                                        @change="saveAnswerRadioButton(question, answer)"
+                                                    ></v-radio>
+                                                </v-radio-group>
+                                                <div v-if="question.userAnswers">
+                                                    <v-text-field
+                                                        class="mx-4"
+                                                        auto-grow
+                                                        prepend-icon="mdi-plus"
+                                                        clearable
+                                                        @click:prepend="saveOwnAnswer(question)"
+                                                        @input="saveAnswerPossibility($event, question)"
+                                                    ></v-text-field>
+                                                </div>
+                                            </v-card-text>
                                         </div>
                                         <div v-else>
-                                            <v-text-field
-                                                label="Antwort"
-                                                :color="fontColor"
-                                                :rules="textQuestionRules"
-                                                v-model="valueList[index]"
-                                                @input="saveAnswerField($event, question)"
-                                            ></v-text-field>
-                                        </div>
-                                    </v-card-text>
-                                </div>
-                                <div v-else-if="question.questionType === 'ChoiceQuestion'">
-                                    <!--Radio Button since only one answer possible-->
-                                    <!--Only to debug, otherwise numberOfPossibleAnswer === 1-->
-                                    <div v-if="question.numberOfPossibleAnswers === 1">
-                                        <v-card-text>
-                                            <v-radio-group v-model="valueList[index]">
-                                                <v-radio
-                                                    v-for="answer in question.answerPossibilities"
-                                                    :key="answer.text"
-                                                    :label="`${answer}`"
+                                            <!--Checkboxes, so that multiple answers are technically allowed,
+                                        not able to save them yet-->
+                                            <v-list v-for="answer in question.answerPossibilities" :key="answer.text">
+                                                <v-checkbox
+                                                    class="my-n2 mx-3"
+                                                    dense
+                                                    :label="answer"
+                                                    :color="fontColor"
                                                     :value="answer"
-                                                    @change="saveAnswerRadioButton(question, answer)"
-                                                ></v-radio>
-                                            </v-radio-group>
+                                                    v-model="valueList[index]"
+                                                    @change="saveAnswerCheckbox($event, question, answer)"
+                                                ></v-checkbox>
+                                            </v-list>
                                             <div v-if="question.userAnswers">
                                                 <v-text-field
                                                     class="mx-4"
@@ -83,152 +110,135 @@
                                                     @input="saveAnswerPossibility($event, question)"
                                                 ></v-text-field>
                                             </div>
+                                        </div>
+                                    </div>
+                                    <div v-else-if="question.questionType === 'SliderQuestion'">
+                                        <v-card-text>
+                                            <!--might have to check if attributes aren't empty, depending on data bank-->
+                                            <p>
+                                                {{ question.belowMessage }}
+                                                <span class="float-right">{{ question.aboveMessage }}</span>
+                                            </p>
+                                            <!--Thumb label is being shown-->
+                                            <div v-if="question.hideValues === false">
+                                                <v-slider
+                                                    v-model="valueList[index]"
+                                                    :min="question.startValue"
+                                                    :max="question.endValue"
+                                                    :step="question.stepSize"
+                                                    ticks
+                                                    tick-size="4"
+                                                    thumb-label="always"
+                                                    append-icon="mdi-plus"
+                                                    prepend-icon="mdi-minus"
+                                                    :color="fontColor"
+                                                    :track-color="backgroundColor"
+                                                    @click:append="addValue(question, index)"
+                                                    @click:prepend="subValue(question, index)"
+                                                    @change="saveAnswerSliderQuestion($event, question, index)"
+                                                >
+                                                </v-slider>
+                                            </div>
+                                            <!--Thumb-label is not being shown-->
+                                            <div v-else-if="question.hideValues === true">
+                                                <v-slider
+                                                    v-model="valueList[index]"
+                                                    :min="question.startValue"
+                                                    :max="question.endValue"
+                                                    :step="question.stepSize"
+                                                    append-icon="mdi-plus"
+                                                    prepend-icon="mdi-minus"
+                                                    :color="fontColor"
+                                                    :track-color="backgroundColor"
+                                                    @click:append="addValue(question, index)"
+                                                    @click:prepend="subValue(question, index)"
+                                                    @change="saveAnswerSliderQuestion($event, question)"
+                                                >
+                                                </v-slider>
+                                            </div>
                                         </v-card-text>
                                     </div>
-                                    <div v-else>
-                                        <!--Checkboxes, so that multiple answers are technically allowed,
-                                        not able to save them yet-->
-                                        <v-list v-for="answer in question.answerPossibilities" :key="answer.text">
+                                    <div v-else-if="question.questionType === 'RangeQuestion'">
+                                        <v-list v-for="answer in question.answerPossibilities" :key="answer">
                                             <v-checkbox
                                                 class="my-n2 mx-3"
-                                                dense
                                                 :label="answer"
                                                 :color="fontColor"
-                                                :value="answer"
-                                                v-model="valueList[index]"
                                                 @change="saveAnswerCheckbox($event, question, answer)"
                                             ></v-checkbox>
                                         </v-list>
-                                        <div v-if="question.userAnswers">
-                                            <v-text-field
-                                                class="mx-4"
-                                                auto-grow
-                                                prepend-icon="mdi-plus"
-                                                clearable
-                                                @click:prepend="saveOwnAnswer(question)"
-                                                @input="saveAnswerPossibility($event, question)"
-                                            ></v-text-field>
-                                        </div>
                                     </div>
-                                </div>
-                                <div v-else-if="question.questionType === 'SliderQuestion'">
-                                    <v-card-text>
-                                        <!--might have to check if attributes aren't empty, depending on data bank-->
-                                        <p>
-                                            {{ question.belowMessage }}
-                                            <span class="float-right">{{ question.aboveMessage }}</span>
-                                        </p>
-                                        <!--Thumb label is being shown-->
-                                        <div v-if="question.hideValues === false">
-                                            <v-slider
-                                                v-model="valueList[index]"
-                                                :min="question.startValue"
-                                                :max="question.endValue"
-                                                :step="question.stepSize"
-                                                ticks
-                                                tick-size="4"
-                                                thumb-label="always"
-                                                append-icon="mdi-plus"
-                                                prepend-icon="mdi-minus"
-                                                :color="fontColor"
-                                                :track-color="backgroundColor"
-                                                @click:append="addValue(question, index)"
-                                                @click:prepend="subValue(question, index)"
-                                                @change="saveAnswerSliderQuestion($event, question, index)"
-                                            >
-                                            </v-slider>
-                                        </div>
-                                        <!--Thumb-label is not being shown-->
-                                        <div v-else-if="question.hideValues === true">
-                                            <v-slider
-                                                v-model="valueList[index]"
-                                                :min="question.startValue"
-                                                :max="question.endValue"
-                                                :step="question.stepSize"
-                                                append-icon="mdi-plus"
-                                                prepend-icon="mdi-minus"
-                                                :color="fontColor"
-                                                :track-color="backgroundColor"
-                                                @click:append="addValue(question, index)"
-                                                @click:prepend="subValue(question, index)"
-                                                @change="saveAnswerSliderQuestion($event, question)"
-                                            >
-                                            </v-slider>
-                                        </div>
-                                    </v-card-text>
-                                </div>
-                                <div v-else-if="question.questionType === 'RangeQuestion'">
-                                    <v-list v-for="answer in question.answerPossibilities" :key="answer">
-                                        <v-checkbox
-                                            class="my-n2 mx-3"
-                                            :label="answer"
-                                            :color="fontColor"
-                                            @change="saveAnswerCheckbox($event, question, answer)"
-                                        ></v-checkbox>
-                                    </v-list>
-                                </div>
 
-                                <div v-else-if="question.questionType === 'SortQuestion'" class="pa-2">
-                                    <v-subheader>
-                                        Bitte bringen Sie die unten aufgeführten Möglichkeiten mittels Drag & Drop in
-                                        eine von Ihnen präferierte Reihenfolge.
-                                    </v-subheader>
-                                    <draggable
-                                        v-model="AnswerListsOfSortQuestions[index]"
-                                        @change="saveAnswerSortQuestion(index, question)"
-                                    >
-                                        <div
-                                            v-for="(answerPossibility, i) in AnswerListsOfSortQuestions[index]"
-                                            :key="i"
+                                    <div v-else-if="question.questionType === 'SortQuestion'" class="pa-2">
+                                        <v-subheader>
+                                            Bitte bringen Sie die unten aufgeführten Möglichkeiten mittels Drag & Drop
+                                            in eine von Ihnen präferierte Reihenfolge.
+                                        </v-subheader>
+                                        <draggable
+                                            v-model="AnswerListsOfSortQuestions[index]"
+                                            @change="saveAnswerSortQuestion(index, question)"
                                         >
-                                            <v-chip class="my-1 mx-3" :color="fontColor">
-                                                {{ answerPossibility }}</v-chip
+                                            <div
+                                                v-for="(answerPossibility, i) in AnswerListsOfSortQuestions[index]"
+                                                :key="i"
                                             >
-                                        </div>
-                                    </draggable>
-                                    <v-btn @click="restoreAP(index, question)" :color="backgroundColor" class="ma-2">
-                                        Zurücksetzen
-                                    </v-btn>
-                                </div>
-                            </v-card>
-                        </v-list>
-                    </v-col>
-                </v-row>
-                <v-row>
-                    <v-col cols="8">
-                        <div v-if="getPoll[1].data.anonymityStatus !== '1'">
-                            <!-- button to get to the previous category, if there is no previous one, the button is disabled,
+                                                <v-chip class="my-1 mx-3" :color="fontColor">
+                                                    {{ answerPossibility }}</v-chip
+                                                >
+                                            </div>
+                                        </draggable>
+                                        <v-btn
+                                            @click="restoreAP(index, question)"
+                                            :color="backgroundColor"
+                                            class="ma-2"
+                                        >
+                                            Zurücksetzen
+                                        </v-btn>
+                                    </div>
+                                </v-card>
+                            </v-list>
+                        </v-col>
+                    </v-row>
+                    <v-row>
+                        <v-col cols="8">
+                            <div v-if="getPoll[1].data.anonymityStatus !== '1'">
+                                <!-- button to get to the previous category, if there is no previous one, the button is disabled,
                          else, the previous category is loaded by getPreviousCategory() if clicked -->
-                            <v-btn class="pl-4" :disabled="hasNoPrevious" @click="getPreviousCategory()"
-                                >Vorherige Seite
-                            </v-btn>
-                            <!-- button to get to the next category, same principle as the one above -->
-                            <v-btn class="pl-4" :disabled="hasNoNext" @click="getNextCategory()">Nächste Seite</v-btn>
-                            <!--@click="saveParticipatedPoll()-->
-                            <v-btn class="float-right" :color="fontColor" nuxt to="/AfterParticipated">
-                                Absenden
-                            </v-btn>
-                            <v-btn class="float-right" :color="fontColor" nuxt to="/AfterSaved">
-                                Speichern
-                            </v-btn>
-                        </div>
-                        <div v-else>
-                            <!-- button to get to the previous category, if there is no previous one, the button is disabled,
+                                <v-btn class="pl-4" :disabled="hasNoPrevious" @click="getPreviousCategory()"
+                                    >Vorherige Seite
+                                </v-btn>
+                                <!-- button to get to the next category, same principle as the one above -->
+                                <v-btn class="pl-4" :disabled="hasNoNext" @click="getNextCategory()"
+                                    >Nächste Seite</v-btn
+                                >
+                                <!--nuxt to="/AfterParticipated"-->
+                                <v-btn class="float-right" :color="fontColor" @click="saveParticipatedPoll()">
+                                    Absenden
+                                </v-btn>
+                                <v-btn class="float-right" :color="fontColor" nuxt to="/AfterSaved">
+                                    Speichern
+                                </v-btn>
+                            </div>
+                            <div v-else>
+                                <!-- button to get to the previous category, if there is no previous one, the button is disabled,
                          else, the previous category is loaded by getPreviousCategory() if clicked -->
-                            <v-btn class="pl-4" :disabled="hasNoPrevious" @click="getPreviousCategory()"
-                                >Vorherige Seite
-                            </v-btn>
-                            <!-- button to get to the next category, same principle as the one above -->
-                            <v-btn class="pl-4" :disabled="hasNoNext" @click="getNextCategory()">Nächste Seite</v-btn>
-                            <!--@click="saveParticipatedPoll()-->
-                            <v-btn :color="fontColor" nuxt to="/AfterParticipated">
-                                Absenden
-                            </v-btn>
-                        </div>
-                    </v-col>
-                </v-row>
-            </v-content>
-        </v-container>
+                                <v-btn class="pl-4" :disabled="hasNoPrevious" @click="getPreviousCategory()"
+                                    >Vorherige Seite
+                                </v-btn>
+                                <!-- button to get to the next category, same principle as the one above -->
+                                <v-btn class="pl-4" :disabled="hasNoNext" @click="getNextCategory()"
+                                    >Nächste Seite</v-btn
+                                >
+                                <!--nuxt to="/AfterParticipated"-->
+                                <v-btn :color="fontColor" @click="saveParticipatedPoll()">
+                                    Absenden
+                                </v-btn>
+                            </div>
+                        </v-col>
+                    </v-row>
+                </v-content>
+            </v-container>
+        </div>
     </div>
 </template>
 
@@ -269,6 +279,7 @@ export default {
             AnswerListsOfSortQuestions: [[1], [2], [3]],
             lastInput: 'Letzte Eingabe',
             valueList: [],
+            participated: true,
         }
     },
     /**
@@ -278,6 +289,7 @@ export default {
         this.id = this.$route.params.id
         this.showPoll()
         this.showAnswer()
+        this.showParticipated()
     },
 
     mounted() {
@@ -297,6 +309,7 @@ export default {
             getCategory: 'participant/getCategory',
             getChangeOfCategories: 'participant/getChangeOfCategories',
             getUsername: 'participant/getUsername',
+            getParticipated: 'participant/getParticipated',
         }),
         /**
          * Generates a questionList for the current category from the origin questionList, where every rangeQuestion is
@@ -738,6 +751,17 @@ export default {
             this.valuesForQuestions()
         },
         /**
+         * Calls participated in store/participant.js.
+         */
+        showParticipated() {
+            const userObj = {
+                pollTaker: this.getUsername,
+                pollId: this.getPoll[1].data.pollId,
+            }
+            this.$store.dispatch('participant/participatedInfo', userObj)
+            this.participated = this.getParticipated
+        },
+        /**
          * Calls saveAnswers from the store with the answerobj (cmdAnswer with all given input)
          */
         saveAnswer() {
@@ -756,15 +780,19 @@ export default {
             this.$store.dispatch('participant/showAnswer', this.answerObj)
             this.givenAnswers = this.getAnswer
         },
-
+        /**
+         * Calls saveParticipatedPoll in store/participat, to change participated Boolean.
+         * Is called when clicked on "Absenden".
+         */
         saveParticipatedPoll() {
             console.log('Ich werde aufgerufen!')
             console.log(this.getUsername)
             const userObj = {
-                username: this.getUsername,
+                pollTaker: this.getUsername,
                 pollId: this.getPoll[1].data.pollId,
             }
             this.$store.dispatch('participant/saveParticipatedPoll', userObj)
+            this.$router.push('/AfterSaved')
         },
     },
 }

@@ -9,6 +9,7 @@
  *            category: [string]}}
  *            username: string
  */
+
 export const state = () => ({
     visibility: false,
     changeOfCategories: false,
@@ -18,6 +19,7 @@ export const state = () => ({
     answer: ['Object'],
     category: ['Object'],
     username: '',
+    participated: false,
 })
 /**
  * Defines mapGetters for Usage in _id.vue.
@@ -57,6 +59,9 @@ export const getters = {
     },
     getQuestionId: (state) => {
         return state.questionId
+    },
+    getParticipated: (state) => {
+        return state.participated
     },
 }
 
@@ -139,6 +144,18 @@ export const actions = {
         commit('setPoll', poll)
     },
     /**
+     * Calls participated in PollResultController to get the participated status and sets the state for it.
+     * @param state
+     * @param pollResultObj
+     * @returns {Promise<void>}
+     */
+    async participatedInfo(state, pollResultObj) {
+        this.$axios.defaults.baseURL = 'http://localhost:8088/api/'
+        this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('user-token')
+        const participated = await this.$axios.get('/participated', pollResultObj)
+        state.participated = participated
+    },
+    /**
      * Defines mapAction showAnswer and sets the global axios with the token saved in localstorage and the baseURL to get
      * all the answers from one user from the AnswerController in the backend. After it got the answers,it commits
      * the answers,to save it in this store (setAnswer), so the mapGetters can access the data and give it back
@@ -168,11 +185,18 @@ export const actions = {
         this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('user-token')
         return this.$axios.post('/poll/' + answerObj.pollId + '/addanswer', answerObj)
     },
-
+    /**
+     * Calls participationToPollResult in PollResultController to save Boolean participated to true, since
+     * the participant has sent the survey away.
+     * @param state
+     * @param userObj
+     * @returns {Promise<AxiosResponse<any>>}
+     */
     saveParticipatedPoll(state, userObj) {
         this.$axios.defaults.baseURL = 'http://localhost:8088/api/'
         this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('user-token')
-        return this.$axios.post('/addParticipatedPollToUser', userObj)
+        console.log('userObj', userObj)
+        return this.$axios.post('/participationToPollResult', userObj)
     },
 
     async saveAnswerPossibility(state, answer) {
