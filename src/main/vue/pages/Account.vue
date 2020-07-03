@@ -1,23 +1,7 @@
 <template>
     <div>
-        <v-container v-if="authenticated === false">
-            <v-card class="mx-auto" max-width="400" outlined>
-                <v-list-item three-line>
-                    <v-list-item-content class="center">
-                        <v-list-item-title class="headline mb-1">Zugriff verweigert</v-list-item-title>
-                        <v-list-item-subtitle>Bitte loggen Sie sich ein</v-list-item-subtitle>
-                    </v-list-item-content>
-                </v-list-item>
-
-                <v-card-actions>
-                    <v-spacer></v-spacer>
-                    <div class="my-2">
-                        <v-btn depressed color="secondary" to="/Login">Login</v-btn>
-                    </div>
-                </v-card-actions>
-            </v-card>
-        </v-container>
-        <v-container>
+        <AuthGate v-if="isAuthenticated !== true"></AuthGate>
+        <v-container v-else>
             <v-card class="mx-auto" max-width="800" tile>
                 <v-card-title class="justify-center"> Willkommen, {{ account.firstName }}! </v-card-title>
                 <v-container class="ma-1">
@@ -123,8 +107,10 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import AuthGate from '../components/AuthGate'
 export default {
     name: 'Account',
+    components: { AuthGate },
     data() {
         return {
             token: '',
@@ -150,6 +136,7 @@ export default {
     computed: {
         ...mapGetters({
             authenticate: 'administration/getToken',
+            isAuthenticated: 'login/isAuthenticated',
             getUsername: 'login/getUsername',
             getFailStatus: 'account/getFailStatus',
         }),
@@ -206,7 +193,7 @@ export default {
         getAccount() {
             console.log(this.users)
             for (let i = 0; i < this.users.length; i++) {
-                if ((this.users[i].username = this.getUsername)) {
+                if (this.users[i].username === this.getUsername) {
                     this.account = this.users[i]
                     console.log(this.account)
                 }

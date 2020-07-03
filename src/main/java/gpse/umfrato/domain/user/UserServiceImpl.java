@@ -131,7 +131,9 @@ class UserServiceImpl implements UserService {
     public void changePassword(final String username, final String password) {
         final User user = userRepository.getOne(username);
         LOGGER.info("username, password" + username + password);
-        user.setPassword(password);
+        String cryptPassword = PasswordEncoderFactories.createDelegatingPasswordEncoder().encode(password);
+        user.setPassword(cryptPassword);
+        LOGGER.info(cryptPassword);
         userRepository.save(user);
         LOGGER.info("All done in UserServiceImpl");
     }
