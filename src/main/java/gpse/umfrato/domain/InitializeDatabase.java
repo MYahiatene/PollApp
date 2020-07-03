@@ -98,10 +98,12 @@ public class InitializeDatabase implements InitializingBean {
 
         //participationLinkService.createParticipationLink(testPoll.getPollId(), tbettmannUserName);
 
+        final String testUserName = "testNutzer";
+
         try {
-            userService.loadUserByUsername("testNutzer");
+            userService.loadUserByUsername(testUserName);
         } catch (UsernameNotFoundException ex) {
-            userService.createUser("testNutzer", dummyPassword, "Markus", "Mueller",
+            userService.createUser(testUserName, dummyPassword, "Markus", "Mueller",
                 "Teilnehmer", "mmueller@gmx.de");
         }
     }

@@ -1,123 +1,128 @@
 <template>
     <div>
-        <v-container v-if="authenticated === false">
-            <v-card class="mx-auto" max-width="400" outlined>
-                <v-list-item three-line>
-                    <v-list-item-content class="center">
-                        <v-list-item-title class="headline mb-1">Zugriff verweigert</v-list-item-title>
-                        <v-list-item-subtitle>Bitte loggen Sie sich ein</v-list-item-subtitle>
-                    </v-list-item-content>
-                </v-list-item>
+        <div v-if="authenticated === false">
+            <v-container>
+                <v-card class="mx-auto" max-width="400" outlined>
+                    <v-list-item three-line>
+                        <v-list-item-content class="center">
+                            <v-list-item-title class="headline mb-1">Zugriff verweigert</v-list-item-title>
+                            <v-list-item-subtitle>Bitte loggen Sie sich ein</v-list-item-subtitle>
+                        </v-list-item-content>
+                    </v-list-item>
 
-                <v-card-actions>
-                    <v-spacer></v-spacer>
-                    <div class="my-2">
-                        <v-btn depressed color="secondary" to="/Login">Login</v-btn>
-                    </div>
-                </v-card-actions>
-            </v-card>
-        </v-container>
-        <v-container>
-            <v-card class="mx-auto" max-width="800" tile>
-                <v-card-title class="justify-center"> Willkommen, {{ account.firstName }}! </v-card-title>
-                <v-container class="ma-1">
-                    <v-container>
-                        <span class="font-weight-bold">
-                            Name:
-                        </span>
-                        {{ account.firstName }} {{ account.lastName }}</v-container
-                    >
-                    <v-container>
-                        <span class="font-weight-bold">
-                            Username:
-                        </span>
-                        {{ account.username }}</v-container
-                    >
-                    <v-container>
-                        <span class="font-weight-bold">
-                            Rolle:
-                        </span>
-                        {{ account.role }}</v-container
-                    >
-                    <v-container>
-                        <span class="font-weight-bold">
-                            E-Mail:
-                        </span>
-                        {{ account.email }} <v-icon @click="dialog2 = true">mdi-pencil</v-icon></v-container
-                    >
-                </v-container>
-                <v-dialog v-model="dialog" persistent max-width="600px">
-                    <template v-slot:activator="{ on }">
-                        <v-btn color="primary" class="ma-4 float-left" v-on="on">Passwort ändern</v-btn>
-                    </template>
-                    <v-card>
-                        <v-card-title>
-                            Passwort ändern
-                        </v-card-title>
-                        <v-card-text>
-                            <v-container>
-                                <v-row>
-                                    <v-col cols="12">
-                                        <v-text-field
-                                            v-model="newPassword1"
-                                            label="Neues Passwort"
-                                            :type="showPassword1 ? 'text' : 'password'"
-                                            :append-icon="showPassword1 ? 'mdi-eye' : 'mdi-eye-off'"
-                                            @click:append="showPassword1 = !showPassword1"
-                                            required
-                                        ></v-text-field>
-                                    </v-col>
-                                    <v-col cols="12">
-                                        <v-text-field
-                                            v-model="newPassword2"
-                                            label="Neues Passwort wiederholen"
-                                            :type="showPassword2 ? 'text' : 'password'"
-                                            :append-icon="showPassword2 ? 'mdi-eye' : 'mdi-eye-off'"
-                                            @click:append="showPassword2 = !showPassword2"
-                                            required
-                                        ></v-text-field>
-                                    </v-col>
-                                    <!--ToDo: Make red and cursive-->
-                                    <div v-if="incorrectPw" class="red--text font-italic">
-                                        <span>Die Passwörter stimmen nicht überein!</span>
-                                    </div>
-                                </v-row>
-                            </v-container>
-                        </v-card-text>
-                        <v-card-actions>
-                            <v-spacer></v-spacer>
-                            <v-btn color="primary" text @click="closePw">Abbrechen</v-btn>
-                            <v-btn color="primary" text @click="savePw">Speichern</v-btn>
-                        </v-card-actions>
-                    </v-card>
-                </v-dialog>
-                <v-dialog v-model="dialog2" persistent max-width="600px">
-                    <v-card>
-                        <v-card-title>
-                            E-Mail ändern
-                        </v-card-title>
-                        <v-card-text>
-                            <v-container>
-                                <v-row>
-                                    <v-col cols="12">
-                                        <v-text-field
-                                            v-model="email"
-                                            label="Neue E-Mail Adresse"
-                                            required
-                                        ></v-text-field>
-                                    </v-col>
-                                </v-row>
-                            </v-container>
-                        </v-card-text>
-                        <v-card-actions>
-                            <v-spacer></v-spacer>
-                            <v-btn color="primary" text @click="closeEmail">Abbrechen</v-btn>
-                            <v-btn color="primary" text @click="saveEmail">Speichern</v-btn>
-                        </v-card-actions>
-                    </v-card>
-                </v-dialog>
-            </v-card>
-        </v-container>
+                    <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <div class="my-2">
+                            <v-btn depressed color="secondary" to="/Login">Login</v-btn>
+                        </div>
+                    </v-card-actions>
+                </v-card>
+            </v-container>
+        </div>
+
+        <div v-else>
+            <v-container>
+                <v-card class="mx-auto" max-width="800" tile>
+                    <v-card-title class="justify-center"> Willkommen, {{ account.firstName }}! </v-card-title>
+                    <v-container class="ma-1">
+                        <v-container>
+                            <span class="font-weight-bold">
+                                Name:
+                            </span>
+                            {{ account.firstName }} {{ account.lastName }}</v-container
+                        >
+                        <v-container>
+                            <span class="font-weight-bold">
+                                Username:
+                            </span>
+                            {{ account.username }}</v-container
+                        >
+                        <v-container>
+                            <span class="font-weight-bold">
+                                Rolle:
+                            </span>
+                            {{ account.role }}</v-container
+                        >
+                        <v-container>
+                            <span class="font-weight-bold">
+                                E-Mail:
+                            </span>
+                            {{ account.email }} <v-icon @click="dialog2 = true">mdi-pencil</v-icon></v-container
+                        >
+                    </v-container>
+                    <v-dialog v-model="dialog" persistent max-width="600px">
+                        <template v-slot:activator="{ on }">
+                            <v-btn color="primary" class="ma-4 float-left" v-on="on">Passwort ändern</v-btn>
+                        </template>
+                        <v-card>
+                            <v-card-title>
+                                Passwort ändern
+                            </v-card-title>
+                            <v-card-text>
+                                <v-container>
+                                    <v-row>
+                                        <v-col cols="12">
+                                            <v-text-field
+                                                v-model="newPassword1"
+                                                label="Neues Passwort"
+                                                :type="showPassword1 ? 'text' : 'password'"
+                                                :append-icon="showPassword1 ? 'mdi-eye' : 'mdi-eye-off'"
+                                                @click:append="showPassword1 = !showPassword1"
+                                                required
+                                            ></v-text-field>
+                                        </v-col>
+                                        <v-col cols="12">
+                                            <v-text-field
+                                                v-model="newPassword2"
+                                                label="Neues Passwort wiederholen"
+                                                :type="showPassword2 ? 'text' : 'password'"
+                                                :append-icon="showPassword2 ? 'mdi-eye' : 'mdi-eye-off'"
+                                                @click:append="showPassword2 = !showPassword2"
+                                                required
+                                            ></v-text-field>
+                                        </v-col>
+                                        <!--ToDo: Make red and cursive-->
+                                        <div v-if="incorrectPw" class="red--text font-italic">
+                                            <span>Die Passwörter stimmen nicht überein!</span>
+                                        </div>
+                                    </v-row>
+                                </v-container>
+                            </v-card-text>
+                            <v-card-actions>
+                                <v-spacer></v-spacer>
+                                <v-btn color="primary" text @click="closePw">Abbrechen</v-btn>
+                                <v-btn color="primary" text @click="savePw">Speichern</v-btn>
+                            </v-card-actions>
+                        </v-card>
+                    </v-dialog>
+                    <v-dialog v-model="dialog2" persistent max-width="600px">
+                        <v-card>
+                            <v-card-title>
+                                E-Mail ändern
+                            </v-card-title>
+                            <v-card-text>
+                                <v-container>
+                                    <v-row>
+                                        <v-col cols="12">
+                                            <v-text-field
+                                                v-model="email"
+                                                label="Neue E-Mail Adresse"
+                                                required
+                                            ></v-text-field>
+                                        </v-col>
+                                    </v-row>
+                                </v-container>
+                            </v-card-text>
+                            <v-card-actions>
+                                <v-spacer></v-spacer>
+                                <v-btn color="primary" text @click="closeEmail">Abbrechen</v-btn>
+                                <v-btn color="primary" text @click="saveEmail">Speichern</v-btn>
+                            </v-card-actions>
+                        </v-card>
+                    </v-dialog>
+                </v-card>
+            </v-container>
+        </div>
     </div>
 </template>
 
@@ -128,7 +133,7 @@ export default {
     data() {
         return {
             token: '',
-            account: '',
+            account: {},
             users: [],
             authenticated: false,
             dialog: false,
@@ -206,7 +211,7 @@ export default {
         getAccount() {
             console.log(this.users)
             for (let i = 0; i < this.users.length; i++) {
-                if ((this.users[i].username = this.getUsername)) {
+                if (this.users[i].username === this.getUsername) {
                     this.account = this.users[i]
                     console.log(this.account)
                 }
