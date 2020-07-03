@@ -9,6 +9,8 @@
                         :search="search"
                         :sort-by="sortBy"
                         :sort-desc="sortDesc"
+                        no-data-text="Es gibt noch keine Umfragen"
+                        no-results-text="Keine passenden Umfragen gefunden"
                         hide-default-footer
                     >
                         <template v-slot:header>
@@ -42,6 +44,9 @@
                                     :search="search"
                                     :custom-filter="filterOnlyCapsText"
                                     class="elevation-1"
+                                    multi-sort
+                                    no-data-text="Es gibt noch keine Umfragen"
+                                    no-results-text="Keine passenden Umfragen gefunden"
                                     :footer-props="footerProps"
                                 >
                                     <template v-slot:item.status="{ item }">
@@ -57,6 +62,16 @@
                                     <template v-slot:item.action2="{ item }">
                                         <v-icon @click="itemAction2(item)">
                                             {{ item.action2Icon }}
+                                        </v-icon>
+                                    </template>
+                                    <template v-slot:item.invite="{ item }">
+                                        <v-icon @click="inviteAction(item)">
+                                            {{ item.inviteIcon }}
+                                        </v-icon>
+                                    </template>
+                                    <template v-slot:item.reminder="{ item }">
+                                        <v-icon @click="reminderAction(item)">
+                                            {{ item.reminderIcon }}
                                         </v-icon>
                                     </template>
                                     <template v-slot:item.delete="{ item }">
@@ -105,6 +120,8 @@ export default {
             contextActions: [
                 { title: 'Beantworten', link: '/' },
                 { title: 'Bearbeiten', link: '/polls/' },
+                { title: 'Einladen', link: '/invite/' },
+                { title: 'Erinnern', link: '/remind/' },
                 { title: 'Aktivieren', link: '/' },
                 { title: 'Löschen', link: '/' },
             ],
@@ -112,11 +129,12 @@ export default {
                 { text: '', value: 'status', sortable: false },
                 { text: '', value: 'action1', sortable: false },
                 { text: '', value: 'action2', sortable: false },
-                { text: '', value: 'delete', sortable: false },
+                { text: '', value: 'invite', sortable: false },
+                { text: '', value: 'reminder', sortable: false },
                 { text: 'Umfrage', value: 'pollName' },
                 { text: 'Erstellt von', value: 'pollCreator' },
                 { text: 'Status', value: 'pollStatusString' },
-                { text: 'Beantwortet von', value: 'paticipantCount' },
+                { text: 'Beantwortet von', value: 'participantCount' },
                 { text: 'Kategorienanzahl', value: 'categoryCount' },
                 { text: 'Fragenanzahl', value: 'questionCount' },
                 { text: 'Anonymitätsgrad', value: 'anonymityString' },
@@ -158,26 +176,19 @@ export default {
                     data[i].action1Icon = 'mdi-pencil'
                     data[i].action2Icon = 'mdi-delete'
                     data[i].statusIcon = 'mdi-play'
-                    data[i].deleteIcon = 'mdi-delete'
+                    data[i].inviteIcon = 'mdi-account-plus'
                 } else if (this.items[i].pollStatus === 1) {
                     data[i].pollStatusString = 'Aktiv'
                     data[i].action1Icon = 'mdi-magnify'
                     data[i].action2Icon = 'mdi-link-variant'
                     data[i].statusIcon = 'mdi-stop'
-                    data[i].deleteIcon = 'mdi-delete'
+                    data[i].inviteIcon = 'mdi-account-plus'
+                    data[i].reminderIcon = 'mdi-message-alert'
                 } else if (this.items[i].pollStatus === 2) {
                     data[i].pollStatusString = 'Beendet'
                     data[i].action1Icon = 'mdi-magnify'
                     data[i].action2Icon = 'mdi-delete'
                     data[i].statusIcon = 'mdi-content-duplicate'
-                    data[i].deleteIcon = 'mdi-delete'
-                }
-                const categories = this.items[i].categoryList
-                data[i].categoryCount = categories.length
-                data[i].questionCount = 0
-                for (let j = 0; j < categories.length; j++) {
-                    const count = data[i].questionCount
-                    data[i].questionCount = count + categories[j].questionList.length
                 }
             }
             return data
@@ -185,7 +196,6 @@ export default {
     },
     mounted() {
         this.initialize()
-        this.initializeLinks()
     },
     methods: {
         ...mapActions({ initialize: 'navigation/initialize', updatePollStatus: 'navigation/updatePollStatus' }),
@@ -194,13 +204,6 @@ export default {
             setPollFinished: 'navigation/setPollFinished',
             splicePolls: 'navigation/splicePolls',
         }),
-
-        async initializeLinks() {
-            await this.$axios.get('/participationLinks').then((response) => {
-                this.participationLinks = response.data
-                console.log(response.data)
-            })
-        },
         changePollStatus(item) {
             if (item.pollStatus === 0) {
                 if (confirm('Umfrage jetzt veröffentlichen?')) {
@@ -224,9 +227,15 @@ export default {
         itemAction2(item) {
             if (item.pollStatus === 1) {
                 this.setLink(item)
-            } else if (confirm('Umfrage entgültig löschen?')) {
+            } else {
                 this.deletePoll(item)
             }
+        },
+        inviteAction(item) {
+            this.$router.push('/invite/' + item.pollId)
+        },
+        reminderAction(item) {
+            this.$router.push('/remind/' + item.pollId)
         },
         showValue(item, key) {
             alert(item[key])
@@ -241,18 +250,15 @@ export default {
             )
         },
         setLink(item) {
-            for (let i = 0; i < this.participationLinks.length; i++) {
-                if (this.participationLinks[i].pollId === item.pollId) {
-                    navigator.clipboard.writeText(
-                        'http://localhost:8080/participant/' + this.participationLinks[i].participationLink
-                    )
-                    /* alert( //TODO: extrem nervig beim Testen
-                        'Link kopiert: "localhost:8080/participant/' +
-                            this.participationLinks[i].participationLink +
-                            '"'
-                    ) */
+            let links = ''
+            for (let i = 0; i < item.participationLinks.length; i++) {
+                links += item.participationLinks[i].generatedParticipationLink
+                if (i + 1 !== item.participationLinks.length) {
+                    links += ', '
                 }
             }
+            navigator.clipboard.writeText(links)
+            alert('Link(s) kopiert: ' + links.slice(0, 120) + (links.length > 117 ? '...' : ''))
         },
         async initializeDatabase() {
             const today = new Date()
@@ -260,9 +266,9 @@ export default {
             const mm = String(today.getMonth() + 1).padStart(2, '0') // January is 0!
             const yyyy = today.getFullYear()
             const poll = {
-                pollcreator: 'Jan',
+                pollCreator: 'Jan',
                 anonymityStatus: '1',
-                pollname: 'Beispielumfrage',
+                pollName: 'Beispielumfrage',
                 pollCreatedAt: dd + '.' + mm + '.' + yyyy,
                 activatedAt: dd + '.' + mm + '.' + yyyy,
                 deactivatedAt: dd + '.' + mm + '.' + yyyy,
@@ -459,7 +465,6 @@ export default {
                 })
             this.progressColorA = '#006eff'
             this.initialize()
-            await this.initializeLinks()
         },
 
         async answerPoll() {
@@ -527,9 +532,10 @@ export default {
                 })
             }
         },
+
         deletePoll(item) {
             const index = this.items.indexOf(item)
-            const del = confirm('Sind sie sich sicher, dass sie diese Umfrage löschen möchten?')
+            const del = confirm('Sind sie sich sicher, dass sie diese Umfrage entgültig löschen möchten?')
             if (del) {
                 this.splicePolls(index)
                 this.$axios.put('/deletepoll', { pollId: item.pollId })

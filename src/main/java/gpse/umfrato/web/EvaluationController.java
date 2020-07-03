@@ -46,7 +46,6 @@ public class EvaluationController {
         ANSWER_FILTER, USER_FILTER
     }
 
-
     @Autowired
     public EvaluationController(final AnswerService answerService, final UserService userService,
                                 final QuestionService questionService, final PollService pollService,
@@ -121,6 +120,11 @@ public class EvaluationController {
     @GetMapping("/loadSession/{sessionId:\\d+}")
     public Session loadEvaluation(final @PathVariable Long sessionId) {
         return sessionService.getSession(sessionId);
+    }
+
+    @PostMapping("/deleteSession/{sessionId:\\d+}")
+    public void deleteEvaluation(final @PathVariable Long sessionId) {
+        sessionService.deleteSession(sessionId);
     }
 
     @GetMapping("/getSessions/{pollId:\\d+}")

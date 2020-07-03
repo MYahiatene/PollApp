@@ -1,7 +1,7 @@
 <template>
     <v-dialog v-model="dialog" overlay-color="background" persistent width="500" overlay-opacity="0.95" fullscreen>
         <template v-slot:activator="{ on }">
-            <v-btn color="primary" v-on="on">
+            <v-btn color="primary" v-on="on" class="ma-2">
                 Analyse
             </v-btn>
         </template>
@@ -187,40 +187,6 @@
                             </div>
                         </v-expansion-panel-content>
                     </v-expansion-panel>
-                    <v-spacer />
-                    <v-expansion-panel>
-                        <v-expansion-panel-header>
-                            Sessionmanagement
-                        </v-expansion-panel-header>
-                        <v-expansion-panel-content>
-                            Hier können Sie Auswertungs-Sessions speichern und laden.
-                            <v-row>
-                                <v-col cols="6">
-                                    <v-overflow-btn
-                                        v-model="choosenSessionTitle"
-                                        label="Session zum laden wählen"
-                                        editable
-                                        :items="sessions"
-                                    >
-                                    </v-overflow-btn>
-                                    <v-btn color="primary" @click="loadOneSession()">
-                                        Laden
-                                    </v-btn>
-                                </v-col>
-                                <v-col cols="6">
-                                    <v-text-field
-                                        v-model="sessionTitle"
-                                        label="Sessiontitel"
-                                        hint="Sie sollten jeder Session einen Namen geben, um sie später unterscheiden zu können."
-                                    >
-                                    </v-text-field>
-                                    <v-btn color="primary" @click="saveToStore(), saveThisSession()">
-                                        Speichern
-                                    </v-btn>
-                                </v-col>
-                            </v-row>
-                        </v-expansion-panel-content>
-                    </v-expansion-panel>
                 </v-expansion-panels>
             </template>
             <v-card-actions>
@@ -257,8 +223,6 @@ export default {
             applyConsistency: false,
             minConsistencyValue: 0,
             maxConsistencyValue: 0,
-            sessionTitle: '',
-            choosenSessionTitle: '',
             qafilter: false,
             datefilter: true,
             qafilterList: [
@@ -335,7 +299,6 @@ export default {
         ...mapGetters({
             polls: 'evaluation/getPolls',
             getSessions: 'evaluation/getSessions',
-            getUsername: 'login/getUsername',
         }),
 
         pollTitles() {
@@ -382,16 +345,6 @@ export default {
             console.log('questionTitles: ')
             return questionTitles
         },
-
-        sessions() {
-            console.log('sessions()')
-            const sessions = this.getSessions
-            const titles = []
-            for (let i = 0; i < sessions.length; i++) {
-                titles.push(sessions[i].sessionTitle)
-            }
-            return titles
-        },
     },
     mounted() {
         console.log('mounted()')
@@ -399,15 +352,11 @@ export default {
         for (let i = 0; i < this.questionTitles.length; i++) {
             this.selectedQuestions.push(this.questionTitles[i])
         }
-        this.loadSessions()
         this.updateNumberOfConsistencyQuestions()
     },
     methods: {
         ...mapActions({
             sendFilter: 'evaluation/sendFilter',
-            saveSession: 'evaluation/saveSession',
-            loadSessions: 'evaluation/loadSessions',
-            loadSession: 'evaluation/loadSession',
             updateData: 'evaluation/updateData',
         }),
 
@@ -427,29 +376,39 @@ export default {
             for (let i = 0; i < this.qafilterList.length; i++) {
                 if (this.qafilterList[i].active) {
                     const filter = this.qafilterList[i]
+                    console.log('saveQAFilter')
+                    console.log(this.polls)
+                    console.log(this.pollIndex)
+                    console.log(filter)
                     if (filter.answerIndices.length !== 0) {
                         filterData.push({
                             filterType: 'questionAnswer',
-                            invertFilter: false,
-                            targetQuestionId: this.polls[this.pollIndex].categoryList[filter.categoryIndex]
-                                .questionList[filter.questionIndex].questionId,
+                            invertFilter: filter.invertFilter,
+                            targetQuestionId: filter.questionId,
                             targetAnswerPossibilities: filter.answerIndices,
+                            isSlider: filter.isSlider,
                         })
                     }
                 }
             }
             if (this.datefilter) {
+                let numberOfDateFilters = 0
+                console.log(this.dateFilterList)
                 for (let i = 0; i < this.dateFilterList.length; i++) {
                     if (this.dateFilterList[i].active) {
-                        if (i < -1) {
-                            filterData.push({
-                                filterType: 'date',
-                                invertFilter: this.dateFilterList[i].invertFilter,
-                                startDate: this.dateFilterList[i].startDate,
-                                endDate: this.dateFilterList[i].endDate,
-                            })
-                        }
+                        numberOfDateFilters += 1
+                        filterData.push({
+                            filterType: 'date',
+                            invertFilter: this.dateFilterList[i].invertFilter,
+                            startDate: this.dateFilterList[i].startDate,
+                            endDate: this.dateFilterList[i].endDate,
+                        })
                     }
+                }
+                if (numberOfDateFilters > 1) {
+                    filterData.push({
+                        filterType: 'or',
+                    })
                 }
             }
             console.log(filterData)
@@ -490,6 +449,7 @@ export default {
                 filterType: 'qaFilter',
                 categoryId: -1,
                 questionId: -1,
+                isSlider: false,
                 answerIndices: [],
             })
         },
@@ -499,11 +459,13 @@ export default {
             this.qafilterList[index].active = false
         },
 
-        updateQaFilter([filterId, categoryIndex, questionIndex, answerIndices, invertFilter]) {
+        updateQaFilter([filterId, categoryIndex, questionIndex, questionId, answerIndices, isSlider, invertFilter]) {
             console.log('updateQAFilter()')
             this.qafilterList[filterId].categoryIndex = categoryIndex
             this.qafilterList[filterId].questionIndex = questionIndex
+            this.qafilterList[filterId].questionId = questionId
             this.qafilterList[filterId].answerIndices = answerIndices
+            this.qafilterList[filterId].isSlider = isSlider
             this.qafilterList[filterId].invertFilter = invertFilter
         },
 
@@ -528,40 +490,12 @@ export default {
 
         updateDateFilter([filterIndex, startDate, endDate, invertFilter]) {
             console.log('updateDateFilter()')
-
+            console.log(invertFilter)
             this.dateFilterList[filterIndex].startDate = startDate
             this.dateFilterList[filterIndex].endDate = endDate
-
             this.dateFilterList[filterIndex].invertFilter = invertFilter
+            console.log(this.dateFilterList)
         },
-
-        saveThisSession() {
-            console.log('saveThisSession()')
-            this.saveToStore()
-            const payload = {
-                sessionTitle: this.sessionTitle,
-                lastUsername: this.getUsername,
-            }
-            this.saveSession(payload)
-        },
-
-        async loadOneSession() {
-            console.log('loadOneSession()')
-            let id = -1
-            const sessions = this.getSessions
-            for (let i = 0; i < sessions.length; i++) {
-                if (sessions[i].sessionTitle === this.choosenSessionTitle) {
-                    id = sessions[i].sessionId
-                }
-            }
-            if (id !== -1) {
-                await this.loadSession(id)
-                await this.updateData()
-                this.$emit('close-event')
-                this.dialog = false
-            }
-        },
-
         updateConsistencyOn() {
             this.consistencyOn = !(this.minConsistencyValue === 0)
         },

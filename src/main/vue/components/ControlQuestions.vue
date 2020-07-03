@@ -87,6 +87,10 @@
                             </v-overflow-btn>
 
                             <v-select
+                                v-if="
+                                    questions[questionIndex] &&
+                                    !(questions[questionIndex].questionType === 'SliderQuestion')
+                                "
                                 v-model="selectedAnswers"
                                 prefix="Mögliche Antwort(en): "
                                 :items="answerTitles"
@@ -109,6 +113,44 @@
                                     </span>
                                 </template>
                             </v-select>
+                            <div
+                                v-if="
+                                    questions[questionIndex] &&
+                                    questions[questionIndex].questionType === 'SliderQuestion'
+                                "
+                            >
+                                Antwort-Bereich:
+                                <v-range-slider
+                                    v-model="range"
+                                    :min="questions[questionIndex].startValue"
+                                    :max="questions[questionIndex].endValue"
+                                    :step="questions[questionIndex].stepSize"
+                                    :thumb-label="true"
+                                >
+                                    <template v-slot:prepend>
+                                        <v-text-field
+                                            :value="range[0]"
+                                            class="mt-0 pt-0"
+                                            hide-details
+                                            single-line
+                                            type="number"
+                                            style="width: 60px;"
+                                            @change="$set(range, 0, $event)"
+                                        ></v-text-field>
+                                    </template>
+                                    <template v-slot:append>
+                                        <v-text-field
+                                            :value="range[1]"
+                                            class="mt-0 pt-0"
+                                            hide-details
+                                            single-line
+                                            type="number"
+                                            style="width: 60px;"
+                                            @change="$set(range, 1, $event)"
+                                        ></v-text-field>
+                                    </template>
+                                </v-range-slider>
+                            </div>
                         </v-card>
                     </v-col>
 
@@ -139,6 +181,10 @@
                             >
                             </v-overflow-btn>
                             <v-select
+                                v-if="
+                                    questions2[questionIndex2] &&
+                                    !(questions2[questionIndex2].questionType === 'SliderQuestion')
+                                "
                                 v-model="selectedAnswers2"
                                 prefix="Mögliche Antwort(en): "
                                 :items="answerTitles2"
@@ -161,6 +207,44 @@
                                     >
                                 </template>
                             </v-select>
+                            <div
+                                v-if="
+                                    questions2[questionIndex2] &&
+                                    questions2[questionIndex2].questionType === 'SliderQuestion'
+                                "
+                            >
+                                Antwort-Bereich:
+                                <v-range-slider
+                                    v-model="range2"
+                                    :min="questions2[questionIndex2].startValue"
+                                    :max="questions2[questionIndex2].endValue"
+                                    :step="questions2[questionIndex2].stepSize"
+                                    :thumb-label="true"
+                                >
+                                    <template v-slot:prepend>
+                                        <v-text-field
+                                            :value="range2[0]"
+                                            class="mt-0 pt-0"
+                                            hide-details
+                                            single-line
+                                            type="number"
+                                            style="width: 60px;"
+                                            @change="$set(range2, 0, $event)"
+                                        ></v-text-field>
+                                    </template>
+                                    <template v-slot:append>
+                                        <v-text-field
+                                            :value="range2[1]"
+                                            class="mt-0 pt-0"
+                                            hide-details
+                                            single-line
+                                            type="number"
+                                            style="width: 60px;"
+                                            @change="$set(range2, 1, $event)"
+                                        ></v-text-field>
+                                    </template>
+                                </v-range-slider>
+                            </div>
                         </v-card>
                     </v-col>
                 </v-row>
@@ -207,8 +291,9 @@
                 <div v-for="(cq, index) in listOfControlQuestions" :key="index">
                     <v-row>
                         <v-chip class="ma-1" :outlined="index === currentId" @click="openCq(index)">
-                            {{ index }}: {{ cq.serverId }}: Frage {{ cq.q1 }} : {{ cq.a1.length }} Antwort(en) mit Frage
-                            {{ cq.q2 }} : {{ cq.a2.length }} Antwort(en)
+                            {{ index }}: {{ cq.serverId }}: Frage {{ cq.q1 }} :
+                            {{(cq.s1? "Intervall" :  cq.a1.length + " Antwort(en) ")}} mit Frage {{ cq.q2 }} :
+                            {{(cq.s2? "Intervall" :  cq.a2.length + " Antwort(en)" )}}
 
                             <v-icon class="ml-1" @click="copyQcQuestion(index)"> mdi-content-duplicate</v-icon>
                             <v-icon right @click="deleteDialog = true"> mdi-minus-circle-outline</v-icon>
@@ -262,6 +347,8 @@ export default {
             selectedQuestion2: '',
             selectedAnswers: [],
             selectedAnswers2: [],
+            range: [0, 0],
+            range2: [0, 0],
             answerTitlesDisplayedInSelect: 5,
             listOfControlQuestions: [],
             buttonInfo: '',
@@ -307,8 +394,8 @@ export default {
                 return []
             } else {
                 const l = []
-                for (let i = 0; i < this.categories[this.categoryIndex].questionList.length; i++) {
-                    l[i] = this.categories[this.categoryIndex].questionList[i].questionMessage
+                for (let i = 0; i < this.questions.length; i++) {
+                    l[i] = this.questions[i].questionMessage
                 }
                 return l
             }
@@ -319,8 +406,8 @@ export default {
                 return []
             } else {
                 const l = []
-                for (let i = 0; i < this.categories[this.categoryIndex2].questionList.length; i++) {
-                    l[i] = this.categories[this.categoryIndex2].questionList[i].questionMessage
+                for (let i = 0; i < this.questions2.length; i++) {
+                    l[i] = this.questions2[i].questionMessage
                 }
                 return l
             }
@@ -330,7 +417,16 @@ export default {
             if (this.categoryIndex === -1) {
                 return []
             } else {
-                return this.categories[this.categoryIndex].questionList
+                const c = []
+                for (let i = 0; i < this.categories[this.categoryIndex].questionList.length; i++) {
+                    if (
+                        this.categories[this.categoryIndex].questionList[i].questionType !== 'TextQuestion' &&
+                        this.categories[this.categoryIndex].questionList[i].questionType !== 'SortQuestion'
+                    ) {
+                        c.push(this.categories[this.categoryIndex].questionList[i])
+                    }
+                }
+                return c
             }
         },
 
@@ -338,7 +434,16 @@ export default {
             if (this.categoryIndex2 === -1) {
                 return []
             } else {
-                return this.categories[this.categoryIndex2].questionList
+                const c = []
+                for (let i = 0; i < this.categories[this.categoryIndex2].questionList.length; i++) {
+                    if (
+                        this.categories[this.categoryIndex2].questionList[i].questionType !== 'TextQuestion' &&
+                        this.categories[this.categoryIndex2].questionList[i].questionType !== 'SortQuestion'
+                    ) {
+                        c.push(this.categories[this.categoryIndex2].questionList[i])
+                    }
+                }
+                return c
             }
         },
 
@@ -347,6 +452,9 @@ export default {
                 return []
             } else {
                 const l = []
+                console.log('answerTitles')
+                console.log(this.questionIndex)
+                console.log(this.questions)
                 if (this.questions[this.questionIndex].questionType === 'RangeQuestion') {
                     l.push(this.questions[this.questionIndex].belowMessage)
                     for (
@@ -402,22 +510,36 @@ export default {
         this.answerIndices = this.initialAnswerIndices
 
         this.computeWordsFromIndices()
+        console.log('mount')
 
         this.$axios
             .get('/poll/' + this.polls[this.pollIndex].pollId + '/consistencyquestions')
             .then((response) => {
                 const list = response.data
-                console.log(response)
+                console.log(response.data)
 
                 for (let i = 0; i < list.length; i++) {
                     console.log(i)
+
+                    const a1 = []
+                    for (let j = 0; j < list[i].answer1Indices.length; j++) {
+                        a1.push(parseFloat(list[i].answer1Indices[j]))
+                    }
+
+                    const a2 = []
+                    for (let j = 0; j < list[i].answer2Indices.length; j++) {
+                        a2.push(parseFloat(list[i].answer2Indices[j]))
+                    }
+
                     this.listOfControlQuestions.push({
                         c1: this.getCategoryIndexAndQuestionIndexFromQuestionId(list[i].question1Id).categoryIndex,
                         q1: this.getCategoryIndexAndQuestionIndexFromQuestionId(list[i].question1Id).questionIndex,
-                        a1: list[i].answer1Indices,
+                        a1,
+                        s1: list[i].question1Slider,
                         c2: this.getCategoryIndexAndQuestionIndexFromQuestionId(list[i].question2Id).categoryIndex,
                         q2: this.getCategoryIndexAndQuestionIndexFromQuestionId(list[i].question2Id).questionIndex,
-                        a2: list[i].answer2Indices,
+                        a2,
+                        s2: list[i].question2Slider,
                         serverId: list[i].consistencyQuestionId,
                     })
                 }
@@ -452,10 +574,12 @@ export default {
 
         updateQuestionIndex() {
             this.questionIndex = this.questionTitles.indexOf(this.selectedQuestion)
+            this.resetAnswers()
         },
 
         updateQuestionIndex2() {
             this.questionIndex2 = this.questionTitles2.indexOf(this.selectedQuestion2)
+            this.resetAnswers2()
         },
 
         updateAnswerIndices() {
@@ -475,6 +599,16 @@ export default {
             }
         },
 
+        resetAnswers() {
+            this.range = [0, 0]
+            this.answerIndices = []
+        },
+
+        resetAnswers2() {
+            this.range2 = [0, 0]
+            this.answerIndices2 = []
+        },
+
         askForCategory() {
             const OnlyOneCategory = this.categories.length === 1
             if (OnlyOneCategory) {
@@ -492,40 +626,72 @@ export default {
             if (
                 this.categoryIndex === -1 ||
                 this.questionIndex === -1 ||
-                this.answerIndices.length === 0 ||
+                (this.answerIndices.length === 0 &&
+                    !(this.questions[this.questionIndex].questionType === 'SliderQuestion')) ||
                 this.categoryIndex2 === -1 ||
                 this.questionIndex2 === -1 ||
-                this.answerIndices2.length === 0
+                (this.answerIndices2.length === 0 &&
+                    !(this.questions2[this.questionIndex2].questionType === 'SliderQuestion'))
             ) {
                 this.buttonInfo = 'Bitte füllen Sie erst alle Felder aus!'
             } else {
                 const ans1 = []
-                for (let i = 0; i < this.answerIndices.length; i++) {
-                    ans1[i] = this.answerIndices[i]
+                const ans2 = []
+                let slide = false
+                let slide2 = false
+
+                if (this.questions[this.questionIndex].questionType === 'SliderQuestion') {
+                    if (this.range[0] === this.range[1]) {
+                        this.buttonInfo = 'Bitte geben Sie bei der ersten Frage ein echtes Intervall an'
+                        console.log('no add')
+                        return
+                    } else {
+                        slide = true
+                        ans1[0] = this.range[0] + ''
+                        ans1[1] = this.range[1] + ''
+                    }
+                } else {
+                    for (let i = 0; i < this.answerIndices.length; i++) {
+                        ans1[i] = this.answerIndices[i] + ''
+                    }
                 }
 
-                const ans2 = []
-                for (let i = 0; i < this.answerIndices2.length; i++) {
-                    ans2[i] = this.answerIndices2[i]
+                if (this.questions2[this.questionIndex2].questionType === 'SliderQuestion') {
+                    if (this.range2[0] === this.range2[1]) {
+                        this.buttonInfo = 'Bitte geben Sie bei der zweiten Frage ein echtes Intervall an'
+                        return
+                    } else {
+                        slide2 = true
+                        ans2[0] = this.range2[0] + ''
+                        ans2[1] = this.range2[1] + ''
+                    }
+                } else {
+                    for (let i = 0; i < this.answerIndices2.length; i++) {
+                        ans2[i] = this.answerIndices2[i] + ''
+                    }
                 }
 
                 const cq = {
                     c1: this.categoryIndex,
                     q1: this.questionIndex,
                     a1: ans1,
+                    s1: slide,
                     c2: this.categoryIndex2,
                     q2: this.questionIndex2,
                     a2: ans2,
+                    s2: slide2,
                     serverId: this.currentServerId,
                 }
-                console.log(ans1)
+                console.log(cq)
 
                 const consistencyQuestion = {
                     consistencyQuestionId: null,
                     pollId: this.polls[this.pollIndex].pollId,
                     question1Id: this.questions[this.questionIndex].questionId,
+                    question1Slider: slide,
                     answer1Indices: ans1,
                     question2Id: this.questions2[this.questionIndex2].questionId,
+                    question2Slider: slide2,
                     answer2Indices: ans2,
                 }
 
@@ -554,6 +720,8 @@ export default {
                 } else {
                     this.listOfControlQuestions[this.currentId] = cq
                 }
+                console.log('bin hier')
+                console.log(cq)
 
                 this.buttonInfo = ''
                 this.currentId = -1
@@ -576,16 +744,21 @@ export default {
             this.categoryIndex = -1
             this.questionIndex = -1
             this.answerIndices = []
+            this.range = [0, 0]
             this.categoryIndex2 = -1
             this.questionIndex2 = -1
             this.answerIndices2 = []
+            this.range2 = [0, 0]
             this.computeWordsFromIndices()
         },
 
         deleteControlQuestion(index) {
             // the question is added here, so its no longer visible in the editing component
 
-            this.addControlQuestion(index)
+            if (index === this.currentId) {
+                this.addControlQuestion(index)
+            }
+
             console.log('delete')
             if (index > -1) {
                 this.$axios.post('/poll/delcq/' + this.listOfControlQuestions[index].serverId).catch((reason) => {
@@ -598,6 +771,8 @@ export default {
         },
 
         openCq(index) {
+            console.log('open')
+            console.log(this.listOfControlQuestions[index])
             if (this.questionWasCopied) {
                 this.currentId = -1
                 this.currentServerId = -1
@@ -610,18 +785,31 @@ export default {
             this.categoryIndex = this.listOfControlQuestions[index].c1
             this.questionIndex = this.listOfControlQuestions[index].q1
 
-            this.answerIndices = []
+            if (this.listOfControlQuestions[index].s1) {
+                this.range[0] = parseFloat(this.listOfControlQuestions[index].a1[0])
+                this.range[1] = parseFloat(this.listOfControlQuestions[index].a1[1])
+                this.$forceUpdate()
+            } else {
+                this.answerIndices = []
 
-            for (let i = 0; i < this.listOfControlQuestions[index].a1.length; i++) {
-                this.answerIndices[i] = this.listOfControlQuestions[index].a1[i]
+                for (let i = 0; i < this.listOfControlQuestions[index].a1.length; i++) {
+                    this.answerIndices[i] = this.listOfControlQuestions[index].a1[i]
+                }
             }
+
             this.categoryIndex2 = this.listOfControlQuestions[index].c2
             this.questionIndex2 = this.listOfControlQuestions[index].q2
 
-            this.answerIndices2 = []
+            if (this.listOfControlQuestions[index].s2) {
+                this.range2[0] = parseFloat(this.listOfControlQuestions[index].a2[0])
+                this.range2[1] = parseFloat(this.listOfControlQuestions[index].a2[1])
+                this.$forceUpdate()
+            } else {
+                this.answerIndices2 = []
 
-            for (let i = 0; i < this.listOfControlQuestions[index].a2.length; i++) {
-                this.answerIndices2[i] = this.listOfControlQuestions[index].a2[i]
+                for (let i = 0; i < this.listOfControlQuestions[index].a2.length; i++) {
+                    this.answerIndices2[i] = this.listOfControlQuestions[index].a2[i]
+                }
             }
 
             console.log('open')
@@ -665,7 +853,14 @@ export default {
             console.log('bin in getCat...')
             for (let c = 0; c < this.categories.length; c++) {
                 console.log(c)
-                const questions = this.categories[c].questionList
+                const questions = []
+                for (let i = 0; i < this.categories[c].questionList.length; i++) {
+                    if (
+                        this.categories[c].questionList[i].questionType !== 'SortQuestion' &&
+                        this.categories[c].questionList[i].questionType !== 'TextQuestion'
+                    )
+                        questions.push(this.categories[c].questionList[i])
+                }
                 for (let q = 0; q < questions.length; q++) {
                     console.log(q)
                     if (questions[q].questionId === questionId) {

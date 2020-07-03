@@ -6,30 +6,20 @@ export default {
     extends: Bar,
     props: {
         chartdata: {
-            labels: {
-                type: Array,
-            },
-            datasets: {
-                type: Array,
-            },
+            labels: {},
+            datasets: {},
+            backgroundColor: {},
         },
         options: {},
     },
-
     mounted() {
-        console.log('mount')
-        console.log(this.chartdata)
+        // console.log('mount')
+        // console.log(this.chartdata)
         this.renderChart(this.chartdata, this.options)
     },
 
     updated() {
-        console.log('update')
-    },
-
-    watch: {
-        chartdata: function handle() {
-            console.log('watcher')
-        },
+        // console.log('update')
     },
 }
 </script>

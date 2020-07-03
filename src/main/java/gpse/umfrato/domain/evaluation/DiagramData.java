@@ -8,6 +8,7 @@ import gpse.umfrato.domain.category.Category;
 import gpse.umfrato.domain.category.CategoryService;
 import gpse.umfrato.domain.poll.Poll;
 import gpse.umfrato.domain.pollresult.PollResult;
+
 import gpse.umfrato.domain.question.Question;
 import gpse.umfrato.domain.question.QuestionService;
 import lombok.AllArgsConstructor;
@@ -20,6 +21,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * This class represents the entire evaluation data needed to display the filtered data in the frontend .
+ * It consists of a list of QuestionData each representing one question or diagram and the data needed to display it
+ */
 public class DiagramData {
 
     public static final String DIVIDER_STRING = " / ";
@@ -40,18 +45,20 @@ public class DiagramData {
     private ChoiceData participantsOverTime;
 
     interface QuestionData {
-        enum QuestionType { CHOICE_QUESTION, TEXT_QUESTION, RANGE_QUESTION, SLIDER_QUESTION }
+        enum QuestionType { CHOICE_QUESTION, TEXT_QUESTION, RANGE_QUESTION, SLIDER_QUESTION, SORT_QUESTION }
 
-        long getQuestionId();
+        long questionId(); //No 'get' to prevent Jackson from finding it
 
-        QuestionType getQuestionType();
+        QuestionType questionType(); //No 'get' to prevent Jackson from finding it
 
         void statistics();
 
         String toJSON();
     }
 
-    @Getter @Setter protected static class ChoiceData implements QuestionData {
+    @Getter
+    @Setter
+    protected static class ChoiceData implements QuestionData {
         private long id;
         private String title;
         private String type;
@@ -80,7 +87,8 @@ public class DiagramData {
             }
         }
 
-        @Override public long getQuestionId() {
+        @Override
+        public long questionId() {
             return this.id;
         }
 
@@ -96,11 +104,13 @@ public class DiagramData {
             }
         }
 
-        @Override public QuestionType getQuestionType() {
+        @Override
+        public QuestionType questionType() {
             return QuestionType.CHOICE_QUESTION;
         }
 
-        @Override public void statistics() {
+        @Override
+        public void statistics() {
             int size = 0;
             final List<Integer> maxima = new ArrayList<>();
             int max = 0;
@@ -146,6 +156,199 @@ public class DiagramData {
             }
         }
 
+        @Override
+        public String toJSON() {
+            final ObjectMapper mapper = new ObjectMapper();
+            try {
+                return mapper.writeValueAsString(this);
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+    }
+
+    @Getter
+    @Setter
+    protected static class SortData implements QuestionData {
+        private long id;
+        private String title;
+        private String type;
+        private List<String> answerPossibilities;
+        @JsonIgnore
+        private List<List<Integer>> data = new ArrayList<>();
+        private List<List<SortValues>> meanOrder = new ArrayList<>();
+
+        SortData(final long questionId, final String questionMessage, final List<String> answerPossibilities) {
+            this.id = questionId;
+            this.type = "sort";
+            this.title = questionMessage;
+            this.answerPossibilities = answerPossibilities;
+        }
+
+        @Getter @Setter private static class SortValues {
+            private int itemID;
+            private String itemName;
+            private List<Integer> wasAtPositionNumbers;
+            private double meanPositionValue;
+            private int meanPosition;
+            private int twin;
+            private double variance;
+            private double standardDeviation;
+        }
+
+        void addAnswers(List<String> answers)
+        {
+            List<Integer> newAnswer = new ArrayList<>();
+            for (String s :answers)
+            {
+                newAnswer.add(Integer.valueOf(s));
+            }
+            data.add(newAnswer);
+        }
+
+        @Override
+        public long questionId() {
+            return id;
+        }
+
+        @Override
+        public QuestionType questionType() {
+            return QuestionType.SORT_QUESTION;
+        }
+
+        @Override
+        public void statistics() {
+
+            if (answerPossibilities.size() != data.get(0).size()) {
+                System.out.println("Fehlerhafte Daten");
+
+            }
+            // initializing a array that has size nxn with n = number of items
+
+            List<SortValues> arrayOfValues = new ArrayList<>();
+
+            for (int i = 0; i < data.get(0).size(); i++) {
+                arrayOfValues.add(new SortValues());
+                arrayOfValues.get(i).itemID = i;
+                arrayOfValues.get(i).itemName = answerPossibilities.get(i);
+                    arrayOfValues.get(i).wasAtPositionNumbers= new ArrayList<>();
+                    arrayOfValues.get(i).meanPositionValue = 0;
+                    arrayOfValues.get(i).meanPosition = -1;
+                    arrayOfValues.get(i).twin = -1;
+                    arrayOfValues.get(i).variance = 0;
+                    arrayOfValues.get(i).standardDeviation = 0;
+
+
+                for (int j = 0; j < data.get(0).size(); j++) {
+                    arrayOfValues.get(i).wasAtPositionNumbers.add(0);
+                }
+            }
+
+            // in this array we store for each item (i) and each position (j) how many times the item was placed in that position
+
+            for (int i = 0; i < data.size(); i++) {
+                for (int j = 0; j < data.get(i).size(); j++) {
+                    int index = data.get(i).get(j);
+                    arrayOfValues.get(index).wasAtPositionNumbers.set(j,arrayOfValues.get(index).wasAtPositionNumbers.get(j) + 1);
+                }
+            }
+
+            // Now we compute the mean order.
+
+            // every item gets a mean position value computed from the number it was placed on a position times the index of that position
+
+            for (int i = 0; i < arrayOfValues.size(); i++) {
+                for (int j = 0; j < arrayOfValues.get(i).wasAtPositionNumbers.size(); j++) {
+                    arrayOfValues.get(i).meanPositionValue += arrayOfValues.get(i).wasAtPositionNumbers.get(j) * (j + 1);
+                }
+
+                arrayOfValues.get(i).meanPositionValue =
+                    arrayOfValues.get(i).meanPositionValue / data.size();
+            }
+
+            // we sort the items according to their mean position values and save the order in orderedItems
+
+            int [] orderedItems = new int [data.get(0).size()];
+
+            double lowestMeanPositionValue = arrayOfValues.size() * arrayOfValues.size();
+            int firstItem = arrayOfValues.size() + 1;
+
+            for (int j = 0; j < arrayOfValues.size(); j++) {
+                for (int i = 0; i < arrayOfValues.size(); i++) {
+                    if (arrayOfValues.get(i).meanPosition == -1) {
+                        if (lowestMeanPositionValue >= arrayOfValues.get(i).meanPositionValue) {
+                            if (lowestMeanPositionValue == arrayOfValues.get(i).meanPositionValue) {
+                                if (firstItem != i) {
+                                    System.out.println("item " + i + "is duplicate to " + firstItem);
+                                    arrayOfValues.get(i).twin = firstItem;
+                                }
+                            }
+                            lowestMeanPositionValue = arrayOfValues.get(i).meanPositionValue;
+                            firstItem = i;
+//                            console.log('i: ' + i)
+//                            console.log('first: ' + firstItem)
+                        }
+                    }
+                }
+
+//                console.log('first ' + firstItem + 'position ' + j)
+
+                arrayOfValues.get(firstItem).meanPosition = j;
+                orderedItems[j] = firstItem;
+                lowestMeanPositionValue = arrayOfValues.size() + 1;
+            }
+
+            // Now we compute the variance and standard deviation of the wasAtPositionNumbers
+
+            for (int i = 0; i < arrayOfValues.size(); i++) {
+                for (int j = 0; j < arrayOfValues.get(i).wasAtPositionNumbers.size(); j++) {
+                    arrayOfValues.get(i).variance +=
+                        arrayOfValues.get(i).wasAtPositionNumbers.get(j) *
+                            Math.pow(j + 1 - arrayOfValues.get(i).meanPositionValue,2);
+                }
+
+                arrayOfValues.get(i).variance = arrayOfValues.get(i).variance / data.size();
+
+                arrayOfValues.get(i).standardDeviation = Math.sqrt(arrayOfValues.get(i).variance);
+            }
+
+            // Now we build the meanOrder Array by pushing an Array of items for each position
+
+
+
+            int position = 0;
+            for (int i = 0; i < orderedItems.length; i++) {
+//                meanOrder.push([])
+                boolean twinsLeft = true;
+                SortValues currentItem = arrayOfValues.get(orderedItems[i]);
+//                console.log('arrayOfValues[orderedItems[i] with i as ' + i + 'is')
+//                console.log(currentItem)
+                meanOrder.add(new ArrayList<>());
+                while (twinsLeft) {
+
+                    meanOrder.get(position).add(currentItem);
+
+//                    console.log('added item ' + currentItem.itemID + 'at position :' + position)
+                    if (currentItem.twin == -1) {
+//                        console.log('no twins for ' + i)
+                        twinsLeft = false;
+                    } else {
+                        currentItem = arrayOfValues.get(currentItem.twin);
+                        i++;
+                    }
+                }
+                position++;
+            }
+
+//            console.log(this.arrayOfValues)
+//            console.log('ordered')
+//            console.log(orderedItems)
+//            console.log('meanOrder: ')
+//            console.log(this.meanOrder)
+
+        }
+
         @Override public String toJSON() {
             final ObjectMapper mapper = new ObjectMapper();
             try {
@@ -176,7 +379,8 @@ public class DiagramData {
             this.title = questionMessage;
         }
 
-        @Override public long getQuestionId() {
+        @Override
+        public long questionId() {
             return this.id;
         }
 
@@ -184,15 +388,18 @@ public class DiagramData {
             answers.add(new TextAnswer(id, text, editedDate, creator));
         }
 
-        @Override public QuestionType getQuestionType() {
+        @Override
+        public QuestionType questionType() {
             return QuestionType.TEXT_QUESTION;
         }
 
-        @Override public void statistics() {
+        @Override
+        public void statistics() {
 
         }
 
-        @Override public String toJSON() {
+        @Override
+        public String toJSON() {
             final ObjectMapper mapper = new ObjectMapper();
             try {
                 return mapper.writeValueAsString(this);
@@ -259,6 +466,10 @@ public class DiagramData {
                         ((ChoiceData) qd).setModifier(q.getStartValue(), q.getStepSize());
                         // System.out.println(qd.toString());
                         break;
+                    case "SortQuestion":
+                        qd = new SortData(q.getQuestionId(), q.getQuestionMessage(), q.getAnswerPossibilities());
+                        // System.out.println(qd.toString());
+                        break;
                     default:
                         break;
                 }
@@ -278,8 +489,8 @@ public class DiagramData {
             }
             for (final Answer a: pr.getAnswerList()) {
                 for (final QuestionData qd: questionList) {
-                    if (qd.getQuestionId() == a.getQuestionId()) {
-                        switch (qd.getQuestionType()) {
+                    if (qd.questionId() == a.getQuestionId()) {
+                        switch (qd.questionType()) {
                             case CHOICE_QUESTION:
                                 final ChoiceData cd = (ChoiceData) qd;
                                 for (final String s: a.getGivenAnswerList()) {
@@ -290,6 +501,12 @@ public class DiagramData {
                                 if (!a.getGivenAnswerList().isEmpty()) {
                                     final TextData td = (TextData) qd;
                                     td.addAnswer(pr.getPollResultId(), a.getGivenAnswerList().get(a.getGivenAnswerList().size() - 1), pr.getLastEditAt(), pr.getPollTaker());
+                                }
+                                break;
+                            case SORT_QUESTION:
+                                if (!a.getGivenAnswerList().isEmpty()) {
+                                    final SortData sd = (SortData) qd;
+                                    sd.addAnswers(a.getGivenAnswerList());
                                 }
                                 break;
                             default:

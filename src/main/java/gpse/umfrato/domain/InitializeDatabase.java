@@ -1,6 +1,8 @@
 package gpse.umfrato.domain;
 
 import gpse.umfrato.domain.answer.AnswerService;
+import gpse.umfrato.domain.mail.CsvReader;
+import gpse.umfrato.domain.mail.MailService;
 import gpse.umfrato.domain.category.Category;
 import gpse.umfrato.domain.participationlinks.ParticipationLinkService;
 import gpse.umfrato.domain.category.CategoryService;
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.net.MalformedURLException;
+import java.util.List;
 import java.util.Arrays;
 
 @Service
@@ -78,6 +81,7 @@ public class InitializeDatabase implements InitializingBean {
         this.participationLinkService = participationLinkService;
 
         this.categoryService = categoryService;
+
     }
 
     /**
@@ -95,5 +99,15 @@ public class InitializeDatabase implements InitializingBean {
             userService.createUser(tbettmannUserName, dummyPassword, "Tobias", "Bettmann",
                 "Admin", "tbettmann@reply.de");
         }
+
+        //participationLinkService.createParticipationLink(testPoll.getPollId(), tbettmannUserName);
+
+        try {
+            userService.loadUserByUsername("testnutzer");
+        } catch (UsernameNotFoundException ex) {
+            userService.createUser("testNutzer", dummyPassword, "Markus", "Mueller",
+                "Teilnehmer", "mmueller@gmx.de");
+        }
+
     }
 }

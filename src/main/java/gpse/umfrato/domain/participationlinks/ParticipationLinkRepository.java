@@ -9,4 +9,5 @@ import java.util.List;
  */
 public interface ParticipationLinkRepository extends JpaRepository<ParticipationLink, Long> {
     List<ParticipationLink> findParticipationLinksByPollId(Long pollId);
+    ParticipationLink findByGeneratedParticipationLink(String link);
 }

@@ -1,12 +1,12 @@
 package gpse.umfrato.web;
 
+import gpse.umfrato.domain.mail.MailService;
 import gpse.umfrato.domain.participationlinks.ParticipationLink;
 import gpse.umfrato.domain.participationlinks.ParticipationLinkService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.logging.Logger;
 
 /**
  * The ParticipationLink controller used to process participationLink specific requests.
@@ -22,7 +22,7 @@ public class ParticipationLinkController {
         this.participationLinkService = participationLinkService;
     }
 
-    @GetMapping("/participationLinks")
+    @GetMapping("/participationLinks") // TODO: wofür brauche ich sämtliche Links aus der Datenbank?
     public List<ParticipationLink> getParticipationLinks() {
         return participationLinkService.getAllParticipationLinks();
     }

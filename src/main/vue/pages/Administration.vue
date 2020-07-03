@@ -1,21 +1,5 @@
 <template>
-    <v-container v-if="authenticated === false">
-        <v-card class="mx-auto" max-width="400" outlined>
-            <v-list-item three-line>
-                <v-list-item-content class="center">
-                    <v-list-item-title class="headline mb-1">Zugriff verweigert</v-list-item-title>
-                    <v-list-item-subtitle>Bitte loggen Sie sich ein</v-list-item-subtitle>
-                </v-list-item-content>
-            </v-list-item>
-
-            <v-card-actions>
-                <v-spacer></v-spacer>
-                <div class="my-2">
-                    <v-btn depressed color="secondary" to="/Login">Login</v-btn>
-                </div>
-            </v-card-actions>
-        </v-card>
-    </v-container>
+    <AuthGate v-if="isAuthenticated !== true"></AuthGate>
     <v-container v-else>
         <v-card class="mx-auto" max-width="1000">
             <v-card-title>
@@ -101,7 +85,9 @@
 </template>
 <script>
 import { mapGetters } from 'vuex'
+import AuthGate from '../components/AuthGate'
 export default {
+    components: { AuthGate },
     data() {
         return {
             token: '',
@@ -151,6 +137,7 @@ export default {
     computed: {
         ...mapGetters({
             authenticate: 'administration/getToken',
+            isAuthenticated: 'login/isAuthenticated',
         }),
         formTitle() {
             return this.editedIndex === -1 ? 'Neuer Nutzer' : 'Nutzer bearbeiten'
@@ -199,6 +186,7 @@ export default {
                     ele.role = ele.authorities[0].authority
                 })
             })
+            console.log('users', this.users)
         },
         editUser(item) {
             this.editedIndex = this.users.indexOf(item)

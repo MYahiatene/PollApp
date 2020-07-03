@@ -1,6 +1,5 @@
 export const state = () => ({
     Polls: [],
-    ParticipationLinks: [],
     error: '',
 })
 export const getters = {
@@ -37,19 +36,6 @@ export const actions = {
             error = reason
         })
         if (error.length === 0) {
-            console.log(data)
-            for (let i = 0; i < data.data.length; i++) {
-                await this.$axios
-                    .get('/evaluation/getParticipants/' + data.data[i].pollId)
-                    .then((response) => {
-                        console.log(response)
-                        data.data[i].paticipantCount = response.data
-                    })
-                    .catch((reason) => {
-                        console.log(reason)
-                    })
-            }
-            console.log('FINAL')
             console.log(data)
             commit('setPolls', data)
         } else {
