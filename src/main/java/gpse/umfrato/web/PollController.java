@@ -133,12 +133,13 @@ public class PollController {
      * @return returns the specific username.
      */
     // @GetMapping("/getUsername")
-    @RequestMapping(value = "/getUsername", method = RequestMethod.POST)
-    public String getUsername(final @RequestBody PollCmd pollCmd) {
-        if (pollCmd.getAnonymityStatus().equals("1")) {
+    @RequestMapping(value = "/getUsername/{link}", method = RequestMethod.POST)
+    public String getUsername(final @PathVariable String link) {
+        Poll poll = pollService.getPoll(participationLinkService.getPollIdFromParticipationLink(link));
+        if (poll.getAnonymityStatus().equals("1")) {
             return pollService.createAnonymousUsername();
         } else {
-            return "Nina"; //TODO: Nina muss raus!
+            return participationLinkService.getUserFromParticipationLink(link);
         }
     }
 

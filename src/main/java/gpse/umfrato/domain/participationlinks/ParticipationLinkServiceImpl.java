@@ -52,7 +52,14 @@ public class ParticipationLinkServiceImpl implements ParticipationLinkService {
 
     @Override
     public String getUserFromParticipationLink(final String participationLink) {
-        return participationLinkRepository.findByGeneratedParticipationLink(participationLink).getUsername();
+        try {
+            final URL link = new URL("http", "localhost", DEFAULT_PORT,
+                    "/participant/" + participationLink);
+            return participationLinkRepository.findByGeneratedParticipationLink(link.toExternalForm()).getUsername();
+        } catch (EntityNotFoundException | MalformedURLException e) {
+            e.printStackTrace();
+            return "";
+        }
     }
 
     @Override

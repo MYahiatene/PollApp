@@ -136,11 +136,11 @@ export const actions = {
      * @param commit
      * @returns {Promise<void>}
      */
-    async showPoll({ commit }, id) {
+    async showPoll({ commit }, link) {
         this.$axios.defaults.baseURL = 'http://localhost:8088/api/'
         this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('user-token')
-        const poll = await this.$axios.get('/participant/' + id)
-        const username = await this.$axios.post('/getUsername', { anonymityStatus: poll.data.anonymityStatus })
+        const poll = await this.$axios.get('/participant/' + link)
+        const username = await this.$axios.post('/getUsername/' + link)
         commit('setUsername', username.data)
         commit('setPoll', poll)
     },
