@@ -8,6 +8,7 @@ import gpse.umfrato.domain.category.Category;
 import gpse.umfrato.domain.category.CategoryService;
 import gpse.umfrato.domain.poll.Poll;
 import gpse.umfrato.domain.pollresult.PollResult;
+
 import gpse.umfrato.domain.question.Question;
 import gpse.umfrato.domain.question.QuestionService;
 import lombok.AllArgsConstructor;
@@ -174,13 +175,26 @@ public class DiagramData {
         private String title;
         private String type;
         private List<String> answerPossibilities;
-        private List<List<Integer>> data;
+        @JsonIgnore
+        private List<List<Integer>> data = new ArrayList<>();
+        private List<List<SortValues>> meanOrder = new ArrayList<>();
 
         SortData(final long questionId, final String questionMessage, final List<String> answerPossibilities) {
             this.id = questionId;
             this.type = "sort";
             this.title = questionMessage;
             this.answerPossibilities = answerPossibilities;
+        }
+
+        @Getter @Setter private static class SortValues {
+            private int itemID;
+            private String itemName;
+            private List<Integer> wasAtPositionNumbers;
+            private double meanPositionValue;
+            private int meanPosition;
+            private int twin;
+            private double variance;
+            private double standardDeviation;
         }
 
         void addAnswers(List<String> answers)
@@ -205,6 +219,133 @@ public class DiagramData {
 
         @Override
         public void statistics() {
+
+            if (answerPossibilities.size() != data.get(0).size()) {
+                System.out.println("Fehlerhafte Daten");
+
+            }
+            // initializing a array that has size nxn with n = number of items
+
+            List<SortValues> arrayOfValues = new ArrayList<>();
+
+            for (int i = 0; i < data.get(0).size(); i++) {
+                arrayOfValues.add(new SortValues());
+                arrayOfValues.get(i).itemID = i;
+                arrayOfValues.get(i).itemName = answerPossibilities.get(i);
+                    arrayOfValues.get(i).wasAtPositionNumbers= new ArrayList<>();
+                    arrayOfValues.get(i).meanPositionValue = 0;
+                    arrayOfValues.get(i).meanPosition = -1;
+                    arrayOfValues.get(i).twin = -1;
+                    arrayOfValues.get(i).variance = 0;
+                    arrayOfValues.get(i).standardDeviation = 0;
+
+
+                for (int j = 0; j < data.get(0).size(); j++) {
+                    arrayOfValues.get(i).wasAtPositionNumbers.add(0);
+                }
+            }
+
+            // in this array we store for each item (i) and each position (j) how many times the item was placed in that position
+
+            for (int i = 0; i < data.size(); i++) {
+                for (int j = 0; j < data.get(i).size(); j++) {
+                    int index = data.get(i).get(j);
+                    arrayOfValues.get(index).wasAtPositionNumbers.set(j,arrayOfValues.get(index).wasAtPositionNumbers.get(j) + 1);
+                }
+            }
+
+            // Now we compute the mean order.
+
+            // every item gets a mean position value computed from the number it was placed on a position times the index of that position
+
+            for (int i = 0; i < arrayOfValues.size(); i++) {
+                for (int j = 0; j < arrayOfValues.get(i).wasAtPositionNumbers.size(); j++) {
+                    arrayOfValues.get(i).meanPositionValue += arrayOfValues.get(i).wasAtPositionNumbers.get(j) * (j + 1);
+                }
+
+                arrayOfValues.get(i).meanPositionValue =
+                    arrayOfValues.get(i).meanPositionValue / data.size();
+            }
+
+            // we sort the items according to their mean position values and save the order in orderedItems
+
+            int [] orderedItems = new int [data.get(0).size()];
+
+            double lowestMeanPositionValue = arrayOfValues.size() * arrayOfValues.size();
+            int firstItem = arrayOfValues.size() + 1;
+
+            for (int j = 0; j < arrayOfValues.size(); j++) {
+                for (int i = 0; i < arrayOfValues.size(); i++) {
+                    if (arrayOfValues.get(i).meanPosition == -1) {
+                        if (lowestMeanPositionValue >= arrayOfValues.get(i).meanPositionValue) {
+                            if (lowestMeanPositionValue == arrayOfValues.get(i).meanPositionValue) {
+                                if (firstItem != i) {
+                                    System.out.println("item " + i + "is duplicate to " + firstItem);
+                                    arrayOfValues.get(i).twin = firstItem;
+                                }
+                            }
+                            lowestMeanPositionValue = arrayOfValues.get(i).meanPositionValue;
+                            firstItem = i;
+//                            console.log('i: ' + i)
+//                            console.log('first: ' + firstItem)
+                        }
+                    }
+                }
+
+//                console.log('first ' + firstItem + 'position ' + j)
+
+                arrayOfValues.get(firstItem).meanPosition = j;
+                orderedItems[j] = firstItem;
+                lowestMeanPositionValue = arrayOfValues.size() + 1;
+            }
+
+            // Now we compute the variance and standard deviation of the wasAtPositionNumbers
+
+            for (int i = 0; i < arrayOfValues.size(); i++) {
+                for (int j = 0; j < arrayOfValues.get(i).wasAtPositionNumbers.size(); j++) {
+                    arrayOfValues.get(i).variance +=
+                        arrayOfValues.get(i).wasAtPositionNumbers.get(j) *
+                            Math.pow(j + 1 - arrayOfValues.get(i).meanPositionValue,2);
+                }
+
+                arrayOfValues.get(i).variance = arrayOfValues.get(i).variance / data.size();
+
+                arrayOfValues.get(i).standardDeviation = Math.sqrt(arrayOfValues.get(i).variance);
+            }
+
+            // Now we build the meanOrder Array by pushing an Array of items for each position
+
+
+
+            int position = 0;
+            for (int i = 0; i < orderedItems.length; i++) {
+//                meanOrder.push([])
+                boolean twinsLeft = true;
+                SortValues currentItem = arrayOfValues.get(orderedItems[i]);
+//                console.log('arrayOfValues[orderedItems[i] with i as ' + i + 'is')
+//                console.log(currentItem)
+                meanOrder.add(new ArrayList<>());
+                while (twinsLeft) {
+
+                    meanOrder.get(position).add(currentItem);
+
+//                    console.log('added item ' + currentItem.itemID + 'at position :' + position)
+                    if (currentItem.twin == -1) {
+//                        console.log('no twins for ' + i)
+                        twinsLeft = false;
+                    } else {
+                        currentItem = arrayOfValues.get(currentItem.twin);
+                        i++;
+                    }
+                }
+                position++;
+            }
+
+//            console.log(this.arrayOfValues)
+//            console.log('ordered')
+//            console.log(orderedItems)
+//            console.log('meanOrder: ')
+//            console.log(this.meanOrder)
 
         }
 
