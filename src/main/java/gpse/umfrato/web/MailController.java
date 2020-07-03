@@ -1,6 +1,7 @@
 package gpse.umfrato.web;
 
 import gpse.umfrato.domain.cmd.MailCmd;
+import gpse.umfrato.domain.participationlinks.ParticipationLink;
 import gpse.umfrato.domain.participationlinks.ParticipationLinkService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.MailException;
@@ -10,6 +11,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @RequestMapping("/api")
@@ -49,17 +52,12 @@ public class MailController {
                 } else if (mailCmd.getAnonymityStatus().equals("2")) { // 2 = teilanonym, Username ist unique Key
 
                     invitationLink = participationLinkService.createParticipationLink();
-                    participationLinkService.saveParticipationLink(mailCmd.getPollId(), invitationLink.toString()
-                        .substring(invitationLink.toString().lastIndexOf("/") + 1), invitationLink.toString()
+                    participationLinkService.saveParticipationLink(mailCmd.getPollId(), mail, invitationLink.toString()
                     );
 
                 } else { // 1 = anonym, es ist jedes mal der selbe Link
 
-                    String generatedUsername = participationLinkService.createParticipationLink().toString();
-                    generatedUsername = participationLinkService.createParticipationLink().toString()
-                        .substring(generatedUsername.lastIndexOf("/") + 1);
-
-                    participationLinkService.saveParticipationLink(mailCmd.getPollId(), generatedUsername, invitationLink.toString()
+                    participationLinkService.saveParticipationLink(mailCmd.getPollId(), mail, invitationLink.toString()
                     );
 
                 }
@@ -88,4 +86,31 @@ public class MailController {
 
     }
 
+    @PostMapping(value = "/sendRemindEmail")
+    public String sendRemindEmail(final @RequestBody MailCmd mailCmd) {
+        try {
+
+            List<ParticipationLink> participationList = participationLinkService.getAllParticipationLinks(mailCmd.getPollId());
+            final SimpleMailMessage message = new SimpleMailMessage();
+
+            for (ParticipationLink participationLink : participationList) {
+
+                String mailText = mailCmd.getEmailMessage();
+                mailText = mailText.replace("{link}", participationLink.getParticipationLink());
+                message.setTo(participationLink.getUsername());
+                message.setSubject(mailCmd.getEmailSubject());
+                message.setText(mailText);
+
+                this.mailSender.send(message);
+
+            }
+
+            return "Email sent.";
+
+        } catch (MailException e) {
+
+            return "Email sending failed.";
+
+        }
+    }
 }

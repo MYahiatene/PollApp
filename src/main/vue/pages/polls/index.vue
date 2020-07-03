@@ -64,6 +64,11 @@
                                             {{ item.inviteIcon }}
                                         </v-icon>
                                     </template>
+                                    <template v-slot:item.reminder="{ item }">
+                                        <v-icon @click="reminderAction(item)">
+                                            {{ item.reminderIcon }}
+                                        </v-icon>
+                                    </template>
                                     <template v-slot:item.delete="{ item }">
                                         <v-icon @click="deletePoll(item)">
                                             mdi-delete
@@ -111,6 +116,7 @@ export default {
                 { title: 'Beantworten', link: '/' },
                 { title: 'Bearbeiten', link: '/polls/' },
                 { title: 'Einladen', link: '/invite/' },
+                { title: 'Erinnern', link: '/remind/' },
                 { title: 'Aktivieren', link: '/' },
                 { title: 'Löschen', link: '/' },
             ],
@@ -119,6 +125,7 @@ export default {
                 { text: '', value: 'action1', sortable: false },
                 { text: '', value: 'action2', sortable: false },
                 { text: '', value: 'invite', sortable: false },
+                { text: '', value: 'reminder', sortable: false },
                 { text: '', value: 'delete', sortable: false },
                 { text: 'Umfrage', value: 'pollName' },
                 { text: 'Erstellt von', value: 'pollCreator' },
@@ -174,6 +181,7 @@ export default {
                     data[i].statusIcon = 'mdi-stop'
                     data[i].deleteIcon = 'mdi-delete'
                     data[i].inviteIcon = 'mdi-account-plus'
+                    data[i].reminderIcon = 'mdi-message-alert'
                 } else if (this.items[i].pollStatus === 2) {
                     data[i].pollStatusString = 'Beendet'
                     data[i].action1Icon = 'mdi-magnify'
@@ -239,6 +247,9 @@ export default {
         },
         inviteAction(item) {
             this.$router.push('/invite/' + item.pollId)
+        },
+        reminderAction(item) {
+            this.$router.push('/remind/' + item.pollId)
         },
         showValue(item, key) {
             alert(item[key])
