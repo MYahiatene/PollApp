@@ -233,7 +233,7 @@ export default {
                 const saltRounds = 10
                 const hash = bcrypt.hashSync(this.newPassword1, saltRounds) */
                 this.userObj.username = this.account.username
-                this.userObj.password = this.newPassword1 // hash
+                this.userObj.password = '{noop}' + this.newPassword1 // hash
 
                 // this.$store.dispatch('account/changePassword', this.userObj)
                 // this.failStatus = this.getFailStatus

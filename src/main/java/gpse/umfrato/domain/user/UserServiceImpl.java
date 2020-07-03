@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -100,8 +101,11 @@ class UserServiceImpl implements UserService {
     public void changePassword(final String username, final String password) {
         final User user = userRepository.getOne(username);
         LOGGER.info("username, password" + username + password);
-        user.setPassword(password);
+        String cryptPassword = PasswordEncoderFactories.createDelegatingPasswordEncoder().encode(password);
+        LOGGER.info(cryptPassword);
+        user.setPassword(cryptPassword);
         userRepository.save(user);
+        LOGGER.info(userRepository.getOne(username).getPassword());
         LOGGER.info("All done in UserServiceImpl");
     }
 
