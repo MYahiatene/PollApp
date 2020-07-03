@@ -89,12 +89,19 @@ it passes the attributes:
                             v-if="index === currentChipIndex"
                             class="ma-1"
                             :color="color"
+                            style="min-width: 2cm; text-align-all: center;"
                             @click="updateCurrentChip(index)"
                             large
                         >
                             {{ answerTitles[index] }}</v-chip
                         >
-                        <v-chip v-else class="ma-1" :color="color" @click="updateCurrentChip(index)">
+                        <v-chip
+                            v-else
+                            class="ma-1"
+                            :color="color"
+                            style="min-width: 2cm; text-align: center;"
+                            @click="updateCurrentChip(index)"
+                        >
                             {{ answerTitles[index] }}</v-chip
                         >
                     </div>
@@ -302,6 +309,7 @@ export default {
         ...mapGetters({
             getFormat: 'evaluation/getDiagramFormat',
             polls: 'evaluation/getPolls',
+            diagramData: 'evaluation/getDiagramData',
         }),
         initialDiagramType() {
             return this.getFormat(this.questionId).diagramType
@@ -331,7 +339,7 @@ export default {
             console.log(this.polls)
             console.log(this.questionId)
             const a = []
-            for (let i = 0; i < this.polls.length; i++) {
+            /* for (let i = 0; i < this.polls.length; i++) {
                 console.log(i)
                 for (let j = 0; j < this.polls[i].categoryList.length; j++) {
                     console.log(j)
@@ -363,6 +371,22 @@ export default {
                                     a.push(this.polls[i].categoryList[j].questionList[k].answerPossibilities[l])
                                 }
                             }
+                        }
+                    }
+                }
+            } */
+            console.log(this.diagramData)
+            console.log(this.questionId)
+            for (let i = 0; i < this.diagramData.length; i++) {
+                console.log(i)
+                if (this.diagramData[i].id === this.questionId) {
+                    for (let j = 0; j < this.diagramData[i].answerPossibilities.length; j++) {
+                        if (this.diagramData[i].answerPossibilities[j].length < 5) {
+                            a.push('  ' + this.diagramData[i].answerPossibilities[j] + '  ')
+                        } else if (this.diagramData[i].answerPossibilities[j].length > 30) {
+                            a.push(this.diagramData[i].answerPossibilities[j].substr(0, 27) + '...')
+                        } else {
+                            a.push(this.diagramData[i].answerPossibilities[j])
                         }
                     }
                 }

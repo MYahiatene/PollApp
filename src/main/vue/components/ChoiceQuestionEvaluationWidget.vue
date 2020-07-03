@@ -135,8 +135,6 @@ export default {
         // these options are needed to display a visual diagram, they are passed as props into that component
 
         // bar charts dont have a legend
-        cumulated: false,
-        relativ: false,
         barChartOptions: {
             legend: {
                 display: false,
@@ -173,7 +171,32 @@ export default {
         // here we compute the data for the table
         ...mapGetters({
             getFormat: 'evaluation/getDiagramFormat',
+            getDiagramOption: 'evaluation/getDiagramOption',
         }),
+        cumulated: {
+            get() {
+                return this.getDiagramOption(this.questionId).cumulated
+            },
+            set(value) {
+                this.setDiagramOption({
+                    questionId: this.questionId,
+                    cumulated: value,
+                    relativ: this.relativ,
+                })
+            },
+        },
+        relativ: {
+            get() {
+                return this.getDiagramOption(this.questionId).relativ
+            },
+            set(value) {
+                this.setDiagramOption({
+                    questionId: this.questionId,
+                    cumulated: this.cumulated,
+                    relativ: value,
+                })
+            },
+        },
         chartData() {
             console.log('chartData()')
             let baseData = []
@@ -285,7 +308,7 @@ export default {
 
        */
         ...mapMutations({
-            setFormat: 'evaluation/getDiagramFormat',
+            setDiagramOption: 'evaluation/setDiagramOption',
         }),
 
         /* updateVisuals(showDiagram, diagramType, diagramColors, diagramColor, multipleColors, showTable) {

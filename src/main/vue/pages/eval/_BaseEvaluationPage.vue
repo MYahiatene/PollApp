@@ -35,8 +35,8 @@ that each display a basic evaluation of one specific question-->
                                 :change-default="true"
                                 @done=";(dialog = false), (widgetKey += 1)"
                             >
-                            </visual-evaluation-settings
-                        ></v-card>
+                            </visual-evaluation-settings>
+                        </v-card>
                     </v-dialog>
                     <v-col cols="4">
                         <v-card-title> {{ pollName }} </v-card-title>
@@ -50,10 +50,50 @@ that each display a basic evaluation of one specific question-->
                     <!--                   title of the poll-->
 
                     <!--            here we have a sub menu, that can hold a list of different options or setings-->
-
-                    <v-btn icon color="primary">
-                        <v-icon @click="dialog = true">mdi-brush</v-icon>
-                    </v-btn>
+                    <v-tooltip bottom>
+                        <template v-slot:activator="{ on, attrs }">
+                            <v-btn
+                                icon
+                                :color="relativ ? 'accent' : 'primary'"
+                                v-bind="attrs"
+                                v-on="on"
+                                @click=";(relativ = !relativ), (diagramKey += 1)"
+                            >
+                                <v-icon>
+                                    %
+                                </v-icon>
+                            </v-btn>
+                        </template>
+                        <span>Global Relative bzw. Absolute Häufigkeit umschalten</span>
+                    </v-tooltip>
+                    <v-tooltip bottom>
+                        <template v-slot:activator="{ on, attrs }">
+                            <v-btn
+                                icon
+                                :color="cumulated ? 'accent' : 'primary'"
+                                v-bind="attrs"
+                                v-on="on"
+                                @click=";(cumulated = !cumulated), (diagramKey += 1)"
+                            >
+                                <v-icon> mdi-sigma</v-icon>
+                            </v-btn>
+                        </template>
+                        <span>Global Kumulierte Häufigkeit an- und ausschalten</span>
+                    </v-tooltip>
+                    <v-tooltip bottom>
+                        <template v-slot:activator="{ on, attrs }">
+                            <v-btn
+                                icon
+                                color="primary"
+                                v-bind="attrs"
+                                v-on="on"
+                                @click="visualSettings = !visualSettings"
+                            >
+                                <v-icon @click="dialog = true">mdi-brush</v-icon>
+                            </v-btn>
+                        </template>
+                        <span>Globale Digrammfarben anpassen</span>
+                    </v-tooltip>
                     <!--                    <v-menu bottom left>-->
                     <!--                        <template v-slot:activator="{ on }">-->
                     <!--                            <v-btn icon color="primary">-->
@@ -253,8 +293,32 @@ export default {
             isAuthenticated: 'login/isAuthenticated',
             participants: 'evaluation/getParticipants',
             getPolls: 'evaluation/getPolls',
+            getDiagramOption: 'evaluation/getDiagramOption',
         }),
-
+        cumulated: {
+            get() {
+                return this.getDiagramOption(-1).cumulated
+            },
+            set(value) {
+                this.setDiagramOptions({
+                    questionId: -1,
+                    cumulated: value,
+                    relativ: this.relativ,
+                })
+            },
+        },
+        relativ: {
+            get() {
+                return this.getDiagramOption(-1).relativ
+            },
+            set(value) {
+                this.setDiagramOptions({
+                    questionId: -1,
+                    cumulated: this.cumulated,
+                    relativ: value,
+                })
+            },
+        },
         currentTheme() {
             return this.$vuetify.theme.dark
         },
@@ -323,6 +387,7 @@ export default {
     methods: {
         ...mapMutations({
             reset: 'evaluation/resetState',
+            setDiagramOptions: 'evaluation/setDiagramOptions',
         }),
         ...mapActions({
             initialize: 'evaluation/initialize',

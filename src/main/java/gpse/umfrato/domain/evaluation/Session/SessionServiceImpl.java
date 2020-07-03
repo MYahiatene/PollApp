@@ -49,7 +49,6 @@ public class SessionServiceImpl implements SessionService {
 
     @Override
     public Session editSession(SessionCmd sessionCmd) {
-        System.out.println(sessionCmd);
         Session session = sessionRepository.findById(sessionCmd.getSessionId()).orElseThrow(EntityNotFoundException ::new);
         cmdToSession(sessionCmd,filterService.updateFitlerList(sessionCmd.getFilterList(),session.getFilterList()),session);
         sessionRepository.save(session);
@@ -61,6 +60,7 @@ public class SessionServiceImpl implements SessionService {
         session.setSessionTitle(sessionCmd.getSessionTitle());
         session.setFilterList(filterList);
         session.setDiagramFormat(sessionCmd.getDiagramFormat());
+        session.setDiagramOptions(sessionCmd.getDiagramOptions());
         session.setLastUsername(sessionCmd.getLastUsername());
         session.setLastEdited(new Date());
     }

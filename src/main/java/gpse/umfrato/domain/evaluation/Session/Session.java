@@ -28,6 +28,9 @@ public class Session {
     @ElementCollection
     private List<String> diagramFormat;
 
+    @ElementCollection
+    private List<String> diagramOptions;
+
     private Date lastEdited;
 
     private String lastUsername;
