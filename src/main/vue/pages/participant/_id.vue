@@ -159,14 +159,16 @@
                                         </v-card-text>
                                     </div>
                                     <div v-else-if="question.questionType === 'RangeQuestion'">
-                                        <v-list v-for="answer in question.answerPossibilities" :key="answer">
-                                            <v-checkbox
-                                                class="my-n2 mx-3"
-                                                :label="answer"
-                                                :color="fontColor"
-                                                @change="saveAnswerCheckbox($event, question, answer)"
-                                            ></v-checkbox>
-                                        </v-list>
+                                        <v-radio-group v-model="valueList[index]">
+                                            <v-radio
+                                                v-for="answer in question.answerPossibilities"
+                                                class="mx-4"
+                                                :key="answer.text"
+                                                :label="`${answer}`"
+                                                :value="answer"
+                                                @change="saveAnswerRadioButton(question, answer)"
+                                            ></v-radio>
+                                        </v-radio-group>
                                     </div>
 
                                     <div v-else-if="question.questionType === 'SortQuestion'" class="pa-2">
@@ -328,16 +330,24 @@ export default {
                     const text2 = this.getCategory.questionList[i].aboveMessage
 
                     if (max != null && min != null && step != null) {
-                        if (text1 != null) {
+                        if (text1) {
                             rangeAnswers.push(text1)
                         }
                         const size = (max - min) / step
                         for (let i = 0; i < size; i++) {
                             const value = min + i * step
                             const nextValue = value + step
-                            rangeAnswers.push(String(value) + ' - ' + String(nextValue))
+                            if (value >= 0 && nextValue >= 0) {
+                                rangeAnswers.push(String(value) + ' - ' + String(nextValue))
+                            } else if (value <= 0 && nextValue >= 0) {
+                                rangeAnswers.push('(' + String(value) + ') - ' + String(nextValue))
+                            } else if (value >= 0 && nextValue <= 0) {
+                                rangeAnswers.push(String(value) + ' - (' + String(nextValue) + ')')
+                            } else if (value <= 0 && nextValue <= 0) {
+                                rangeAnswers.push('(' + String(value) + ') - (' + String(nextValue) + ')')
+                            }
                         }
-                        if (text2 != null) {
+                        if (text2) {
                             rangeAnswers.push(text2)
                         }
                     }
