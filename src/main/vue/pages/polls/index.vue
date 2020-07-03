@@ -252,17 +252,13 @@ export default {
         setLink(item) {
             let links = ''
             for (let i = 0; i < item.participationLinks.length; i++) {
-                links += 'http://localhost:8080/participant/' + item.participationLinks[i].participationLink
+                links += item.participationLinks[i].generatedParticipationLink
                 if (i + 1 !== item.participationLinks.length) {
                     links += ', '
                 }
             }
             navigator.clipboard.writeText(links)
-            /* alert( //TODO: extrem nervig beim Testen
-                        'Link kopiert: "localhost:8080/participant/' +
-                            this.participationLinks[i].participationLink +
-                            '"'
-                    ) */
+            alert('Link(s) kopiert: ' + links.slice(0, 120) + (links.length > 117 ? '...' : ''))
         },
         async initializeDatabase() {
             const today = new Date()

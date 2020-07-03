@@ -22,7 +22,7 @@ public class ParticipationLinkController {
         this.participationLinkService = participationLinkService;
     }
 
-    @GetMapping("/participationLinks")
+    @GetMapping("/participationLinks") // TODO: wofür brauche ich sämtliche Links aus der Datenbank?
     public List<ParticipationLink> getParticipationLinks() {
         return participationLinkService.getAllParticipationLinks();
     }

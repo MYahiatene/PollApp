@@ -44,12 +44,6 @@ that each display a basic evaluation of one specific question-->
 
                     <!--            This button will lead to the Page where we can filter and analyse the data-->
                     <v-spacer />
-                    <session-manager @close-event="widgetKey += 1"></session-manager>
-                    <filter-form :initial-poll-index="getPollIndex" @close-event="widgetKey += 1"></filter-form>
-
-                    <!--                   title of the poll-->
-
-                    <!--            here we have a sub menu, that can hold a list of different options or setings-->
                     <v-tooltip bottom>
                         <template v-slot:activator="{ on, attrs }">
                             <v-btn
@@ -57,7 +51,7 @@ that each display a basic evaluation of one specific question-->
                                 :color="relativ ? 'accent' : 'primary'"
                                 v-bind="attrs"
                                 v-on="on"
-                                @click=";(relativ = !relativ), (diagramKey += 1)"
+                                @click=";(relativ = !relativ), (widgetKey += 1)"
                             >
                                 <v-icon>
                                     %
@@ -73,7 +67,7 @@ that each display a basic evaluation of one specific question-->
                                 :color="cumulated ? 'accent' : 'primary'"
                                 v-bind="attrs"
                                 v-on="on"
-                                @click=";(cumulated = !cumulated), (diagramKey += 1)"
+                                @click=";(cumulated = !cumulated), (widgetKey += 1)"
                             >
                                 <v-icon> mdi-sigma</v-icon>
                             </v-btn>
@@ -94,6 +88,20 @@ that each display a basic evaluation of one specific question-->
                         </template>
                         <span>Globale Digrammfarben anpassen</span>
                     </v-tooltip>
+                    <v-tooltip bottom>
+                        <template v-slot:activator="{ on, attrs }">
+                            <v-btn icon color="primary" v-bind="attrs" v-on="on">
+                                <v-icon>mdi-cloud-download</v-icon>
+                            </v-btn>
+                        </template>
+                        <span>Exportieren</span>
+                    </v-tooltip>
+                    <session-manager @close-event="widgetKey += 1"></session-manager>
+                    <filter-form :initial-poll-index="getPollIndex" @close-event="widgetKey += 1"></filter-form>
+
+                    <!--                   title of the poll-->
+
+                    <!--            here we have a sub menu, that can hold a list of different options or setings-->
                     <!--                    <v-menu bottom left>-->
                     <!--                        <template v-slot:activator="{ on }">-->
                     <!--                            <v-btn icon color="primary">-->
