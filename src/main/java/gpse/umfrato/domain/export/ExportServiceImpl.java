@@ -7,8 +7,9 @@ import gpse.umfrato.domain.category.Category;
 import gpse.umfrato.domain.poll.Poll;
 import gpse.umfrato.domain.pollresult.PollResult;
 import gpse.umfrato.domain.question.Question;
-import org.springframework.boot.configurationprocessor.json.JSONObject;
+import org.json.JSONObject;
 import org.springframework.stereotype.Service;
+
 
 import java.io.IOException;
 import java.util.List;
@@ -23,36 +24,41 @@ public class ExportServiceImpl implements ExportService {
         String output = "";
         output += "Name,PollID,PollCreator,Anonymitätsstatus";
         int amountOfArgumentsBeforeCategories = 4;
-        for(Category category : poll.getCategoryList())
+        for (Category category : poll.getCategoryList()) {
             output += ',' + category.getCategoryName() + ',' + "Antwortmöglichkeiten";
+        }
         output += '\n';
         output += poll.getPollName() + ',' + poll.getPollId() + ',' + poll.getPollCreator() + ',' + poll.getAnonymityStatus();
-        for(Category category : poll.getCategoryList()) {
+        for (Category category : poll.getCategoryList()) {
             for (Question question : category.getQuestionList()) {
                 output += ',' + escapeSpecialCharacters(question.getQuestionMessage()) + ',';
-                for(String possibility : question.getAnswerPossibilities())
-                    output +=' ' + possibility;
-                if(question.getQuestionType() == "RangeQuestion")
+                for (String possibility : question.getAnswerPossibilities()) {
+                    output += ' ' + possibility;
+                }
+                if (question.getQuestionType().equals("RangeQuestion")) {
                     output += question.getStartValue() + ".." + question.getEndValue() + " in Inkrementen von " + question.getStepSize();
-                if(question.getQuestionType() == "SliderQuestion")
+                }
+                if (question.getQuestionType().equals("SliderQuestion")) {
                     output += question.getStartValue() + ".." + question.getEndValue() + " in Inkrementen von " + question.getStepSize();
+                }
                 output += '\n';
-                for(int i = 0; i<amountOfArgumentsBeforeCategories-1; i++) /**Needs to be -1 because of output + escapeSpecial... that comma can't go away*/
+                for (int i = 0; i < amountOfArgumentsBeforeCategories - 1; i++) /**Needs to be -1 because of output + escapeSpecial... that comma can't go away*/ {
                     output += ',';
+                }
             }
         }
         output += '\n';
         return output;
     }
+
     @Override
     public String toJSON(Poll result) throws Exception {
         ObjectMapper objectMapper = new ObjectMapper()
             .findAndRegisterModules();
         try {
-            System.out.println("JSONDATA: "+objectMapper.writeValueAsString(result));
             return objectMapper.writeValueAsString(result);
         } catch (JsonProcessingException e) {
-            throw new Exception("Serialisierung fehlgeschlagen");
+            return ("Serialisierung fehlgeschlagen");
         }
     }
 
@@ -61,8 +67,6 @@ public class ExportServiceImpl implements ExportService {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             Poll poll = objectMapper.readValue(json, Poll.class);
-            System.out.println(poll.getPollId());
-            System.out.println(poll.getPollName());
             return poll;
         } catch (IOException e) {
             e.printStackTrace();
@@ -76,7 +80,7 @@ public class ExportServiceImpl implements ExportService {
         try {
             return objectMapper.writeValueAsString(result);
         } catch (JsonProcessingException e) {
-            throw new Exception("Serialisierung fehlgeschlagen");
+            return "Serialisierung fehlgeschlagen";
         }
     }
 
@@ -85,10 +89,10 @@ public class ExportServiceImpl implements ExportService {
         ObjectMapper objectMapper = new ObjectMapper()
             .findAndRegisterModules();
         try {
-            System.out.println("JSONDATA: "+objectMapper.writeValueAsString(result));
             return objectMapper.writeValueAsString(result);
         } catch (JsonProcessingException e) {
-            throw new Exception("Serialisierung fehlgeschlagen");
+
+            return "Serialisierung fehlgeschlagen";
         }
     }
 
@@ -96,7 +100,8 @@ public class ExportServiceImpl implements ExportService {
     public List<PollResult> fromJSONToResult(String json) {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
-            List<PollResult> pResult = objectMapper.readValue(json, new TypeReference<List<PollResult>>(){});
+            List<PollResult> pResult = objectMapper.readValue(json, new TypeReference<List<PollResult>>() {
+            });
             return pResult;
         } catch (IOException e) {
             e.printStackTrace();
@@ -112,13 +117,15 @@ public class ExportServiceImpl implements ExportService {
             pollJSON.getJSONObject(toJSON(poll));
             combined.put("Poll", pollJSON);
             JSONObject resultJSON;
-            for(PollResult resultIndex : result) {
+            for (PollResult resultIndex : result) {
                 resultJSON = new JSONObject();
                 resultJSON.getJSONObject(toJSONSingularPR(resultIndex));
                 combined.put("Results", resultJSON);
             }
             return combined.toString();
-        } catch(Exception e){}
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return null;
     }
 

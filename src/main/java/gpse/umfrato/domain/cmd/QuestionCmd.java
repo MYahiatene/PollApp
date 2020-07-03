@@ -4,6 +4,9 @@ import lombok.Data;
 
 import java.util.List;
 
+/**
+ * The command design class for questions.
+ */
 @Data
 public class QuestionCmd {
 
@@ -13,11 +16,11 @@ public class QuestionCmd {
 
     private long questionId;
 
-    private float endValue;
+    private double endValue;
 
-    private float startValue;
+    private double startValue;
 
-    private float stepSize;
+    private double stepSize;
 
     private String belowMessage;
 

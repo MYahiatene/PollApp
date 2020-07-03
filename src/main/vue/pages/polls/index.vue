@@ -14,7 +14,11 @@
                         <template v-slot:header>
                             <v-toolbar class="mb-1">
                                 <v-btn large color="primary" @click="initializeDatabase">
-                                    <v-icon :color="progress">mdi-auto-fix</v-icon>
+                                    <v-icon :color="progressA">mdi-auto-fix</v-icon>
+                                </v-btn>
+                                <v-spacer />
+                                <v-btn large color="secondary" @click="answerPoll">
+                                    <v-icon :color="progressB">mdi-auto-fix</v-icon>
                                 </v-btn>
                                 <v-spacer />
                                 <v-text-field
@@ -30,7 +34,6 @@
                                 </v-btn>
                             </v-toolbar>
                         </template>
-
                         <v-container>
                             <template>
                                 <v-data-table
@@ -54,6 +57,11 @@
                                     <template v-slot:item.action2="{ item }">
                                         <v-icon @click="itemAction2(item)">
                                             {{ item.action2Icon }}
+                                        </v-icon>
+                                    </template>
+                                    <template v-slot:item.delete="{ item }">
+                                        <v-icon @click="deletePoll(item)">
+                                            mdi-delete
                                         </v-icon>
                                     </template>
                                 </v-data-table>
@@ -80,13 +88,14 @@
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import AuthGate from '../../components/AuthGate'
-
 export default {
     name: 'Navigation',
     components: { AuthGate },
     data() {
         return {
-            progressColor: '#FF0000',
+            participantNr: 2,
+            progressColorA: '#FF0000',
+            progressColorB: '#FF0000',
             itemsList: [],
             search: '',
             filter: {},
@@ -103,6 +112,7 @@ export default {
                 { text: '', value: 'status', sortable: false },
                 { text: '', value: 'action1', sortable: false },
                 { text: '', value: 'action2', sortable: false },
+                { text: '', value: 'delete', sortable: false },
                 { text: 'Umfrage', value: 'pollName' },
                 { text: 'Erstellt von', value: 'pollCreator' },
                 { text: 'Status', value: 'pollStatusString' },
@@ -127,8 +137,11 @@ export default {
             isAuthenticated: 'login/isAuthenticated',
             getError: 'navigation/getError',
         }),
-        progress() {
-            return this.progressColor
+        progressA() {
+            return this.progressColorA
+        },
+        progressB() {
+            return this.progressColorB
         },
         prepareItems() {
             const data = Object.assign([], this.items)
@@ -145,16 +158,19 @@ export default {
                     data[i].action1Icon = 'mdi-pencil'
                     data[i].action2Icon = 'mdi-delete'
                     data[i].statusIcon = 'mdi-play'
+                    data[i].deleteIcon = 'mdi-delete'
                 } else if (this.items[i].pollStatus === 1) {
                     data[i].pollStatusString = 'Aktiv'
                     data[i].action1Icon = 'mdi-magnify'
                     data[i].action2Icon = 'mdi-link-variant'
                     data[i].statusIcon = 'mdi-stop'
+                    data[i].deleteIcon = 'mdi-delete'
                 } else if (this.items[i].pollStatus === 2) {
                     data[i].pollStatusString = 'Beendet'
                     data[i].action1Icon = 'mdi-magnify'
                     data[i].action2Icon = 'mdi-delete'
                     data[i].statusIcon = 'mdi-content-duplicate'
+                    data[i].deleteIcon = 'mdi-delete'
                 }
                 const categories = this.items[i].categoryList
                 data[i].categoryCount = categories.length
@@ -171,10 +187,13 @@ export default {
         this.initialize()
         this.initializeLinks()
     },
-
     methods: {
         ...mapActions({ initialize: 'navigation/initialize', updatePollStatus: 'navigation/updatePollStatus' }),
-        ...mapMutations({ setPollActive: 'navigation/setPollActive', setPollFinished: 'navigation/setPollFinished' }),
+        ...mapMutations({
+            setPollActive: 'navigation/setPollActive',
+            setPollFinished: 'navigation/setPollFinished',
+            splicePolls: 'navigation/splicePolls',
+        }),
 
         async initializeLinks() {
             await this.$axios.get('/participationLinks').then((response) => {
@@ -206,7 +225,7 @@ export default {
             if (item.pollStatus === 1) {
                 this.setLink(item)
             } else if (confirm('Umfrage entgültig löschen?')) {
-                alert('Jetzt wäre sie gelöscht')
+                this.deletePoll(item)
             }
         },
         showValue(item, key) {
@@ -227,11 +246,11 @@ export default {
                     navigator.clipboard.writeText(
                         'http://localhost:8080/participant/' + this.participationLinks[i].participationLink
                     )
-                    alert(
+                    /* alert( //TODO: extrem nervig beim Testen
                         'Link kopiert: "localhost:8080/participant/' +
                             this.participationLinks[i].participationLink +
                             '"'
-                    )
+                    ) */
                 }
             }
         },
@@ -318,7 +337,7 @@ export default {
                     console.log(reason)
                 })
             console.log(newPollId)
-            this.progressColor = '#ff4d00'
+            this.progressColorA = '#ff4d00'
             await this.$axios
                 .post('/addquestion', {
                     pollId: newPollId,
@@ -334,7 +353,7 @@ export default {
                 .catch((reason) => {
                     console.log(reason)
                 })
-            this.progressColor = '#ffbb00'
+            this.progressColorA = '#ffbb00'
             await this.$axios
                 .post('/addquestion', {
                     pollId: newPollId,
@@ -350,7 +369,7 @@ export default {
                 .catch((reason) => {
                     console.log(reason)
                 })
-            this.progressColor = '#fbff00'
+            this.progressColorA = '#fbff00'
             await this.$axios
                 .post('/addquestion', {
                     pollId: newPollId,
@@ -366,7 +385,7 @@ export default {
                 .catch((reason) => {
                     console.log(reason)
                 })
-            this.progressColor = '#aaff00'
+            this.progressColorA = '#aaff00'
             await this.$axios
                 .post('/addquestion', {
                     pollId: newPollId,
@@ -382,7 +401,7 @@ export default {
                 .catch((reason) => {
                     console.log(reason)
                 })
-            this.progressColor = '#5eff00'
+            this.progressColorA = '#5eff00'
             await this.$axios
                 .post('/addquestion', {
                     pollId: newPollId,
@@ -400,14 +419,14 @@ export default {
                 .catch((reason) => {
                     console.log(reason)
                 })
-            this.progressColor = '#00ff84'
+            this.progressColorA = '#00ff84'
             await this.$axios
                 .post('/addquestion', {
                     pollId: newPollId,
                     questionMessage: 'Sliderfrage nach Gefühl',
                     questionType: 'SliderQuestion',
-                    startValue: 0,
-                    endValue: 1,
+                    startValue: 0.0,
+                    endValue: 1.0,
                     stepSize: 0.01,
                     belowMessage: 'Wenig',
                     aboveMessage: 'Viel',
@@ -419,7 +438,7 @@ export default {
                 .catch((reason) => {
                     console.log(reason)
                 })
-            this.progressColor = '#00d5ff'
+            this.progressColorA = '#00d5ff'
             await this.$axios
                 .post('/addquestion', {
                     pollId: newPollId,
@@ -427,7 +446,7 @@ export default {
                     questionMessage: 'Sliderfrage nach Wert',
                     startValue: 0,
                     endValue: 5000,
-                    stepSize: 1,
+                    stepSize: 10,
                     belowMessage: 'Unten',
                     aboveMessage: 'Oben',
                     hideValues: false,
@@ -438,7 +457,83 @@ export default {
                 .catch((reason) => {
                     console.log(reason)
                 })
-            this.progressColor = '#006eff'
+            this.progressColorA = '#006eff'
+            this.initialize()
+            await this.initializeLinks()
+        },
+
+        async answerPoll() {
+            for (let j = 0; j < 25; j++) {
+                if (j < 200) {
+                    this.progressColorB = '#006eff'
+                } else if (j < 175) {
+                    this.progressColorB = '#00d5ff'
+                } else if (j < 150) {
+                    this.progressColorB = '#00ff84'
+                } else if (j < 125) {
+                    this.progressColorB = '#5eff00'
+                } else if (j < 100) {
+                    this.progressColorB = '#aaff00'
+                } else if (j < 75) {
+                    this.progressColorB = '#fbff00'
+                } else if (j < 50) {
+                    this.progressColorB = '#ff4d00'
+                } else if (j < 25) {
+                    this.progressColorB = '#ff0000'
+                }
+                const i = this.participantNr
+                this.participantNr += 2
+                await this.$store.dispatch('participant/saveAnswer', {
+                    username: '' + i,
+                    pollId: 1,
+                    questionId: 4,
+                    answerList: [Math.floor(Math.random() * 4)],
+                })
+                await this.$store.dispatch('participant/saveAnswer', {
+                    username: '' + i,
+                    pollId: 1,
+                    questionId: 5,
+                    answerList: [Math.floor(Math.random() * 5), Math.floor(Math.random() * 4)],
+                })
+                await this.$store.dispatch('participant/saveAnswer', {
+                    username: '' + i,
+                    pollId: 1,
+                    questionId: 6,
+                    answerList: ['Hallo'],
+                })
+                await this.$store.dispatch('participant/saveAnswer', {
+                    username: '' + i,
+                    pollId: 1,
+                    questionId: 7,
+                    answerList: ['Das ist ein langer Text'],
+                })
+                await this.$store.dispatch('participant/saveAnswer', {
+                    username: '' + i,
+                    pollId: 1,
+                    questionId: 8,
+                    answerList: [Math.floor(Math.random() * 8)],
+                })
+                await this.$store.dispatch('participant/saveAnswer', {
+                    username: '' + i,
+                    pollId: 1,
+                    questionId: 9,
+                    answerList: [Math.floor(Math.random() * 100) / 100],
+                })
+                await this.$store.dispatch('participant/saveAnswer', {
+                    username: '' + i,
+                    pollId: 1,
+                    questionId: 10,
+                    answerList: [Math.floor((Math.random() * 50000) / 10)],
+                })
+            }
+        },
+        deletePoll(item) {
+            const index = this.items.indexOf(item)
+            const del = confirm('Sind sie sich sicher, dass sie diese Umfrage löschen möchten?')
+            if (del) {
+                this.splicePolls(index)
+                this.$axios.put('/deletepoll', { pollId: item.pollId })
+            }
         },
     },
 }

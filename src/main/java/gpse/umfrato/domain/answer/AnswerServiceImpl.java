@@ -60,9 +60,10 @@ public class AnswerServiceImpl implements AnswerService {
         if (!answerDa) {
             pollResult.getAnswerList().add(answer);
         }
-        final DateFormat df = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+        final DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         final Date dateobj = new Date();
         pollResult.setLastEditAt(df.format(dateobj));
+        // todo: check line below
         answerRepository.save(answer);
         pollResultRepository.save(pollResult);
         return answer;
@@ -91,7 +92,13 @@ public class AnswerServiceImpl implements AnswerService {
     public List<Answer> getAnswerFromOneQuestion(final Long questionId) {
         return answerRepository.findAnswerByQuestionId(questionId);
     }
-
+    /**
+     * This method returns all answers from a selected question.
+     *
+     * @param pollId the id of the poll
+     * @param username the id of the user
+     * @return all answers from a question in a list
+     */
     @Override
     public List<String> getAllAnswersFromPollByUser(final Long pollId, final String username) {
         return null;

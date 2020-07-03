@@ -4,6 +4,9 @@ import lombok.Data;
 
 import java.util.List;
 
+/**
+ * The command design class for answer.
+ */
 @Data
 public class AnswerCmd {
 

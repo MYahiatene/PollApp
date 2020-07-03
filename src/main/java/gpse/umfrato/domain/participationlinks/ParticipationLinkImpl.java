@@ -67,4 +67,9 @@ public class ParticipationLinkImpl implements ParticipationLinkService {
         //return pLinks;
     }
 
+    @Override
+    public List<ParticipationLink> getAllParticipationLinks(final Long pollId) {
+        return participationLinkRepository.findParticipationLinksByPollId(pollId);
+    }
+
 }

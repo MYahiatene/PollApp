@@ -3,6 +3,7 @@ package gpse.umfrato.web;
 import gpse.umfrato.domain.cmd.DeleteUserCmd;
 import gpse.umfrato.domain.cmd.EditUserCmd;
 import gpse.umfrato.domain.cmd.UserCmd;
+import gpse.umfrato.domain.password.RandomPasswordGenerator;
 import gpse.umfrato.domain.user.User;
 import gpse.umfrato.domain.user.UserRepository;
 import gpse.umfrato.domain.user.UserService;
@@ -13,6 +14,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.logging.Logger;
 
+/**
+ * The User controller used to process user specific requests.
+ */
 @RequestMapping("/api")
 @RestController
 @CrossOrigin
@@ -54,6 +58,12 @@ public class UserController {
         return HTTP_POST;
     }
 
+    /**
+     * This method edits user details.
+     *
+     * @param editUserCmd the Cmd includes all necessary details
+     * @return returns a confirmation String
+     */
     @PreAuthorize("hasAuthority('Admin')")
     @PutMapping("editUser")
     public String editUser(final @RequestBody EditUserCmd editUserCmd) {
@@ -90,11 +100,20 @@ public class UserController {
     }
 
     /**
-     * Checks if the users token has the authority admin.
+     * Checks if the users token has the authority "Admin".
      */
     @PreAuthorize("hasAuthority('Admin')")
     @GetMapping("/checkToken")
     public void checkToken() {
+
+    }
+
+    /**
+     * Checks if the users token has the authority "Creator".
+     */
+    @PreAuthorize("hasAuthority('Creator')")
+    @GetMapping("/checkCreatorToken")
+    public void checkCreatorToken() {
 
     }
 
@@ -108,5 +127,13 @@ public class UserController {
     public String deleteUser(final @RequestBody DeleteUserCmd deleteUserCmd) {
         userService.deleteUser(deleteUserCmd.getUsername());
         return "test";
+    }
+
+    // todo: test function only
+    @PreAuthorize("hasAuthority('Admin')")
+    @PostMapping("/generatepwd")
+    public String generatePwd() {
+        final RandomPasswordGenerator randomPasswordGenerator = new RandomPasswordGenerator();
+        return new String(randomPasswordGenerator.generatePwd());
     }
 }

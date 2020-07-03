@@ -134,10 +134,15 @@ public class ExportController {
         }*/
     }
 
-    @PostMapping("/importPoll/{file:[\\s\\S]+}")
-    public Poll fromJSONToPoll(final @PathVariable String file) throws Exception {
+    @PostMapping("/importPoll")
+    public Poll fromJSONToPoll(final @RequestBody String file) throws Exception {
+        System.out.println("In ImportPoll");
         System.out.println(file);
-        return exportService.fromJSONToPoll(file);
+        Poll poll = exportService.fromJSONToPoll(file);
+        System.out.println(poll.getPollName());
+        poll.setPollId(null);
+        pollService.createPoll(poll);
+        return poll;
 /*        try {
             ObjectMapper objectMapper = new ObjectMapper();
             Poll poll = objectMapper.readValue(json, Poll.class);
@@ -166,6 +171,7 @@ public class ExportController {
 
     @PostMapping("/importPollResult")
     public List<PollResult> fromJSONToResult(final @RequestBody String json) throws Exception {
+        System.out.println(json);
         return exportService.fromJSONToResult(json);
 /*        try {
             ObjectMapper objectMapper = new ObjectMapper();

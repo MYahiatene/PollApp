@@ -3,12 +3,15 @@ package gpse.umfrato.domain.cmd;
 import gpse.umfrato.domain.poll.Poll;
 import lombok.Data;
 
+/**
+ * The command design class for polls.
+ */
 @Data
 public class PollCmd {
 
     private String pollId;
 
-    private String pollcreator;
+    private String pollCreator;
 
     private String pollCreatedAt;
 
@@ -26,7 +29,7 @@ public class PollCmd {
 
     private String logo;
 
-    private String pollname;
+    private String pollName;
 
     private int pollStatus;
 
@@ -35,7 +38,7 @@ public class PollCmd {
     private boolean categoryChange;
 
     public Poll getCmdPoll() {
-        final Poll poll = new Poll(pollcreator, anonymityStatus, pollname, pollCreatedAt, activatedAt, deactivatedAt,
+        final Poll poll = new Poll(pollCreator, anonymityStatus, pollName, pollCreatedAt, activatedAt, deactivatedAt,
             pollStatus, backgroundColor, fontColor, logo, visibility, categoryChange);
         return poll;
     }

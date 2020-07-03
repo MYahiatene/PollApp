@@ -65,11 +65,6 @@ export default {
                     to: '/navigation',
                 },
                 {
-                    icon: 'mdi-chart-line',
-                    title: 'Auswertung',
-                    to: '/Analyse',
-                },
-                {
                     icon: 'mdi-account-multiple',
                     title: 'Administration',
                     to: '/Administration',

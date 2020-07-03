@@ -7,19 +7,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.function.Supplier;
+import java.util.logging.Logger;
 
+/**
+ * The answer controller used to process answer specific requests.
+ */
 @RequestMapping(value = "/api", method = RequestMethod.GET)
 @RestController
 @CrossOrigin
 public class AnswerController {
-
+    static final Logger LOGGER = Logger.getLogger("AnswerController");
     private final AnswerService answerService;
 
 
     /**
-     * This class constructor initializes the objects.
+     * This class constructor injects the answer service component.
      *
-     * @param answerService      the answer service
+     * @param answerService takes the answer service
      */
     @Autowired
     public AnswerController(final AnswerService answerService) {
@@ -35,13 +40,14 @@ public class AnswerController {
      */
     @PostMapping("/poll/{pollId:\\d+}/addanswer") // {pollId:\d+}
     public void addAnswer(final @PathVariable Long pollId, final @RequestBody AnswerCmd answerCmd) {
+        LOGGER.info("Im AnswerController");
         answerService.giveAnswer(answerCmd.getUsername(), pollId,
             answerCmd.getQuestionId(), answerCmd.getAnswerList());
     }
 
     /**
      * This method deletes an answer.
-     * @param answerCmd the needed information is saved in the answerCmd object
+     * @param answerCmd the needed information is saved in the answerCmd object.
      */
     @PostMapping("/question/{questionId:\\d+}/deleteanswer")
     public void deleteAnswer(final @RequestBody AnswerCmd answerCmd) {

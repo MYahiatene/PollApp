@@ -4,8 +4,9 @@ import java.net.MalformedURLException;
 import java.util.List;
 
 public interface ParticipationLinkService {
-    ParticipationLink createParticipationLink(Long pollId, String username) throws MalformedURLException;
-    Long getPollIdFromParticipationLink(String participationLink);
-    String getUserFromParticipationLink(String participationLink);
+    ParticipationLink createParticipationLink(final Long pollId, final String username) throws MalformedURLException;
+    Long getPollIdFromParticipationLink(final String participationLink);
+    String getUserFromParticipationLink(final String participationLink);
     List<ParticipationLink> getAllParticipationLinks();
+    List<ParticipationLink> getAllParticipationLinks(final Long pollId);
 }

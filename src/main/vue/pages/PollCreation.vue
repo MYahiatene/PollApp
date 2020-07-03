@@ -229,9 +229,9 @@ export default {
          */
         sendData() {
             const obj = {
-                pollcreator: this.getUsername,
+                pollCreator: this.getUsername,
                 anonymityStatus: this.selectedAnonymityType,
-                pollname: this.title,
+                pollName: this.title,
                 pollCreatedAt: this.creationDate,
                 activatedAt: this.activateDate,
                 deactivatedAt: this.deactivateDate,
