@@ -54,7 +54,7 @@
                         <visual-evaluation-settings
                             :question-id="questionId"
                             :change-default="false"
-                            @done=";(visualSettings = false), (diagramKey += 1)"
+                            @done=";(diagramKey += 1), (visualSettings = false)"
                         ></visual-evaluation-settings>
                     </v-card>
                 </v-col>
@@ -99,7 +99,6 @@ import { mapGetters, mapMutations } from 'vuex'
 import BarChartView from './BarChartView'
 import PieChartView from './PieChartView'
 import visualEvaluationSettings from './visualEvaluationSettings'
-
 export default {
     components: { BarChartView, PieChartView, visualEvaluationSettings },
     // these props are past in by the parent component

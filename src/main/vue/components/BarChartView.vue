@@ -7,13 +7,19 @@ export default {
     props: {
         chartdata: {
             labels: {},
+            backgroundColor: [],
             datasets: {},
         },
         options: {},
     },
     watch: {
-        chartdata: function handle() {
-            // console.log('watcher')
+        chartdata() {
+            this.renderChart(this.chartdata, this.options)
+            console.log('watcher')
+        },
+        options() {
+            this.renderChart(this.chartdata, this.options)
+            console.log('watcher')
         },
     },
     mounted() {

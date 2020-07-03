@@ -71,7 +71,7 @@ public class Statistics {
             Filter filter = null;
             switch (cmd.getFilterType()) {
                 case "questionAnswer":
-                    filter = new QuestionFilter(pollId, cmd.getTargetQuestionId(), cmd.getTargetAnswerPossibilities(), cmd.getInvertFilter(), false);
+                    filter = new QuestionFilter(pollId, cmd.getTargetQuestionId(), cmd.getTargetAnswerPossibilities(), cmd.getInvertFilter(),cmd.getIsSlider(),  false);
                     break;
                 case "consistency":
                     filter = new ConsistencyFilter(consistencyQuestionService.getAllConsistencyQuestions(pollId), cmd.getMinSuccesses());

@@ -12,7 +12,7 @@ it passes the attributes:
             <p v-if="!changeDefault">
                 Hier können die Design-Einstellungen für eine Auswahlfrage verändert werden.
             </p>
-            <h3>
+            <h3 v-else>
                 Hier können die Design-Einstellungen für Auswahlfragen generell gesetzt werden.
             </h3>
         </v-row>
@@ -157,11 +157,11 @@ export default {
     },
     // these props can be passed by the parent component
     props: {
-        // is this a settings window for one particular question or all questions?
         questionId: {
             type: Number,
             default: -1,
         },
+        // is this a settings window for one particular question or all questions?
         changeDefault: {
             type: Boolean,
             default: false,
@@ -217,7 +217,7 @@ export default {
             setDiagramFormats: 'evaluation/setDiagramFormats',
         }),
 
-        saveDiagramFormat() {
+        async saveDiagramFormat() {
             const format = {
                 questionId: this.questionId,
                 showDiagram: this.showDiagram,
@@ -231,7 +231,7 @@ export default {
                 this.setDiagramFormats({ useOnAll: this.useOnAll, format })
             } else {
                 console.log('pushFormat')
-                this.setDiagramFormat(format)
+                await this.setDiagramFormat(format)
                 console.log('pushedFormat')
             }
             console.log('done')
@@ -328,6 +328,8 @@ export default {
             )
         },
         answerTitles() {
+            console.log(this.polls)
+            console.log(this.questionId)
             const a = []
             for (let i = 0; i < this.polls.length; i++) {
                 console.log(i)
@@ -365,7 +367,7 @@ export default {
                     }
                 }
             }
-
+            console.log(a)
             return a
         },
     },

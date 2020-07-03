@@ -18,6 +18,8 @@ private final List<String> targetAnswerPossibilities;
 
 private final boolean inverted;
 
+private final boolean workWithIntervall;
+
 private final boolean requireAbsoluteMatch;
 
     @Override
@@ -27,12 +29,28 @@ private final boolean requireAbsoluteMatch;
 
 @Override public List<PollResult> filter(final List<PollResult> input) {
     final List<PollResult> filteredList = new ArrayList<>();
+    double lowerBorder = 0.0;
+    double upperBorder = 1.0;
+    if(workWithIntervall)
+    {
+        lowerBorder = Double.parseDouble(targetAnswerPossibilities.get(0));
+        upperBorder = Double.parseDouble(targetAnswerPossibilities.get(1));
+    }
     for (final PollResult pr: input) {
         boolean match = false;
         if (pr.getPollId().equals(targetPollId)) {
             for (final Answer a: pr.getAnswerList()) {
                 if (a.getQuestionId().equals(targetQuestionId)) {
-                    if (requireAbsoluteMatch) {
+                    if (workWithIntervall) {
+                        match = true;
+                        for (final String ga: a.getGivenAnswerList()) {
+                            double value = Double.parseDouble(ga);
+                            if (value < lowerBorder || upperBorder < value) {
+                                match = false;
+                                break;
+                            }
+                        }
+                    } else if (requireAbsoluteMatch) {
                         match = true;
                         for (final String ga: a.getGivenAnswerList()) {
                             if (!targetAnswerPossibilities.contains(ga)) {

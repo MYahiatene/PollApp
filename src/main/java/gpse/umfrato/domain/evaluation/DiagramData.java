@@ -40,11 +40,11 @@ public class DiagramData {
     private ChoiceData participantsOverTime;
 
     interface QuestionData {
-        enum QuestionType { CHOICE_QUESTION, TEXT_QUESTION, RANGE_QUESTION, SLIDER_QUESTION }
+        enum QuestionType { CHOICE_QUESTION, TEXT_QUESTION, RANGE_QUESTION, SLIDER_QUESTION, SORT_QUESTION }
 
-        long getQuestionId();
+        long questionId(); //No 'get' to prevent Jackson from finding it
 
-        QuestionType getQuestionType();
+        QuestionType questionType(); //No 'get' to prevent Jackson from finding it
 
         void statistics();
 
@@ -80,7 +80,8 @@ public class DiagramData {
             }
         }
 
-        @Override public long getQuestionId() {
+        @Override
+        public long questionId() {
             return this.id;
         }
 
@@ -96,11 +97,13 @@ public class DiagramData {
             }
         }
 
-        @Override public QuestionType getQuestionType() {
+        @Override
+        public QuestionType questionType() {
             return QuestionType.CHOICE_QUESTION;
         }
 
-        @Override public void statistics() {
+        @Override
+        public void statistics() {
             int size = 0;
             final List<Integer> maxima = new ArrayList<>();
             int max = 0;
@@ -146,6 +149,59 @@ public class DiagramData {
             }
         }
 
+        @Override
+        public String toJSON() {
+            final ObjectMapper mapper = new ObjectMapper();
+            try {
+                return mapper.writeValueAsString(this);
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+    }
+
+    @Getter
+    @Setter
+    protected static class SortData implements QuestionData {
+        private long id;
+        private String title;
+        private String type;
+        private List<String> answerPossibilities;
+        private List<List<Integer>> data;
+
+        SortData(final long questionId, final String questionMessage, final List<String> answerPossibilities) {
+            this.id = questionId;
+            this.type = "sort";
+            this.title = questionMessage;
+            this.answerPossibilities = answerPossibilities;
+        }
+
+        void addAnswers(List<String> answers)
+        {
+            List<Integer> newAnswer = new ArrayList<>();
+            for (String s :answers)
+            {
+                newAnswer.add(Integer.valueOf(s));
+            }
+            data.add(newAnswer);
+        }
+
+        @Override
+        public long questionId() {
+            return id;
+        }
+
+        @Override
+        public QuestionType questionType() {
+            return QuestionType.SORT_QUESTION;
+        }
+
+        @Override
+        public void statistics() {
+
+        }
+
         @Override public String toJSON() {
             final ObjectMapper mapper = new ObjectMapper();
             try {
@@ -176,7 +232,8 @@ public class DiagramData {
             this.title = questionMessage;
         }
 
-        @Override public long getQuestionId() {
+        @Override
+        public long questionId() {
             return this.id;
         }
 
@@ -184,15 +241,18 @@ public class DiagramData {
             answers.add(new TextAnswer(id, text, editedDate, creator));
         }
 
-        @Override public QuestionType getQuestionType() {
+        @Override
+        public QuestionType questionType() {
             return QuestionType.TEXT_QUESTION;
         }
 
-        @Override public void statistics() {
+        @Override
+        public void statistics() {
 
         }
 
-        @Override public String toJSON() {
+        @Override
+        public String toJSON() {
             final ObjectMapper mapper = new ObjectMapper();
             try {
                 return mapper.writeValueAsString(this);
@@ -259,6 +319,10 @@ public class DiagramData {
                         ((ChoiceData) qd).setModifier(q.getStartValue(), q.getStepSize());
                         // System.out.println(qd.toString());
                         break;
+                    case "SortQuestion":
+                        qd = new SortData(q.getQuestionId(), q.getQuestionMessage(), q.getAnswerPossibilities());
+                        // System.out.println(qd.toString());
+                        break;
                     default:
                         break;
                 }
@@ -278,8 +342,8 @@ public class DiagramData {
             }
             for (final Answer a: pr.getAnswerList()) {
                 for (final QuestionData qd: questionList) {
-                    if (qd.getQuestionId() == a.getQuestionId()) {
-                        switch (qd.getQuestionType()) {
+                    if (qd.questionId() == a.getQuestionId()) {
+                        switch (qd.questionType()) {
                             case CHOICE_QUESTION:
                                 final ChoiceData cd = (ChoiceData) qd;
                                 for (final String s: a.getGivenAnswerList()) {
@@ -290,6 +354,12 @@ public class DiagramData {
                                 if (!a.getGivenAnswerList().isEmpty()) {
                                     final TextData td = (TextData) qd;
                                     td.addAnswer(pr.getPollResultId(), a.getGivenAnswerList().get(a.getGivenAnswerList().size() - 1), pr.getLastEditAt(), pr.getPollTaker());
+                                }
+                                break;
+                            case SORT_QUESTION:
+                                if (!a.getGivenAnswerList().isEmpty()) {
+                                    final SortData sd = (SortData) qd;
+                                    sd.addAnswers(a.getGivenAnswerList());
                                 }
                                 break;
                             default:

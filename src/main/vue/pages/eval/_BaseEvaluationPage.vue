@@ -240,6 +240,11 @@ export default {
         this.initialize(this.$route.params.BaseEvaluationPage)
         this.loadSessions()
     },
+    watch: {
+        currentTheme() {
+            this.widgetKey += 1
+        },
+    },
     computed: {
         ...mapGetters({
             diagramData: 'evaluation/getDiagramData',
@@ -248,6 +253,10 @@ export default {
             participants: 'evaluation/getParticipants',
             getPolls: 'evaluation/getPolls',
         }),
+
+        currentTheme() {
+            return this.$vuetify.theme.dark
+        },
 
         // computes the number of pages
         numberOfPages() {
@@ -267,13 +276,19 @@ export default {
 
         items2() {
             const i2 = []
+            let c = -1
+            console.log(this.items)
             for (let i = 0; i < this.items.length; i++) {
-                // TODO: Title fixen
+                if (this.items[i].title === 'Teilnahmen über Zeit') {
+                    c = 0
+                }
+            }
+            for (let i = 0; i < this.items.length; i++) {
                 i2[i] = {
                     answerPossibilities: this.items[i].answerPossibilities,
                     data: this.items[i].data,
                     id: this.items[i].id,
-                    title: 'Frage ' + (i + 1) + ': ' + this.items[i].title,
+                    title: (c === i ? '' : 'Frage ' + (i - c) + ': ') + this.items[i].title,
                     calculated: this.items[i].calculated,
                     type: this.items[i].type,
                     questionID: i, // we need the index in the list

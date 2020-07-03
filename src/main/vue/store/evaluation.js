@@ -70,11 +70,11 @@ export const getters = {
                 if (state.DiagramFormat[i].questionId === id) {
                     console.log('custom ' + i)
                     console.log(state.DiagramFormat[i])
-                    return state.DiagramFormat[i]
+                    return JSON.parse(JSON.stringify(state.DiagramFormat[i]))
                 }
             }
             for (let i = 0; i < state.DiagramData.questionList.length; i++) {
-                if (state.DiagramData.questionList[i].questionId === id) {
+                if (state.DiagramData.questionList[i].id === id) {
                     const defaultFormat = JSON.parse(JSON.stringify(state.defaultDiagramFormat))
                     const colors = state.defaultDiagramFormat.backgroundColors
                     for (let q = colors.length; q < state.DiagramData.questionList[i].answerPossibilities.length; q++) {
@@ -96,7 +96,7 @@ export const mutations = {
         state.DiagramData = data.data
     },
     setPollData(state, pollData) {
-        state.Polls = pollData.data
+        state.Polls = [pollData.data]
     },
     saveFilter(state, filterList) {
         state.FilterList = filterList
@@ -149,14 +149,18 @@ export const mutations = {
     },
 }
 export const actions = {
-    async initialize({ commit }, pollId) {
-        commit('setPollID', pollId)
-        const pollData = await this.$axios.get('/bigPoll')
+    async initialize({ commit }, pollID) {
+        commit('setPollID', pollID)
+        const pollData = await this.$axios.get('/getonepoll', {
+            params: {
+                pollId: pollID,
+            },
+        })
         commit('setPollData', pollData)
         const data = await this.$axios.post('/evaluation/generateDiagram', [
             {
                 filterType: 'DataFilter',
-                basePollId: pollId,
+                basePollId: pollID,
                 baseQuestionIds: [],
             },
         ])
