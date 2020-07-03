@@ -26,6 +26,24 @@ export const mutations = {
     setQuestionMes(state, questionMessage) {
         state.question.questionMessage = questionMessage
     },
+    setStartValue(state, value) {
+        state.question.startValue = value
+    },
+    setEndValue(state, value) {
+        state.question.endValue = value
+    },
+    setStepSize(state, value) {
+        state.question.stepSize = value
+    },
+    setBelowMessage(state, value) {
+        state.question.belowMessage = value
+    },
+    setAboveMessage(state, value) {
+        state.question.aboveMessage = value
+    },
+    setHideValues(state, value) {
+        state.question.hideValues = value
+    },
     setTextMultiline(state, value) {
         state.question.textMultiline = value
     },

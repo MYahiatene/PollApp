@@ -25,7 +25,7 @@ public class StatisticUnitTest {
         try {
             //actual = Statistics.getRelativeFrequencyOfOneValue(2,10);
         }
-        catch (Exception e){
+        catch (NumberFormatException e){
             actual = 0;
         }
         assertEquals(0, 0);

@@ -162,7 +162,10 @@
                 </v-container>
 
                 <br />
-                <v-btn :disabled="!valid" color="success" class="mr-4" @click="sendData()">Erstellen</v-btn>
+                <v-btn :disabled="!valid" color="success" class="mr-4" @click="goHome()">Erstellen</v-btn>
+                <v-btn :disabled="!valid" color="success" class="mr-4" @click="goToNewPoll()"
+                    >Erstellen und bearbeiten</v-btn
+                >
             </v-form>
         </v-container>
     </v-card>
@@ -185,6 +188,7 @@ export default {
             backgroundColor: null,
             fontColor: null,
             logo: null,
+            newPollId: -1,
             activateDate: this.formatDate(new Date().toISOString().substr(0, 10)),
             deactivateDate: this.formatDate(new Date().toISOString().substr(0, 10)),
             creationDate: this.formatDate(new Date().toISOString().substr(0, 10)),
@@ -227,11 +231,11 @@ export default {
          * Puts all information in an object and directly acces axios over above declared instance at PostMapping
          * createPoll in PollController.
          */
-        sendData() {
+        async sendData() {
             const obj = {
-                pollcreator: this.getUsername,
+                pollCreator: this.getUsername,
                 anonymityStatus: this.selectedAnonymityType,
-                pollname: this.title,
+                pollName: this.title,
                 pollCreatedAt: this.creationDate,
                 activatedAt: this.activateDate,
                 deactivatedAt: this.deactivateDate,
@@ -243,8 +247,20 @@ export default {
                 logo: this.logo,
             }
             console.log(obj)
-            this.$axios.post('/createpoll', obj).catch()
-            this.$router.push('/polls')
+            await this.$axios
+                .post('/createpoll', obj)
+                .catch()
+                .then((result) => {
+                    this.newPollId = result.data
+                })
+        },
+        async goHome() {
+            await this.sendData()
+            await this.$router.push('/polls')
+        },
+        async goToNewPoll() {
+            await this.sendData()
+            await this.$router.push('/polls/' + this.newPollId)
         },
         formatDate(date) {
             if (!date) return null

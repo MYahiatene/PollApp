@@ -22,10 +22,12 @@
                                                         <v-toolbar-title>Zuletzt angesehen: </v-toolbar-title>
                                                         <v-spacer></v-spacer>
                                                     </v-toolbar>
-                                                    <p class="pa-5">Es gibt noch nichts anzuzeigen.</p>
+                                                    <p v-if="polls.length === 0" class="pa-5">
+                                                        Es gibt noch nichts anzuzeigen.
+                                                    </p>
                                                     <v-list subheader cols="12" lg="5">
                                                         <v-list-item
-                                                            v-for="item in umfragen"
+                                                            v-for="item in polls"
                                                             :key="item.id"
                                                             link
                                                             align="left"
@@ -38,13 +40,6 @@
                                                                     v-text="item.subtitle"
                                                                 ></v-list-item-subtitle>
                                                             </v-list-item-content>
-                                                            <v-list-item-action>
-                                                                <v-btn icon>
-                                                                    <v-icon color="secondary">
-                                                                        {{ item.iconStatus }}
-                                                                    </v-icon>
-                                                                </v-btn>
-                                                            </v-list-item-action>
                                                             <v-list-item-action>
                                                                 <v-btn icon nuxt :to="item.actionLink">
                                                                     <v-icon color="primary">
@@ -90,38 +85,63 @@ export default {
     name: 'Index',
     data() {
         return {
-            umfragen: [
-                /* {
-                    title: 'Meinungsbild Teambuilding',
-                    id: '418',
-                    subtitle: 'Fragen: 3 Bearbeiter: 1 Zuletzt: NHILLE (14.05.2020)',
-                    iconAction: 'mdi-pencil',
-                    actionLink: '/polls/1',
-                    iconStatus: 'mdi-play',
-                },
-                {
-                    title: 'Wahl der Vertrauensperson',
-                    id: '215',
-                    subtitle: 'Teilgenommen: 52% (18/34) Tage übrig: 5 (26.05.2020)',
-                    iconAction: 'mdi-magnify',
-                    actionLink: '/eval/1',
-                    iconStatus: 'mdi-stop',
-                },
-                {
-                    title: 'Weihnachtsfeier 2019 Rückblick',
-                    id: '183',
-                    subtitle: 'Automatisch geschlossen seit 01.02.2020',
-                    iconAction: 'mdi-magnify',
-                    actionLink: '/eval/1',
-                    iconStatus: 'mdi-content-duplicate',
-                }, */
-            ],
+            polls: [],
         }
+    },
+    mounted() {
+        this.getPolls()
     },
     computed: {
         ...mapGetters({
             isAuthenticated: 'login/isAuthenticated',
         }),
+    },
+    methods: {
+        async getPolls() {
+            if (this.isAuthenticated) {
+                let pollData = []
+                await this.$axios
+                    .get('/relevantpolls')
+                    .then((response) => {
+                        console.log(response)
+                        pollData = response.data
+                    })
+                    .catch((reason) => {
+                        console.log(reason)
+                    })
+                const data = []
+                for (let i = 0; i < pollData.length; i++) {
+                    if (pollData[i].pollStatus === 0) {
+                        data.push({
+                            title: pollData[i].pollName,
+                            id: pollData[i].pollId,
+                            subtitle: pollData[i].computedSubtitle,
+                            iconAction: 'mdi-pencil',
+                            actionLink: '/polls/' + pollData[i].pollId,
+                        })
+                    } else if (pollData[i].pollStatus === 1) {
+                        data.push({
+                            title: pollData[i].pollName,
+                            id: pollData[i].pollId,
+                            subtitle: pollData[i].computedSubtitle,
+                            iconAction: 'mdi-magnify',
+                            actionLink: '/eval/' + pollData[i].pollId,
+                        })
+                    } else if (pollData[i].pollStatus === 2) {
+                        data.push({
+                            title: pollData[i].pollName,
+                            id: pollData[i].pollId,
+                            subtitle: pollData[i].computedSubtitle,
+                            iconAction: 'mdi-magnify',
+                            actionLink: '/eval/' + pollData[i].pollId,
+                        })
+                    }
+                }
+                this.polls = data
+            } else {
+                this.polls = []
+            }
+        },
     },
 }
 </script>

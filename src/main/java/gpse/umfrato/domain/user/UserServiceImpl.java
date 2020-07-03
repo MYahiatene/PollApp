@@ -1,24 +1,32 @@
 package gpse.umfrato.domain.user;
 
+import gpse.umfrato.domain.mail.MailService;
+import gpse.umfrato.domain.password.RandomPasswordGenerator;
 import gpse.umfrato.web.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Logger;
 
 @Primary
 @Service
 class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final MailService mailService;
+    private static final Logger LOGGER = Logger.getLogger("UserServiceImpl");
 
     @Autowired
-    public UserServiceImpl(final UserRepository userRepository) {
+    public UserServiceImpl(final UserRepository userRepository, final MailService mailService) {
         this.userRepository = userRepository;
+        this.mailService = mailService;
     }
 
     /**
@@ -27,11 +35,36 @@ class UserServiceImpl implements UserService {
      * @param role the roles from user
      * @return created user
      */
+    // todo: send password form here to user
     @Override
     public User createUser(final String username, final String password, final String firstName,
                            final String lastName, final String role, final String email) {
-        final User user = new User(username, password, firstName, lastName, role, email);
+        final RandomPasswordGenerator randomPasswordGenerator = new RandomPasswordGenerator();
+        final User user;
+        // for a completely fresh user to be generated the password value sent from the frontend must be null
+        if (password == null) {
+            char[] safePwd = randomPasswordGenerator.generatePwd();
+            final String encryptedSafePwd = PasswordEncoderFactories.createDelegatingPasswordEncoder().encode(new String(safePwd));
+            user = new User(username, encryptedSafePwd, firstName, lastName, role, email);
+
+            final String pwd = new String(safePwd);
+            final String mailSubject = "Login Daten für Umfrato";
+            final String mailMessage = "Sehr geehrte/r Frau/Herr " + lastName + ",\n\n" +
+                "anbei finden Sie Ihre neuen Login Daten. \n\n" +
+                "Username: " + username + "\n" +
+                "Password: " + pwd + "\n\n" +
+                "Mit freundlichen Grüßen\nIhr Umfrato Team";
+
+            mailService.sendMail(mailSubject, mailMessage, email);
+
+            Arrays.fill(safePwd, '*');
+        } else {
+            user = new User(username, password, firstName, lastName, role, email);
+        }
+
+
         return userRepository.save(user);
+
     }
 
     /**
@@ -92,6 +125,23 @@ class UserServiceImpl implements UserService {
     public UserDetails loadUserByUsername(final String username) {
         return userRepository.findById(username)
             .orElseThrow(() -> new UsernameNotFoundException("Username " + username + " not found."));
+    }
+
+    @Override
+    public void changePassword(final String username, final String password) {
+        final User user = userRepository.getOne(username);
+        LOGGER.info("username, password" + username + password);
+        user.setPassword(password);
+        userRepository.save(user);
+        LOGGER.info("All done in UserServiceImpl");
+    }
+
+    @Override
+    public void changeEmail(final String username, final String email) {
+        final User user = userRepository.getOne(username);
+        user.setEmail(email);
+        userRepository.save(user);
+        LOGGER.info("Changed Password!");
     }
 
 }

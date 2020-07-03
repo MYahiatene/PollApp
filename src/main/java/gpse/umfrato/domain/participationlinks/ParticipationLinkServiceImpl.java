@@ -3,30 +3,39 @@ package gpse.umfrato.domain.participationlinks;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 import java.util.UUID;
 
 @Service
-public class ParticipationLinkImpl implements ParticipationLinkService {
+public class ParticipationLinkServiceImpl implements ParticipationLinkService {
+
+    /* default */ static final int DEFAULT_PORT = 8080;
 
     /* default */ final ParticipationLinkRepository participationLinkRepository;
 
-    public ParticipationLinkImpl(final ParticipationLinkRepository participationLinkRepository) {
+    public ParticipationLinkServiceImpl(final ParticipationLinkRepository participationLinkRepository) {
         this.participationLinkRepository = participationLinkRepository;
     }
 
     @Override
-    public ParticipationLink createParticipationLink(final Long pollId, final String username) {
+    public URL createParticipationLink()
+        throws MalformedURLException {
 
         final UUID uuid = UUID.randomUUID();
-        //final String urlUuid = "/" + uuid.toString();
-        //final URL invitationLink = new URL("http", "localhost", 8080, urlUuid);
+        final String urlUuid = "/" + uuid.toString();
+        final URL invitationLink = new URL("http", "localhost", DEFAULT_PORT, urlUuid);
 
-        final ParticipationLink participationLink = new ParticipationLink(pollId, username, uuid.toString());
+        return invitationLink;
+    }
 
+    @Override
+    public void saveParticipationLink(final Long pollId, final String emailAdress, final String generatedLink) {
+
+        final ParticipationLink participationLink = new ParticipationLink(pollId, emailAdress,
+            generatedLink);
         participationLinkRepository.save(participationLink);
-
-        return participationLink;
     }
 
     @Override
@@ -34,7 +43,7 @@ public class ParticipationLinkImpl implements ParticipationLinkService {
         final List<ParticipationLink> participationLinks = participationLinkRepository.findAll();
 
         for (final ParticipationLink p : participationLinks) {
-            if (p.getParticipationLink().equals(participationLink)) {
+            if (p.getGeneratedParticipationLink().equals(participationLink)) {
                 return p.getPollId();
             }
         }
@@ -46,7 +55,7 @@ public class ParticipationLinkImpl implements ParticipationLinkService {
         final List<ParticipationLink> participationLinks = participationLinkRepository.findAll();
 
         for (final ParticipationLink p : participationLinks) {
-            if (p.getParticipationLink().equals(participationLink)) {
+            if (p.getGeneratedParticipationLink().equals(participationLink)) {
                 return p.getUsername();
             }
         }
@@ -55,16 +64,12 @@ public class ParticipationLinkImpl implements ParticipationLinkService {
 
     @Override
     public List<ParticipationLink> getAllParticipationLinks() {
-        //final List<ParticipationLink> pLinks = participationLinkRepository.findParticipationLinksByPollId(
-          //  Long.valueOf(pollId));
-
         return participationLinkRepository.findAll();
+    }
 
-        /*if (pLinks.isEmpty()) {
-            throw new BadRequestException();
-        }*/
-
-        //return pLinks;
+    @Override
+    public List<ParticipationLink> getAllParticipationLinks(final Long pollId) {
+        return participationLinkRepository.findParticipationLinksByPollId(pollId);
     }
 
 }

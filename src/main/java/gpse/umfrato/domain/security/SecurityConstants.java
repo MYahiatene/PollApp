@@ -4,6 +4,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+/**
+ * This class defines our security constants variables(declared in application properties for security reasons).
+ */
 @Data
 @NoArgsConstructor
 @ConfigurationProperties("security")

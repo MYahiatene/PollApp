@@ -1,41 +1,39 @@
 <template>
     <v-card flat class="pa-2 ma-2">
+        <v-switch v-model="invertFilter" label="Invertieren" @change="updateData" />
         <v-overflow-btn
             v-if="!askForCategory()"
+            v-model="selectedCategory"
             prefix="Nur Teilnehmer, die in Kategorie"
             :items="categoryTitles"
-            v-model="selectedCategory"
-            @input="updateCategoryIndex()"
             elevation="0"
             style="box-shadow: none;"
+            @input="updateCategoryIndex()"
         >
         </v-overflow-btn>
-        <p v-else>Nur Teilnehmer, die in der Kategorie "{{ selectedCategory }}"</p>
+        <p v-else>Nur Teilnehmer anzeigen, die in der Kategorie "{{ selectedCategory }}"</p>
         <v-spacer></v-spacer>
         <v-overflow-btn
+            v-model="selectedQuestion"
             prefix="bei der Frage"
             :items="questionTitles"
-            v-model="selectedQuestion"
             :no-data-text="'Keine Kategorie ausgewählt'"
-            @input="updateQuestionIndex()"
             elevation="0"
             style="box-shadow: none;"
+            @input="updateQuestionIndex()"
         >
         </v-overflow-btn>
         <v-select
-            prefix="eine der folgenden Antwort(en)"
-            :items="answerTitles"
+            v-if="questions[questionIndex] && !(questions[questionIndex].questionType === 'SliderQuestion')"
             v-model="selectedAnswers"
+            :prefix="conditional + ' aus den Antworten'"
+            :items="answerTitles"
             multiple
             :no-data-text="'Keine Fragen ausgewählt'"
             @input="updateData"
         >
             <template v-slot:selection="{ item, index }">
-                <v-chip
-                    close
-                    @click:close="selectedAnswers.splice(index, 1)"
-                    v-if="index < answerTitlesDisplayedInSelect"
-                >
+                <v-chip v-if="index < answerTitlesDisplayedInSelect" close @click:close="deleteChip(index)">
                     <span>{{ item }}</span>
                 </v-chip>
                 <span v-if="index === answerTitlesDisplayedInSelect" class="grey--text caption"
@@ -45,6 +43,41 @@
                 >
             </template>
         </v-select>
+        <div v-if="questions[questionIndex] && questions[questionIndex].questionType === 'SliderQuestion'">
+            eine Antwort in folgendem Bereich
+            <v-range-slider
+                v-model="range"
+                :min="questions[questionIndex].startValue"
+                :max="questions[questionIndex].endValue"
+                :step="questions[questionIndex].stepSize"
+                :thumb-label="true"
+                @change="updateData"
+            >
+                <template v-slot:prepend>
+                    <v-text-field
+                        :value="range[0]"
+                        class="mt-0 pt-0"
+                        hide-details
+                        single-line
+                        type="number"
+                        style="width: 60px;"
+                        @change="$set(range, 0, $event), updateData"
+                    ></v-text-field>
+                </template>
+                <template v-slot:append>
+                    <v-text-field
+                        :value="range[1]"
+                        class="mt-0 pt-0"
+                        hide-details
+                        single-line
+                        type="number"
+                        style="width: 60px;"
+                        @change="$set(range, 1, $event), updateData"
+                    ></v-text-field>
+                </template>
+            </v-range-slider>
+        </div>
+
         ausgewählt haben.
     </v-card>
 </template>
@@ -53,23 +86,14 @@
 import { mapGetters } from 'vuex'
 export default {
     name: 'QAFilter',
-    data() {
-        return {
-            categoryIndex: -1,
-            questionIndex: -1,
-            answerIndices: [],
-            selectedCategory: '',
-            selectedQuestion: '',
-            selectedAnswers: [],
-            answerTitlesDisplayedInSelect: 5,
-        }
-    },
     props: {
         pollIndex: {
             type: Number,
+            default: -1,
         },
         filterId: {
             type: Number,
+            default: -1,
         },
         initialCategoryIndex: {
             default: -1,
@@ -82,6 +106,105 @@ export default {
         initialAnswerIndices: {
             default: () => [],
             type: Array,
+        },
+    },
+    data() {
+        return {
+            categoryIndex: -1,
+            questionIndex: -1,
+            answerIndices: [],
+            selectedCategory: '',
+            selectedQuestion: '',
+            selectedAnswers: [],
+            answerTitlesDisplayedInSelect: 5,
+            invertFilter: false,
+            range: [0, 0],
+        }
+    },
+    computed: {
+        ...mapGetters({
+            polls: 'evaluation/getPolls',
+        }),
+        conditional() {
+            if (this.invertFilter) {
+                return 'NICHT'
+            } else {
+                return ''
+            }
+        },
+        pollTitles() {
+            const pollTitles = Object.assign([{}], this.polls)
+            for (let i = 0; i < pollTitles.length; i++) {
+                pollTitles[i] = this.polls[i].pollName
+            }
+            return pollTitles
+        },
+        categoryTitles() {
+            const l = []
+            for (let i = 0; i < this.polls[this.pollIndex].categoryList.length; i++) {
+                l[i] = this.polls[this.pollIndex].categoryList[i].categoryName
+            }
+            return l
+        },
+        categories() {
+            return this.polls[this.pollIndex].categoryList
+        },
+        questionTitles() {
+            if (this.categoryIndex === -1) {
+                return []
+            } else {
+                const l = []
+                for (let i = 0; i < this.questions.length; i++) {
+                    if (
+                        !(this.questions[i].questionType === 'TextQuestion') &&
+                        !(this.questions[i].questionType === 'SortQuestion')
+                    ) {
+                        l.push(this.questions[i].questionMessage)
+                    }
+                }
+                return l
+            }
+        },
+        questions() {
+            if (this.categoryIndex === -1) {
+                return []
+            } else {
+                const c = []
+                for (let i = 0; i < this.categories[this.categoryIndex].questionList.length; i++) {
+                    if (
+                        this.categories[this.categoryIndex].questionList[i].questionType !== 'TextQuestion' &&
+                        this.categories[this.categoryIndex].questionList[i].questionType !== 'SortQuestion'
+                    ) {
+                        c.push(this.categories[this.categoryIndex].questionList[i])
+                    }
+                }
+                console.log('questions: ')
+                console.log(c)
+                return c
+            }
+        },
+        answerTitles() {
+            if (this.questionIndex === -1) {
+                return []
+            } else {
+                const l = []
+                if (this.questions[this.questionIndex].questionType === 'RangeQuestion') {
+                    l.push(this.questions[this.questionIndex].belowMessage)
+                    for (
+                        let i = this.questions[this.questionIndex].startValue;
+                        i < this.questions[this.questionIndex].endValue;
+                        i += this.questions[this.questionIndex].stepSize
+                    ) {
+                        l.push('' + i + ' - ' + (i + this.questions[this.questionIndex].stepSize))
+                    }
+                    l.push(this.questions[this.questionIndex].aboveMessage)
+                } else {
+                    for (let i = 0; i < this.questions[this.questionIndex].answerPossibilities.length; i++) {
+                        l[i] = this.questions[this.questionIndex].answerPossibilities[i]
+                    }
+                }
+                return l
+            }
         },
     },
     mounted() {
@@ -106,16 +229,15 @@ export default {
         updateCategoryIndex() {
             this.categoryIndex = this.categoryTitles.indexOf(this.selectedCategory)
         },
-
         updateQuestionIndex() {
             this.questionIndex = this.questionTitles.indexOf(this.selectedQuestion)
         },
         updateAnswerIndices() {
+            this.answerIndices = []
             for (let i = 0; i < this.selectedAnswers.length; i++) {
-                this.answerIndices[i] = this.answerTitles.indexOf(this.selectedAnswers[i])
+                this.answerIndices.push(this.answerTitles.indexOf(this.selectedAnswers[i]))
             }
         },
-
         updateData() {
             console.log('updateData')
             this.updateAnswerIndices()
@@ -123,9 +245,20 @@ export default {
             console.log(this.categoryIndex)
             console.log(this.questionIndex)
             console.log(this.answerIndices)
-            this.$emit('updateData', [this.filterId, this.categoryIndex, this.questionIndex, this.answerIndices])
+            if (this.questionIndex !== -1) {
+                this.$emit('updateData', [
+                    this.filterId,
+                    this.categoryIndex,
+                    this.questionIndex,
+                    this.questions[this.questionIndex].questionId,
+                    this.questions[this.questionIndex].questionType === 'SliderQuestion'
+                        ? this.range
+                        : this.answerIndices,
+                    this.questions[this.questionIndex].questionType === 'SliderQuestion',
+                    this.invertFilter,
+                ])
+            }
         },
-
         askForCategory() {
             const OnlyOneCategory = this.categories.length === 1
             if (OnlyOneCategory) {
@@ -134,64 +267,10 @@ export default {
             }
             return OnlyOneCategory
         },
-    },
-    computed: {
-        ...mapGetters({
-            polls: 'evaluation/getPolls',
-        }),
-
-        pollTitles() {
-            const pollTitles = Object.assign([{}], this.polls)
-            for (let i = 0; i < pollTitles.length; i++) {
-                pollTitles[i] = this.polls[i].pollName
-            }
-            return pollTitles
-        },
-        categoryTitles() {
-            const l = []
-            for (let i = 0; i < this.polls[this.pollIndex].categoryList.length; i++) {
-                l[i] = this.polls[this.pollIndex].categoryList[i].categoryName
-            }
-            return l
-        },
-
-        categories() {
-            return this.polls[this.pollIndex].categoryList
-        },
-
-        questionTitles() {
-            if (this.categoryIndex === -1) {
-                return []
-            } else {
-                const l = []
-                for (let i = 0; i < this.categories[this.categoryIndex].questionList.length; i++) {
-                    l[i] = this.categories[this.categoryIndex].questionList[i].questionMessage
-                }
-                return l
-            }
-        },
-
-        questions() {
-            if (this.categoryIndex === -1) {
-                return []
-            } else {
-                return this.categories[this.categoryIndex].questionList
-            }
-        },
-
-        answerTitles() {
-            console.log('heyho')
-            if (this.questionIndex === -1) {
-                console.log('fnkdjs')
-                return []
-            } else {
-                const l = []
-                for (let i = 0; i < this.questions[this.questionIndex].answerPossibilities.length; i++) {
-                    l[i] = this.questions[this.questionIndex].answerPossibilities[i]
-                }
-                console.log(l)
-                return l
-            }
+        deleteChip(index) {
+            this.selectedAnswers.splice(index, 1)
+            this.updateAnswerIndices()
+            this.updateData()
         },
     },
 }

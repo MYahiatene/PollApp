@@ -19,14 +19,23 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * The authentication class with jwt specific filter and configurations.
+ */
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
-    /* default */ static final int EIGHT_HUNDRED_SIXTY_FOUR_MILLION = 864_000_000;
+    private static final int EIGHT_HUNDRED_SIXTY_FOUR_MILLION = 864_000_000;
 
     private final AuthenticationManager authenticationManager;
 
     private final SecurityConstants securityConstants;
 
+    /**
+     * This constructor uses the authentication manager from spring and our security constants.
+     *
+     * @param authenticationManager springs authentication manager.
+     * @param securityConstants     our specified security constants.
+     */
     public JwtAuthenticationFilter(final AuthenticationManager authenticationManager,
                                    final SecurityConstants securityConstants) {
         this.authenticationManager = authenticationManager;
@@ -35,6 +44,13 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         setFilterProcessesUrl(this.securityConstants.getAuthLoginUrl());
     }
 
+    /**
+     * This method is used to process authentication attempts.
+     *
+     * @param request  takes a request(usually client side).
+     * @param response takes the response specific to above request.
+     * @return returns the authentication(with token).
+     */
     @Override
     public Authentication attemptAuthentication(final HttpServletRequest request, final HttpServletResponse response) {
         final String username = request.getParameter("username");
@@ -44,6 +60,13 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         return authenticationManager.authenticate(authenticationToken);
     }
 
+    /**
+     * @param request        takes a request(usually client side).
+     * @param response       takes the response specific to above request.
+     * @param filterChain    takes the filter chain used to auth.
+     * @param authentication takes the authentication object.
+     * @throws IOException the IOException.
+     */
     @Override
     protected void successfulAuthentication(final HttpServletRequest request, final HttpServletResponse response,
                                             final FilterChain filterChain, final Authentication authentication)
