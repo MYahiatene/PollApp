@@ -10,7 +10,7 @@
                 </v-col>
                 <v-col>
                     <v-card-actions>
-                        <input id="itemForm" placeholder="E-Mail Adresse" @keypress.enter="addEmail" />
+                        <input id="itemForm" placeholder="E-Mail Adresse eingeben" @keypress.enter="addEmail" />
                         <v-btn @click="addEmail">Hinzufügen</v-btn>
                     </v-card-actions>
                 </v-col>
@@ -155,7 +155,6 @@ export default {
                     'Bearer ' +
                     'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWN1cmUtYXBpIiwiYXVkIjoic2VjdXJlLWFwcCIsInN1YiI6InRiZXR0bWFubiIsImV4cCI6MTU5NDMwMzI5MCwicm9sIjpbIkFkbWluIl19._83mp73eHuu5JP8gtDIC3Jho5V7_pA-R-2pLOuRKfLe_NPtO5VtPjn3jBtBCfqJI_aaRjquFgeA5s7Y8JRAxvQ',
             }
-            console.log('submitFile test')
             const papa = require('papaparse')
 
             papa.parse(this.file, {
@@ -167,7 +166,6 @@ export default {
                             }
                         }
                     }
-                    this.$axios.post('/sendCsv', this.items).catch()
                 },
             })
         },

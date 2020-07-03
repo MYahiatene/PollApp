@@ -49,13 +49,18 @@ public class MailController {
                 } else if (mailCmd.getAnonymityStatus().equals("2")) { // 2 = teilanonym, Username ist unique Key
 
                     invitationLink = participationLinkService.createParticipationLink();
-                    participationLinkService.saveParticipationLink(mailCmd.getPollId(), invitationLink.toString(),
-                        invitationLink.toString());
+                    participationLinkService.saveParticipationLink(mailCmd.getPollId(), invitationLink.toString()
+                        .substring(invitationLink.toString().lastIndexOf("/") + 1), invitationLink.toString()
+                    );
 
                 } else { // 1 = anonym, es ist jedes mal der selbe Link
 
-                    participationLinkService.saveParticipationLink(mailCmd.getPollId(), invitationLink.toString(),
-                        invitationLink.toString());
+                    String generatedUsername = participationLinkService.createParticipationLink().toString();
+                    generatedUsername = participationLinkService.createParticipationLink().toString()
+                        .substring(generatedUsername.lastIndexOf("/") + 1);
+
+                    participationLinkService.saveParticipationLink(mailCmd.getPollId(), generatedUsername, invitationLink.toString()
+                    );
 
                 }
 
