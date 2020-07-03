@@ -39,25 +39,27 @@ public class MailController {
 
             final SimpleMailMessage message = new SimpleMailMessage();
 
-            URL invitationLink = participationLinkService.createParticipationLink();
+            String invitationLink;
 
             for (String mail : mailCmd.getMailList()) {
 
                 if (mailCmd.getAnonymityStatus().equals("3")) { // 3 = nicht anonym
 
-                    invitationLink = participationLinkService.createParticipationLink();
+                    invitationLink = participationLinkService.createParticipationLink().toString();
                     participationLinkService.saveParticipationLink(mailCmd.getPollId(), mail,
                         invitationLink.toString());
 
                 } else if (mailCmd.getAnonymityStatus().equals("2")) { // 2 = teilanonym, Username ist unique Key
 
-                    invitationLink = participationLinkService.createParticipationLink();
+                    invitationLink = participationLinkService.createParticipationLink().toString();
                     participationLinkService.saveParticipationLink(mailCmd.getPollId(), mail, invitationLink.toString()
                     );
 
                 } else { // 1 = anonym, es ist jedes mal der selbe Link
 
-                    participationLinkService.saveParticipationLink(mailCmd.getPollId(), mail, invitationLink.toString()
+                    List<ParticipationLink> participationLinks = participationLinkService.getAllParticipationLinks(mailCmd.getPollId());
+                    invitationLink = participationLinks.get(0).getParticipationLink();
+                    participationLinkService.saveParticipationLink(mailCmd.getPollId(), mail, invitationLink
                     );
 
                 }
@@ -94,15 +96,15 @@ public class MailController {
             final SimpleMailMessage message = new SimpleMailMessage();
 
             for (ParticipationLink participationLink : participationList) {
+                if (participationLink.getUsername().contains("@") && participationLink.getUsername().contains(".")) {
+                    String mailText = mailCmd.getEmailMessage();
+                    mailText = mailText.replace("{link}", participationLink.getParticipationLink());
+                    message.setTo(participationLink.getUsername());
+                    message.setSubject(mailCmd.getEmailSubject());
+                    message.setText(mailText);
 
-                String mailText = mailCmd.getEmailMessage();
-                mailText = mailText.replace("{link}", participationLink.getParticipationLink());
-                message.setTo(participationLink.getUsername());
-                message.setSubject(mailCmd.getEmailSubject());
-                message.setText(mailText);
-
-                this.mailSender.send(message);
-
+                    this.mailSender.send(message);
+                }
             }
 
             return "Email sent.";
