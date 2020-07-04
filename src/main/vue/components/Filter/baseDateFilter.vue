@@ -58,6 +58,27 @@ export default {
         filterIndex: {
             type: Number,
         },
+        startDate: {
+            type: String,
+            default: '2000-01-01 00:00',
+        },
+        endDate: {
+            type: String,
+            default: '2100-01-01 23:59',
+        },
+        invertFilter: {
+            type: Boolean,
+            default: false,
+        },
+    },
+
+    mounted() {
+        this.dates[0] = this.startDate.substr(0, 10)
+        this.dates[1] = this.endDate.substr(0, 10)
+        this.time1 = this.startDate.substr(11, 5)
+        this.time2 = this.endDate.substr(11, 5)
+        this.inverted = this.invertFilter
+        this.computeDates()
     },
 
     computed: {

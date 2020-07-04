@@ -63,6 +63,9 @@ export const getters = {
     getPollName(state) {
         return state.DiagramData.name
     },
+    getFilterList(state) {
+        return state.FilterList
+    },
     getParticipants(state) {
         return state.DiagramData.particpantCount
     },
