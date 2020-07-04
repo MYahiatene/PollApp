@@ -123,6 +123,7 @@ public class ExportController {
     public String toJSON(final @PathVariable Long pollId) throws Exception {
         Poll result = pollService.getPoll(pollId);
         writeToFile(exportService.toJSON(result), pollId.toString());
+        System.out.println(exportService.toJSON(result));
         return exportService.toJSON(result);
 /*        LOGGER.info(result.toString());
         ObjectMapper objectMapper = new ObjectMapper()
