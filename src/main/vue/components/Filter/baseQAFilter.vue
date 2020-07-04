@@ -17,7 +17,11 @@
             v-model="selectedQuestion"
             prefix="bei der Frage"
             :items="questionTitles"
-            :no-data-text="'Keine Kategorie ausgewählt'"
+            :no-data-text="
+                selectedCategory === ''
+                    ? 'Keine Kategorie ausgewählt'
+                    : 'Keine nutzbaren Fragen in dieser Kategorie. Bitte wählen Sie eine andere!'
+            "
             elevation="0"
             style="box-shadow: none;"
             @input="updateQuestionIndex()"

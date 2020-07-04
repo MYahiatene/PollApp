@@ -4,94 +4,105 @@
             <!--            the title includes the Question and its id-->
             <v-toolbar-title> {{ questionTitle }} </v-toolbar-title>
             <v-spacer></v-spacer>
-            <v-switch class="mt-4" v-model="shortView" label="Kurzübersicht"> </v-switch>
+
+            <div v-if="!noAnswers">
+                <v-switch class="mt-4" v-model="shortView" label="Kurzübersicht"> </v-switch>
+            </div>
+
+            <div v-else>
+                Keine Antworten
+            </div>
         </v-app-bar>
 
-        <v-container fluid v-if="shortView">
-            <v-row justify="center">
-                <v-col cols="12">
-                    <v-row justify="center" v-for="(list, index) in meanOrder" :key="index">
-                        <v-chip v-for="(item, id) in list" :key="id" class="ma-1">
-                            {{ item.itemName }}
-                        </v-chip>
-                    </v-row>
-                </v-col>
-            </v-row>
-        </v-container>
-
-        <div v-else>
-            <v-card-subtitle>
-                <v-btn icon @click="spanExplanation = !spanExplanation"><v-icon>mdi-magnify</v-icon></v-btn> Spannweite:
-                {{ span }}
-            </v-card-subtitle>
-
-            <v-card dense v-if="spanExplanation" class="ma-1 pa-1">
-                <v-btn icon @click="spanExplanation = !spanExplanation"><v-icon>mdi-close</v-icon></v-btn>
-                <p>Hier reicht die potentielle Spannweite von 0 bis {{ answerPossibilites.length - 1 }}.</p>
-                <p>
-                    Eine geringe Spannweite bedeutet, dass alle Konzepte im Mittel ähnlich bewertet wurden, sich die
-                    verschiedenen Bewertungen der Teilnehmer also gegenseitig aufheben. Eine große Spannweite heißt,
-                    dass sich sehr eindeutige Unterschiede in der Gewichtung gab. Eine große Spannweite bedeutet also,
-                    dass sich die Teilnehmer einiger waren und der durchschnittlichen Ordnung eine größe Bedeutung
-                    zugemessen werden kann.
-                </p>
-            </v-card>
-
-            <v-card class="ma-1" dense v-for="(list, index) in meanOrder" :key="index">
-                <v-card-title> Position: {{ index + 1 }} </v-card-title>
-
-                <v-card-subtitle> relative Position: {{ list[0].meanPositionValue }} </v-card-subtitle>
-
-                <v-card-text>
-                    <v-row>
-                        <div v-for="(item, id) in list" :key="id">
-                            <v-chip v-if="!item.show" class="ma-1" @click="item.show = !item.show">
-                                {{ item.itemName }}<v-icon>mdi-magnify</v-icon>
-                            </v-chip>
-                        </div>
-                    </v-row>
-
-                    <div v-for="(item, id) in list" :key="id">
-                        <v-card v-if="item.show" class="pa-2 ma-2">
-                            <v-card-title>
+        <div v-if="!noAnswers">
+            <v-container fluid v-if="shortView">
+                <v-row justify="center">
+                    <v-col cols="12">
+                        <v-row justify="center" v-for="(list, index) in meanOrder" :key="index">
+                            <v-chip v-for="(item, id) in list" :key="id" class="ma-1">
                                 {{ item.itemName }}
-                                <v-spacer></v-spacer>
-                                <v-btn icon @click="item.show = false">
-                                    <v-icon>mdi-close</v-icon>
-                                </v-btn>
-                            </v-card-title>
+                            </v-chip>
+                        </v-row>
+                    </v-col>
+                </v-row>
+            </v-container>
 
-                            <v-card-text>
-                                <v-row>
-                                    <v-col cols="12" lg="4">
-                                        <v-card flat>
-                                            <BarChartView
-                                                style="height: 30vh;"
-                                                :chartdata="chartdataSets[item.itemID]"
-                                                :options="barChartOptions"
-                                            ></BarChartView>
-                                        </v-card>
-                                    </v-col>
-                                    <v-col cols="12" lg="4">
-                                        <div>
-                                            Wurde
+            <div v-else>
+                <v-card-subtitle>
+                    <v-btn icon @click="spanExplanation = !spanExplanation"><v-icon>mdi-magnify</v-icon></v-btn>
+                    Spannweite:
+                    {{ span }}
+                </v-card-subtitle>
 
-                                            <div v-for="(value, key) in item.wasAtPositionNumbers" :key="key">
-                                                {{ value }} mal an Position {{ key + 1 }},
+                <v-card dense v-if="spanExplanation" class="ma-1 pa-1">
+                    <v-btn icon @click="spanExplanation = !spanExplanation"><v-icon>mdi-close</v-icon></v-btn>
+                    <p>Hier reicht die potentielle Spannweite von 0 bis {{ answerPossibilites.length - 1 }}.</p>
+                    <p>
+                        Eine geringe Spannweite bedeutet, dass alle Konzepte im Mittel ähnlich bewertet wurden, sich die
+                        verschiedenen Bewertungen der Teilnehmer also gegenseitig aufheben. Eine große Spannweite heißt,
+                        dass sich sehr eindeutige Unterschiede in der Gewichtung gab. Eine große Spannweite bedeutet
+                        also, dass sich die Teilnehmer einiger waren und der durchschnittlichen Ordnung eine größe
+                        Bedeutung zugemessen werden kann.
+                    </p>
+                </v-card>
+
+                <v-card class="ma-1" dense v-for="(list, index) in meanOrder" :key="index">
+                    <v-card-title> Position: {{ index + 1 }} </v-card-title>
+
+                    <v-card-subtitle> relative Position: {{ list[0].meanPositionValue }} </v-card-subtitle>
+
+                    <v-card-text>
+                        <v-row>
+                            <div v-for="(item, id) in list" :key="id">
+                                <v-chip v-if="!item.show" class="ma-1" @click="item.show = !item.show">
+                                    {{ item.itemName }}<v-icon>mdi-magnify</v-icon>
+                                </v-chip>
+                            </div>
+                        </v-row>
+
+                        <div v-for="(item, id) in list" :key="id">
+                            <v-card v-if="item.show" class="pa-2 ma-2">
+                                <v-card-title>
+                                    {{ item.itemName }}
+                                    <v-spacer></v-spacer>
+                                    <v-btn icon @click="item.show = false">
+                                        <v-icon>mdi-close</v-icon>
+                                    </v-btn>
+                                </v-card-title>
+
+                                <v-card-text>
+                                    <v-row>
+                                        <v-col cols="12" lg="4">
+                                            <v-card flat>
+                                                <BarChartView
+                                                    :key="DiagramKey"
+                                                    style="height: 30vh;"
+                                                    :chartdata="chartdataSets[item.itemID]"
+                                                    :options="barChartOptions"
+                                                ></BarChartView>
+                                            </v-card>
+                                        </v-col>
+                                        <v-col cols="12" lg="4">
+                                            <div>
+                                                Wurde
+
+                                                <div v-for="(value, key) in item.wasAtPositionNumbers" :key="key">
+                                                    {{ value }} mal an Position {{ key + 1 }},
+                                                </div>
+
+                                                positioniert.
                                             </div>
-
-                                            positioniert.
-                                        </div>
-                                    </v-col>
-                                </v-row>
-                                <v-row>
-                                    Varianz: {{ item.variance }} Standartabweichung: {{ item.standardDeviation }}
-                                </v-row>
-                            </v-card-text>
-                        </v-card>
-                    </div>
-                </v-card-text>
-            </v-card>
+                                        </v-col>
+                                    </v-row>
+                                    <v-row>
+                                        Varianz: {{ item.variance }} Standartabweichung: {{ item.standardDeviation }}
+                                    </v-row>
+                                </v-card-text>
+                            </v-card>
+                        </div>
+                    </v-card-text>
+                </v-card>
+            </div>
         </div>
     </v-card>
 </template>
@@ -130,10 +141,10 @@ export default {
 
         span: 0,
 
-        showList: [],
-
         spanExplanation: false,
         shortView: true,
+
+        noAnswers: false,
 
         // these options are needed to display a visual diagram, they are passed as props into that component
 
@@ -155,6 +166,8 @@ export default {
                 ],
             },
         },
+
+        DiagramKey: 0,
 
         chartdataSets: [],
 
@@ -227,14 +240,6 @@ export default {
                     })
                 }
             }
-        },
-
-        changeShow(id) {
-            console.log('change')
-            console.log('wuuu')
-            console.log(this.showList)
-            this.showList[id] = !this.showList[id]
-            this.$forceUpdate()
         },
 
         // createChartData() {
@@ -378,56 +383,59 @@ export default {
 
             console.log(this.diagramData[this.questionID].meanOrder)
 
-            for (let i = 0; i < this.diagramData[this.questionID].meanOrder.length; i++) {
-                this.meanOrder.push([])
-                for (let j = 0; j < this.diagramData[this.questionID].meanOrder[i].length; j++) {
-                    console.log(i)
-                    console.log(j)
-                    console.log(this.diagramData[this.questionID].meanOrder[i][j])
-                    this.meanOrder[i].push({
-                        itemID: this.diagramData[this.questionID].meanOrder[i][j].itemID,
-                        meanPositionValue: this.diagramData[this.questionID].meanOrder[i][j].meanPositionValue,
-                        meanPosition: this.diagramData[this.questionID].meanOrder[i][j].meanPosition,
-                        itemName: this.diagramData[this.questionID].meanOrder[i][j].itemName,
-                        variance: this.diagramData[this.questionID].meanOrder[i][j].variance,
-                        standardDeviation: this.diagramData[this.questionID].meanOrder[i][j].standardDeviation,
-                        show: false,
-                        wasAtPositionNumbers: this.diagramData[this.questionID].meanOrder[i][j].wasAtPositionNumbers,
-                    })
+            if (this.diagramData[this.questionID].meanOrder.length === 0) {
+                this.noAnswers = true
+            } else {
+                for (let i = 0; i < this.diagramData[this.questionID].meanOrder.length; i++) {
+                    this.meanOrder.push([])
+                    for (let j = 0; j < this.diagramData[this.questionID].meanOrder[i].length; j++) {
+                        console.log(i)
+                        console.log(j)
+                        console.log(this.diagramData[this.questionID].meanOrder[i][j])
+                        this.meanOrder[i].push({
+                            itemID: this.diagramData[this.questionID].meanOrder[i][j].itemID,
+                            meanPositionValue: this.diagramData[this.questionID].meanOrder[i][j].meanPositionValue,
+                            meanPosition: this.diagramData[this.questionID].meanOrder[i][j].meanPosition,
+                            itemName: this.diagramData[this.questionID].meanOrder[i][j].itemName,
+                            variance: this.diagramData[this.questionID].meanOrder[i][j].variance,
+                            standardDeviation: this.diagramData[this.questionID].meanOrder[i][j].standardDeviation,
+                            show: false,
+                            wasAtPositionNumbers: this.diagramData[this.questionID].meanOrder[i][j]
+                                .wasAtPositionNumbers,
+                        })
+                    }
                 }
-            }
 
-            console.log(this.meanOrder)
-            this.answerPossibilites = this.diagramData[this.questionID].answerPossibilities
+                console.log(this.meanOrder)
+                this.answerPossibilites = this.diagramData[this.questionID].answerPossibilities
 
-            this.span =
-                -this.meanOrder[0][0].meanPositionValue + this.meanOrder[this.meanOrder.length - 1][0].meanPositionValue
+                this.span =
+                    -this.meanOrder[0][0].meanPositionValue +
+                    this.meanOrder[this.meanOrder.length - 1][0].meanPositionValue
 
-            for (let i = 0; i < this.answerPossibilites.length; i++) {
-                this.showList.push(false)
-            }
-
-            const items = this.answerPossibilites
-            console.log(this.answerPossibilites)
-            console.log(items)
-            for (let i = 0; i < items.length; i++) {
-                this.chartdataSets.push({ labels: [], datasets: [] })
-                for (let j = 0; j < items.length; j++) {
-                    this.chartdataSets[i].labels.push('Position ' + (j + 1) + '')
+                const items = this.answerPossibilites
+                console.log(this.answerPossibilites)
+                console.log(items)
+                for (let i = 0; i < items.length; i++) {
+                    this.chartdataSets.push({ labels: [], datasets: [] })
+                    for (let j = 0; j < items.length; j++) {
+                        this.chartdataSets[i].labels.push('Position ' + (j + 1) + '')
+                    }
                 }
-            }
-            console.log('chartData')
-            console.log(this.chartdataSets)
+                console.log('chartData')
+                console.log(this.chartdataSets)
 
-            for (let j = 0; j < this.meanOrder.length; j++) {
-                for (let k = 0; k < this.meanOrder[j].length; k++) {
-                    console.log(this.meanOrder[j][k].itemID)
-                    this.chartdataSets[this.meanOrder[j][k].itemID].datasets.push({
-                        label: this.meanOrder[j][k].itemName,
-                        backgroundColor: this.$vuetify.theme.currentTheme.primary,
-                        data: this.meanOrder[j][k].wasAtPositionNumbers,
-                    })
+                for (let j = 0; j < this.meanOrder.length; j++) {
+                    for (let k = 0; k < this.meanOrder[j].length; k++) {
+                        console.log(this.meanOrder[j][k].itemID)
+                        this.chartdataSets[this.meanOrder[j][k].itemID].datasets.push({
+                            label: this.meanOrder[j][k].itemName,
+                            backgroundColor: this.$vuetify.theme.currentTheme.primary,
+                            data: this.meanOrder[j][k].wasAtPositionNumbers,
+                        })
+                    }
                 }
+                this.DiagramKey += 1
             }
         },
     },
