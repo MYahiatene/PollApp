@@ -70,6 +70,7 @@
                                                         v-for="answer in question.answerPossibilities"
                                                         :key="answer.text"
                                                         :label="`${answer}`"
+                                                        :color="fontColor"
                                                         :value="answer"
                                                         @change="saveAnswerRadioButton(question, answer)"
                                                     ></v-radio>

@@ -86,6 +86,7 @@ export const getters = {
                     return JSON.parse(JSON.stringify(state.DiagramOptions[i]))
                 }
             }
+            console.log(state)
             return JSON.parse(JSON.stringify(state.defaultDiagramOptions))
         }
     },
@@ -170,13 +171,13 @@ export const mutations = {
         console.log('reset')
         console.log(optionList)
         state.DiagramOptions = []
-        state.defaultDiagramOptions = stringToFormat(optionList[0])
+        state.defaultDiagramOptions = JSON.parse(optionList[0])
         if (optionList.length > 1) {
-            state.DiagramOptions.push(stringToFormat(optionList.slice(1)))
+            state.DiagramOptions.push(JSON.parse(optionList.slice(1)))
         }
     },
     setDiagramOptions(state, payload) {
-        console.log('setDiagramOptiosn()')
+        console.log('setDiagramOptions()')
         console.log(payload)
         if (payload.useOnAll) {
             state.DiagramOptions = []

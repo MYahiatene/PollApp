@@ -362,7 +362,9 @@ public class DiagramData {
         }
     }
 
-    @Getter @Setter protected static class TextData implements QuestionData {
+    @Getter
+    @Setter
+    protected static class TextData implements QuestionData {
         private long id;
         private String type;
         private String title;

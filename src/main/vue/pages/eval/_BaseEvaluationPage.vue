@@ -38,7 +38,7 @@ that each display a basic evaluation of one specific question-->
                             </visual-evaluation-settings>
                         </v-card>
                     </v-dialog>
-                    <v-col cols="4">
+                    <v-col cols="3">
                         <v-card-title> {{ pollName }} </v-card-title>
                     </v-col>
 
@@ -328,9 +328,12 @@ export default {
             },
             set(value) {
                 this.setDiagramOptions({
-                    questionId: -1,
-                    cumulated: value,
-                    relativ: this.relativ,
+                    useOnAll: true,
+                    option: {
+                        questionId: -1,
+                        cumulated: value,
+                        relativ: this.relativ,
+                    },
                 })
             },
         },
@@ -340,9 +343,12 @@ export default {
             },
             set(value) {
                 this.setDiagramOptions({
-                    questionId: -1,
-                    cumulated: this.cumulated,
-                    relativ: value,
+                    useOnAll: true,
+                    option: {
+                        questionId: -1,
+                        cumulated: this.cumulated,
+                        relativ: value,
+                    },
                 })
             },
         },
