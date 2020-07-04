@@ -222,10 +222,21 @@ public class DiagramData {
         @Override
         public void statistics() {
 
-            if (answerPossibilities.size() != data.get(0).size()) {
-                LOGGER.info("Fehlerhafte Daten");
+            if (data.size() == 0) {
+                LOGGER.info("Keine Antworten");
+                return;
 
             }
+
+
+             if (answerPossibilities.size() != data.get(0).size()) {
+                LOGGER.info("Fehlerhafte Daten");
+                return;
+
+            }
+
+
+
             // initializing a array that has size nxn with n = number of items
 
             List<SortValues> arrayOfValues = new ArrayList<>();

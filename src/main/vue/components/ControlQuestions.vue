@@ -31,8 +31,9 @@
                         <p>
                             Hier können Sie Konsistenzfragenbeziehungen für die Umfrage "{{ pollName }}" erstellen. Dazu
                             wählen sie im linken Fenster eine Frage aus und entscheiden sich dann für eine Menge von
-                            Antwortmöglichkeiten bei dieser Frage. Nachdem Sie das gleiche im rechten Fenster getan und
-                            auf "Speichern" gedrückt haben, haben, werde diese zwei Mengen von Antwort-Möglichkeiten
+                            Antwortmöglichkeiten bei dieser Frage. Achtung, Sie haben dabei nur die Auswahl aus Range-,
+                            Slider- und Auswahlfragen. Nachdem Sie das gleiche im rechten Fenster getan und auf
+                            "Speichern" gedrückt haben, haben, werde diese zwei Mengen von Antwort-Möglichkeiten
                             verknüpft. Sobald ein Teilnehmer nun eine Antwort aus der linken Menge, aber keine aus der
                             rechten wählt, können seine Ergebnisse bei der Auswertung mit einem Klick ausgeschlossen
                             werden.
@@ -79,7 +80,11 @@
                                 prefix="Frage: "
                                 dense
                                 :items="questionTitles"
-                                :no-data-text="'Keine Kategorie ausgewählt'"
+                                :no-data-text="
+                                    selectedCategory === ''
+                                        ? 'Keine Kategorie ausgewählt'
+                                        : 'Keine nutzbaren Fragen in dieser Kategorie. Bitte wählen Sie eine andere!'
+                                "
                                 elevation="0"
                                 style="box-shadow: none;"
                                 @input="updateQuestionIndex()"
@@ -174,7 +179,11 @@
                                 prefix="Frage: "
                                 dense
                                 :items="questionTitles2"
-                                :no-data-text="'Keine Kategorie ausgewählt'"
+                                :no-data-text="
+                                    selectedCategory === ''
+                                        ? 'Keine Kategorie ausgewählt'
+                                        : 'Keine nutzbaren Fragen in dieser Kategorie. Bitte wählen Sie eine andere!'
+                                "
                                 elevation="0"
                                 style="box-shadow: none;"
                                 @input="updateQuestionIndex2()"

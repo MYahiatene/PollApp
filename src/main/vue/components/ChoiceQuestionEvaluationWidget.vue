@@ -7,98 +7,109 @@
 
             <v-spacer></v-spacer>
             <!--            this button leads to the settings page for this specific question-->
-            <v-tooltip bottom>
-                <template v-slot:activator="{ on, attrs }">
-                    <v-btn
-                        icon
-                        :color="relativ ? 'accent' : 'primary'"
-                        v-bind="attrs"
-                        v-on="on"
-                        @click=";(relativ = !relativ), (diagramKey += 1)"
-                    >
-                        <v-icon>
-                            %
-                        </v-icon>
-                    </v-btn>
-                </template>
-                <span>Relative bzw. Absolute Häufigkeit umschalten</span>
-            </v-tooltip>
-            <v-tooltip bottom>
-                <template v-slot:activator="{ on, attrs }">
-                    <v-btn
-                        icon
-                        :color="cumulated ? 'accent' : 'primary'"
-                        v-bind="attrs"
-                        v-on="on"
-                        @click=";(cumulated = !cumulated), (diagramKey += 1)"
-                    >
-                        <v-icon> mdi-sigma</v-icon>
-                    </v-btn>
-                </template>
-                <span>Kumulierte Häufigkeit an- und ausschalten</span>
-            </v-tooltip>
-            <v-tooltip bottom>
-                <template v-slot:activator="{ on, attrs }">
-                    <v-btn icon color="primary" v-bind="attrs" v-on="on" @click="visualSettings = !visualSettings">
-                        <v-icon> mdi-brush </v-icon>
-                    </v-btn>
-                </template>
-                <span>Digrammfarben anpassen</span>
-            </v-tooltip>
+
+            <div v-if="(calculated.relative[0] === 'NaN')">
+                Keine Antworten
+            </div>
+
+            <div v-if="!(calculated.relative[0] === 'NaN')">
+                <v-tooltip bottom>
+                    <template v-slot:activator="{ on, attrs }">
+                        <v-btn
+                            icon
+                            :color="relativ ? 'accent' : 'primary'"
+                            v-bind="attrs"
+                            v-on="on"
+                            @click=";(relativ = !relativ), (diagramKey += 1)"
+                        >
+                            <v-icon>
+                                %
+                            </v-icon>
+                        </v-btn>
+                    </template>
+                    <span>Relative bzw. Absolute Häufigkeit umschalten</span>
+                </v-tooltip>
+                <v-tooltip bottom>
+                    <template v-slot:activator="{ on, attrs }">
+                        <v-btn
+                            icon
+                            :color="cumulated ? 'accent' : 'primary'"
+                            v-bind="attrs"
+                            v-on="on"
+                            @click=";(cumulated = !cumulated), (diagramKey += 1)"
+                        >
+                            <v-icon> mdi-sigma</v-icon>
+                        </v-btn>
+                    </template>
+                    <span>Kumulierte Häufigkeit an- und ausschalten</span>
+                </v-tooltip>
+                <v-tooltip bottom>
+                    <template v-slot:activator="{ on, attrs }">
+                        <v-btn icon color="primary" v-bind="attrs" v-on="on" @click="visualSettings = !visualSettings">
+                            <v-icon> mdi-brush </v-icon>
+                        </v-btn>
+                    </template>
+                    <span>Digrammfarben anpassen</span>
+                </v-tooltip>
+            </div>
         </v-app-bar>
-        <v-container>
-            <v-row v-if="visualSettings">
-                <v-col cols="12" lg="12">
-                    <v-card>
-                        <!--                    the visual settings the widget gets the current settings passed as props-->
-                        <visual-evaluation-settings
-                            :question-id="questionId"
-                            :change-default="false"
-                            @done=";(diagramKey += 1), (visualSettings = false)"
-                        ></visual-evaluation-settings>
-                    </v-card>
-                </v-col>
-            </v-row>
 
-            <!--            here we display a visual diagram-->
-            <v-row v-if="showDiagram">
-                <v-col cols="12" lg="12">
-                    <!--                    we check in diagramType which one the user wants-->
-                    <div v-if="diagramType === 'bar'">
-                        <BarChartView
-                            :chartdata="chartdataSet"
-                            :options="barChartOptions"
-                            :key="diagramKey"
-                        ></BarChartView>
-                    </div>
-                    <!--                     the height is set to 60% of the screen-->
-                    <div v-else-if="diagramType === 'pie'" style="height: 60vh;">
-                        <PieChartView
-                            :chartdata="chartdataSet"
-                            :options="pieChartOptions"
-                            :key="diagramKey"
-                        ></PieChartView>
-                    </div>
-                </v-col>
-            </v-row>
-            <v-row> </v-row>
-            <!-- here we display a table with the data-->
+        <div v-if="!(calculated.relative[0] === 'NaN')">
+            <v-container>
+                <v-row v-if="visualSettings">
+                    <v-col cols="12" lg="12">
+                        <v-card>
+                            <!--                    the visual settings the widget gets the current settings passed as props-->
+                            <visual-evaluation-settings
+                                :question-id="questionId"
+                                :change-default="false"
+                                @done=";(diagramKey += 1), (visualSettings = false)"
+                            ></visual-evaluation-settings>
+                        </v-card>
+                    </v-col>
+                </v-row>
 
-            <v-row>
-                <v-col cols="3">
-                    <v-chip :color="this.$vuetify.theme.currentTheme.info">Median: {{ calculated.median }}</v-chip>
-                </v-col>
-                <v-col cols="3">
-                    <v-chip :color="this.$vuetify.theme.currentTheme.info">Modus: {{ calculated.mode }}</v-chip>
-                </v-col>
-            </v-row>
-            <v-row>
-                <v-col cols="12" lg="12">
-                    <div v-if="showTable">
-                        <v-data-table :headers="header" :items="items" hide-default-footer dense> </v-data-table></div
-                ></v-col>
-            </v-row>
-        </v-container>
+                <!--            here we display a visual diagram-->
+                <v-row v-if="showDiagram">
+                    <v-col cols="12" lg="12">
+                        <!--                    we check in diagramType which one the user wants-->
+                        <div v-if="diagramType === 'bar'">
+                            <BarChartView
+                                :chartdata="chartdataSet"
+                                :options="barChartOptions"
+                                :key="diagramKey"
+                            ></BarChartView>
+                        </div>
+                        <!--                     the height is set to 60% of the screen-->
+                        <div v-else-if="diagramType === 'pie'" style="height: 60vh;">
+                            <PieChartView
+                                :chartdata="chartdataSet"
+                                :options="pieChartOptions"
+                                :key="diagramKey"
+                            ></PieChartView>
+                        </div>
+                    </v-col>
+                </v-row>
+                <v-row> </v-row>
+                <!-- here we display a table with the data-->
+
+                <v-row>
+                    <v-col cols="3">
+                        <v-chip :color="this.$vuetify.theme.currentTheme.info">Median: {{ calculated.median }}</v-chip>
+                    </v-col>
+                    <v-col cols="3">
+                        <v-chip :color="this.$vuetify.theme.currentTheme.info">Modus: {{ calculated.mode }}</v-chip>
+                    </v-col>
+                </v-row>
+                <v-row>
+                    <v-col cols="12" lg="12">
+                        <div v-if="showTable">
+                            <v-data-table :headers="header" :items="items" hide-default-footer dense>
+                            </v-data-table></div
+                    ></v-col>
+                </v-row>
+            </v-container>
+        </div>
     </v-card>
 </template>
 

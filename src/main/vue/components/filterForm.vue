@@ -102,6 +102,7 @@
                         </v-expansion-panel-header>
                         <v-expansion-panel-content dense>
                             Hier können Sie das Antwortverhalten der Teilnehmer, die Sie betrachten wollen, festlegen.
+                            Dieser Filter funktioniert allerdings nur auf Range-, Slider- und Auswahlfragen.
 
                             <v-row>
                                 <v-col colls="12" lg="10">
@@ -467,6 +468,7 @@ export default {
             this.qafilterList[filterId].answerIndices = answerIndices
             this.qafilterList[filterId].isSlider = isSlider
             this.qafilterList[filterId].invertFilter = invertFilter
+            console.log(this.qafilterList[filterId])
         },
 
         addDateFilter() {
