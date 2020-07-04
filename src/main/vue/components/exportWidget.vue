@@ -9,10 +9,10 @@
             <v-row>
                 <v-col>
                     <v-card>
-                        <v-card-title class="primary" dark>
-                            <span class="headline">Export</span>
+                        <v-app-bar dense flat>
+                            <v-toolbar-title> Export von Umfragedaten </v-toolbar-title>
                             <v-spacer></v-spacer>
-                        </v-card-title>
+                        </v-app-bar>
 
                         <v-card-text
                             ><v-list>

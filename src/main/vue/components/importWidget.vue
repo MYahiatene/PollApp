@@ -9,16 +9,14 @@
             <v-row>
                 <v-col>
                     <v-card>
-                        <v-card-title class="primary" dark>
-                            <span class="headline">Import</span>
+                        <v-app-bar dense flat>
+                            <v-toolbar-title> Import einer Umfrage </v-toolbar-title>
                             <v-spacer></v-spacer>
-                        </v-card-title>
-
+                        </v-app-bar>
                         <v-card-text
                             ><v-list>
                                 <v-list-item>
                                     <v-col cols="12" md="4">
-                                        Poll importieren
                                         <input type="file" @change="uploadFile" />
                                     </v-col>
                                     <v-list-item-title>{{ Title }}</v-list-item-title>
