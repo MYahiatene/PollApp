@@ -223,6 +223,9 @@ export default {
             anonymityRules: [(v) => !!v || 'Anonymitätsgrad fehlt.'],
         }
     },
+    /**
+     * loads the page for creating a new poll with the pollId 0, else with the pollId of the poll to copy.
+     **/
     mounted() {
         this.pollId = this.$route.params.pollCopy
         this.getCopyPoll()
@@ -243,14 +246,13 @@ export default {
             this.$refs.form.validate()
         },
         /**
-         * Puts all information in an object and directly acces axios over above declared instance at PostMapping
-         * createPoll in PollController.
-         */
+         * Puts all information in an object and directly access axios over above declared instance at PostMapping
+         * createPoll in PollController. Depending on the pollID creates a new poll or copies the poll and then the
+         * categories.
+         **/
         async sendData() {
             this.activated = this.activateDate.concat('&', this.activatedTime)
             this.deactivated = this.deactivateDate.concat('&', this.deactivatedTime)
-            console.log('isActivated: ', this.switch1)
-            console.log('isDeactivated: ', this.switch2)
             const obj = {
                 pollCreator: this.getUsername,
                 anonymityStatus: this.selectedAnonymityType,
@@ -269,16 +271,13 @@ export default {
             }
             console.log('obj: ', obj)
             if (this.pollId !== '0') {
-                console.log('klappt')
                 await this.$axios
                     .post('/createcopypoll', obj)
                     .catch()
                     .then((result) => {
                         this.newPollId = result.data
                     })
-                console.log('klappt noch')
                 await this.$axios.post('/copycategories/' + this.poll.pollId + '/' + this.newPollId).catch()
-                console.log('klappt nicht mehr')
             } else {
                 await this.$axios
                     .post('/createpoll', obj)
@@ -427,13 +426,10 @@ export default {
             }
         },
         saveTime(e, type) {
-            console.log('event', e)
             if (type === 'd') {
                 this.deactivatedTime = e
-                console.log('deactivatedTime: ', this.deactivatedTime)
             } else if (type === 'a') {
                 this.activatedTime = e
-                console.log('activatedTime: ', this.activatedTime)
             }
         },
     },

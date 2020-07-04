@@ -58,8 +58,19 @@ public interface PollService {
      */
     String deletePoll(final String pollId);
 
+    /**
+     * Reformat the date from Calendar to a better readable String.
+     * @param date Calendar with date and time information
+     * @return date as a String
+     */
     String parseDate(final Calendar date);
 
+    /**
+     * Checks if a poll should be automatically activated/deactivated and if the activationDAte/deactivationDate is
+     * reached, the pollStatus is updated.
+     * @param poll
+     * @return updated Poll
+     */
     Poll checkActivationAndDeactivation(final Poll poll);
 
 }

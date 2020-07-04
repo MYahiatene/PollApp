@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.ListIterator;
-import java.util.logging.Logger;
 
 /**
  * The category controller used to process category specific requests.
@@ -20,7 +19,7 @@ import java.util.logging.Logger;
 @CrossOrigin
 public class CategoryController {
 
-    /* default */ static final Logger LOGGER = Logger.getLogger("CategoryController");
+    private static final String HAS_ANY_AUTHORITY = "hasAnyAuthority('Admin', 'Creator', 'Editor')";
     private final CategoryService categoryService;
     private final QuestionService questionService;
 
@@ -28,6 +27,7 @@ public class CategoryController {
      * The constructor is used inject the category service.
      *
      * @param categoryService
+     * @param questionService
      */
     @Autowired
     public CategoryController(final CategoryService categoryService, final QuestionService questionService) {
@@ -41,7 +41,7 @@ public class CategoryController {
      * @param categoryCmd the Cmd includes the name and the poll id of the new category.
      * @return returns the new category object.
      */
-    @PreAuthorize("hasAnyAuthority('Admin', 'Creator', 'Editor')")
+    @PreAuthorize(HAS_ANY_AUTHORITY)
     @PostMapping("/addcategory")
     public Category addCategory(final @RequestBody CategoryCmd categoryCmd) {
         return categoryService.createCategory(categoryCmd.getCategoryName(), categoryCmd.getPollId());
@@ -63,7 +63,7 @@ public class CategoryController {
      *
      * @param categoryCmd the Cmd of category.
      */
-    @PreAuthorize("hasAnyAuthority('Admin', 'Creator', 'Editor')")
+    @PreAuthorize(HAS_ANY_AUTHORITY)
     @PutMapping("/deletecategory")
     public String deleteCategory(final @RequestBody CategoryCmd categoryCmd) {
         return categoryService.deleteCategory(categoryCmd.getCategoryId(),
@@ -75,26 +75,28 @@ public class CategoryController {
      *
      * @param categoryCmd the Cmd includes the required id and the new name of the catgegory.
      */
-    @PreAuthorize("hasAnyAuthority('Admin', 'Creator', 'Editor')")
+    @PreAuthorize(HAS_ANY_AUTHORITY)
     @PutMapping("/editcategory")
     public void editCategory(final @RequestBody CategoryCmd categoryCmd) {
         categoryService.editCategory(categoryCmd.getCategoryId(), categoryCmd.getCategoryName());
     }
 
-    @PostMapping(value = "/copycategories/{oldPollId:\\d+}/{newPollId:\\d+}")
-    @PreAuthorize("hasAnyAuthority('Admin', 'Creator', 'Editor')")
+    /**
+     * Copies Copies all categories and their questions from one Poll to a new one.
+     * @param oldPollId
+     * @param newPollId
+     * @return
+     */
+    @PostMapping("/copycategories/{oldPollId:\\d+}/{newPollId:\\d+}")
+    @PreAuthorize(HAS_ANY_AUTHORITY)
     public String copyCategories(final @PathVariable Long oldPollId, final @PathVariable long newPollId) {
         try {
-            LOGGER.info("start copy categories, old pollId:" + oldPollId + " newPollId: " + newPollId);
             final List<Category> categories = categoryService.getAllCategories(Long.valueOf(oldPollId));
             final ListIterator<Category> iterator = categories.listIterator();
-            while(iterator.hasNext()) {
+            while (iterator.hasNext()) {
                 final Category oldCategory = iterator.next();
-                LOGGER.info("old category: " + oldCategory.toString());
                 final Category newCategory = categoryService.createCategory(oldCategory.getCategoryName(), newPollId);
-                LOGGER.info("new category: " + newCategory.toString());
                 questionService.copyQuestions(newCategory.getCategoryId(), newPollId, oldCategory.getQuestionList());
-                LOGGER.info("new category: " + newCategory.toString());
             }
             return "Categories created: " + categories.toString();
         } catch (BadRequestException e) {

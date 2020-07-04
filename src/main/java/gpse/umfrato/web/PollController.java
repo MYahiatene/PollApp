@@ -20,8 +20,6 @@ import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.ListIterator;
-import java.util.logging.Logger;
 
 /**
  * The Poll controller used to process poll specific requests.
@@ -30,7 +28,9 @@ import java.util.logging.Logger;
 @RestController
 @CrossOrigin
 public class PollController {
-    /* default */ static final Logger LOGGER = Logger.getLogger("PollController");
+    private static final String ALL_USERS = "allUsers";
+    private static final String ANONYM = "Anonym";
+    private static final String ONE = "1";
     private final PollService pollService;
     private final PollResultService pollResultService;
     private final ParticipationLinkService participationLinkService;
@@ -42,11 +42,15 @@ public class PollController {
      *
      * @param pollService              the poll service to work with the poll.
      * @param participationLinkService the participationLink service to work with.
+     * @param pollResultService
+     * @param consistencyQuestionService
+     * @param questionService
      */
     @Autowired
     public PollController(final PollService pollService, final PollResultService pollResultService,
                           final ParticipationLinkService participationLinkService,
-                          final ConsistencyQuestionService consistencyQuestionService, QuestionService questionService) {
+                          final ConsistencyQuestionService consistencyQuestionService,
+                          final QuestionService questionService) {
         this.pollService = pollService;
         this.pollResultService = pollResultService;
         this.participationLinkService = participationLinkService;
@@ -65,12 +69,10 @@ public class PollController {
     @PreAuthorize("hasAnyAuthority('Admin', 'Creator')")
     public Long createPoll(final @RequestBody PollCmd pollCmd) {
         try {
-            LOGGER.info("isActivated: " + pollCmd.isActivated());
-            LOGGER.info("pollCmd: " + pollCmd);
             final Poll poll = pollService.createPoll(pollCmd.getCmdPoll());
-            if (poll.getAnonymityStatus().equals("1")) {
+            if (poll.getAnonymityStatus().equals(ONE)) {
                 final String link = participationLinkService.createParticipationLink().toString();
-                participationLinkService.saveParticipationLink(poll.getPollId(), "allUsers", link);
+                participationLinkService.saveParticipationLink(poll.getPollId(), ALL_USERS, link);
             }
             return poll.getPollId();
         } catch (BadRequestException | MalformedURLException e) {
@@ -85,29 +87,26 @@ public class PollController {
      */
     @GetMapping("/poll")
     public List<SmallPoll> getSmallPolls() {
-        List<SmallPoll> polls = new ArrayList<>();
-        for(Poll p: pollService.getAllPolls())
-        {
-            polls.add(new SmallPoll(p,pollResultService,participationLinkService));
+        final List<SmallPoll> polls = new ArrayList<>();
+        for (final Poll p: pollService.getAllPolls()) {
+            polls.add(new SmallPoll(p, pollResultService, participationLinkService));
         }
         return polls;
     }
 
     /**
-     * This method creates the poll with the given settings from the PollCreation page.
-     *
+     * Creates a new Poll with the information from the another one.
      * @param pollCmd
-     * @return String with PollID or Error
+     * @return returns string with PollID or Error
      */
     @PostMapping(value = "/createcopypoll", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasAuthority('Admin')")
     public Long createCopyPoll(final @RequestBody PollCmd pollCmd) {
         try {
-            LOGGER.info("pollCmd: " + pollCmd);
             final Poll poll = pollService.createCopyPoll(pollCmd.getCmdPoll());
-            if (poll.getAnonymityStatus().equals("1")) {
+            if (poll.getAnonymityStatus().equals(ONE)) {
                 final String link = participationLinkService.createParticipationLink().toString();
-                participationLinkService.saveParticipationLink(poll.getPollId(), "allUsers", link);
+                participationLinkService.saveParticipationLink(poll.getPollId(), ALL_USERS, link);
             }
             return poll.getPollId();
         } catch (BadRequestException | MalformedURLException e) {
@@ -162,7 +161,7 @@ public class PollController {
     // @GetMapping("/getUsername")
     @RequestMapping(value = "/getUsername", method = RequestMethod.POST)
     public String getUsername(final @RequestBody PollCmd pollCmd) {
-        if (pollCmd.getAnonymityStatus().equals("1")) {
+        if (pollCmd.getAnonymityStatus().equals(ONE)) {
             return pollService.createAnonymousUsername();
         } else {
             return "Nina"; //TODO: Nina muss raus!
@@ -170,12 +169,10 @@ public class PollController {
     }
 
     @GetMapping("relevantpolls")
-    public List<SmallPoll> getNewestPolls()
-    {
-        List<SmallPoll> relevantPolls = new ArrayList<>();
-        for(Poll p: pollService.getLastEditedPolls())
-        {
-            relevantPolls.add(new SmallPoll(p,pollResultService,participationLinkService));
+    public List<SmallPoll> getNewestPolls() {
+        final List<SmallPoll> relevantPolls = new ArrayList<>();
+        for (final Poll p: pollService.getLastEditedPolls()) {
+            relevantPolls.add(new SmallPoll(p, pollResultService, participationLinkService));
         }
         return relevantPolls;
     }
@@ -192,47 +189,46 @@ public class PollController {
     }
 
     @PostMapping("/poll/{pollId:\\d+}/addcq")
-    public ConsistencyQuestion addConsistencyQuestion(final @PathVariable long pollId, final @RequestBody ConsistencyQuestionCmd consistencyQuestionCmd)
-    {
+    public ConsistencyQuestion addConsistencyQuestion(final @PathVariable long pollId, final @RequestBody
+        ConsistencyQuestionCmd consistencyQuestionCmd) {
         consistencyQuestionCmd.setPollId(pollId);
         return consistencyQuestionService.createConsistencyQuestion(consistencyQuestionCmd);
     }
 
     @GetMapping("/poll/{pollId:\\d+}/consistencyquestions")
-    public List<ConsistencyQuestion> getConsistencyQuestions(final @PathVariable long pollId)
-    {
+    public List<ConsistencyQuestion> getConsistencyQuestions(final @PathVariable long pollId) {
         return consistencyQuestionService.getAllConsistencyQuestions(pollId);
     }
 
     @GetMapping("/poll/{pollId:\\d+}/consistencyquestionnumber")
-    public Integer getConsistencyQuestionCount(final @PathVariable long pollId)
-    {
+    public Integer getConsistencyQuestionCount(final @PathVariable long pollId) {
         return consistencyQuestionService.getAllConsistencyQuestions(pollId).size();
     }
 
     @GetMapping("/poll/{pollId:\\d+}/consistencyquestions/{question1Id:\\d+}/{question2Id:\\d+}")
-    public List<ConsistencyQuestion> getConsistencyQuestions(final @PathVariable long pollId,final @PathVariable long question1Id,final @PathVariable long question2Id)
-    {
-        return consistencyQuestionService.getAllConsistencyQuestions(question1Id,question2Id);
+    public List<ConsistencyQuestion> getConsistencyQuestions(final @PathVariable long pollId, final @PathVariable
+        long question1Id, final @PathVariable long question2Id) {
+        return consistencyQuestionService.getAllConsistencyQuestions(question1Id, question2Id);
     }
 
     @SuppressWarnings("checkstyle:LeftCurly")
     @PostMapping("/poll/editcq/{cqId:\\d+}")
-    public void editConsistencyQuestion(final @PathVariable long cqId, final @RequestBody ConsistencyQuestionCmd consistencyQuestionCmd)
+    public void editConsistencyQuestion(final @PathVariable long cqId, final @RequestBody
+        ConsistencyQuestionCmd consistencyQuestionCmd)
     {
-        consistencyQuestionService.editConsistencyQuestion(cqId,consistencyQuestionCmd);
+        consistencyQuestionService.editConsistencyQuestion(cqId, consistencyQuestionCmd);
     }
 
     @PostMapping("/poll/delcq/{cqId:\\d+}")
-    public void addConsistencyQuestion(final @PathVariable long cqId)
-    {
+    public void addConsistencyQuestion(final @PathVariable long cqId) {
         consistencyQuestionService.deleteConsistencyQuestion(cqId);
     }
     @PostMapping("/poll/{pollId:\\d+}/question/{questionId:\\d+}/addAnswerPossibility")
-    public Poll addAnswerPossibility(final @PathVariable Long pollId, final @PathVariable Long questionId, final @RequestBody String answer) {
-        String tmp = answer.substring(answer.indexOf(':'));
-        Question question = questionService.getQuestion(questionId);
-        questionService.setNewAnswer(question, tmp.substring(2,tmp.length()-2));
+    public Poll addAnswerPossibility(final @PathVariable Long pollId, final @PathVariable Long questionId,
+                                     final @RequestBody String answer) {
+        final String tmp = answer.substring(answer.indexOf(':'));
+        final Question question = questionService.getQuestion(questionId);
+        questionService.setNewAnswer(question, tmp.substring(2, tmp.length() - 2));
         return pollService.getPoll(pollId);
     }
     /**
@@ -260,32 +256,27 @@ public class PollController {
 
     @GetMapping("/getPollName")
     public String getPollName(final @RequestParam long pollId) {
-        LOGGER.info("PollID: " + String.valueOf(pollId));
         return pollService.getPoll(pollId).getPollName();
     }
 
     @GetMapping("/getAnonType")
     public String getAnonType(final @RequestParam long pollId) {
-        LOGGER.info("PollID: " + String.valueOf(pollId));
-        LOGGER.info("anonymity status: " + pollService.getPoll(pollId).getAnonymityStatus());
-        switch(pollService.getPoll(pollId).getAnonymityStatus()) {
-            case "0": return "Anonym";
-            case "1": return "Anonym";
+        switch (pollService.getPoll(pollId).getAnonymityStatus()) {
+            case "0": return ANONYM;
+            case ONE: return ANONYM;
             case "2": return "Teilanonym";
             case "3": return "Nichtanonym";
+            default: return ANONYM;
         }
-        return "Anonym";
     }
     @GetMapping("/getActDate")
     public String getActDate(final @RequestParam long pollId) {
-        LOGGER.info("PollID: " + String.valueOf(pollId));
         final Calendar date = pollService.getPoll(pollId).getActivatedDate();
         return pollService.parseDate(date);
     }
 
     @GetMapping("/getDeactDate")
     public String getDeactDate(final @RequestParam long pollId) {
-        LOGGER.info("PollID: " + String.valueOf(pollId));
         final Calendar date = pollService.getPoll(pollId).getDeactivatedDate();
         return pollService.parseDate(date);
     }

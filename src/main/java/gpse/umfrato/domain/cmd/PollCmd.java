@@ -5,11 +5,10 @@ import lombok.Data;
 
 import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
-import java.time.Instant;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 import java.util.logging.Logger;
 
 /**
@@ -53,15 +52,14 @@ public class PollCmd {
     private boolean deactivated;
 
     public Poll getCmdPoll() {
-        LOGGER.info("isActivated: " + activated);
-        LOGGER.info("activatedAt: " + activatedAt);
-        Calendar activationDate = Calendar.getInstance();
-        Calendar deactivationDate = Calendar.getInstance();
+        // parses the activationDAte and deactivationDate from a String to a Calendar
+        final Calendar activationDate = Calendar.getInstance();
+        final Calendar deactivationDate = Calendar.getInstance();
         try {
-            DateFormat df = new SimpleDateFormat("dd.MM.yyyy&HH:mm");
-            Date activation = df.parse(activatedAt);
+            final DateFormat df = new SimpleDateFormat("dd.MM.yyyy&HH:mm", Locale.GERMAN);
+            final Date activation = df.parse(activatedAt);
             activationDate.setTime(activation);
-            Date deactivation = df.parse(deactivatedAt);
+            final Date deactivation = df.parse(deactivatedAt);
             deactivationDate.setTime(deactivation);
         } catch (ParseException e) {
             e.printStackTrace();

@@ -1,17 +1,12 @@
 package gpse.umfrato.domain.poll;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import gpse.umfrato.domain.category.Category;
-import gpse.umfrato.domain.question.Question;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -53,13 +48,12 @@ public class Poll {
     private String lastEditFrom;
 
     /**
-     * This attribute represents the date when the poll was activated.
+     * This attribute represents the date and time when the poll is/was activated.
      */
-    // use Instant instead , cause of time zone
     private Calendar activatedDate;
 
     /**
-     * This attribute represents the date when the poll was deactivated.
+     * This attribute represents the date and time when the poll is/was deactivated.
      */
     private Calendar deactivatedDate;
 
@@ -106,8 +100,14 @@ public class Poll {
      */
     private boolean categoryChange;
 
+    /**
+     * This attribute represents if the poll should be activated automatically at the given activationDate.
+     */
     private boolean activated;
 
+    /**
+     * This attribute represents if the poll should be deactivated automatically at the given activationDate.
+     */
     private boolean deactivated;
 
     /**
@@ -124,7 +124,7 @@ public class Poll {
      *
      * @param pollCreator     the name of the user who creates the poll
      * @param pollName        the name of the poll
-     * @param anonymityStatus the anonymitystatus of the poll
+     * @param anonymityStatus the anonymityStatus of the poll
      * @param createdAt       the date when the poll is created
      * @param activatedAt     the date when the poll activated
      * @param deactivatedAt   the date when the poll deactivates
@@ -134,8 +134,8 @@ public class Poll {
      * @param logo            the logo displayed on the website
      * @param visibility      whether or not a rolling question number should be displayed
      * @param categoryChange  whether or not it is possible to go to an already answered category
-     * @param activated
-     * @param deactivated
+     * @param activated       whether the poll should be activated automatically
+     * @param deactivated     whether the poll should be deactivated automatically
      */
     public Poll(final String pollCreator, final String anonymityStatus, final String pollName, final String createdAt,
                 final Calendar activatedAt, final Calendar deactivatedAt, final int pollStatus,

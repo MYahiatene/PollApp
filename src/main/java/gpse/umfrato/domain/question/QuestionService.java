@@ -58,10 +58,27 @@ public interface QuestionService {
      */
     Question changeCategory(final Long questionId, final Long newCategoryId, final Long newIndex);
 
+    /**
+     * Adds a new answerPossibility to the List of answerPossibilities of the given question.
+     * @param question
+     * @param answer
+     */
     void setNewAnswer(final Question question, final String answer);
 
-    Question addChoiceQuestion (final Question question, final Long pollId);
+    /**
+     * Copies a choiceQuestion to a category. Needs to adds every answer separately to the new question.
+     * @param question
+     * @param pollId
+     * @return
+     */
+    Question addChoiceQuestion(final Question question, final Long pollId);
 
+    /**
+     * Copies all questions from one category.
+     * @param categoryId
+     * @param pollId
+     * @param questions
+     */
     void copyQuestions(final Long categoryId, final Long pollId, final List<Question> questions);
 
 }

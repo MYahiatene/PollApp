@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * This class is used every time the frontend needs data about a poll,
@@ -53,7 +54,7 @@ public class SmallPoll {
     @SuppressWarnings({"checkstyle:LeftCurly", "checkstyle:RightCurly"})
     public SmallPoll(Poll original, PollResultService pollResultService, ParticipationLinkService participationLinkService)
     {
-        SimpleDateFormat df = new SimpleDateFormat("dd.MM.yyyy HH:mm");
+        final SimpleDateFormat df = new SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.GERMAN);
         this.pollId = original.getPollId();
         this.pollName = original.getPollName();
         this.pollCreator = original.getPollCreator();
