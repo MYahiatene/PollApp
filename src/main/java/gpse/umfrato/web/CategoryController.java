@@ -82,7 +82,7 @@ public class CategoryController {
     }
 
     @PostMapping(value = "/copycategories/{oldPollId:\\d+}/{newPollId:\\d+}")
-    @PreAuthorize("hasAuthority('Admin')")
+    @PreAuthorize("hasAnyAuthority('Admin', 'Creator', 'Editor')")
     public String copyCategories(final @PathVariable Long oldPollId, final @PathVariable long newPollId) {
         try {
             LOGGER.info("start copy categories, old pollId:" + oldPollId + " newPollId: " + newPollId);
@@ -90,8 +90,11 @@ public class CategoryController {
             final ListIterator<Category> iterator = categories.listIterator();
             while(iterator.hasNext()) {
                 final Category oldCategory = iterator.next();
+                LOGGER.info("old category: " + oldCategory.toString());
                 final Category newCategory = categoryService.createCategory(oldCategory.getCategoryName(), newPollId);
+                LOGGER.info("new category: " + newCategory.toString());
                 questionService.copyQuestions(newCategory.getCategoryId(), newPollId, oldCategory.getQuestionList());
+                LOGGER.info("new category: " + newCategory.toString());
             }
             return "Categories created: " + categories.toString();
         } catch (BadRequestException e) {

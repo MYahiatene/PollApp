@@ -394,7 +394,7 @@ export default {
                 const response = await this.$store.dispatch('PollCreation/getAnonType', this.pollId)
                 console.log(response)
                 if (response === 'Anonym') this.selectedAnonymityType = 1
-                if (response === 'TeilAnonym') this.selectedAnonymityType = 2
+                if (response === 'Teilanonym') this.selectedAnonymityType = 2
                 if (response === 'Nichtanonym') this.selectedAnonymityType = 3
             }
         },

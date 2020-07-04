@@ -281,6 +281,7 @@ public class QuestionServiceImpl implements QuestionService {
     @Override
     public void copyQuestions(final Long categoryId, final Long pollId, final List<Question> questions) {
         final ListIterator<Question> iterator = questions.listIterator();
+        Long indexCounter = 0L;
         while(iterator.hasNext()) {
             Question newQuestion = null;
             Question question = iterator.next();
@@ -309,8 +310,8 @@ public class QuestionServiceImpl implements QuestionService {
             } else {
                 newQuestion = addQuestion(cmd);
             }
-            Question finalQuestion = changeCategory(newQuestion.getQuestionId(), newQuestion.getCategoryId(),
-                categoryId);
+            Question finalQuestion = changeCategory(newQuestion.getQuestionId(), categoryId, indexCounter);
+            indexCounter += 1;
         }
 
     }

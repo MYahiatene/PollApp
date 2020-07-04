@@ -101,7 +101,11 @@
             </v-card>
         </v-container>
     </div>
-    <div v-else>Die Umfrage ist im Moment aktiv und kann nicht bearbeitet werden.</div>
+    <div v-else>
+        <v-card>
+            <v-card-title>Die Umfrage ist aktiv und daher nicht bearbeitbar</v-card-title>
+        </v-card>
+    </div>
 </template>
 
 <script>
