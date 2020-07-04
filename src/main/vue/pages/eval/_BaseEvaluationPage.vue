@@ -222,6 +222,7 @@ that each display a basic evaluation of one specific question-->
 
                                     <div v-else-if="question.type === 'sort'">
                                         <SortQuestionEvaluationWidget
+                                            :key="sortWidgetKey"
                                             :questionID="question.questionID"
                                             :questionTitle="question.title"
                                         >

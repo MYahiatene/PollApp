@@ -66,6 +66,7 @@
                                     <v-col cols="12" lg="4">
                                         <v-card flat>
                                             <BarChartView
+                                                :key="DiagramKey"
                                                 style="height: 30vh;"
                                                 :chartdata="chartdataSets[item.itemID]"
                                                 :options="barChartOptions"
@@ -130,8 +131,6 @@ export default {
 
         span: 0,
 
-        showList: [],
-
         spanExplanation: false,
         shortView: true,
 
@@ -155,6 +154,8 @@ export default {
                 ],
             },
         },
+
+        DiagramKey: 0,
 
         chartdataSets: [],
 
@@ -227,14 +228,6 @@ export default {
                     })
                 }
             }
-        },
-
-        changeShow(id) {
-            console.log('change')
-            console.log('wuuu')
-            console.log(this.showList)
-            this.showList[id] = !this.showList[id]
-            this.$forceUpdate()
         },
 
         // createChartData() {
@@ -403,10 +396,6 @@ export default {
             this.span =
                 -this.meanOrder[0][0].meanPositionValue + this.meanOrder[this.meanOrder.length - 1][0].meanPositionValue
 
-            for (let i = 0; i < this.answerPossibilites.length; i++) {
-                this.showList.push(false)
-            }
-
             const items = this.answerPossibilites
             console.log(this.answerPossibilites)
             console.log(items)
@@ -429,6 +418,7 @@ export default {
                     })
                 }
             }
+            this.DiagramKey += 1
         },
     },
 }
