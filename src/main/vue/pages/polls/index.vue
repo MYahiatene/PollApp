@@ -33,7 +33,7 @@
                                 <v-spacer />
                                 <v-tooltip bottom>
                                     <template v-slot:activator="{ on, attrs }">
-                                        <v-btn large color="primary" to="./PollCreation" v-bind="attrs" v-on="on">
+                                        <v-btn large color="primary" to="./PollCreation/0" v-bind="attrs" v-on="on">
                                             <v-icon>mdi-plus</v-icon>
                                         </v-btn>
                                     </template>
@@ -260,7 +260,7 @@ export default {
                     this.updatePollStatus(item.pollId)
                 }
             } else if (confirm('Umfrage kopieren?')) {
-                alert('Tja, das geht noch nicht...')
+                this.copyPoll(item)
             }
         },
         itemAction1(item) {
@@ -599,6 +599,9 @@ export default {
                 this.splicePolls(index)
                 this.$axios.put('/deletepoll', { pollId: item.pollId })
             }
+        },
+        copyPoll(item) {
+            this.$router.push('/PollCreation/' + item.pollId)
         },
     },
 }

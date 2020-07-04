@@ -199,11 +199,14 @@ export const actions = {
         console.log('userObj', userObj)
         return this.$axios.post('/participationToPollResult', userObj)
     },
-
+    /**
+     * Sends the new AnswerPossibility to the backend with the pollId, questionId and the textmessage to save it in the
+     * poll and then updates the poll for the page.
+     * @param state
+     * @param answer answer[0] is the new Answer, answer[1] is the questionId and answer[2] is the pollId
+     * @returns {Promise<void>}
+     */
     async saveAnswerPossibility(state, answer) {
-        console.log('pollId: ', answer[2])
-        console.log('questionId: ', answer[1])
-        console.log('newAnswer: ', answer[0])
         const obj = { value: answer[0] }
         this.$axios.defaults.baseURL = 'http://localhost:8088/api/'
         this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('user-token')
@@ -211,8 +214,6 @@ export const actions = {
             '/poll/' + answer[2] + '/question/' + answer[1] + '/addAnswerPossibility',
             obj
         )
-        console.log('after post')
-        console.log(poll)
         state.commit('setPoll', poll)
     },
 }

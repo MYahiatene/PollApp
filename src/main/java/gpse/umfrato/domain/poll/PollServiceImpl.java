@@ -3,17 +3,17 @@ package gpse.umfrato.domain.poll;
 import gpse.umfrato.domain.category.CategoryRepository;
 import gpse.umfrato.domain.category.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
-import java.util.List;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Service
 class PollServiceImpl implements PollService {
 
-    private final CategoryRepository categoryRepository;
+    /* default */ final CategoryRepository categoryRepository;
     private final PollRepository pollRepository;
     private final CategoryService categoryService;
     private int anonymousUsername = 0;
@@ -43,7 +43,18 @@ class PollServiceImpl implements PollService {
     public Poll createPoll(final Poll poll) {
         pollRepository.save(poll);
         categoryService.createCategory("Standardkategorie", poll.getPollId());
+        return poll;
+    }
 
+    /**
+     * Saves the new poll in the repository.
+     * @param poll
+     * @return new poll
+     */
+    @Override
+    @Transactional
+    public Poll createCopyPoll(final Poll poll) {
+        pollRepository.save(poll);
         return poll;
     }
 
@@ -54,8 +65,13 @@ class PollServiceImpl implements PollService {
      */
     @Override
     public List<Poll> getAllPolls() {
-        final List<Poll> poll = pollRepository.findAll();
-        return poll;
+        final List<Poll> polls = pollRepository.findAll();
+        final ListIterator<Poll> it = polls.listIterator();
+        final List<Poll> finalPolls = new ArrayList<>();
+        while (it.hasNext()) {
+            finalPolls.add(checkActivationAndDeactivation(it.next()));
+        }
+        return finalPolls;
     }
 
     /**
@@ -66,7 +82,8 @@ class PollServiceImpl implements PollService {
      */
     @Override
     public Poll getPoll(final Long pollId) {
-        return pollRepository.findById(pollId).orElseThrow(EntityNotFoundException::new);
+        final Poll poll = pollRepository.findById(pollId).orElseThrow(EntityNotFoundException::new);
+        return checkActivationAndDeactivation(poll);
     }
 
     /**
@@ -117,5 +134,36 @@ class PollServiceImpl implements PollService {
     }
     @Override public List<Poll> getLastEditedPolls() {
         return pollRepository.findTop5ByOrderByLastEditAt();
+    }
+
+    /**
+     * Reformat the date from Calendar to a better readable String.
+     * @param date Calendar with date and time information
+     * @return date as a String
+     */
+    @Override
+    public String parseDate(final Calendar date) {
+        final SimpleDateFormat df = new SimpleDateFormat("dd.MM.yyyy&HH:mm", Locale.GERMAN);
+        final String res = df.format(date.getTime());
+        return res;
+    }
+
+    /**
+     * Checks if a poll should be automatically activated/deactivated and if the activationDAte/deactivationDate is
+     * reached, the pollStatus is updated.
+     * @param poll
+     * @return updated Poll
+     */
+    @Override
+    public Poll checkActivationAndDeactivation(final Poll poll) {
+        final Calendar now = Calendar.getInstance();
+        // now.set(Calendar.MONTH, now.get(Calendar.MONTH)+1);
+        if (poll.isActivated() && poll.getPollStatus() == 0 && poll.getActivatedDate().before(now)) {
+            activatePoll(poll.getPollId());
+        }
+        if (poll.isDeactivated() && poll.getPollStatus() == 1 && poll.getDeactivatedDate().before(now)) {
+            activatePoll(poll.getPollId());
+        }
+        return pollRepository.findById(poll.getPollId()).orElseThrow(EntityNotFoundException::new);
     }
 }

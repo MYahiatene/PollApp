@@ -7,7 +7,10 @@ import gpse.umfrato.domain.pollresult.PollResultService;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * This class is used every time the frontend needs data about a poll,
@@ -48,16 +51,18 @@ public class SmallPoll {
 
     private String computedSubtitle;
 
+    @SuppressWarnings({"checkstyle:LeftCurly", "checkstyle:RightCurly"})
     public SmallPoll(Poll original, PollResultService pollResultService, ParticipationLinkService participationLinkService)
     {
+        final SimpleDateFormat df = new SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.GERMAN);
         this.pollId = original.getPollId();
         this.pollName = original.getPollName();
         this.pollCreator = original.getPollCreator();
         this.creationDate = original.getCreationDate();
         this.lastEditAt = original.getLastEditAt();
         this.lastEditFrom = original.getLastEditFrom();
-        this.activatedDate = original.getActivatedDate();
-        this.deactivatedDate = original.getDeactivatedDate();
+        this.activatedDate = df.format(original.getActivatedDate().getTime());
+        this.deactivatedDate = df.format(original.getDeactivatedDate().getTime());
         this.anonymityStatus = original.getAnonymityStatus();
         this.pollStatus = original.getPollStatus();
         this.participationLinks = participationLinkService.getAllParticipationLinks(pollId);

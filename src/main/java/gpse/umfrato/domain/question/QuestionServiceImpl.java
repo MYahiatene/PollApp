@@ -9,15 +9,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 
 @Service
 public class QuestionServiceImpl implements QuestionService {
 
-    private static final double FIVE = 5.0;
-    private static final double ZERO_DOT_ONE = 0.1;
     private static final double ZERO = 0.0;
     private static final double ONE = 1.0;
 
@@ -239,18 +237,93 @@ public class QuestionServiceImpl implements QuestionService {
         final Category newCategory = categoryRepository.getOne(newCategoryId);
         oldCategory.getQuestionList().remove(question);
         question.setCategoryId(newCategoryId);
-        newCategory.getQuestionList().add(newIndex.intValue(), question);
+        newCategory.getQuestionList().add(question);
         categoryRepository.save(oldCategory);
-        categoryRepository.save(newCategory);
+            categoryRepository.save(newCategory);
         return question;
     }
 
+    /**
+     * Adds a new answerPossibility to the List of answerPossibilities of the given question.
+     * @param question
+     * @param answer
+     */
     @Override
     public void setNewAnswer(final Question question, final String answer) {
-        List<String> list = question.getAnswerPossibilities();
+        final List<String> list = question.getAnswerPossibilities();
         list.add(answer);
         question.setAnswerPossibilities(list);
         questionRepository.save(question);
+    }
+
+    /**
+     * Copies a choiceQuestion to a category. Needs to adds every answer separately to the new question.
+     * @param question
+     * @param pollId
+     * @return
+     */
+    @Override
+    public Question addChoiceQuestion(final Question question, final Long pollId) {
+        Question newQuestion = null;
+        newQuestion = new Question(question.getQuestionMessage(), new ArrayList<>(),
+            question.getNumberOfPossibleAnswers(), question.isUserAnswers());
+        final ListIterator<String> it = question.getAnswerPossibilities().listIterator();
+        while (it.hasNext()) {
+            final String answer = it.next();
+            newQuestion.getAnswerPossibilities().add(answer);
+        }
+        newQuestion.setCategoryId(pollRepository.findById(pollId)
+            .orElseThrow(EntityNotFoundException::new).getCategoryList().get(0).getCategoryId());
+        pollRepository.findById(pollId).orElseThrow(EntityNotFoundException::new)
+            .getCategoryList().get(0).getQuestionList().add(newQuestion);
+        questionRepository.save(newQuestion);
+
+        return newQuestion;
+    }
+
+    /**
+     * Copies all questions from one category.
+     * @param categoryId
+     * @param pollId
+     * @param questions
+     */
+    @Override
+    public void copyQuestions(final Long categoryId, final Long pollId, final List<Question> questions) {
+        final ListIterator<Question> iterator = questions.listIterator();
+        Long indexCounter = 0L;
+        // creates a cmd from the question to copy for the addQuestion method
+        while (iterator.hasNext()) {
+            Question newQuestion = null;
+            final Question question = iterator.next();
+            final QuestionCmd cmd = new QuestionCmd();
+            cmd.setPollId(pollId);
+            cmd.setEndValue(question.getEndValue());
+            cmd.setStartValue(question.getStartValue());
+            cmd.setStepSize(question.getStepSize());
+            cmd.setBelowMessage(question.getBelowMessage());
+            cmd.setAboveMessage(question.getAboveMessage());
+            cmd.setHideValues(question.isHideValues());
+            cmd.setTextMultiline(question.isTextMultiline());
+            cmd.setTextMinimum(question.getTextMinimum());
+            cmd.setTextMaximum(question.getTextMaximum());
+            cmd.setTextMinBool(question.isTextMinBool());
+            cmd.setTextMaxBool(question.isTextMaxBool());
+            cmd.setCategoryId(question.getCategoryId());
+            cmd.setQuestionMessage(question.getQuestionMessage());
+            cmd.setAnswerPossibilities(question.getAnswerPossibilities());
+            cmd.setQuestionType(question.getQuestionType());
+            cmd.setUserAnswers(question.isUserAnswers());
+            cmd.setNumberOfPossibleAnswers(question.getNumberOfPossibleAnswers());
+            if (question.getQuestionType().equals(CHOICE_QUESTION)
+                || question.getQuestionType().equals(SORT_QUESTION)) {
+                newQuestion = addChoiceQuestion(question, pollId);
+            } else {
+                newQuestion = addQuestion(cmd);
+            }
+            changeCategory(newQuestion.getQuestionId(), categoryId, indexCounter);
+            indexCounter += 1;
+        }
+
     }
 
 
