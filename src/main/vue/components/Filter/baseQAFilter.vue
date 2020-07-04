@@ -65,7 +65,7 @@
                         single-line
                         type="number"
                         style="width: 60px;"
-                        @change="$set(range, 0, $event), updateData"
+                        @input="updateLower"
                     ></v-text-field>
                 </template>
                 <template v-slot:append>
@@ -76,7 +76,7 @@
                         single-line
                         type="number"
                         style="width: 60px;"
-                        @change="$set(range, 1, $event), updateData"
+                        @input="updateUpper"
                     ></v-text-field>
                 </template>
             </v-range-slider>
@@ -242,6 +242,14 @@ export default {
                 this.answerIndices.push(this.answerTitles.indexOf(this.selectedAnswers[i]))
             }
         },
+        updateLower(value) {
+            this.$set(this.range, 0, value)
+            this.updateData()
+        },
+        updateUpper(value) {
+            this.$set(this.range, 1, value)
+            this.updateData()
+        },
         updateData() {
             console.log('updateData')
             this.updateAnswerIndices()
@@ -249,6 +257,11 @@ export default {
             console.log(this.categoryIndex)
             console.log(this.questionIndex)
             console.log(this.answerIndices)
+            if (this.range[0] > this.range[1]) {
+                const tmp = this.range[1]
+                this.range[0] = Number(this.range[1])
+                this.range[1] = Number(tmp)
+            }
             if (this.questionIndex !== -1) {
                 this.$emit('updateData', [
                     this.filterId,

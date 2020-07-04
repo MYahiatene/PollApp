@@ -19,17 +19,13 @@ public class OrFilter implements Filter {
 
     @Override public List<PollResult> filter(List<PollResult> input) {
         final List<PollResult> filteredList = new ArrayList<>();
-        for(PollResult pr:input)
-        {
-            for(Filter f:filterList)
-            {
-                if(f.filter(Collections.singletonList(pr)).size() == 1)
-                {
+        for(PollResult pr:input) {
+            for (Filter f: filterList) {
+                if (f.filter(Collections.singletonList(pr)).size() == 1) {
                     filteredList.add(pr);
                     break;
                 }
             }
-
         }
         return filteredList;
     }
