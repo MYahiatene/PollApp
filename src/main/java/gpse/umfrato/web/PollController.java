@@ -156,7 +156,6 @@ public class PollController {
     /**
      * This method returns the username or creates an anonymous one if the poll is anonymous.
      *
-     * @param pollCmd represents the given Poll.
      * @return returns the specific username.
      */
     // @GetMapping("/getUsername")

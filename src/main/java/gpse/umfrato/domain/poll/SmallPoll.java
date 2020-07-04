@@ -19,6 +19,8 @@ import java.util.Locale;
 @Data
 public class SmallPoll {
 
+    private static final String DEFAULT = "nicht automatisch";
+
     private Long pollId;
 
     private String pollCreator;
@@ -51,7 +53,7 @@ public class SmallPoll {
 
     private String computedSubtitle;
 
-    @SuppressWarnings({"checkstyle:LeftCurly", "checkstyle:RightCurly"})
+    @SuppressWarnings({"checkstyle:LeftCurly", "checkstyle:RightCurly", "checkstyle:OperatorWrap"})
     public SmallPoll(Poll original, PollResultService pollResultService, ParticipationLinkService participationLinkService)
     {
         final SimpleDateFormat df = new SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.GERMAN);
@@ -61,8 +63,8 @@ public class SmallPoll {
         this.creationDate = original.getCreationDate();
         this.lastEditAt = original.getLastEditAt();
         this.lastEditFrom = original.getLastEditFrom();
-        this.activatedDate = df.format(original.getActivatedDate().getTime());
-        this.deactivatedDate = df.format(original.getDeactivatedDate().getTime());
+        this.activatedDate = original.isActivated() ? df.format(original.getActivatedDate().getTime()) : DEFAULT;
+        this.deactivatedDate = original.isDeactivated() ? df.format(original.getDeactivatedDate().getTime()) : DEFAULT;
         this.anonymityStatus = original.getAnonymityStatus();
         this.pollStatus = original.getPollStatus();
         this.participationLinks = participationLinkService.getAllParticipationLinks(pollId);
@@ -82,7 +84,7 @@ public class SmallPoll {
             this.expectedParticipantCount = participationLinkService.getAllParticipationLinks(pollId).size();
         }
         StringBuilder sb = new StringBuilder();
-        if(pollStatus == 0) {
+        if (pollStatus == 0) {
             sb.append(questionCount);
             if (questionCount == 1) {
                 sb.append(" Frage in ");
@@ -97,17 +99,19 @@ public class SmallPoll {
             }
             sb.append(" Zuletzt bearbeitet von ").append(lastEditFrom).append(" am ").append(lastEditAt);
         }
-        else if(pollStatus == 1)
+        else if (pollStatus == 1)
         {
             sb.append("Umfrage aktiv seit ").append(activatedDate)
                     .append(". Bisherige Teilnehmer: ").append(participantCount);
-            if(!anonymityStatus.equals("1"))
+            if (!anonymityStatus.equals("1"))
             {
                 sb.append(" / ").append(expectedParticipantCount).append(" (")
                         .append(participantCount.doubleValue() / expectedParticipantCount.doubleValue() * 100.0)
                         .append("%)");
             }
-            sb.append(" Wird zum ").append(deactivatedDate).append(" deaktiviert.");
+            if (original.isDeactivated()) {
+                sb.append(" Wird zum ").append(deactivatedDate).append(" deaktiviert.");
+            }
         }
         else if(pollStatus == 2)
         {
