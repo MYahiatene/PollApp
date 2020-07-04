@@ -6,15 +6,21 @@
                 <v-col>
                     CSV Datei mit E-Mail Adressen hochladen:
                     <input id="file" ref="file" type="file" @change="handleFileUpload()" />
-                    <v-btn @click="submitFile()">CSV hochladen</v-btn>
+                    <v-btn color="primary" dark class="mb-2" @click="submitFile()">CSV hochladen</v-btn>
                 </v-col>
-                <v-col>
+                <v-col sm="6">
                     <v-card-actions>
-                        <input id="itemForm" placeholder="E-Mail Adresse eingeben" @keypress.enter="addEmail" />
-                        <v-btn @click="addEmail">Hinzufügen</v-btn>
+                        <v-text-field
+                            id="itemForm"
+                            label="E-Mail Adresse des Teilnehmers"
+                            outlined
+                            placeholder="E-Mail Adresse eingeben"
+                            @keypress.enter="addEmail"
+                        ></v-text-field>
+                        <v-col>
+                            <v-btn color="primary" dark class="mb-2" @click="addEmail">Hinzufügen</v-btn>
+                        </v-col>
                     </v-card-actions>
-                </v-col>
-                <v-col cols="12" md="6">
                     <v-card>
                         <v-list>
                             <v-subheader>E-MAIL ADRESSEN</v-subheader>
@@ -72,7 +78,9 @@
                                     :solo="solo"
                                 ></v-textarea>
                                 <v-row justify="end">
-                                    <v-btn justify="end" @click="sendEmail">E-Mail senden</v-btn>
+                                    <v-btn color="primary" dark class="mb-2" justify="end" @click="sendEmail"
+                                        >E-Mail senden</v-btn
+                                    >
                                 </v-row>
                             </v-sheet>
                         </v-col>
