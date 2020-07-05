@@ -112,7 +112,7 @@
                             </v-row>
 
                             <div>
-                                <div v-for="filter in qafilterList" :key="filter.filterId">
+                                <div v-for="filter in qafilterList" :key="filter.filterIndex">
                                     <div v-if="filter.active">
                                         <v-card class="pa-3 ma-2">
                                             <v-row>
@@ -120,7 +120,7 @@
                                                 <v-btn icon @click="addQAFilter()">
                                                     <v-icon> mdi-plus </v-icon>
                                                 </v-btn>
-                                                <v-btn icon @click="deleteQAFilter(filter.filterId)">
+                                                <v-btn icon @click="deleteQAFilter(filter.filterIndex)">
                                                     <v-icon> mdi-delete </v-icon>
                                                 </v-btn>
                                             </v-row>
@@ -129,15 +129,15 @@
                                                     <base-q-a-filter
                                                         :key="qaKey"
                                                         :poll-index="pollIndex"
-                                                        :filter-id="filter.filterId"
+                                                        :filter-id="filter.filterIndex"
                                                         :initial-category-index="
-                                                            qafilterList[filter.filterId].categoryIndex
+                                                            qafilterList[filter.filterIndex].categoryIndex
                                                         "
                                                         :initial-question-index="
-                                                            qafilterList[filter.filterId].questionIndex
+                                                            qafilterList[filter.filterIndex].questionIndex
                                                         "
                                                         :initial-answer-indices="
-                                                            qafilterList[filter.filterId].answerIndices
+                                                            qafilterList[filter.filterIndex].answerIndices
                                                         "
                                                         @updateData="updateQaFilter"
                                                     ></base-q-a-filter>
@@ -165,7 +165,7 @@
                                 </v-col>
                             </v-row>
 
-                            <div v-for="filter in dateFilterList" :key="filter.filterId">
+                            <div v-for="filter in dateFilterList" :key="filter.filterIndex">
                                 <div v-if="filter.active">
                                     <v-card class="pa-3 ma-2">
                                         <v-row>
@@ -229,7 +229,6 @@ export default {
     },
     data() {
         return {
-            globalFilterId: 1,
             applyConsistency: false,
             minConsistencyValue: 0,
             maxConsistencyValue: 0,
@@ -238,27 +237,27 @@ export default {
             qafilter: true,
             datefilter: true,
             qafilterList: [
-                {
-                    active: true,
-                    filterId: 0,
-                    filterType: 'qaFilter',
-                    questionId: -1,
-                    categoryIndex: -1,
-                    questionIndex: -1,
-                    answerIndices: [],
-                    invertFilter: false,
-                },
+                // {
+                //     active: true,
+                //     filterId: 0,
+                //     filterType: 'qaFilter',
+                //     questionId: -1,
+                //     categoryIndex: -1,
+                //     questionIndex: -1,
+                //     answerIndices: [],
+                //     invertFilter: false,
+                // },
             ],
 
             dateFilterList: [
-                {
-                    active: true,
-                    filterIndex: 0,
-                    filterType: 'date',
-                    endDate: '',
-                    startDate: '',
-                    invertFilter: false,
-                },
+                // {
+                //     active: true,
+                //     filterIndex: 0,
+                //     filterType: 'date',
+                //     endDate: '',
+                //     startDate: '',
+                //     invertFilter: false,
+                // },
             ],
 
             chosenPoll: '',
@@ -462,9 +461,10 @@ export default {
 
         addQAFilter() {
             console.log('addQAFilter()')
+            const id = this.qafilterList.length
             this.qafilterList.push({
                 active: true,
-                filterId: this.globalFilterId++,
+                filterIndex: id,
                 filterType: 'qaFilter',
                 categoryIndex: -1,
                 questionIndex: -1,
@@ -527,7 +527,6 @@ export default {
                 console.log(this.filters)
                 this.qafilterList = []
                 this.dateFilterList = []
-                this.globalFilterId = 0
                 if (this.filters[0].filterType === 'dataFilter') {
                     if (this.filters[0].baseQuestionIds.length > 0) {
                         this.selectedQuestions = []
@@ -579,9 +578,10 @@ export default {
                     //     for (let j = 0; j < this.filters[i].targetAnswerPossibilities.length; j++) {
                     //         a.push(parseInt(this.filters[i].targetAnswerPossibilities[j]))
                     //     }
+                    //     const id = this.qafilterList.length
                     //     this.qafilterList.push({
                     //         active: true,
-                    //         filterIndex: this.globalFilterId++,
+                    //         filterIndex: id,
                     //         filterType: 'qaFilter',
                     //         questionId: this.filters[i].targetQuestionId,
                     //         categoryIndex: this.getCategoryIndexAndQuestionIndexFromQuestionId(
@@ -598,40 +598,50 @@ export default {
                     console.log(this.dateFilterList)
 
                     console.log(this.qafilterList)
+
+                    this.updateFilter()
+                }
+
+                if (this.dateFilterList.length === 0) {
+                    this.addDateFilter()
+                }
+                if (this.qafilterList.length === 0) {
+                    this.addQAFilter()
                 }
             }
         },
 
         clearFilter() {
             this.selectedQuestions = []
-            this.globalFilterId = 1
             for (let i = 0; i < this.questionTitles.length; i++) {
                 this.selectedQuestions.push(this.questionTitles[i])
             }
             this.minConsistencyValue = 0
             this.updateConsistencyOn()
             this.qafilterList = [
-                {
-                    active: true,
-                    filterId: 0,
-                    filterType: 'qaFilter',
-                    categoryIndex: -1,
-                    questionId: -1,
-                    questionIndex: -1,
-                    answerIndices: [],
-                    invertFilter: false,
-                },
+                // {
+                //     active: true,
+                //     filterId: 0,
+                //     filterType: 'qaFilter',
+                //     categoryIndex: -1,
+                //     questionId: -1,
+                //     questionIndex: -1,
+                //     answerIndices: [],
+                //     invertFilter: false,
+                // },
             ]
             this.dateFilterList = [
-                {
-                    active: true,
-                    filterIndex: 0,
-                    filterType: 'date',
-                    endDate: '',
-                    startDate: '',
-                    invertFilter: false,
-                },
+                // {
+                //     active: true,
+                //     filterIndex: 0,
+                //     filterType: 'date',
+                //     endDate: '',
+                //     startDate: '',
+                //     invertFilter: false,
+                // },
             ]
+            this.addDateFilter()
+            this.addQAFilter()
             this.updateFilter()
             this.saveToStore()
         },
