@@ -151,9 +151,8 @@ public class ExportController {
         List<Category> categories = pollToConvert.getCategoryList();
         ListIterator<Category> categoryIterator = categories.listIterator();
 
-        StringBuilder columnNamesList = new StringBuilder(pollToConvert.getPollName()); /*Table headers*/
+        StringBuilder columnNamesList = new StringBuilder(); /*Table headers*/
         /*Structure: PollID, PollName, AnonymityStatus, PollCreator*/
-        columnNamesList.append(pollToConvert.getPollId()).append(',').append(pollToConvert.getPollName()).append(',').append(pollToConvert.getAnonymityStatus()).append(',').append(pollToConvert.getPollCreator()).append(',');
         while(categoryIterator.hasNext()) {
             Category singularCategory = categoryIterator.next(); //Page
             for (Question singularQuestion : singularCategory.getQuestionList()) {
@@ -168,8 +167,9 @@ public class ExportController {
     /*Function iterates over the list of pollResults first filling the first row of Elements with the Questions and then filling the rest with the actual PollResults.*/
 
     @PostMapping("/answers/{pollId:\\d+}")
-    public String convertPollWithResultsToCSV(final @PathVariable Long pollId) {
-        String columnNamesList = addHeaders(pollId);
+    public String convertPollWithResultsToCSV(final @PathVariable Long pollId) throws FileNotFoundException {
+
+        String columnNamesList = "PollTaker,LastEdit" +addHeaders(pollId) + '\n';
         /*This is what does the work I guess*/
 
         StringBuilder builder = new StringBuilder();
@@ -180,24 +180,27 @@ public class ExportController {
         List<PollResult> results = pollResultService.getPollResults(pollId);
         for (PollResult singularResult : results) {
             ListIterator<Answer> answerIterator = singularResult.getAnswerList().listIterator();
-            builder.append(singularResult.getPollId()).append(',').append(singularResult.getPollTaker()).append(',').append(singularResult.getPollResultId()).append(',').append(singularResult.getLastEditAt());
+            builder.append(singularResult.getPollTaker()).append(',').append(singularResult.getLastEditAt()).append(',');
             while (answerIterator.hasNext()) {
                 Answer singularAnswer = answerIterator.next();
                 /*Iterate over list to make every Answer one column in the csv table*/
-                builder.append(answerToCSV(singularAnswer)).append(',');
+                builder.append(answerToCSV(singularAnswer)).append(",");
             }
             builder.append('\n');
         }
-        PrintWriter pw = null;
+        writeToFileCSV(builder.toString(), "RESULTSCSV"+pollId.toString());
+        /*PrintWriter pw = null;
         try {
-            pw = new PrintWriter(new File("PollData.csv"));
+            System.out.println("Zeile 197");
+            pw = new PrintWriter(new File(FILES+"PollData.csv"));
             pw.write(builder.toString());
             pw.close();
             return builder.toString();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             return "Export failed.";
-        }
+        }*/
+        return builder.toString();
     }
 
     public String answerToCSV(Answer input) {
@@ -205,10 +208,18 @@ public class ExportController {
         StringBuilder output = new StringBuilder();
         while(answerIterator.hasNext()) {
             String answerForSingularQuestion = answerIterator.next();
-            output.append(answerForSingularQuestion).append(",");
+            output.append(escapeSpecialCharacters(answerForSingularQuestion)).append(" ");
         }
-        output.append('\n');
         return output.toString();
+    }
+
+    public static String escapeSpecialCharacters(String data) {
+        String escapedData = data.replaceAll("\\R", " ");
+        if (data.contains(",") || data.contains("\"") || data.contains("'")) {
+            data = data.replace("\"", "\"\"");
+            escapedData = "\"" + data + "\"";
+        }
+        return escapedData;
     }
 
 }

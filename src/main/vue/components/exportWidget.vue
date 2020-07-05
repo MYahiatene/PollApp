@@ -84,8 +84,8 @@ export default {
         },
     },
 
-        methods: {
-            ...mapActions({initialize: 'evaluation/initialize', updateData: 'evaluation/updateData'}),
+    methods: {
+        ...mapActions({ initialize: 'evaluation/initialize', updateData: 'evaluation/updateData' }),
 
         exportAnswers() {
             this.$store.dispatch('evaluation/exportAnswers', this.pollId) // This should be PollId
@@ -93,7 +93,7 @@ export default {
         },
 
         exportResults() {
-            this.$store.dispatch('evaluation/exportResults', {this.pollId} ) // This should be PollId
+            this.$store.dispatch('evaluation/exportResults') // This should be PollId
             this.downloadClickResult(this.pollId)
         },
 
@@ -124,7 +124,7 @@ export default {
                 console.log(this.$store.dispatch('evaluation/importPoll', e.target.result))
             }
         },
-},
+    },
 }
 </script>
 
