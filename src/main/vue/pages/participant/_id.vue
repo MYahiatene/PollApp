@@ -296,6 +296,7 @@ export default {
         await this.showPoll()
         await this.showAnswer()
         await this.showParticipated()
+        await this.valuesForQuestions()
     },
 
     mounted() {
@@ -456,28 +457,70 @@ export default {
          * already given answers by the user, or nothing at all, if there are no previous given answers.
          */
         valuesForQuestions() {
+            console.log('Ich bin in valuesForQuestions')
+            console.log('givenAnswers in valuesForQuestion:', this.givenAnswers)
+            console.log(this.getCategory.questionList.length)
+            this.valueList = []
             for (let i = 0; i < this.getCategory.questionList.length; i++) {
                 const type = this.getCategory.questionList[i].questionType
 
-                if (this.givenAnswers[i] != null) {
-                    // for RadioButtons we need answer text and given back are the indizes
-                    if (type === 'ChoiceQuestion' && this.getCategory.questionList[i].numberOfPossibleAnswers === 1) {
-                        this.valueList.push(this.getCategory.questionList[i].answerPossibilities[this.givenAnswers[i]])
-                    } // for Checkboxes and RangeQuestions it works the same
-                    else if (type === 'ChoiceQuestion' || type === 'RangeQuestion') {
-                        const array = []
-                        for (let j = 0; j < this.givenAnswers.length; j++) {
-                            array.push(this.computedQuestionList[i].answerPossibilities[this.givenAnswers[i]])
+                if (this.givenAnswers !== []) {
+                    console.log('valueList:', this.valueList)
+                    console.log(i, this.givenAnswers[i])
+                    if (this.givenAnswers[i] != null) {
+                        // for RadioButtons we need answer text and given back are the indizes
+                        if (
+                            type === 'ChoiceQuestion' &&
+                            this.getCategory.questionList[i].numberOfPossibleAnswers === 1
+                        ) {
+                            this.valueList.push(
+                                this.getCategory.questionList[i].answerPossibilities[
+                                    this.givenAnswers[i].givenAnswerList
+                                ]
+                            )
+                        } // for Checkboxes and RangeQuestions it works the same
+                        else if (type === 'ChoiceQuestion' || type === 'RangeQuestion') {
+                            const array = []
+                            for (let j = 0; j < this.givenAnswers.length; j++) {
+                                array.push(
+                                    this.computedQuestionList[i].answerPossibilities[
+                                        this.givenAnswers[i].givenAnswerList
+                                    ]
+                                )
+                            }
+                            this.valueList.push(array)
+                        } else if (type === 'SortQuestion') {
+                            // ToDo: Hier mal schauen, was schief läuft!
+                            const array = []
+                            for (let j = 0; j < this.givenAnswers.length; j++) {
+                                array.push(
+                                    this.computedQuestionList[i].answerPossibilities[
+                                        this.givenAnswers[i].givenAnswerList
+                                    ]
+                                )
+                            }
+                            this.AnswerListsOfSortQuestions[i] = array
+                        } else {
+                            this.valueList.push(this.givenAnswers[i].givenAnswerList)
                         }
-                        this.valueList.push(array)
-                    } else if (type === 'SortQuestion') {
-                        const array = []
-                        for (let j = 0; j < this.givenAnswers.length; j++) {
-                            array.push(this.computedQuestionList[i].answerPossibilities[this.givenAnswers[i]])
-                        }
-                        this.AnswerListsOfSortQuestions[i] = array
                     } else {
-                        this.valueList.push(this.givenAnswers[i])
+                        switch (type) {
+                            case 'TextQuestion':
+                                this.valueList.push('')
+                                break
+                            case 'SlideQuestion':
+                                this.valueList.push(0)
+                                // TODO: startValue
+                                break
+                            case 'ChoiceQuestion':
+                                this.valueList.push([])
+                                break
+                            case 'RangeQuestion':
+                                this.valueList.push([])
+                                break
+                            case 'SortQuestion':
+                                break
+                        }
                     }
                 } else {
                     switch (type) {
@@ -498,7 +541,7 @@ export default {
                     }
                 }
             }
-            console.log(this.valueList)
+            console.log('valueList', this.valueList)
         },
         /**
          * Get the given answer of the text field from the array ownAnswers and send the answer with the
@@ -599,7 +642,7 @@ export default {
          * @param answer The answer object, so it can get the answer possibilities.
          */
         saveAnswerCheckbox(e, question, answer) {
-            this.showAnswer()
+            this.showAnswerMultipleChoice()
             const objectIndex = this.givenAnswers.indexOf('Object')
             if (objectIndex !== -1) {
                 this.$store.commit('participant/takeOffAnswer', objectIndex)
@@ -764,7 +807,6 @@ export default {
         showPoll() {
             this.$store.dispatch('participant/showPoll', this.id)
             this.poll = this.getPoll
-            this.valuesForQuestions()
         },
         /**
          * Calls participated in store/participant.js.
@@ -797,11 +839,30 @@ export default {
          * user are given back it can also be used for loading the page with already given answers, for non-anonym
          * and partialy anonym users, after they saved it.
          */
-        showAnswer() {
+        async showAnswer() {
+            this.answerObj.username = this.getUsername
+            this.answerObj.pollId = this.getPoll[1].data.pollId
+            await this.$axios
+                .post('/getPollResult', this.answerObj)
+                .catch()
+                .then((result) => {
+                    if (result.data.answerList !== undefined) {
+                        console.log('Result ist vorhanden')
+                        this.givenAnswers = result.data.answerList
+                        console.log(this.givenAnswers)
+                    } else {
+                        console.log('Result ist nicht vorhanden')
+                        this.givenAnswers = []
+                        console.log(this.givenAnswers)
+                    }
+                })
+        },
+        showAnswerMultipleChoice() {
             this.answerObj.username = this.getUsername
             this.answerObj.pollId = this.getPoll[1].data.pollId
             this.$store.dispatch('participant/showAnswer', this.answerObj)
             this.givenAnswers = this.getAnswer
+            console.log(this.givenAnswers)
         },
         /**
          * Calls saveParticipatedPoll in store/participat, to change participated Boolean.
