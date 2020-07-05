@@ -253,6 +253,9 @@
                 </v-content>
             </v-container>
         </div>
+        <div v-else>
+            Not today!
+        </div>
     </div>
 </template>
 
@@ -294,17 +297,17 @@ export default {
             sqWasAnsweredList: [],
             lastInput: 'Letzte Eingabe',
             valueList: [],
-            participated: true,
+            participated: false,
         }
     },
     /**
      * Calls showPoll in methods to getPoll before/while the page is created.
      */
-    created() {
+    async created() {
         this.id = this.$route.params.id
-        this.showPoll()
-        this.showAnswer()
-        this.showParticipated()
+        await this.showPoll()
+        await this.showAnswer()
+        await this.showParticipated()
     },
 
     mounted() {
@@ -781,13 +784,20 @@ export default {
         /**
          * Calls participated in store/participant.js.
          */
-        showParticipated() {
+        async showParticipated() {
             const userObj = {
                 pollTaker: this.getUsername,
                 pollId: this.getPoll[1].data.pollId,
             }
-            this.$store.dispatch('participant/participatedInfo', userObj)
-            this.participated = this.getParticipated
+            /* await this.$store
+                .dispatch('participant/participatedInfo', userObj)
+                .then((this.participated = this.getParticipated), console.log('participated', this.participated)) */
+            await this.$axios
+                .post('/participated', userObj)
+                .catch()
+                .then((result) => {
+                    this.participated = result.data
+                })
         },
         /**
          * Calls saveAnswers from the store with the answerobj (cmdAnswer with all given input)
