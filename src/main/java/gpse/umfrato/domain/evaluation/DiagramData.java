@@ -14,12 +14,11 @@ import gpse.umfrato.domain.question.QuestionService;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import org.dom4j.Text;
+import org.json.JSONObject;
 
 import java.text.*;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 import java.util.logging.Logger;
 
 /**
@@ -380,8 +379,17 @@ public class DiagramData {
         private String type;
         private String title;
         List<TextAnswer> answers = new ArrayList<>();
+        String[] positiveWords = {
+            "gut", "super", "großartig", "fesch", "schnafte", "töfte", "flott", "positiv", "überzeugend", "erfreut", "softwerkende", "beeindruckend", "durchdacht", "eifrig", "eindrucksvoll", "schön", "reizend", "idyllisch", "groovy", "nice", "urcool", "megaaffentittengeil", "bäumig", "pfundig", "endgeil", "benutzerfreundlich", "angenehm", "anregend", "ansprechend", "atemberaubend", "attraktiv", "auffallend", "aufmerksam", "aufregend", "ausgewogen", "ausgezeichnet", "außergewöhnlich", "beeindruckend", "befriedigend", "begeisternd", "bejahend", "bekräftigend", "belebend", "beliebt", "bemerkenswert", "beneidenswert", "benutzerfreundlich", "bequem", "berauschend", "beruhigend", "berühmt", "beschwingt", "bestätigend", "bewährt", "bewundernswert", "brüderlich", "chancengleich", "charismatisch", "charmant", "couragiert", "dankbar", "durchdacht", "edel", "ehrgeizig", "ehrlich", "eifrig", "eindeutig", "eindrucksvoll", "einfallsreich", "einfühlend", "einwandfrei", "ekstatisch", "elegant", "elektrisierend", "empfehlenswert", "energisch", "engagiert", "entgegenkommend", "entspannt", "entzückend", "erfolgreich", "erfreulich", "erfüllend", "erhellend", "erleuchtend", "erreichbar", "erstaunlich", "erstklassig", "euphorisch", "exquisit", "exzellent", "fähig", "fantastisch", "faszinierend", "fehlerfrei", "feierlich", "fesselnd", "festlich", "fleißig", "freundlich", "friedlich", "frisch", "froh", "fröhlich", "frohlockend", "furchtlos", "gedeihlich", "geduldig", "geerdet", "gefeiert", "genial", "genießerisch", "genussvoll", "geschätzt", "geschickt", "geschmackvoll", "gestärkt", "gesund", "gewinnend", "glänzend", "glaubwürdig", "glücklich", "göttlich", "grandios", "großzügig", "handlich", "harmonisch", "heilig", "heilsam", "heiter", "herausragend", "herrlich", "hervorragend", "herzlich", "hilfreich", "hinreißend", "hochgeschätzt", "höflich", "humorvoll", "ideal", "idyllisch", "inspirierend", "interessant", "intuitiv", "jubelnd", "jugendlich", "klug", "kompetent", "königlich", "köstlich", "kraftvoll", "lächelnd", "langlebig", "lebendig", "leidenschaftlich", "leuchtend", "liebenswert", "liebenswürdig", "liebevoll", "lobenswert", "luxuriös", "makellos", "malerisch", "meisterhaft", "motivierend", "mutig", "niedlich", "nutzbringend", "offen", "ordentlich", "organisiert", "perfekt", "phänomenal", "positiv", "prächtig", "prachtvoll", "prickelnd", "problemlos", "produktiv", "pünktlich", "reibungslos", "reichhaltig", "renommiert", "respektvoll", "romantisch", "rücksichtsvoll", "sauber", "schick", "schmeichelnd", "schön", "schwungvoll", "seriös", "sicher", "solidarisch", "spektakulär", "spielerisch", "spontan", "stilvoll", "sympathisch", "tadellos", "tapfer", "tolerant", "treu", "triumphierend", "tüchtig", "überraschend", "überschwänglich", "überzeugend", "umsichtig", "unberührt", "unbeschwert", "uneigennützig", "unglaublich", "unkompliziert", "unterstützend", "unwiderstehlich", "verantwortungsvoll", "verführerisch", "vergnüglich", "verjüngend", "verliebt", "verlockend", "vertrauensvoll", "verwöhnend", "verzaubert", "verzückt", "vollendet", "vorteilhaft", "warm", "warmherzig", "wegweisend", "weise", "wendig", "wertvoll", "wichtig", "wirksam", "wohlerzogen", "wohlmeinend", "wohltätig", "wohltuend", "wunderbar", "wünschenswert", "würdevoll", "zauberhaft", "zugänglich", "zuverlässig"
+        };
+        String[] negativeWords = {
+            "doof", "schlecht", "negativ", "scheiße", "enttäuschend", "enttäuschung", "enttäuscht", "uff", "yikes", "fuck", "lahm", "afd", "NN", "abgefeimt", "affektiert", "aggressiv", "ambivalent", "angeberisch", "anmaßend", "arglistig", "argwöhnisch", "arrogant", "aufdringlich", "aufgeblasen", "beratungsresistent", "blasiert", "borniert", "boshaft", "cholerisch", "dekadent", "demagogisch", "deprimiert", "despotisch", "distanziert", "dogmatisch", "dominant", "dreist", "egoistisch", "egozentrisch", "eifersüchtig", "eigenmächtig", "einfältig", "eingebildet", "einseitig", "eitel", "ekelerregend", "elitär", "fies", "jähzornig", "garstig", "gefallsüchtig", "gefrustet", "gnädig", "gönnerhaft", "großkotzig", "großspurig", "großtuerisch", "heimtückig", "herablassen", "hinterhältig", "hintertrieben", "hochfahrend", "hochmütig", "hoffärtig", "hoffnungslos", "hysterisch", "ignorant", "infam", "intrigant", "kleinkariert", "kompliziert", "kopfhängerisch", "langweilig", "lethargisch", "lügnerisch", "maliziös", "manipulativ", "mutlos", "naiv", "narzisstisch", "neurotisch", "oberflächlich", "pedantisch", "phlegmatisch", "protzig", "reserviert", "reserviert", "resigniert", "rücksichtslos", "scheinheilig", "schlampig", "schuftig", "selbstgefällig", "selbstgerecht", "selbstsüchtig", "selbstverliebt", "skrupellos", "spießig", "stur", "überheblich", "unbeweglich", "ungeduldig", "unnahbar", "unsozial", "unzugänglich", "verbohrt", "verlogen", "vernagelt", "verschlagen", "versnobt", "snobistisch", "verstiegen", "willkürlich", "zynisch"
+        };
 
-        @Getter @Setter @AllArgsConstructor private static class TextAnswer {
+        @Getter
+        @Setter
+        @AllArgsConstructor
+        private static class TextAnswer {
             private Long id;
             private String text;
             private String edited;
@@ -399,7 +407,7 @@ public class DiagramData {
             return this.id;
         }
 
-        public void addAnswer(final Long id,final String text, final String editedDate, final String creator) {
+        public void addAnswer(final Long id, final String text, final String editedDate, final String creator) {
             answers.add(new TextAnswer(id, text, editedDate, creator));
         }
 
@@ -410,7 +418,36 @@ public class DiagramData {
 
         @Override
         public void statistics() {
+        }
 
+        int calcTendency(String input){
+            int tendency = 0;
+            List<String> wordList = Arrays.asList(input.split("[ .,;:?\\-_=()/&%$§!#'+*~|<>]+"));
+            for(String word : wordList)
+                if(Arrays.asList(positiveWords).contains(word.toLowerCase()))
+                    tendency += Collections.frequency(wordList, word.toLowerCase());
+                else if(Arrays.asList(negativeWords).contains(word.toLowerCase()))
+                    tendency -= Collections.frequency(wordList, word.toLowerCase());
+            return tendency;
+        }
+
+        List<JSObject> doWordStuff(List<TextAnswer> input){ //Antworten Darstellen
+            List<JSObject> outputList = new ArrayList<>();
+            for(TextAnswer ta : input)
+                outputList.add(new JSObject(ta.text.split("[ .,;:?\\-_=()/&%$§!#'+*~|<>]+").length, ta.text, calcTendency(ta.text), ta.edited, ta.creator)); // Antwortlänge, Antwort, Antworttendenz
+            return outputList;
+        }
+
+        List<JSObject> doWordFrequencyStuff(List<TextAnswer> input){ //Wortfrequenzen darstekken
+            List<String> answers = new ArrayList<>();
+            for(TextAnswer ta : input)
+                answers.add(ta.text);
+            List<JSObject> duplicateList = new ArrayList<>();
+            for(String answer : answers) //Wir brauchen nur die Strings
+                for(String word : answer.split("[ .,;:?\\-_=()/&%$§!#'+*~|<>]+"))
+                    duplicateList.add(new JSObject(Collections.frequency(input, word), word, 0, "", ""));
+            Set<JSObject> s = new HashSet<JSObject>(duplicateList);
+            return new ArrayList<JSObject>(s);
         }
 
         @Override
@@ -421,6 +458,22 @@ public class DiagramData {
             } catch (JsonProcessingException e) {
                 e.printStackTrace();
                 return null;
+            }
+        }
+
+        protected static class JSObject {
+            public int value;
+            public String text;
+            public int tendency;
+            public String edited;
+            public String creator;
+
+            JSObject(int value, String text, int tendency, String edited, String creator){
+                this.value = value;
+                this.text = text;
+                this.tendency = tendency;
+                this.edited = edited;
+                this.creator = creator;
             }
         }
     }
