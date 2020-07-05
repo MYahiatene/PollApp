@@ -38,18 +38,12 @@ that each display a basic evaluation of one specific question-->
                             </visual-evaluation-settings>
                         </v-card>
                     </v-dialog>
-                    <v-col cols="4">
+                    <v-col cols="3">
                         <v-card-title> {{ pollName }} </v-card-title>
                     </v-col>
 
                     <!--            This button will lead to the Page where we can filter and analyse the data-->
                     <v-spacer />
-                    <session-manager @close-event="widgetKey += 1"></session-manager>
-                    <filter-form :initial-poll-index="getPollIndex" @close-event="widgetKey += 1"></filter-form>
-
-                    <!--                   title of the poll-->
-
-                    <!--            here we have a sub menu, that can hold a list of different options or setings-->
                     <v-tooltip bottom>
                         <template v-slot:activator="{ on, attrs }">
                             <v-btn
@@ -57,7 +51,7 @@ that each display a basic evaluation of one specific question-->
                                 :color="relativ ? 'accent' : 'primary'"
                                 v-bind="attrs"
                                 v-on="on"
-                                @click=";(relativ = !relativ), (diagramKey += 1)"
+                                @click=";(relativ = !relativ), (widgetKey += 1)"
                             >
                                 <v-icon>
                                     %
@@ -73,7 +67,7 @@ that each display a basic evaluation of one specific question-->
                                 :color="cumulated ? 'accent' : 'primary'"
                                 v-bind="attrs"
                                 v-on="on"
-                                @click=";(cumulated = !cumulated), (diagramKey += 1)"
+                                @click=";(cumulated = !cumulated), (widgetKey += 1)"
                             >
                                 <v-icon> mdi-sigma</v-icon>
                             </v-btn>
@@ -94,6 +88,20 @@ that each display a basic evaluation of one specific question-->
                         </template>
                         <span>Globale Digrammfarben anpassen</span>
                     </v-tooltip>
+                    <v-tooltip bottom>
+                        <template v-slot:activator="{ on, attrs }">
+                            <v-btn icon color="primary" v-bind="attrs" v-on="on">
+                                <v-icon>mdi-cloud-download</v-icon>
+                            </v-btn>
+                        </template>
+                        <span>Exportieren</span>
+                    </v-tooltip>
+                    <session-manager @close-event="widgetKey += 1"></session-manager>
+                    <filter-form :initial-poll-index="getPollIndex" @close-event="widgetKey += 1"></filter-form>
+
+                    <!--                   title of the poll-->
+
+                    <!--            here we have a sub menu, that can hold a list of different options or setings-->
                     <!--                    <v-menu bottom left>-->
                     <!--                        <template v-slot:activator="{ on }">-->
                     <!--                            <v-btn icon color="primary">-->
@@ -214,6 +222,7 @@ that each display a basic evaluation of one specific question-->
 
                                     <div v-else-if="question.type === 'sort'">
                                         <SortQuestionEvaluationWidget
+                                            :key="sortWidgetKey"
                                             :questionID="question.questionID"
                                             :questionTitle="question.title"
                                         >
@@ -326,9 +335,12 @@ export default {
             },
             set(value) {
                 this.setDiagramOptions({
-                    questionId: -1,
-                    cumulated: value,
-                    relativ: this.relativ,
+                    useOnAll: true,
+                    option: {
+                        questionId: -1,
+                        cumulated: value,
+                        relativ: this.relativ,
+                    },
                 })
             },
         },
@@ -338,9 +350,12 @@ export default {
             },
             set(value) {
                 this.setDiagramOptions({
-                    questionId: -1,
-                    cumulated: this.cumulated,
-                    relativ: value,
+                    useOnAll: true,
+                    option: {
+                        questionId: -1,
+                        cumulated: this.cumulated,
+                        relativ: value,
+                    },
                 })
             },
         },

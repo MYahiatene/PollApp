@@ -1,27 +1,33 @@
 <template>
     <div>
         <div>
-            <v-container class="grey lighten-5">
+            <v-card>
                 <v-card-title>Teilnehmer zur Umfrage einladen</v-card-title>
                 <v-col>
                     CSV Datei mit E-Mail Adressen hochladen:
                     <input id="file" ref="file" type="file" @change="handleFileUpload()" />
-                    <v-btn @click="submitFile()">CSV hochladen</v-btn>
+                    <v-btn color="primary" dark class="mb-2" @click="submitFile()">CSV hochladen</v-btn>
                 </v-col>
-                <v-col>
+                <v-col sm="6">
                     <v-card-actions>
-                        <input id="itemForm" placeholder="E-Mail Adresse eingeben" @keypress.enter="addEmail" />
-                        <v-btn @click="addEmail">Hinzufügen</v-btn>
+                        <v-text-field
+                            v-model="mail"
+                            id="itemForm"
+                            hint="E-Mail Adresse des Teilnehmers"
+                            label="E-Mail Adresse eingeben"
+                            @keypress.enter="addEmail"
+                        ></v-text-field>
+                        <v-col>
+                            <v-btn color="primary" dark class="mb-2" @click="addEmail">Hinzufügen</v-btn>
+                        </v-col>
                     </v-card-actions>
-                </v-col>
-                <v-col cols="12" md="6">
                     <v-card>
                         <v-list>
                             <v-subheader>E-MAIL ADRESSEN</v-subheader>
                             <ul>
                                 <li v-for="(item, index) in items" :key="item.id">
-                                    <v-btn x-small color="grey" @click="deleteEmail(index)">X</v-btn>
                                     {{ item }}
+                                    <v-btn icon color="grey" @click="deleteEmail(index)">X</v-btn>
                                 </li>
                             </ul>
                         </v-list>
@@ -55,7 +61,7 @@
                                     :auto-grow="autoGrow"
                                     :clearable="clearable"
                                     :counter="counter ? counter : false"
-                                    :filled="filled"
+                                    filled="true"
                                     :flat="flat"
                                     :hint="hint"
                                     :label="label"
@@ -72,13 +78,15 @@
                                     :solo="solo"
                                 ></v-textarea>
                                 <v-row justify="end">
-                                    <v-btn justify="end" @click="sendEmail">E-Mail senden</v-btn>
+                                    <v-btn color="primary" dark class="mb-2" justify="end" @click="sendEmail"
+                                        >E-Mail senden</v-btn
+                                    >
                                 </v-row>
                             </v-sheet>
                         </v-col>
                     </v-row>
                 </v-container>
-            </v-container>
+            </v-card>
         </div>
     </div>
 </template>
@@ -91,7 +99,7 @@ export default {
             items: [],
             message: '',
             poll: [],
-
+            mail: '',
             autoGrow: true,
             autofocus: true,
             clearable: true,
@@ -105,7 +113,7 @@ export default {
                 'Hallo Teilnehmer!\n\nHier ist dein persönlicher Teilnahmelink:\n' +
                 '{link}\nViel Spaß bei der Teilnahme!\n\n' +
                 'Mit freundlichen Grüßen\n' +
-                'Dein Umrato Team',
+                'Dein Umfrato Team',
             noResize: false,
             outlined: false,
             persistentHint: true,
@@ -188,7 +196,7 @@ export default {
             if (input.value !== '' && input.value.includes('@') && input.value.includes('.')) {
                 this.items.push(input.value)
                 console.log(input.value)
-                input.value = ''
+                this.mail = ''
             }
         },
         deleteEmail(index) {

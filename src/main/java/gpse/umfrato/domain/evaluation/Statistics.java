@@ -6,6 +6,8 @@ import gpse.umfrato.domain.answer.AnswerService;
 import gpse.umfrato.domain.category.Category;
 import gpse.umfrato.domain.category.CategoryService;
 import gpse.umfrato.domain.cmd.FilterCmd;
+import gpse.umfrato.domain.evaluation.Session.SessionService;
+import gpse.umfrato.domain.evaluation.filter.FilterData;
 import gpse.umfrato.domain.evaluation.filter.filterimpl.*;
 import gpse.umfrato.domain.evaluation.filter.Filter;
 import gpse.umfrato.domain.poll.Poll;
@@ -36,13 +38,25 @@ public class Statistics {
     private final PollService pollService;
     private final PollResultService pollResultService;
     private final CategoryService categoryService;
+    private final SessionService sessionService;
     private final ConsistencyQuestionService consistencyQuestionService;
-    private final List<Filter> filters = new ArrayList<>();
+    private List<Filter> filters = new ArrayList<>();
     private final Long pollId;
     private final List<Long> questionIds = new ArrayList<>();
     private final boolean showParticipantsOverTime;
 
-    public Statistics(final AnswerService answerService, final UserService userService, final QuestionService questionService, final PollService pollService, final PollResultService pollResultService, final CategoryService categoryService, final ConsistencyQuestionService consistencyQuestionService, final FilterCmd data) {
+    /**
+     * Initializes the Statistic.
+     * @param answerService
+     * @param userService
+     * @param questionService
+     * @param pollService
+     * @param pollResultService
+     * @param categoryService
+     * @param consistencyQuestionService
+     * @param data
+     */
+    public Statistics(final AnswerService answerService, final UserService userService, final QuestionService questionService, final PollService pollService, final PollResultService pollResultService, final CategoryService categoryService, final ConsistencyQuestionService consistencyQuestionService, SessionService sessionService, final FilterCmd data) {
         this.answerService = answerService;
         this.userService = userService;
         this.questionService = questionService;
@@ -50,6 +64,7 @@ public class Statistics {
         this.pollResultService = pollResultService;
         this.categoryService = categoryService;
         this.consistencyQuestionService = consistencyQuestionService;
+        this.sessionService = sessionService;
         pollId = data.getBasePollId();
         if(data.getTimeDiagram() == null) {
             showParticipantsOverTime = false;
@@ -58,15 +73,14 @@ public class Statistics {
             showParticipantsOverTime = data.getTimeDiagram();
         }
         final List<Category> categories = categoryService.getAllCategories(pollId);
-        if (data.getBaseQuestionIds().isEmpty()) {
+        questionIds.addAll(data.getBaseQuestionIds());
+        if ((!data.getBaseQuestionIds().isEmpty()) && data.getBaseQuestionIds().get(0).equals(-1L)) {
             for (final Category c: categories) {
                 for (final Question q: questionService.getAllQuestions(c.getCategoryId())) {
                     questionIds.add(q.getQuestionId());
                 }
             }
             /* LOGGER.info(questionIds.toString());*/
-        } else {
-            questionIds.addAll(data.getBaseQuestionIds());
         }
     }
 
@@ -91,10 +105,11 @@ public class Statistics {
                     break;
                 case "or":
                     List<Filter> orFilter = new ArrayList<>();
-                    for(Filter f:filters) {
-                        if (f.getFilterType().equals("date")) {
-                            orFilter.add(f);
-                            filters.remove(f);
+                    for(int i = 0; i < filters.size();i++) {
+                        if (filters.get(i).getFilterType().equals("date")) {
+                            orFilter.add(filters.get(i));
+                            filters.remove(i);
+                            i--;
                         }
                     }
                     filter = new OrFilter(orFilter);
@@ -106,6 +121,21 @@ public class Statistics {
                 filters.add(filter);
             }
         }
+    }
+
+    public boolean loadSessionFilters(final Long sessionId) {
+        filters = new ArrayList<>();
+        loadFilter(sessionService.getFilters(sessionId));
+        return filters.size() > 0;
+    }
+
+    public List<PollResult> filteredResults()
+    {
+        List<PollResult> prs = pollResultService.getPollResults(pollId);
+        for (final Filter f: filters) {
+            prs = f.filter(prs);
+        }
+        return prs;
     }
 
     public String generateDiagram() {

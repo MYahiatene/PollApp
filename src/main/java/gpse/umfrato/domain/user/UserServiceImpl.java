@@ -4,6 +4,7 @@ import gpse.umfrato.domain.mail.MailService;
 import gpse.umfrato.domain.password.RandomPasswordGenerator;
 import gpse.umfrato.web.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.logging.LoggerGroup;
 import org.springframework.context.annotation.Primary;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -41,11 +42,12 @@ class UserServiceImpl implements UserService {
                            final String lastName, final String role, final String email) {
         final RandomPasswordGenerator randomPasswordGenerator = new RandomPasswordGenerator();
         final User user;
+        final List<Long> participated = new ArrayList<>();
         // for a completely fresh user to be generated the password value sent from the frontend must be null
         if (password == null) {
             char[] safePwd = randomPasswordGenerator.generatePwd();
             final String encryptedSafePwd = PasswordEncoderFactories.createDelegatingPasswordEncoder().encode(new String(safePwd));
-            user = new User(username, encryptedSafePwd, firstName, lastName, role, email);
+            user = new User(username, encryptedSafePwd, firstName, lastName, role, email, participated);
 
             final String pwd = new String(safePwd);
             final String mailSubject = "Login Daten für Umfrato";
@@ -59,12 +61,9 @@ class UserServiceImpl implements UserService {
 
             Arrays.fill(safePwd, '*');
         } else {
-            user = new User(username, password, firstName, lastName, role, email);
+            user = new User(username, password, firstName, lastName, role, email, participated);
         }
-
-
         return userRepository.save(user);
-
     }
 
     /**
@@ -106,6 +105,22 @@ class UserServiceImpl implements UserService {
     }
 
     /**
+     * This method adds a pollId to the partcicipated List of a user
+     *
+     * @param username the username of the user
+     * @param pollId pollId of the poll, the user just clicked Absenden on
+     */
+    @Override
+    public void addParticipatedPoll(final String username, final Long pollId) {
+        LOGGER.info("username" + username + "pollId" + pollId);
+        final User user = userRepository.getOne(username);
+        final List<Long> tmp = user.getParticipated();
+        tmp.add(pollId);
+        user.setParticipated(tmp);
+        LOGGER.info(tmp.toString());
+        userRepository.save(user);
+    }
+    /**
      * This method deletes the user in the repository based on the id username.
      *
      * @param username the username of the user
@@ -131,7 +146,9 @@ class UserServiceImpl implements UserService {
     public void changePassword(final String username, final String password) {
         final User user = userRepository.getOne(username);
         LOGGER.info("username, password" + username + password);
-        user.setPassword(password);
+        String cryptPassword = PasswordEncoderFactories.createDelegatingPasswordEncoder().encode(password);
+        user.setPassword(cryptPassword);
+        LOGGER.info(cryptPassword);
         userRepository.save(user);
         LOGGER.info("All done in UserServiceImpl");
     }

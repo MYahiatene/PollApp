@@ -1,6 +1,8 @@
 package gpse.umfrato.domain.pollresult;
 
 import gpse.umfrato.domain.answer.Answer;
+import gpse.umfrato.domain.poll.Poll;
+import gpse.umfrato.web.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -79,6 +81,51 @@ public class PollResultServiceImpl implements PollResultService {
             return pollResultRepository.findPollResultByPollIdAndPollTaker(pollId, pollTaker);
         } catch(NullPointerException e) {
             return null;
+        }
+    }
+
+    /**
+     * This method changes the status of participated in the correlation pollResult.
+     *
+     * @param pollTaker
+     * @param pollId
+     */
+    @Override
+    public void addParticipatedToPollResult(final String pollTaker, final Long pollId) {
+        LOGGER.info("I'm in PollResultServiceImpl!");
+        try {
+            PollResult pollResult = pollResultRepository.findPollResultByPollIdAndPollTaker(pollId, pollTaker);
+            pollResult.setParticipatedPoll(true);
+            LOGGER.info("participated" + pollResult.getParticipatedPoll().toString());
+            pollResultRepository.save(pollResult);
+
+            PollResult pollResult1 = pollResultRepository.findPollResultByPollIdAndPollTaker(pollId, pollTaker);
+            LOGGER.info("participatedReally?" + pollResult1.getParticipatedPoll().toString());
+        } catch(BadRequestException e) {
+            LOGGER.info("Bad Request!");
+        }
+    }
+
+    /**
+     * This method returns whether a PollTaker has already answered and sent the survey (true) or not(false).
+     * @param pollTaker
+     * @param pollId
+     * @return participated Boolean
+     */
+    @Override
+    public Boolean getParticipated(final String pollTaker, final Long pollId) {
+        LOGGER.info(pollTaker);
+        LOGGER.info(String.valueOf(pollId));
+        try {
+            PollResult pollResult = pollResultRepository.findPollResultByPollIdAndPollTaker(pollId, pollTaker);
+            LOGGER.info(pollResult.toString());
+            return pollResult.getParticipatedPoll();
+        } catch (BadRequestException e) {
+            LOGGER.info("Bad Request!");
+            return false;
+        } catch (NullPointerException e) {
+            LOGGER.info("NullPointerException");
+            return false;
         }
     }
 

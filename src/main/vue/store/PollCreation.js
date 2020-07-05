@@ -3,10 +3,16 @@ import api from '../api/poll'
 export const state = () => ({
     poll: null,
 })
+export const getters = {
+    getPoll: (state) => {
+        console.log('getPoll in js')
+        return state.poll
+    },
+}
 // not used right now, since createPoll is directly called on page.vue
 export const mutations = {
     savePoll(state, poll) {
-        this.poll = poll
+        state.poll = poll
     },
 }
 // not used right now, since createPoll is directly called on page.vue
@@ -22,5 +28,60 @@ export const actions = {
                 commit('savePoll', null)
                 // reject(new Error('Authentification failed'))
             })
+    },
+    async getCopyPoll({ commit }, id) {
+        await this.$axios
+            .get('/getonepoll', {
+                params: {
+                    pollId: id,
+                },
+            })
+            .then((response) => {
+                commit('savePoll', response.data)
+                console.log('response data: ', response.data)
+            })
+            .catch((error) => {
+                console.log(error)
+            })
+    },
+
+    async getPollName({ commit }, id) {
+        const response = await this.$axios.get('/getPollName', {
+            params: {
+                pollId: id,
+            },
+        })
+        console.log('responsepollName: ', response.data)
+        return response.data
+    },
+
+    async getAnonType({ commit }, id) {
+        const response = await this.$axios.get('/getAnonType', {
+            params: {
+                pollId: id,
+            },
+        })
+        console.log('responsepollAnonStatus: ', response.data)
+        return response.data
+    },
+
+    async getActDate({ commit }, id) {
+        const response = await this.$axios.get('/getActDate', {
+            params: {
+                pollId: id,
+            },
+        })
+        console.log('responsepollActDate: ', response.data)
+        return response.data
+    },
+
+    async getDeactDate({ commit }, id) {
+        const response = await this.$axios.get('/getDeactDate', {
+            params: {
+                pollId: id,
+            },
+        })
+        console.log('responsepollDeactDate: ', response.data)
+        return response.data
     },
 }

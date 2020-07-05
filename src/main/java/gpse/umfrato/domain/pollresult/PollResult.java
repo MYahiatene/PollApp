@@ -22,6 +22,8 @@ public class PollResult {
 
     private String lastEditAt;
 
+    private Boolean participatedPoll;
+
     @OneToMany/*(fetch = FetchType.EAGER, cascade = CascadeType.ALL)*/
     private List<Answer> answerList = new ArrayList<>();
 
@@ -33,5 +35,6 @@ public class PollResult {
     public PollResult(final Long pollId, final String username) {
         this.pollId = pollId;
         this.pollTaker = username;
+        this.participatedPoll = false;
     }
 }

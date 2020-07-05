@@ -24,7 +24,7 @@ public class ParticipationLinkServiceImpl implements ParticipationLinkService {
         throws MalformedURLException {
 
         final UUID uuid = UUID.randomUUID();
-        final String urlUuid = "/" + uuid.toString();
+        final String urlUuid = "/participant/" + uuid.toString();
         final URL invitationLink = new URL("http", "localhost", DEFAULT_PORT, urlUuid);
 
         return invitationLink;
@@ -40,26 +40,26 @@ public class ParticipationLinkServiceImpl implements ParticipationLinkService {
 
     @Override
     public Long getPollIdFromParticipationLink(final String participationLink) {
-        final List<ParticipationLink> participationLinks = participationLinkRepository.findAll();
-
-        for (final ParticipationLink p : participationLinks) {
-            if (p.getGeneratedParticipationLink().equals(participationLink)) {
-                return p.getPollId();
-            }
+        try {
+            final URL link = new URL("http", "localhost", DEFAULT_PORT,
+                    "/participant/" + participationLink);
+            return participationLinkRepository.findByGeneratedParticipationLink(link.toExternalForm()).getPollId();
+        } catch (EntityNotFoundException | MalformedURLException e) {
+            e.printStackTrace();
+            return -1L;
         }
-        throw new EntityNotFoundException();
     }
 
     @Override
     public String getUserFromParticipationLink(final String participationLink) {
-        final List<ParticipationLink> participationLinks = participationLinkRepository.findAll();
-
-        for (final ParticipationLink p : participationLinks) {
-            if (p.getGeneratedParticipationLink().equals(participationLink)) {
-                return p.getUsername();
-            }
+        try {
+            final URL link = new URL("http", "localhost", DEFAULT_PORT,
+                    "/participant/" + participationLink);
+            return participationLinkRepository.findByGeneratedParticipationLink(link.toExternalForm()).getUsername();
+        } catch (EntityNotFoundException | MalformedURLException e) {
+            e.printStackTrace();
+            return "";
         }
-        throw new EntityNotFoundException();
     }
 
     @Override

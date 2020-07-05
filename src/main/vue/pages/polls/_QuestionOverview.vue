@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div v-if="this.pollData.pollStatus === 0">
         <AuthGate v-if="isAuthenticated !== true"></AuthGate>
         <v-container v-else-if="storeValid">
             <v-card class="pa-2 ma-0">
@@ -100,6 +100,11 @@
                 </v-card-title>
             </v-card>
         </v-container>
+    </div>
+    <div v-else>
+        <v-card>
+            <v-card-title>Die Umfrage ist aktiv und daher nicht bearbeitbar</v-card-title>
+        </v-card>
     </div>
 </template>
 

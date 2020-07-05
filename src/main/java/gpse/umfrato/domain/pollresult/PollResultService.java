@@ -35,4 +35,19 @@ public interface PollResultService {
      * @return returns the poll result
      */
     PollResult getPollResult(final Long pollId, final String pollTaker);
+
+    /**
+     * This method changes the status of participated in the correlation pollResult.
+     * @param pollTaker
+     * @param pollId
+     */
+    void addParticipatedToPollResult(final String pollTaker, final Long pollId);
+
+    /**
+     * This method returns whether a PollTaker has already answered and sent the survey (true) or not(false).
+     * @param pollTaker
+     * @param pollId
+     * @return participated Boolean
+     */
+    Boolean getParticipated(final String pollTaker, final Long pollId);
 }

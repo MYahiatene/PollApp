@@ -1,13 +1,13 @@
 <template>
     <v-dialog v-model="dialog" overlay-color="background" persistent width="500" overlay-opacity="0.95" fullscreen>
         <template v-slot:activator="{ on }">
-            <v-btn color="primary" v-on="on" class="ma-2">
+            <v-btn color="primary" v-on="on" class="ma-2" @click="getFilters">
                 Analyse
             </v-btn>
         </template>
 
         <v-card class="ma-2 pa-2">
-            <v-card-title>Erweiterte Analyse {{ polls.length }}</v-card-title>
+            <v-card-title>Erweiterte Analyse {{ filters.length }}</v-card-title>
             <template>
                 <v-overflow-btn v-model="chosenPoll" editable prefix="Basisdaten:" :items="pollTitles" dense>
                 </v-overflow-btn>
@@ -24,6 +24,7 @@
                                     v-model="selectedQuestions"
                                     :items="questionTitles"
                                     multiple
+                                    clearable
                                     :no-data-text="'Keine Fragen ausgewählt'"
                                 >
                                     <template v-slot:selection="{ item, index }">
@@ -102,6 +103,7 @@
                         </v-expansion-panel-header>
                         <v-expansion-panel-content dense>
                             Hier können Sie das Antwortverhalten der Teilnehmer, die Sie betrachten wollen, festlegen.
+                            Dieser Filter funktioniert allerdings nur auf Range-, Slider- und Auswahlfragen.
 
                             <v-row>
                                 <v-col colls="12" lg="10">
@@ -110,7 +112,7 @@
                             </v-row>
 
                             <div>
-                                <div v-for="filter in qafilterList" :key="filter.filterId">
+                                <div v-for="filter in qafilterList" :key="filter.filterIndex">
                                     <div v-if="filter.active">
                                         <v-card class="pa-3 ma-2">
                                             <v-row>
@@ -118,24 +120,27 @@
                                                 <v-btn icon @click="addQAFilter()">
                                                     <v-icon> mdi-plus </v-icon>
                                                 </v-btn>
-                                                <v-btn icon @click="deleteQAFilter(filter.filterId)">
+                                                <v-btn icon @click="deleteQAFilter(filter.filterIndex)">
                                                     <v-icon> mdi-delete </v-icon>
                                                 </v-btn>
                                             </v-row>
                                             <v-row>
                                                 <v-col cols="12" lg="11">
                                                     <base-q-a-filter
+                                                        :key="qaKey"
                                                         :poll-index="pollIndex"
-                                                        :filter-id="filter.filterId"
+                                                        :filter-id="filter.filterIndex"
                                                         :initial-category-index="
-                                                            qafilterList[filter.filterId].categoryId
+                                                            qafilterList[filter.filterIndex].categoryIndex
                                                         "
                                                         :initial-question-index="
-                                                            qafilterList[filter.filterId].questionId
+                                                            qafilterList[filter.filterIndex].questionIndex
                                                         "
                                                         :initial-answer-indices="
-                                                            qafilterList[filter.filterId].answerIndices
+                                                            qafilterList[filter.filterIndex].answerIndices
                                                         "
+                                                        :initial-invert="qafilterList[filter.filterIndex].invertFilter"
+                                                        :initial-is-slider="qafilterList[filter.filterIndex].isSlider"
                                                         @updateData="updateQaFilter"
                                                     ></base-q-a-filter>
                                                 </v-col>
@@ -162,7 +167,7 @@
                                 </v-col>
                             </v-row>
 
-                            <div v-for="filter in dateFilterList" :key="filter.filterId">
+                            <div v-for="filter in dateFilterList" :key="filter.filterIndex">
                                 <div v-if="filter.active">
                                     <v-card class="pa-3 ma-2">
                                         <v-row>
@@ -177,6 +182,10 @@
                                         <v-row>
                                             <v-col cols="12" lg="11">
                                                 <base-date-filter
+                                                    :start-date="filter.startDate"
+                                                    :end-date="filter.endDate"
+                                                    :invert-filter="filter.invertFilter"
+                                                    :key="dateKey"
                                                     @newDateFilter="updateDateFilter"
                                                     :filter-index="filter.filterIndex"
                                                 ></base-date-filter>
@@ -192,6 +201,9 @@
             <v-card-actions>
                 <v-col>
                     <v-btn color="primary" @click="saveToStore(), (dialog = false)"> Anwenden </v-btn>
+                </v-col>
+                <v-col>
+                    <v-btn color="secondary" @click="clearFilter()"> Keine Filter </v-btn>
                 </v-col>
             </v-card-actions>
         </v-card>
@@ -219,33 +231,35 @@ export default {
     },
     data() {
         return {
-            globalFilterId: 1,
             applyConsistency: false,
             minConsistencyValue: 0,
             maxConsistencyValue: 0,
-            qafilter: false,
+            qaKey: 0,
+            dateKey: 0,
+            qafilter: true,
             datefilter: true,
             qafilterList: [
-                {
-                    active: true,
-                    filterId: 0,
-                    filterType: 'qaFilter',
-                    categoryId: -1,
-                    questionId: -1,
-                    answerIndices: [],
-                    invertFilter: false,
-                },
+                // {
+                //     active: true,
+                //     filterId: 0,
+                //     filterType: 'qaFilter',
+                //     questionId: -1,
+                //     categoryIndex: -1,
+                //     questionIndex: -1,
+                //     answerIndices: [],
+                //     invertFilter: false,
+                // },
             ],
 
             dateFilterList: [
-                {
-                    active: true,
-                    filterIndex: 0,
-                    filterType: 'date',
-                    endDate: '',
-                    startDate: '',
-                    invertFilter: false,
-                },
+                // {
+                //     active: true,
+                //     filterIndex: 0,
+                //     filterType: 'date',
+                //     endDate: '',
+                //     startDate: '',
+                //     invertFilter: false,
+                // },
             ],
 
             chosenPoll: '',
@@ -299,7 +313,12 @@ export default {
         ...mapGetters({
             polls: 'evaluation/getPolls',
             getSessions: 'evaluation/getSessions',
+            filters: 'evaluation/getFilterList',
         }),
+
+        categories() {
+            return this.polls[this.pollIndex].categoryList
+        },
 
         pollTitles() {
             console.log('pollTitles()')
@@ -348,6 +367,7 @@ export default {
     },
     mounted() {
         console.log('mounted()')
+        console.log(this.filters)
         this.chosenPoll = this.pollTitles[this.initialPollIndex]
         for (let i = 0; i < this.questionTitles.length; i++) {
             this.selectedQuestions.push(this.questionTitles[i])
@@ -443,12 +463,13 @@ export default {
 
         addQAFilter() {
             console.log('addQAFilter()')
+            const id = this.qafilterList.length
             this.qafilterList.push({
                 active: true,
-                filterId: this.globalFilterId++,
+                filterIndex: id,
                 filterType: 'qaFilter',
-                categoryId: -1,
-                questionId: -1,
+                categoryIndex: -1,
+                questionIndex: -1,
                 isSlider: false,
                 answerIndices: [],
             })
@@ -467,6 +488,7 @@ export default {
             this.qafilterList[filterId].answerIndices = answerIndices
             this.qafilterList[filterId].isSlider = isSlider
             this.qafilterList[filterId].invertFilter = invertFilter
+            console.log(this.qafilterList[filterId])
         },
 
         addDateFilter() {
@@ -498,6 +520,161 @@ export default {
         },
         updateConsistencyOn() {
             this.consistencyOn = !(this.minConsistencyValue === 0)
+        },
+
+        getFilters() {
+            console.log('getFilters')
+            if (this.filters.length !== 0) {
+                console.log('do stuff')
+                console.log(this.filters)
+                this.qafilterList = []
+                this.dateFilterList = []
+                if (this.filters[0].filterType === 'dataFilter') {
+                    if (this.filters[0].baseQuestionIds.length > 0) {
+                        this.selectedQuestions = []
+                        for (let k = 0; k < this.filters[0].baseQuestionIds.length; k++) {
+                            for (let i = 0; i < this.polls[this.pollIndex].categoryList.length; i++) {
+                                for (
+                                    let j = 0;
+                                    j < this.polls[this.pollIndex].categoryList[i].questionList.length;
+                                    j++
+                                ) {
+                                    if (
+                                        this.polls[this.pollIndex].categoryList[i].questionList[j].questionId ===
+                                        this.filters[0].baseQuestionIds[k]
+                                    )
+                                        this.selectedQuestions.push(
+                                            this.polls[this.pollIndex].categoryList[i].questionList[j].questionMessage
+                                        )
+                                }
+                            }
+                        }
+                    }
+
+                    console.log(this.selectedQuestions)
+                }
+
+                for (let i = 0; i < this.filters.length; i++) {
+                    console.log('bu')
+                    if (this.filters[i].filterType === 'consistency') {
+                        console.log('consis filter')
+                        this.minConsistencyValue = this.filters[i].minSuccesses
+                        this.updateConsistencyOn()
+                    }
+                    if (this.filters[i].filterType === 'date') {
+                        console.log('date filter')
+                        const id = this.dateFilterList.length
+                        this.dateFilterList.push({
+                            active: true,
+                            filterIndex: id,
+                            filterType: 'date',
+                            endDate: this.filters[i].endDate,
+                            startDate: this.filters[i].startDate,
+                            invertFilter: this.filters[i].invertFilter,
+                        })
+                    }
+
+                    if (this.filters[i].filterType === 'questionAnswer') {
+                        console.log('qa filter')
+                        const a = []
+                        for (let j = 0; j < this.filters[i].targetAnswerPossibilities.length; j++) {
+                            a.push(parseInt(this.filters[i].targetAnswerPossibilities[j]))
+                        }
+                        const id = this.qafilterList.length
+                        this.qafilterList.push({
+                            active: true,
+                            filterIndex: id,
+                            filterType: 'qaFilter',
+                            questionId: this.filters[i].targetQuestionId,
+                            categoryIndex: this.getCategoryIndexAndQuestionIndexFromQuestionId(
+                                this.filters[i].targetQuestionId
+                            ).categoryIndex,
+                            questionIndex: this.getCategoryIndexAndQuestionIndexFromQuestionId(
+                                this.filters[i].targetQuestionId
+                            ).questionIndex,
+                            isSlider: this.filters[i].isSlider,
+                            answerIndices: a,
+                            invertFilter: this.filters[i].invertFilter,
+                        })
+                    }
+
+                    console.log(this.dateFilterList)
+
+                    console.log(this.qafilterList)
+
+                    this.updateFilter()
+                }
+
+                if (this.dateFilterList.length === 0) {
+                    this.addDateFilter()
+                }
+                if (this.qafilterList.length === 0) {
+                    this.addQAFilter()
+                }
+            }
+        },
+
+        clearFilter() {
+            this.selectedQuestions = []
+            for (let i = 0; i < this.questionTitles.length; i++) {
+                this.selectedQuestions.push(this.questionTitles[i])
+            }
+            this.minConsistencyValue = 0
+            this.updateConsistencyOn()
+            this.qafilterList = [
+                // {
+                //     active: true,
+                //     filterId: 0,
+                //     filterType: 'qaFilter',
+                //     categoryIndex: -1,
+                //     questionId: -1,
+                //     questionIndex: -1,
+                //     answerIndices: [],
+                //     invertFilter: false,
+                // },
+            ]
+            this.dateFilterList = [
+                // {
+                //     active: true,
+                //     filterIndex: 0,
+                //     filterType: 'date',
+                //     endDate: '',
+                //     startDate: '',
+                //     invertFilter: false,
+                // },
+            ]
+            this.addDateFilter()
+            this.addQAFilter()
+            this.updateFilter()
+            this.saveToStore()
+        },
+
+        updateFilter() {
+            this.qaKey += 1
+            this.dateKey += 1
+        },
+
+        getCategoryIndexAndQuestionIndexFromQuestionId(questionId) {
+            console.log('bin in getCat...')
+            for (let c = 0; c < this.categories.length; c++) {
+                console.log(c)
+                const questions = []
+                for (let i = 0; i < this.categories[c].questionList.length; i++) {
+                    if (
+                        this.categories[c].questionList[i].questionType !== 'SortQuestion' &&
+                        this.categories[c].questionList[i].questionType !== 'TextQuestion'
+                    )
+                        questions.push(this.categories[c].questionList[i])
+                }
+                for (let q = 0; q < questions.length; q++) {
+                    console.log(q)
+                    if (questions[q].questionId === questionId) {
+                        console.log({ categoryIndex: c, questionIndex: q })
+                        return { categoryIndex: c, questionIndex: q }
+                    }
+                }
+            }
+            return null
         },
     },
 }

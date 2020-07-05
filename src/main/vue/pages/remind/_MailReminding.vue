@@ -48,7 +48,9 @@
                                     :solo="solo"
                                 ></v-textarea>
                                 <v-row justify="end">
-                                    <v-btn justify="end" @click="sendRemindEmail">E-Mail senden</v-btn>
+                                    <v-btn color="primary" dark class="mb-2" justify="end" @click="sendRemindEmail"
+                                        >E-Mail senden</v-btn
+                                    >
                                 </v-row>
                             </v-sheet>
                         </v-col>

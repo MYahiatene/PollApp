@@ -9,6 +9,7 @@
  *            category: [string]}}
  *            username: string
  */
+
 export const state = () => ({
     visibility: false,
     changeOfCategories: false,
@@ -18,6 +19,7 @@ export const state = () => ({
     answer: ['Object'],
     category: ['Object'],
     username: '',
+    participated: false,
 })
 /**
  * Defines mapGetters for Usage in _id.vue.
@@ -57,6 +59,9 @@ export const getters = {
     },
     getQuestionId: (state) => {
         return state.questionId
+    },
+    getParticipated: (state) => {
+        return state.participated
     },
 }
 
@@ -131,13 +136,27 @@ export const actions = {
      * @param commit
      * @returns {Promise<void>}
      */
-    async showPoll({ commit }, id) {
+    async showPoll({ commit }, link) {
         this.$axios.defaults.baseURL = 'http://localhost:8088/api/'
         this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('user-token')
-        const poll = await this.$axios.get('/participant/' + id)
-        const username = await this.$axios.post('/getUsername', { anonymityStatus: poll.data.anonymityStatus })
+        const poll = await this.$axios.get('/participant/' + link)
+        const username = await this.$axios.post('/getUsername/' + link)
         commit('setUsername', username.data)
         commit('setPoll', poll)
+    },
+    /**
+     * Calls participated in PollResultController to get the participated status and sets the state for it.
+     * @param state
+     * @param pollResultObj
+     * @returns {Promise<void>}
+     */
+    async participatedInfo(state, pollResultObj) {
+        this.$axios.defaults.baseURL = 'http://localhost:8088/api/'
+        this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('user-token')
+        await this.$axios.post('/participated', pollResultObj).then((response) => {
+            state.participated = response.data
+            console.log('store', state.participated)
+        })
     },
     /**
      * Defines mapAction showAnswer and sets the global axios with the token saved in localstorage and the baseURL to get
@@ -169,10 +188,27 @@ export const actions = {
         this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('user-token')
         return this.$axios.post('/poll/' + answerObj.pollId + '/addanswer', answerObj)
     },
+    /**
+     * Calls participationToPollResult in PollResultController to save Boolean participated to true, since
+     * the participant has sent the survey away.
+     * @param state
+     * @param userObj
+     * @returns {Promise<AxiosResponse<any>>}
+     */
+    saveParticipatedPoll(state, userObj) {
+        this.$axios.defaults.baseURL = 'http://localhost:8088/api/'
+        this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('user-token')
+        console.log('userObj', userObj)
+        return this.$axios.post('/participationToPollResult', userObj)
+    },
+    /**
+     * Sends the new AnswerPossibility to the backend with the pollId, questionId and the textmessage to save it in the
+     * poll and then updates the poll for the page.
+     * @param state
+     * @param answer answer[0] is the new Answer, answer[1] is the questionId and answer[2] is the pollId
+     * @returns {Promise<void>}
+     */
     async saveAnswerPossibility(state, answer) {
-        console.log('pollId: ', answer[2])
-        console.log('questionId: ', answer[1])
-        console.log('newAnswer: ', answer[0])
         const obj = { value: answer[0] }
         this.$axios.defaults.baseURL = 'http://localhost:8088/api/'
         this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('user-token')
@@ -180,8 +216,6 @@ export const actions = {
             '/poll/' + answer[2] + '/question/' + answer[1] + '/addAnswerPossibility',
             obj
         )
-        console.log('after post')
-        console.log(poll)
         state.commit('setPoll', poll)
     },
 }

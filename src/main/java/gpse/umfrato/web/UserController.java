@@ -2,6 +2,7 @@ package gpse.umfrato.web;
 
 import gpse.umfrato.domain.cmd.DeleteUserCmd;
 import gpse.umfrato.domain.cmd.EditUserCmd;
+import gpse.umfrato.domain.cmd.ParticipatedUserCmd;
 import gpse.umfrato.domain.cmd.UserCmd;
 import gpse.umfrato.domain.password.RandomPasswordGenerator;
 import gpse.umfrato.domain.user.User;
@@ -48,9 +49,7 @@ public class UserController {
     @PostMapping("/createUser")
     public String createUser(final @RequestBody UserCmd userCmd) {
         try {
-            userService.createUser(
-                userCmd.getUsername(), userCmd.getPassword(), userCmd.getFirstName(), userCmd.getLastName(),
-                userCmd.getRole(), userCmd.getEmail());
+            userService.createUser(userCmd.getUsername(), userCmd.getPassword(), userCmd.getFirstName(), userCmd.getLastName(), userCmd.getRole(), userCmd.getEmail());
 
         } catch (BadRequestException e) {
             LOGGER.info("Could not create user");
@@ -69,12 +68,21 @@ public class UserController {
     public String editUser(final @RequestBody EditUserCmd editUserCmd) {
         LOGGER.info("UserCmd" + editUserCmd);
         try {
-            userService.editUser(editUserCmd.getUsername(), editUserCmd.getFirstName(), editUserCmd.getLastName(),
-                editUserCmd.getRole(), editUserCmd.getEmail());
+            userService.editUser(editUserCmd.getUsername(), editUserCmd.getFirstName(), editUserCmd.getLastName(), editUserCmd.getRole(), editUserCmd.getEmail());
         } catch (BadRequestException e) {
             LOGGER.info("Could not edit user");
         }
         return HTTP_POST;
+    }
+
+    @PostMapping("addParticipatedPollToUser")
+    public void addParticipatedPollToUser(final @RequestBody ParticipatedUserCmd participatedUserCmd) {
+        try {
+            LOGGER.info("username" + participatedUserCmd.getUsername() + "pollId" + participatedUserCmd.getPollId());
+            userService.addParticipatedPoll(participatedUserCmd.getUsername(), participatedUserCmd.getPollId());
+        } catch (BadRequestException e) {
+            LOGGER.info("Bad Request Exception");
+        }
     }
 
     /**
@@ -144,11 +152,10 @@ public class UserController {
     @PutMapping("/changePassword")
     public int changePassword(final @RequestBody UserCmd userCmd) {
         LOGGER.info("UserCmd" + userCmd);
-        try{
+        try {
             userService.changePassword(userCmd.getUsername(), userCmd.getPassword());
             return 1;
-        }
-        catch(BadRequestException e){
+        } catch (BadRequestException e) {
             LOGGER.info("Could not Change Password");
             return 0;
         }
@@ -158,10 +165,9 @@ public class UserController {
     public void changeEmail(final @RequestBody UserCmd userCmd) {
         // userCmd.email is here null... Why?
         LOGGER.info("UserCmd" + userCmd);
-        try{
+        try {
             userService.changeEmail(userCmd.getUsername(), userCmd.getEmail());
-        }
-        catch(BadRequestException e){
+        } catch (BadRequestException e) {
             LOGGER.info("Could not Change Email");
         }
     }

@@ -17,7 +17,11 @@
             v-model="selectedQuestion"
             prefix="bei der Frage"
             :items="questionTitles"
-            :no-data-text="'Keine Kategorie ausgewählt'"
+            :no-data-text="
+                selectedCategory === ''
+                    ? 'Keine Kategorie ausgewählt'
+                    : 'Keine nutzbaren Fragen in dieser Kategorie. Bitte wählen Sie eine andere!'
+            "
             elevation="0"
             style="box-shadow: none;"
             @input="updateQuestionIndex()"
@@ -61,7 +65,7 @@
                         single-line
                         type="number"
                         style="width: 60px;"
-                        @change="$set(range, 0, $event), updateData"
+                        @input="updateLower"
                     ></v-text-field>
                 </template>
                 <template v-slot:append>
@@ -72,7 +76,7 @@
                         single-line
                         type="number"
                         style="width: 60px;"
-                        @change="$set(range, 1, $event), updateData"
+                        @input="updateUpper"
                     ></v-text-field>
                 </template>
             </v-range-slider>
@@ -106,6 +110,14 @@ export default {
         initialAnswerIndices: {
             default: () => [],
             type: Array,
+        },
+        initialInvert: {
+            type: Boolean,
+            default: false,
+        },
+        initialIsSlider: {
+            type: Boolean,
+            default: false,
         },
     },
     data() {
@@ -224,6 +236,13 @@ export default {
         for (let i = 0; i < this.answerIndices.length; i++) {
             this.selectedAnswers.push(this.answerTitles[this.answerIndices[i]])
         }
+        this.invertFilter = this.initialInvert
+
+        if (this.initialIsSlider) {
+            this.range[0] = this.initialAnswerIndices[0]
+            this.range[1] = this.initialAnswerIndices[1]
+        }
+        this.$forceUpdate()
     },
     methods: {
         updateCategoryIndex() {
@@ -238,6 +257,14 @@ export default {
                 this.answerIndices.push(this.answerTitles.indexOf(this.selectedAnswers[i]))
             }
         },
+        updateLower(value) {
+            this.$set(this.range, 0, value)
+            this.updateData()
+        },
+        updateUpper(value) {
+            this.$set(this.range, 1, value)
+            this.updateData()
+        },
         updateData() {
             console.log('updateData')
             this.updateAnswerIndices()
@@ -245,6 +272,11 @@ export default {
             console.log(this.categoryIndex)
             console.log(this.questionIndex)
             console.log(this.answerIndices)
+            if (this.range[0] > this.range[1]) {
+                const tmp = this.range[1]
+                this.range[0] = Number(this.range[1])
+                this.range[1] = Number(tmp)
+            }
             if (this.questionIndex !== -1) {
                 this.$emit('updateData', [
                     this.filterId,

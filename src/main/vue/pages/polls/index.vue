@@ -31,9 +31,14 @@
                                     label="Suchen"
                                 ></v-text-field>
                                 <v-spacer />
-                                <v-btn large color="primary" to="./PollCreation">
-                                    <v-icon>mdi-plus</v-icon>
-                                </v-btn>
+                                <v-tooltip bottom>
+                                    <template v-slot:activator="{ on, attrs }">
+                                        <v-btn large color="primary" to="./PollCreation/0" v-bind="attrs" v-on="on">
+                                            <v-icon>mdi-plus</v-icon>
+                                        </v-btn>
+                                    </template>
+                                    <span> Neue Umfrage erstellen</span>
+                                </v-tooltip>
                             </v-toolbar>
                         </template>
                         <v-container>
@@ -49,35 +54,60 @@
                                     no-results-text="Keine passenden Umfragen gefunden"
                                     :footer-props="footerProps"
                                 >
-                                    <template v-slot:item.status="{ item }">
-                                        <v-icon @click="changePollStatus(item)">
-                                            {{ item.statusIcon }}
-                                        </v-icon>
-                                    </template>
-                                    <template v-slot:item.action1="{ item }">
-                                        <v-icon @click="itemAction1(item)">
-                                            {{ item.action1Icon }}
-                                        </v-icon>
-                                    </template>
-                                    <template v-slot:item.action2="{ item }">
-                                        <v-icon @click="itemAction2(item)">
-                                            {{ item.action2Icon }}
-                                        </v-icon>
-                                    </template>
-                                    <template v-slot:item.invite="{ item }">
-                                        <v-icon @click="inviteAction(item)">
-                                            {{ item.inviteIcon }}
-                                        </v-icon>
-                                    </template>
-                                    <template v-slot:item.reminder="{ item }">
-                                        <v-icon @click="reminderAction(item)">
-                                            {{ item.reminderIcon }}
-                                        </v-icon>
-                                    </template>
-                                    <template v-slot:item.delete="{ item }">
-                                        <v-icon @click="deletePoll(item)">
-                                            mdi-delete
-                                        </v-icon>
+                                    <template v-slot:item.actions="{ item }">
+                                        <v-chip>
+                                            <v-tooltip bottom>
+                                                <template v-slot:activator="{ on, attrs }">
+                                                    <v-btn icon color="primary" v-bind="attrs" v-on="on">
+                                                        <v-icon @click="itemStatusAction(item)">
+                                                            {{ item.statusIcon }}
+                                                        </v-icon>
+                                                    </v-btn>
+                                                </template>
+                                                <span> {{ item.statusText }}</span>
+                                            </v-tooltip>
+
+                                            <v-tooltip bottom>
+                                                <template v-slot:activator="{ on, attrs }">
+                                                    <v-btn icon color="primary" v-bind="attrs" v-on="on">
+                                                        <v-icon @click="itemAction1(item)">
+                                                            {{ item.action1Icon }}</v-icon
+                                                        >
+                                                    </v-btn>
+                                                </template>
+                                                <span> {{ item.action1Text }}</span>
+                                            </v-tooltip>
+                                            <v-tooltip bottom>
+                                                <template v-slot:activator="{ on, attrs }">
+                                                    <v-btn icon color="primary" v-bind="attrs" v-on="on">
+                                                        <v-icon @click="itemAction2(item)">
+                                                            {{ item.action2Icon }}</v-icon
+                                                        >
+                                                    </v-btn>
+                                                </template>
+                                                <span> {{ item.action2Text }}</span>
+                                            </v-tooltip>
+                                            <v-tooltip bottom>
+                                                <template v-slot:activator="{ on, attrs }">
+                                                    <v-btn icon color="primary" v-bind="attrs" v-on="on">
+                                                        <v-icon @click="itemAction3(item)">
+                                                            {{ item.action3Icon }}</v-icon
+                                                        >
+                                                    </v-btn>
+                                                </template>
+                                                <span> {{ item.action3Text }}</span>
+                                            </v-tooltip>
+                                            <v-tooltip bottom>
+                                                <template v-slot:activator="{ on, attrs }">
+                                                    <v-btn icon color="primary" v-bind="attrs" v-on="on">
+                                                        <v-icon @click="itemAction4(item)">
+                                                            {{ item.action4Icon }}</v-icon
+                                                        >
+                                                    </v-btn>
+                                                </template>
+                                                <span> {{ item.action4Text }}</span>
+                                            </v-tooltip>
+                                        </v-chip>
                                     </template>
                                 </v-data-table>
                             </template>
@@ -108,6 +138,7 @@ export default {
     components: { AuthGate },
     data() {
         return {
+            hovered: false,
             participantNr: 2,
             progressColorA: '#FF0000',
             progressColorB: '#FF0000',
@@ -126,11 +157,7 @@ export default {
                 { title: 'Löschen', link: '/' },
             ],
             headers: [
-                { text: '', value: 'status', sortable: false },
-                { text: '', value: 'action1', sortable: false },
-                { text: '', value: 'action2', sortable: false },
-                { text: '', value: 'invite', sortable: false },
-                { text: '', value: 'reminder', sortable: false },
+                { text: '', value: 'actions', sortable: false },
                 { text: 'Umfrage', value: 'pollName' },
                 { text: 'Erstellt von', value: 'pollCreator' },
                 { text: 'Status', value: 'pollStatusString' },
@@ -163,6 +190,7 @@ export default {
         },
         prepareItems() {
             const data = Object.assign([], this.items)
+            data.hovered = false
             for (let i = 0; i < data.length; i++) {
                 if (this.items[i].anonymityStatus === '1') {
                     data[i].anonymityString = 'Anonym'
@@ -173,22 +201,40 @@ export default {
                 }
                 if (this.items[i].pollStatus === 0) {
                     data[i].pollStatusString = 'Inaktiv'
-                    data[i].action1Icon = 'mdi-pencil'
-                    data[i].action2Icon = 'mdi-delete'
                     data[i].statusIcon = 'mdi-play'
-                    data[i].inviteIcon = 'mdi-account-plus'
+                    data[i].statusText = 'Umfrage aktivieren'
+                    data[i].action1Icon = 'mdi-pencil'
+                    data[i].action1Text = 'Umfrage bearbeiten'
+                    data[i].action2Icon = 'mdi-account-plus'
+                    data[i].action2Text = 'Umfrageteilnehmer konfigurieren'
+                    data[i].action3Icon = 'mdi-cloud-download'
+                    data[i].action3Text = 'Umfrage exportieren'
+                    data[i].action4Icon = 'mdi-delete'
+                    data[i].action4Text = 'Umfrage löschen'
                 } else if (this.items[i].pollStatus === 1) {
                     data[i].pollStatusString = 'Aktiv'
-                    data[i].action1Icon = 'mdi-magnify'
-                    data[i].action2Icon = 'mdi-link-variant'
                     data[i].statusIcon = 'mdi-stop'
-                    data[i].inviteIcon = 'mdi-account-plus'
-                    data[i].reminderIcon = 'mdi-message-alert'
+                    data[i].statusText = 'Umfrage deaktivieren'
+                    data[i].action1Icon = 'mdi-magnify'
+                    data[i].action1Text = 'Umfrage analysieren'
+                    data[i].action2Icon = 'mdi-account-plus'
+                    data[i].action2Text = 'Umfrageteilnehmer konfigurieren'
+                    data[i].action3Icon = 'mdi-message-alert'
+                    data[i].action3Text = 'Umfrageteilnehmer benachrichtigen'
+                    data[i].action4Icon = 'mdi-link-variant'
+                    data[i].action4Text = 'Links kopieren'
                 } else if (this.items[i].pollStatus === 2) {
                     data[i].pollStatusString = 'Beendet'
+                    data[i].statusIcon = 'mdi-content-copy'
+                    data[i].statusText = 'Umfrage kopieren'
                     data[i].action1Icon = 'mdi-magnify'
-                    data[i].action2Icon = 'mdi-delete'
-                    data[i].statusIcon = 'mdi-content-duplicate'
+                    data[i].action1Text = 'Umfrage analysieren'
+                    data[i].action2Icon = 'mdi-cloud-download'
+                    data[i].action2Text = 'Umfrage exportieren'
+                    data[i].action3Icon = 'mdi-cloud-download'
+                    data[i].action3Text = 'Umfrageergebnisse exportieren'
+                    data[i].action4Icon = 'mdi-delete'
+                    data[i].action4Text = 'Umfrage löschen'
                 }
             }
             return data
@@ -204,7 +250,7 @@ export default {
             setPollFinished: 'navigation/setPollFinished',
             splicePolls: 'navigation/splicePolls',
         }),
-        changePollStatus(item) {
+        itemStatusAction(item) {
             if (item.pollStatus === 0) {
                 if (confirm('Umfrage jetzt veröffentlichen?')) {
                     this.updatePollStatus(item.pollId)
@@ -214,7 +260,7 @@ export default {
                     this.updatePollStatus(item.pollId)
                 }
             } else if (confirm('Umfrage kopieren?')) {
-                alert('Tja, das geht noch nicht...')
+                this.copyPoll(item)
             }
         },
         itemAction1(item) {
@@ -225,6 +271,19 @@ export default {
             }
         },
         itemAction2(item) {
+            if (item.pollStatus < 2) {
+                this.inviteAction(item)
+            } else {
+            }
+        },
+        itemAction3(item) {
+            if (item.pollStatus === 0) {
+            } else if (item.pollStatus === 1) {
+                this.reminderAction(item)
+            } else {
+            }
+        },
+        itemAction4(item) {
             if (item.pollStatus === 1) {
                 this.setLink(item)
             } else {
@@ -252,17 +311,13 @@ export default {
         setLink(item) {
             let links = ''
             for (let i = 0; i < item.participationLinks.length; i++) {
-                links += 'http://localhost:8080/participant/' + item.participationLinks[i].participationLink
+                links += item.participationLinks[i].generatedParticipationLink
                 if (i + 1 !== item.participationLinks.length) {
                     links += ', '
                 }
             }
             navigator.clipboard.writeText(links)
-            /* alert( //TODO: extrem nervig beim Testen
-                        'Link kopiert: "localhost:8080/participant/' +
-                            this.participationLinks[i].participationLink +
-                            '"'
-                    ) */
+            alert('Link(s) kopiert: ' + links.slice(0, 120) + (links.length > 117 ? '...' : ''))
         },
         async initializeDatabase() {
             const today = new Date()
@@ -544,6 +599,9 @@ export default {
                 this.splicePolls(index)
                 this.$axios.put('/deletepoll', { pollId: item.pollId })
             }
+        },
+        copyPoll(item) {
+            this.$router.push('/PollCreation/' + item.pollId)
         },
     },
 }

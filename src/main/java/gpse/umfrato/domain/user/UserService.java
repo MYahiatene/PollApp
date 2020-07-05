@@ -40,6 +40,14 @@ public interface UserService extends UserDetailsService {
                   final String lastName, final String role, final String email);
 
     /**
+     * This method adds a pollId to the partcicipated List of a user
+     *
+     * @param username the username of the user
+     * @param pollId pollId of the poll, the user just clicked Absenden on
+     */
+    void addParticipatedPoll(final String username, final Long pollId);
+
+    /**
      * This method deletes a user.
      *
      * @param username the username of the user

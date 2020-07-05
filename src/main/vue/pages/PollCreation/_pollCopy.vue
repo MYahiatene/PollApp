@@ -15,10 +15,11 @@
                             <v-text-field
                                 v-model="title"
                                 hint="Wie soll die Umfrage genannt werden?"
+                                :label="pollTitle"
                                 :rules="titleRules"
-                                label="Titel"
                                 required
-                            ></v-text-field>
+                            >
+                            </v-text-field>
                         </v-col>
                     </v-row>
 
@@ -71,10 +72,11 @@
                         </v-col>
                         <v-col
                             ><v-text-field
+                                v-model="activatedTime"
                                 label="Uhrzeit"
-                                :value="time"
                                 type="time"
                                 style="width: 170px;"
+                                @change="saveTime($event, 'a')"
                             ></v-text-field
                         ></v-col>
                     </v-row>
@@ -116,10 +118,11 @@
                         </v-col>
                         <v-col
                             ><v-text-field
+                                v-model="deactivatedTime"
                                 label="Uhrzeit"
-                                :value="time"
                                 type="time"
                                 style="width: 170px;"
+                                @change="saveTime($event, 'd')"
                             ></v-text-field
                         ></v-col>
                     </v-row>
@@ -178,6 +181,8 @@ export default {
     components: {},
     data() {
         return {
+            pollId: 0,
+            categoryList: [],
             switch1: false,
             switch2: false,
             switch3: false,
@@ -185,6 +190,7 @@ export default {
             visibility: false,
             valid: false,
             title: '',
+            pollTitle: 'Titel',
             backgroundColor: null,
             fontColor: null,
             logo: null,
@@ -193,6 +199,10 @@ export default {
             deactivateDate: this.formatDate(new Date().toISOString().substr(0, 10)),
             creationDate: this.formatDate(new Date().toISOString().substr(0, 10)),
             date: new Date().toISOString().substr(0, 10),
+            activatedTime: '',
+            deactivatedTime: '',
+            activated: null,
+            deactivated: null,
             menu: false,
             selectedAnonymityType: '',
             anonymityTypes: [
@@ -213,46 +223,70 @@ export default {
             anonymityRules: [(v) => !!v || 'Anonymitätsgrad fehlt.'],
         }
     },
+    /**
+     * loads the page for creating a new poll with the pollId 0, else with the pollId of the poll to copy.
+     **/
+    mounted() {
+        this.pollId = this.$route.params.pollCopy
+        this.getCopyPoll()
+        this.getTitle()
+        this.getAnonType()
+        this.getActDate()
+        this.getDeactDate()
+    },
     computed: {
         ...mapGetters({
             isAuthenticated: 'login/isAuthenticated',
             getUsername: 'login/getUsername',
+            getPoll: 'PollCreation/getPoll',
         }),
-        time() {
-            const today = new Date()
-            return today.getHours() + ':' + today.getMinutes() + ':00'
-        },
     },
     methods: {
         validate() {
             this.$refs.form.validate()
         },
         /**
-         * Puts all information in an object and directly acces axios over above declared instance at PostMapping
-         * createPoll in PollController.
-         */
+         * Puts all information in an object and directly access axios over above declared instance at PostMapping
+         * createPoll in PollController. Depending on the pollID creates a new poll or copies the poll and then the
+         * categories.
+         **/
         async sendData() {
+            this.activated = this.activateDate.concat('&', this.activatedTime)
+            this.deactivated = this.deactivateDate.concat('&', this.deactivatedTime)
             const obj = {
                 pollCreator: this.getUsername,
                 anonymityStatus: this.selectedAnonymityType,
                 pollName: this.title,
                 pollCreatedAt: this.creationDate,
-                activatedAt: this.activateDate,
-                deactivatedAt: this.deactivateDate,
+                activatedAt: this.activated,
+                deactivatedAt: this.deactivated,
                 pollStatus: 0,
                 categoryChange: this.categoryChange,
                 visibility: this.visibility,
                 backgroundColor: this.backgroundColor,
                 fontColor: this.fontColor,
                 logo: this.logo,
+                activated: this.switch1,
+                deactivated: this.switch2,
             }
-            console.log(obj)
-            await this.$axios
-                .post('/createpoll', obj)
-                .catch()
-                .then((result) => {
-                    this.newPollId = result.data
-                })
+            console.log('obj: ', obj)
+            if (this.pollId !== '0') {
+                await this.$axios
+                    .post('/createcopypoll', obj)
+                    .catch()
+                    .then((result) => {
+                        this.newPollId = result.data
+                    })
+                await this.$axios.post('/copycategories/' + this.poll.pollId + '/' + this.newPollId).catch()
+            } else {
+                await this.$axios
+                    .post('/createpoll', obj)
+                    .catch()
+                    .then((result) => {
+                        this.newPollId = result.data
+                    })
+            }
+            this.$router.push('/polls')
         },
         async goHome() {
             await this.sendData()
@@ -263,40 +297,49 @@ export default {
             await this.$router.push('/polls/' + this.newPollId)
         },
         formatDate(date) {
+            console.log('formatDate')
             if (!date) return null
             const [year, month, day] = date.split('-')
             return `${day}.${month}.${year}`
         },
         parseDate(date) {
+            console.log('parseDate')
             if (!date) return null
             const [day, month, year] = date.split('.')
             return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
         },
         unparseDate(date) {
+            console.log('unparseDate')
             if (!date) return new Date().toISOString.substr(0, 10)
             const [year, month, day] = date.split('-')
             return `${day.padStart(2, '0')}.${month.padStart(2, '0')}.${year}`
         },
         getActivationDate(date) {
+            console.log('getActivationDate')
             if (date === null) return new Date().toISOString.substr(0, 10)
             const [day, month, year] = date.split('.')
             return `${year}-${month}-${day}`
         },
         reformatActivateDate() {
+            console.log('reformatActivateDate')
             this.activateDate = this.formatDate(this.date)
         },
         reformatDeactivateDate() {
+            console.log('reformatDeActivateDate')
             this.deactivateDate = this.formatDate(this.date)
         },
         parseTime(date) {
+            console.log('parseTime')
             if (!date) return null
             return date.getHours() + ':' + date.getMinutes()
         },
         closeMenuAndUpdateA() {
+            console.log('closeMenuAndUpdateA')
             this.menu = false
             this.reformatActivateDate()
         },
         closeMenuAndUpdateD() {
+            console.log('closeMenuAndUpdateD')
             this.menu = false
             this.reformatDeactivateDate()
         },
@@ -326,6 +369,68 @@ export default {
          */
         getFontColor(e) {
             this.fontColor = e.hexa
+        },
+        async getCopyPoll() {
+            if (this.pollId !== '0') {
+                await this.$store.dispatch('PollCreation/getCopyPoll', this.pollId)
+                this.poll = this.getPoll
+                this.categoryList = this.poll.categoryList
+                console.log('poll', this.poll)
+            }
+        },
+        async getTitle() {
+            if (this.pollId !== '0') {
+                const response = await this.$store.dispatch('PollCreation/getPollName', this.pollId)
+                console.log(response)
+                this.title = response
+                this.$router.forceUpdate()
+                return response
+            }
+            return 'Titel'
+        },
+        async getAnonType() {
+            if (this.pollId !== '0') {
+                const response = await this.$store.dispatch('PollCreation/getAnonType', this.pollId)
+                console.log(response)
+                if (response === 'Anonym') this.selectedAnonymityType = 1
+                if (response === 'Teilanonym') this.selectedAnonymityType = 2
+                if (response === 'Nichtanonym') this.selectedAnonymityType = 3
+            }
+        },
+        async getActDate() {
+            if (this.pollId !== '0') {
+                const response = await this.$store.dispatch('PollCreation/getActDate', this.pollId)
+                console.log(response)
+                this.activateDate = response.substring(0, response.indexOf('&'))
+                console.log('activatedDate', this.activateDate)
+                this.activatedTime = response.substring(response.indexOf('&') + 1)
+                console.log('activatedDate', this.activatedTime)
+                return response
+            } else {
+                const today = new Date()
+                this.activatedTime = today.getHours() + ':' + today.getMinutes()
+            }
+        },
+        async getDeactDate() {
+            if (this.pollId !== '0') {
+                const response = await this.$store.dispatch('PollCreation/getDeactDate', this.pollId)
+                console.log(response)
+                this.deactivateDate = response.substring(0, response.indexOf('&'))
+                console.log('deactivatedDate', this.deactivateDate)
+                this.deactivatedTime = response.substring(response.indexOf('&') + 1)
+                console.log('deactivatedDate', this.deactivatedTime)
+                return response
+            } else {
+                const today = new Date()
+                this.deactivatedTime = today.getHours() + ':' + today.getMinutes()
+            }
+        },
+        saveTime(e, type) {
+            if (type === 'd') {
+                this.deactivatedTime = e
+            } else if (type === 'a') {
+                this.activatedTime = e
+            }
         },
     },
 }
