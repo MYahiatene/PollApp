@@ -424,10 +424,12 @@ public class DiagramData {
             int tendency = 0;
             List<String> wordList = Arrays.asList(input.split("[ .,;:?\\-_=()/&%$§!#'+*~|<>]+"));
             for(String word : wordList) {
-                if (Arrays.asList(positiveWords).contains(word.toLowerCase()))
+                if (Arrays.asList(positiveWords).contains(word.toLowerCase())) {
                     tendency += Collections.frequency(wordList, word.toLowerCase());
-                else if (Arrays.asList(negativeWords).contains(word.toLowerCase()))
+                }
+                else if (Arrays.asList(negativeWords).contains(word.toLowerCase())) {
                     tendency -= Collections.frequency(wordList, word.toLowerCase());
+                }
             }
             return tendency;
         }
@@ -442,15 +444,16 @@ public class DiagramData {
 
         List<JSObject> doWordFrequencyStuff(List<TextAnswer> input){ //Wortfrequenzen darstekken
             List<String> answers = new ArrayList<>();
-            for(TextAnswer ta : input)
+            for(TextAnswer ta : input) {
                 answers.add(ta.text);
+            }
             List<JSObject> duplicateList = new ArrayList<>();
             for(String answer : answers) {//Wir brauchen nur die Strings
                 for (String word : answer.split("[ .,;:?\\-_=()/&%$§!#'+*~|<>]+")) {
                     duplicateList.add(new JSObject(Collections.frequency(input, word), word, 0, "", ""));
                 }
             }
-            Set<JSObject> s = new HashSet<JSObject>(duplicateList);
+            Set<JSObject> s = new HashSet<>();
             return new ArrayList<JSObject>(s);
         }
 
