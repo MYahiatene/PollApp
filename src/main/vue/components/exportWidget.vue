@@ -55,26 +55,51 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 
 export default {
     name: 'ExportWidget',
-    methods: {
-        ...mapActions({ initialize: 'evaluation/initialize', updateData: 'evaluation/updateData' }),
+
+    computed: {
+        ...mapGetters({
+            getSessions: 'evaluation/getSessions',
+            currentSession: 'evaluation/getCurrentSession',
+            pollId: 'evaluation/getPollId,',
+        }),
+
+        sessionId() {
+            return 1
+        },
+
+        sessions() {
+            const sessions = []
+            const data = this.getSessions
+            for (let i = 0; i < data.length; i++) {
+                sessions.push({
+                    sessionId: data[i].sessionId,
+                    sessionTitle: data[i].sessionTitle,
+                })
+            }
+            return sessions
+        },
+    },
+
+        methods: {
+            ...mapActions({initialize: 'evaluation/initialize', updateData: 'evaluation/updateData'}),
 
         exportAnswers() {
-            this.$store.dispatch('evaluation/exportAnswers', 1) // This should be PollId
-            this.downloadClick(1)
+            this.$store.dispatch('evaluation/exportAnswers', this.pollId) // This should be PollId
+            this.downloadClick(this.pollId)
         },
 
         exportResults() {
-            this.$store.dispatch('evaluation/exportResults', 1) // This should be PollId
-            this.downloadClickResult(1)
+            this.$store.dispatch('evaluation/exportResults', {this.pollId} ) // This should be PollId
+            this.downloadClickResult(this.pollId)
         },
 
         exportCSV() {
-            this.$store.dispatch('evaluation/exportCSV', 1) // This should be PollId
-            this.downloadClickCSV(1)
+            this.$store.dispatch('evaluation/exportCSV', this.pollId) // This should be PollId
+            this.downloadClickCSV(this.pollId)
         },
 
         downloadClick(pollId) {
@@ -99,7 +124,7 @@ export default {
                 console.log(this.$store.dispatch('evaluation/importPoll', e.target.result))
             }
         },
-    },
+},
 }
 </script>
 

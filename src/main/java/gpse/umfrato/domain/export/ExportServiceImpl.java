@@ -79,7 +79,6 @@ public class ExportServiceImpl implements ExportService {
         ObjectMapper objectMapper = new ObjectMapper()
             .findAndRegisterModules();
             return objectMapper.writeValueAsString(result);
-
     }
 
     @Override

@@ -3,8 +3,12 @@ package gpse.umfrato.web;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gpse.umfrato.domain.answer.Answer;
+import gpse.umfrato.domain.answer.AnswerService;
 import gpse.umfrato.domain.category.Category;
+import gpse.umfrato.domain.category.CategoryService;
 import gpse.umfrato.domain.cmd.FilterCmd;
+import gpse.umfrato.domain.consistencyquestion.ConsistencyQuestionService;
+import gpse.umfrato.domain.evaluation.Session.SessionService;
 import gpse.umfrato.domain.evaluation.Statistics;
 import gpse.umfrato.domain.export.ExportService;
 import gpse.umfrato.domain.poll.Poll;
@@ -12,6 +16,8 @@ import gpse.umfrato.domain.poll.PollService;
 import gpse.umfrato.domain.pollresult.PollResult;
 import gpse.umfrato.domain.pollresult.PollResultService;
 import gpse.umfrato.domain.question.Question;
+import gpse.umfrato.domain.question.QuestionService;
+import gpse.umfrato.domain.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
@@ -21,6 +27,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.logging.Logger;
@@ -36,12 +43,24 @@ public class ExportController {
     private final PollService pollService;
     private final PollResultService pollResultService;
     private final ExportService exportService;
+    private final AnswerService answerService;
+    private final UserService userService;
+    private final QuestionService questionService;
+    private final CategoryService categoryService;
+    private final SessionService sessionService;
+    private final ConsistencyQuestionService consistencyQuestionService;
 
     @Autowired
-    public ExportController(PollService pollService, PollResultService pollResultService, ExportService exportService) {
+    public ExportController(PollService pollService, PollResultService pollResultService, ExportService exportService, final AnswerService answerService, final UserService userService, final QuestionService questionService, final CategoryService categoryService, final ConsistencyQuestionService consistencyQuestionService, SessionService sessionService) {
         this.pollService = pollService;
         this.pollResultService = pollResultService;
         this.exportService = exportService;
+        this.answerService = answerService;
+        this.userService = userService;
+        this.questionService = questionService;
+        this.categoryService = categoryService;
+        this.consistencyQuestionService = consistencyQuestionService;
+        this.sessionService = sessionService;
     }
 
     @RequestMapping(value = "/getFile/{pollId:\\d+}", method = RequestMethod.GET) // This should be a string, I don't know
@@ -92,24 +111,32 @@ public class ExportController {
     public String toJSON(final @PathVariable Long pollId) throws Exception {
         Poll result = pollService.getPoll(pollId);
         writeToFile(exportService.toJSON(result), pollId.toString());
-        System.out.println(exportService.toJSON(result));
         return exportService.toJSON(result);
     }
 
     @PostMapping("/importPoll")
     public Poll fromJSONToPoll(final @RequestBody String file) throws Exception {
-        System.out.println("In ImportPoll");
-        System.out.println(file);
         Poll poll = exportService.fromJSONToPoll(file);
-        System.out.println(poll.getPollName());
         poll.setPollId(null);
         pollService.createPoll(poll);
         return poll;
     }
 
     @PostMapping("/toJSONPollResult/{pollId:\\d+}")
-    public String toJSONResult(final @PathVariable Long pollId) throws Exception {
-        List<PollResult> results = pollResultService.getPollResults(pollId);
+    public String toJSONResult(final @PathVariable Long pollId, final @RequestBody Long sessionId, final @RequestBody List<FilterCmd> filterList) throws JsonProcessingException, FileNotFoundException {
+        FilterCmd cmd = new FilterCmd();
+        cmd.setBasePollId(pollId);
+        cmd.setBaseQuestionIds(Collections.singletonList(-1L));
+        Statistics statistics = new Statistics(answerService,userService,questionService,pollService,pollResultService,categoryService,consistencyQuestionService,sessionService,cmd);
+        if (sessionId != null) {
+            statistics.loadSessionFilters(sessionId);
+        } else {
+            statistics.loadFilter(filterList);
+        }
+
+        List<PollResult> results = statistics.filteredResults();
+
+        //List<PollResult> results = pollResultService.getPollResults(pollId);
         writeToFile(exportService.toJSON(results), "Results"+pollId.toString());
         return exportService.toJSON(results);
     }
@@ -142,9 +169,6 @@ public class ExportController {
 
     @PostMapping("/answers/{pollId:\\d+}")
     public String convertPollWithResultsToCSV(final @PathVariable Long pollId) {
-        Poll pollToConvert = pollService.getPoll(pollId);
-        List<Category> categories = pollToConvert.getCategoryList();
-        ListIterator<Category> categoryIterator = categories.listIterator();
         String columnNamesList = addHeaders(pollId);
         /*This is what does the work I guess*/
 

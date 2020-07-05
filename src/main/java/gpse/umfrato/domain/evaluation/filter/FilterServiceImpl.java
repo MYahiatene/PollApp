@@ -74,6 +74,7 @@ public class FilterServiceImpl implements FilterService {
         }
     }
 
+    @Override
     public FilterCmd filterToCmd(final FilterData fd)
     {
         FilterCmd cmd = new FilterCmd();

@@ -63,6 +63,9 @@ export const getters = {
     getPollName(state) {
         return state.DiagramData.name
     },
+    getPollId(state) {
+        return state.pollId
+    },
     getFilterList(state) {
         return state.FilterList
     },
@@ -344,12 +347,15 @@ export const actions = {
         console.log('response: ', response)
     },
 
-    async exportResults({ state, commit }, pollId) {
+    async exportResults({ state, commit }, { pollId, sessionID }) {
         console.log('export start!')
 
         console.log('/api/export/toJSONPollResult/{pollId:' + pollId + '}')
 
-        const response = await this.$axios.post('/export/toJSONPollResult/' + pollId)
+        const response = await this.$axios.post('/export/toJSONPollResult/' + pollId, {
+            sessionId: sessionID,
+            filterList: state.FilterList,
+        })
 
         console.log('response: ', response)
     },
