@@ -85,6 +85,7 @@ public class Statistics {
     }
 
     public void loadFilter(final List<FilterCmd> input) {
+        filters = new ArrayList<>();
         for (final FilterCmd cmd: input) {
             Filter filter = null;
             switch (cmd.getFilterType()) {

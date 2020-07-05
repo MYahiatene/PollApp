@@ -381,7 +381,10 @@ public class DiagramData {
         private String title;
         List<TextAnswer> answers = new ArrayList<>();
 
-        @Getter @Setter @AllArgsConstructor private static class TextAnswer {
+        @Getter
+        @Setter
+        @AllArgsConstructor
+        private static class TextAnswer {
             private Long id;
             private String text;
             private String edited;

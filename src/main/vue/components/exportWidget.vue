@@ -13,7 +13,6 @@
                             <v-toolbar-title> Export von Umfragedaten </v-toolbar-title>
                             <v-spacer></v-spacer>
                         </v-app-bar>
-
                         <v-card-text
                             ><v-list>
                                 <v-list-item>
@@ -64,11 +63,11 @@ export default {
         ...mapGetters({
             getSessions: 'evaluation/getSessions',
             currentSession: 'evaluation/getCurrentSession',
-            pollId: 'evaluation/getPollId,',
+            pollId: 'evaluation/getPollId',
         }),
 
         sessionId() {
-            return 1
+            return this.currentSession
         },
 
         sessions() {
@@ -84,8 +83,8 @@ export default {
         },
     },
 
-        methods: {
-            ...mapActions({initialize: 'evaluation/initialize', updateData: 'evaluation/updateData'}),
+    methods: {
+        ...mapActions({ initialize: 'evaluation/initialize', updateData: 'evaluation/updateData' }),
 
         exportAnswers() {
             this.$store.dispatch('evaluation/exportAnswers', this.pollId) // This should be PollId
@@ -93,7 +92,7 @@ export default {
         },
 
         exportResults() {
-            this.$store.dispatch('evaluation/exportResults', {this.pollId} ) // This should be PollId
+            this.$store.dispatch('evaluation/exportResults', { pollId: this.pollId, sessionID: this.sessionId }) // This should be PollId
             this.downloadClickResult(this.pollId)
         },
 
@@ -124,7 +123,7 @@ export default {
                 console.log(this.$store.dispatch('evaluation/importPoll', e.target.result))
             }
         },
-},
+    },
 }
 </script>
 
