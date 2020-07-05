@@ -26,52 +26,58 @@ public class ConsistencyFilter implements Filter {
         for (final PollResult pr: input) {
             int successNr = 0;
             for (final ConsistencyQuestion cq: consistencyQuestionList) {
-                int match = 0;
-                int noMatch = 0;
-                for (final Answer a: pr.getAnswerList()) {
-                    if (a.getQuestionId().equals(cq.getQuestion1Id())) {
-                        for (final String answer: a.getGivenAnswerList()) {
-                            if (cq.getQuestion1Slider()) {
-                                if (Double.parseDouble(cq.getAnswer1Indices().get(0)) <= Double.parseDouble(answer) && Double.parseDouble(cq.getAnswer1Indices().get(1)) >= Double.parseDouble(answer)) {
-                                    match++;
-                                } else {
-                                    noMatch++;
-                                }
-                            } else {
-                                if (cq.getAnswer1Indices().contains(answer)) {
-                                    match++;
-                                } else {
-                                    noMatch++;
-                                }
-                            }
-                        }
-                        break;
+                List<String> givenAnswers1 = new ArrayList<>();
+                List<String> givenAnswers2 = new ArrayList<>();
+                for (Answer a: pr.getAnswerList()) {
+                    if (cq.getQuestion1Id().equals(a.getQuestionId())) {
+                        givenAnswers1 = a.getGivenAnswerList();
+                    }
+                    if (cq.getQuestion2Id().equals(a.getQuestionId())) {
+                        givenAnswers2 = a.getGivenAnswerList();
                     }
                 }
-                if (match != 0 && noMatch != 0) {
-                    continue;
-                }
-                for (final Answer a: pr.getAnswerList()) {
-                    if (a.getQuestionId().equals(cq.getQuestion2Id())) {
-                        for (final String answer: a.getGivenAnswerList()) {
-                            if (cq.getQuestion2Slider()) {
-                                if (Double.parseDouble(cq.getAnswer2Indices().get(0)) <= Double.parseDouble(answer) && Double.parseDouble(cq.getAnswer2Indices().get(1)) >= Double.parseDouble(answer)) {
-                                    match++;
-                                } else {
-                                    noMatch++;
-                                }
-                            } else {
-                                if (cq.getAnswer2Indices().contains(answer)) {
-                                    match++;
-                                } else {
-                                    noMatch++;
-                                }
-                            }
+                int matched = 0;
+                boolean matchA = false;
+                for (String s: givenAnswers1) {
+                    if (cq.getQuestion1Slider()) {
+                        double value = Double.parseDouble(s);
+                        double min = Double.parseDouble(cq.getAnswer1Indices().get(0));
+                        double max = Double.parseDouble(cq.getAnswer1Indices().get(1));
+                        if (min <= value && value <= max) {
+                            matchA = true;
+                            break;
                         }
-                        break;
+                    } else {
+                        if (cq.getAnswer1Indices().contains(s)) {
+                            matchA = true;
+                            break;
+                        }
                     }
                 }
-                if (match == 0 || noMatch == 0) {
+                if (matchA) {
+                    matched++;
+                }
+                boolean matchB = false;
+                for (String s: givenAnswers2) {
+                    if (cq.getQuestion2Slider()) {
+                        double value = Double.parseDouble(s);
+                        double min = Double.parseDouble(cq.getAnswer2Indices().get(0));
+                        double max = Double.parseDouble(cq.getAnswer2Indices().get(1));
+                        if (min <= value && value <= max) {
+                            matchB = true;
+                            break;
+                        }
+                    } else {
+                        if (cq.getAnswer2Indices().contains(s)) {
+                            matchB = true;
+                            break;
+                        }
+                    }
+                }
+                if (matchB) {
+                    matched++;
+                }
+                if (matched != 1) {
                     successNr++;
                 }
             }

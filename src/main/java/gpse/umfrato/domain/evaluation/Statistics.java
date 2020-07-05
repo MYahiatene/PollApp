@@ -42,6 +42,17 @@ public class Statistics {
     private final List<Long> questionIds = new ArrayList<>();
     private final boolean showParticipantsOverTime;
 
+    /**
+     * Initializes the Statistic.
+     * @param answerService
+     * @param userService
+     * @param questionService
+     * @param pollService
+     * @param pollResultService
+     * @param categoryService
+     * @param consistencyQuestionService
+     * @param data
+     */
     public Statistics(final AnswerService answerService, final UserService userService, final QuestionService questionService, final PollService pollService, final PollResultService pollResultService, final CategoryService categoryService, final ConsistencyQuestionService consistencyQuestionService, final FilterCmd data) {
         this.answerService = answerService;
         this.userService = userService;
@@ -58,15 +69,14 @@ public class Statistics {
             showParticipantsOverTime = data.getTimeDiagram();
         }
         final List<Category> categories = categoryService.getAllCategories(pollId);
-        if (data.getBaseQuestionIds().isEmpty()) {
+        questionIds.addAll(data.getBaseQuestionIds());
+        if ((!data.getBaseQuestionIds().isEmpty()) && data.getBaseQuestionIds().get(0).equals(-1L)) {
             for (final Category c: categories) {
                 for (final Question q: questionService.getAllQuestions(c.getCategoryId())) {
                     questionIds.add(q.getQuestionId());
                 }
             }
             /* LOGGER.info(questionIds.toString());*/
-        } else {
-            questionIds.addAll(data.getBaseQuestionIds());
         }
     }
 
@@ -91,10 +101,11 @@ public class Statistics {
                     break;
                 case "or":
                     List<Filter> orFilter = new ArrayList<>();
-                    for(Filter f:filters) {
-                        if (f.getFilterType().equals("date")) {
-                            orFilter.add(f);
-                            filters.remove(f);
+                    for(int i = 0; i < filters.size();i++) {
+                        if (filters.get(i).getFilterType().equals("date")) {
+                            orFilter.add(filters.get(i));
+                            filters.remove(i);
+                            i--;
                         }
                     }
                     filter = new OrFilter(orFilter);

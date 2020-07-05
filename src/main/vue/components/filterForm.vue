@@ -24,6 +24,7 @@
                                     v-model="selectedQuestions"
                                     :items="questionTitles"
                                     multiple
+                                    clearable
                                     :no-data-text="'Keine Fragen ausgewählt'"
                                 >
                                     <template v-slot:selection="{ item, index }">

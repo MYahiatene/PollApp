@@ -511,9 +511,9 @@ export default {
             console.log(this.valueList)
         },
         /**
-         * Holt sich die gegebene Antwort des Textfeldes aus dem Array ownAnswers und schickt die Antwort mit der
-         * questionId und pollId in den store, um die Antwort im Backend zu speichern. Löscht nach speichern der Antwort
-         * den Eintrag im Array, damit eine neue Antwort gegeben werden kann.
+         * Get the given answer of the text field from the array ownAnswers and send the answer with the
+         * questionId and pollId in the store to save the answer in the backend. Deletes after saving the answer
+         * the entry in the array so that a new answer can be given.
          **/
         saveOwnAnswer(question) {
             // save the given answerPossibility from the array ownAnswer in the backend
@@ -540,7 +540,7 @@ export default {
             // TODO: Textfeld nach speichern wieder leeren
         },
         /**
-         * Speichert die gegebene Antwort aus dem Textfeld in einem Array mit der zugehörigen QuestionId ab.
+         * Saves the given answer from the text field in an array with the associated QuestionId.
          **/
         saveAnswerPossibility(e, question) {
             let x = 0
@@ -556,7 +556,6 @@ export default {
             if (x === 0) {
                 this.ownAnswers.push([e, question.questionId])
             }
-            // console.log('ownAnswers: ', this.ownAnswers)
         },
         /**
          * Calls setCategory in the store to get the next category in the poll and save it at the page, if there is one

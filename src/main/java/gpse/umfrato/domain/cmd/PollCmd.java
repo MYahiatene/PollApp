@@ -3,11 +3,21 @@ package gpse.umfrato.domain.cmd;
 import gpse.umfrato.domain.poll.Poll;
 import lombok.Data;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
+import java.util.logging.Logger;
+
 /**
  * The command design class for polls.
  */
 @Data
 public class PollCmd {
+
+    /* default */ static final Logger LOGGER = Logger.getLogger("PollCmd");
 
     private String pollId;
 
@@ -37,9 +47,26 @@ public class PollCmd {
 
     private boolean categoryChange;
 
+    private boolean activated;
+
+    private boolean deactivated;
+
     public Poll getCmdPoll() {
-        final Poll poll = new Poll(pollCreator, anonymityStatus, pollName, pollCreatedAt, activatedAt, deactivatedAt,
-            pollStatus, backgroundColor, fontColor, logo, visibility, categoryChange);
+        // parses the activationDAte and deactivationDate from a String to a Calendar
+        final Calendar activationDate = Calendar.getInstance();
+        final Calendar deactivationDate = Calendar.getInstance();
+        try {
+            final DateFormat df = new SimpleDateFormat("dd.MM.yyyy&HH:mm", Locale.GERMAN);
+            final Date activation = df.parse(activatedAt);
+            activationDate.setTime(activation);
+            final Date deactivation = df.parse(deactivatedAt);
+            deactivationDate.setTime(deactivation);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        final Poll poll = new Poll(pollCreator, anonymityStatus, pollName, pollCreatedAt, activationDate,
+            deactivationDate, pollStatus, backgroundColor, fontColor, logo, visibility, categoryChange, activated,
+            deactivated);
         return poll;
     }
 
