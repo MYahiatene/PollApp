@@ -224,7 +224,7 @@ export const actions = {
             {
                 filterType: 'DataFilter',
                 basePollId: pollID,
-                baseQuestionIds: [],
+                baseQuestionIds: [-1],
             },
         ])
         commit('setDiagramData', data)

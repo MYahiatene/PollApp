@@ -139,6 +139,8 @@
                                                         :initial-answer-indices="
                                                             qafilterList[filter.filterIndex].answerIndices
                                                         "
+                                                        :initial-invert="qafilterList[filter.filterIndex].invertFilter"
+                                                        :initial-is-slider="qafilterList[filter.filterIndex].isSlider"
                                                         @updateData="updateQaFilter"
                                                     ></base-q-a-filter>
                                                 </v-col>
@@ -572,28 +574,29 @@ export default {
                         })
                     }
 
-                    // if (this.filters[i].filterType === 'questionAnswer') {
-                    //     console.log('qa filter')
-                    //     const a = []
-                    //     for (let j = 0; j < this.filters[i].targetAnswerPossibilities.length; j++) {
-                    //         a.push(parseInt(this.filters[i].targetAnswerPossibilities[j]))
-                    //     }
-                    //     const id = this.qafilterList.length
-                    //     this.qafilterList.push({
-                    //         active: true,
-                    //         filterIndex: id,
-                    //         filterType: 'qaFilter',
-                    //         questionId: this.filters[i].targetQuestionId,
-                    //         categoryIndex: this.getCategoryIndexAndQuestionIndexFromQuestionId(
-                    //             this.filters[i].targetQuestionId
-                    //         ).categoryIndex,
-                    //         questionIndex: this.getCategoryIndexAndQuestionIndexFromQuestionId(
-                    //             this.filters[i].targetQuestionId
-                    //         ).questionIndex,
-                    //         isSlider: this.filters[i].isSlider,
-                    //         answerIndices: a,
-                    //     })
-                    // }
+                    if (this.filters[i].filterType === 'questionAnswer') {
+                        console.log('qa filter')
+                        const a = []
+                        for (let j = 0; j < this.filters[i].targetAnswerPossibilities.length; j++) {
+                            a.push(parseInt(this.filters[i].targetAnswerPossibilities[j]))
+                        }
+                        const id = this.qafilterList.length
+                        this.qafilterList.push({
+                            active: true,
+                            filterIndex: id,
+                            filterType: 'qaFilter',
+                            questionId: this.filters[i].targetQuestionId,
+                            categoryIndex: this.getCategoryIndexAndQuestionIndexFromQuestionId(
+                                this.filters[i].targetQuestionId
+                            ).categoryIndex,
+                            questionIndex: this.getCategoryIndexAndQuestionIndexFromQuestionId(
+                                this.filters[i].targetQuestionId
+                            ).questionIndex,
+                            isSlider: this.filters[i].isSlider,
+                            answerIndices: a,
+                            invertFilter: this.filters[i].invertFilter,
+                        })
+                    }
 
                     console.log(this.dateFilterList)
 
