@@ -185,7 +185,11 @@
                                                 v-for="(answerPossibility, i) in AnswerListsOfSortQuestions[index]"
                                                 :key="i"
                                             >
-                                                <v-chip class="my-1 mx-3" :color="fontColor">
+                                                <v-chip
+                                                    class="my-1 mx-3"
+                                                    :color="fontColor"
+                                                    :outlined="!sqWasAnsweredList[index]"
+                                                >
                                                     {{ answerPossibility }}</v-chip
                                                 >
                                             </div>
@@ -196,6 +200,13 @@
                                             class="ma-2"
                                         >
                                             Zurücksetzen
+                                        </v-btn>
+                                        <v-btn
+                                            v-if="!sqWasAnsweredList[index]"
+                                            @click="saveAnswerSortQuestion(index, question)"
+                                            class="ma-2"
+                                        >
+                                            Reihenfolge so übernehmen
                                         </v-btn>
                                     </div>
                                 </v-card>
@@ -242,6 +253,9 @@
                 </v-content>
             </v-container>
         </div>
+        <div v-else>
+            Not today!
+        </div>
     </div>
 </template>
 
@@ -280,19 +294,20 @@ export default {
             ownAnswers: [[]],
             rangeAnswers: [],
             AnswerListsOfSortQuestions: [[1], [2], [3]],
+            sqWasAnsweredList: [],
             lastInput: 'Letzte Eingabe',
             valueList: [],
-            participated: true,
+            participated: false,
         }
     },
     /**
      * Calls showPoll in methods to getPoll before/while the page is created.
      */
-    created() {
+    async created() {
         this.id = this.$route.params.id
-        this.showPoll()
-        this.showAnswer()
-        this.showParticipated()
+        await this.showPoll()
+        await this.showAnswer()
+        await this.showParticipated()
     },
 
     mounted() {
@@ -473,6 +488,7 @@ export default {
                             array.push(this.computedQuestionList[i].answerPossibilities[this.givenAnswers[i]])
                         }
                         this.AnswerListsOfSortQuestions[i] = array
+                        this.sqWasAnsweredList[i] = false
                     } else {
                         this.valueList.push(this.givenAnswers[i])
                     }
@@ -695,6 +711,8 @@ export default {
             this.answerObj.questionId = question.questionId
             console.log('AnswerObj.answerList:')
             console.log(this.answerObj.answerList)
+            this.sqWasAnsweredList[index] = true
+            this.$forceUpdate()
             this.saveAnswer()
 
             // TODO: when this works: showAnswer before every question and ask if null/undefined, to get already given answers
@@ -766,13 +784,20 @@ export default {
         /**
          * Calls participated in store/participant.js.
          */
-        showParticipated() {
+        async showParticipated() {
             const userObj = {
                 pollTaker: this.getUsername,
                 pollId: this.getPoll[1].data.pollId,
             }
-            this.$store.dispatch('participant/participatedInfo', userObj)
-            this.participated = this.getParticipated
+            /* await this.$store
+                .dispatch('participant/participatedInfo', userObj)
+                .then((this.participated = this.getParticipated), console.log('participated', this.participated)) */
+            await this.$axios
+                .post('/participated', userObj)
+                .catch()
+                .then((result) => {
+                    this.participated = result.data
+                })
         },
         /**
          * Calls saveAnswers from the store with the answerobj (cmdAnswer with all given input)

@@ -98,6 +98,9 @@ public class PollResultServiceImpl implements PollResultService {
             pollResult.setParticipatedPoll(true);
             LOGGER.info("participated" + pollResult.getParticipatedPoll().toString());
             pollResultRepository.save(pollResult);
+
+            PollResult pollResult1 = pollResultRepository.findPollResultByPollIdAndPollTaker(pollId, pollTaker);
+            LOGGER.info("participatedReally?" + pollResult1.getParticipatedPoll().toString());
         } catch(BadRequestException e) {
             LOGGER.info("Bad Request!");
         }
@@ -111,11 +114,17 @@ public class PollResultServiceImpl implements PollResultService {
      */
     @Override
     public Boolean getParticipated(final String pollTaker, final Long pollId) {
+        LOGGER.info(pollTaker);
+        LOGGER.info(String.valueOf(pollId));
         try {
             PollResult pollResult = pollResultRepository.findPollResultByPollIdAndPollTaker(pollId, pollTaker);
+            LOGGER.info(pollResult.toString());
             return pollResult.getParticipatedPoll();
         } catch (BadRequestException e) {
             LOGGER.info("Bad Request!");
+            return false;
+        } catch (NullPointerException e) {
+            LOGGER.info("NullPointerException");
             return false;
         }
     }

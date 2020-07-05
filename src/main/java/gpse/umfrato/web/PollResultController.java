@@ -68,8 +68,10 @@ public class PollResultController {
      * @param pollResultCmd PollTaker and PollId
      * @return participated Boolean
      */
-    @GetMapping("/participated")
+    @PostMapping("/participated")
     public Boolean participated(final @RequestBody PollResultCmd pollResultCmd) {
+        LOGGER.info(pollResultCmd.getPollTaker());
+        LOGGER.info(pollResultCmd.getPollId().toString());
         Boolean participated = pollResultService.getParticipated(pollResultCmd.getPollTaker(), pollResultCmd.getPollId());
         return participated;
     }

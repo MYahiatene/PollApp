@@ -153,8 +153,10 @@ export const actions = {
     async participatedInfo(state, pollResultObj) {
         this.$axios.defaults.baseURL = 'http://localhost:8088/api/'
         this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('user-token')
-        const participated = await this.$axios.get('/participated', pollResultObj)
-        state.participated = participated
+        await this.$axios.post('/participated', pollResultObj).then((response) => {
+            state.participated = response.data
+            console.log('store', state.participated)
+        })
     },
     /**
      * Defines mapAction showAnswer and sets the global axios with the token saved in localstorage and the baseURL to get

@@ -63,6 +63,9 @@ export const getters = {
     getPollName(state) {
         return state.DiagramData.name
     },
+    getFilterList(state) {
+        return state.FilterList
+    },
     getParticipants(state) {
         return state.DiagramData.particpantCount
     },
@@ -221,7 +224,7 @@ export const actions = {
             {
                 filterType: 'DataFilter',
                 basePollId: pollID,
-                baseQuestionIds: [],
+                baseQuestionIds: [-1],
             },
         ])
         commit('setDiagramData', data)
