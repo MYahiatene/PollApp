@@ -63,6 +63,12 @@ export const getters = {
     getPollName(state) {
         return state.DiagramData.name
     },
+    getPollId(state) {
+        return state.pollId
+    },
+    getFilterList(state) {
+        return state.FilterList
+    },
     getParticipants(state) {
         return state.DiagramData.particpantCount
     },
@@ -221,7 +227,7 @@ export const actions = {
             {
                 filterType: 'DataFilter',
                 basePollId: pollID,
-                baseQuestionIds: [],
+                baseQuestionIds: [-1],
             },
         ])
         commit('setDiagramData', data)
@@ -341,12 +347,15 @@ export const actions = {
         console.log('response: ', response)
     },
 
-    async exportResults({ state, commit }, pollId) {
+    async exportResults({ state, commit }, { pollId, sessionID }) {
         console.log('export start!')
 
         console.log('/api/export/toJSONPollResult/{pollId:' + pollId + '}')
 
-        const response = await this.$axios.post('/export/toJSONPollResult/' + pollId)
+        const response = await this.$axios.post('/export/toJSONPollResult/' + pollId, {
+            sessionId: sessionID,
+            filterList: state.FilterList,
+        })
 
         console.log('response: ', response)
     },
@@ -411,9 +420,9 @@ export const actions = {
     },
 
     async importPoll({ state, commit }, file) {
-        console.log('Loaded file: ', file)
-        const response = await this.$axios.post('/export/importPoll/' + file)
-        console.log('response: ', response)
-        return response
+        console.log('Loaded file: ', JSON.parse(file)) // .replace(/#/g, encodeURIComponent('#')))
+        const data = JSON.parse(file)
+        const resource = await this.$axios.$post('/export/importPoll/', data)
+        console.log('Resource: ', resource)
     },
 }

@@ -111,6 +111,14 @@ export default {
             default: () => [],
             type: Array,
         },
+        initialInvert: {
+            type: Boolean,
+            default: false,
+        },
+        initialIsSlider: {
+            type: Boolean,
+            default: false,
+        },
     },
     data() {
         return {
@@ -228,6 +236,13 @@ export default {
         for (let i = 0; i < this.answerIndices.length; i++) {
             this.selectedAnswers.push(this.answerTitles[this.answerIndices[i]])
         }
+        this.invertFilter = this.initialInvert
+
+        if (this.initialIsSlider) {
+            this.range[0] = this.initialAnswerIndices[0]
+            this.range[1] = this.initialAnswerIndices[1]
+        }
+        this.$forceUpdate()
     },
     methods: {
         updateCategoryIndex() {

@@ -1,9 +1,9 @@
 Name,PollID,PollCreator,Anonymitätsstatus,Standardkategorie,Antwortmöglichkeiten
-Beispielumfrage,1,Jan,1,Radiobuttons, 1 2 3 4
+null,1,null,1,Radiobuttons, 1 2 3 4
 ,,,,Checkboxen, A B C D E
 ,,,,Textfrage Single Line,
 ,,,,Textfrage Multiline,
 ,,,,Rangefrage,20.0..80.0 in Inkrementen von 10.0
 ,,,,Sliderfrage nach Gefühl,0.0..1.0 in Inkrementen von 0.01
-,,,,Sliderfrage nach Wert,0.0..5000.0 in Inkrementen von 1.0
+,,,,Sliderfrage nach Wert,0.0..5000.0 in Inkrementen von 10.0
 ,,,

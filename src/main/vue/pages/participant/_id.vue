@@ -185,7 +185,11 @@
                                                 v-for="(answerPossibility, i) in AnswerListsOfSortQuestions[index]"
                                                 :key="i"
                                             >
-                                                <v-chip class="my-1 mx-3" :color="fontColor">
+                                                <v-chip
+                                                    class="my-1 mx-3"
+                                                    :color="fontColor"
+                                                    :outlined="!sqWasAnsweredList[index]"
+                                                >
                                                     {{ answerPossibility }}</v-chip
                                                 >
                                             </div>
@@ -308,6 +312,7 @@ export default {
             ownAnswers: [[]],
             rangeAnswers: [],
             AnswerListsOfSortQuestions: [[1], [2], [3]],
+            sqWasAnsweredList: [],
             lastInput: 'Letzte Eingabe',
             valueList: [],
             participated: false,
@@ -417,17 +422,14 @@ export default {
                 console.log('min is undefined')
                 min = 0
             } else {
-                console.log('min: ', min)
                 min = this.getCategory.questionList[index].textMinimum
             }
             if (!this.getCategory.questionList[index].textMaximum) {
                 console.log('max is undefined')
                 max = 1000
             } else {
-                console.log('max: ', max)
                 max = this.getCategory.questionList[index].textMaximum
             }
-            console.log('min und max', min, max)
             return [
                 (v) => {
                     if (v) return v.length > min || 'Eingabe muss länger als ' + min + ' Zeichen sein!'
@@ -485,9 +487,6 @@ export default {
          * already given answers by the user, or nothing at all, if there are no previous given answers.
          */
         valuesForQuestions() {
-            console.log('Ich bin in valuesForQuestions')
-            console.log('givenAnswers in valuesForQuestion:', this.givenAnswers)
-            console.log(this.getCategory.questionList.length)
             this.valueList = []
             for (let i = 0; i < this.getCategory.questionList.length; i++) {
                 const type = this.getCategory.questionList[i].questionType
@@ -528,28 +527,14 @@ export default {
                                 )
                             }
                             this.AnswerListsOfSortQuestions[i] = array
+                            this.sqWasAnsweredList[i] = false
                             // won't be used for SortQuestions, but needs to be correct index
                             this.valueList.push(array)
                         } else {
                             this.valueList.push(this.givenAnswers[i].givenAnswerList[0])
                         }
                     } else {
-                        switch (type) {
-                            case 'TextQuestion':
-                                this.valueList.push('')
-                                break
-                            case 'SlideQuestion':
-                                this.valueList.push(this.getCategory.questionList[i].startValue)
-                                break
-                            case 'ChoiceQuestion':
-                                this.valueList.push([])
-                                break
-                            case 'RangeQuestion':
-                                this.valueList.push([])
-                                break
-                            case 'SortQuestion':
-                                break
-                        }
+                        this.valueList.push(this.givenAnswers[i])
                     }
                 } else {
                     switch (type) {
@@ -570,7 +555,6 @@ export default {
                     }
                 }
             }
-            console.log('valueList', this.valueList)
         },
         /**
          * Get the given answer of the text field from the array ownAnswers and send the answer with the
@@ -770,10 +754,10 @@ export default {
             this.answerObj.questionId = question.questionId
             console.log('AnswerObj.answerList:')
             console.log(this.answerObj.answerList)
+            this.sqWasAnsweredList[index] = true
+            this.$forceUpdate()
             this.saveAnswer()
 
-            // TODO: when this works: showAnswer before every question and ask if null/undefined, to get already given answers
-            // or just call once in beginning?
         },
         /**
          * Moves the slider one step to the left, if possible.
@@ -891,7 +875,6 @@ export default {
             this.answerObj.pollId = this.getPoll[1].data.pollId
             this.$store.dispatch('participant/showAnswer', this.answerObj)
             this.givenAnswers = this.getAnswer
-            console.log(this.givenAnswers)
         },
         /**
          * Calls saveParticipatedPoll in store/participat, to change participated Boolean.

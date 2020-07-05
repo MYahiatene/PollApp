@@ -3,8 +3,12 @@ package gpse.umfrato.web;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gpse.umfrato.domain.answer.Answer;
+import gpse.umfrato.domain.answer.AnswerService;
 import gpse.umfrato.domain.category.Category;
+import gpse.umfrato.domain.category.CategoryService;
 import gpse.umfrato.domain.cmd.FilterCmd;
+import gpse.umfrato.domain.consistencyquestion.ConsistencyQuestionService;
+import gpse.umfrato.domain.evaluation.Session.SessionService;
 import gpse.umfrato.domain.evaluation.Statistics;
 import gpse.umfrato.domain.export.ExportService;
 import gpse.umfrato.domain.poll.Poll;
@@ -12,16 +16,18 @@ import gpse.umfrato.domain.poll.PollService;
 import gpse.umfrato.domain.pollresult.PollResult;
 import gpse.umfrato.domain.pollresult.PollResultService;
 import gpse.umfrato.domain.question.Question;
+import gpse.umfrato.domain.question.QuestionService;
+import gpse.umfrato.domain.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.web.bind.annotation.*;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.logging.Logger;
@@ -33,73 +39,50 @@ import java.util.stream.Stream;
 @CrossOrigin
 public class ExportController {
     static final Logger LOGGER = Logger.getLogger("ExportController");
+    public static final String FILES = "src/main/java/gpse/umfrato/domain/export/files/";
     private final PollService pollService;
     private final PollResultService pollResultService;
     private final ExportService exportService;
+    private final AnswerService answerService;
+    private final UserService userService;
+    private final QuestionService questionService;
+    private final CategoryService categoryService;
+    private final SessionService sessionService;
+    private final ConsistencyQuestionService consistencyQuestionService;
 
     @Autowired
-    public ExportController(PollService pollService, PollResultService pollResultService, ExportService exportService) {
+    public ExportController(PollService pollService, PollResultService pollResultService, ExportService exportService, final AnswerService answerService, final UserService userService, final QuestionService questionService, final CategoryService categoryService, final ConsistencyQuestionService consistencyQuestionService, SessionService sessionService) {
         this.pollService = pollService;
         this.pollResultService = pollResultService;
         this.exportService = exportService;
+        this.answerService = answerService;
+        this.userService = userService;
+        this.questionService = questionService;
+        this.categoryService = categoryService;
+        this.consistencyQuestionService = consistencyQuestionService;
+        this.sessionService = sessionService;
     }
 
-    /**New Idea: Convert to JSON first and then to CSV, it sure ain't pretty but if it works it's fine*/
-
-
-    /**Name, PollID, Creator, Anonymität, Kategorie 1, Kategorie 1, Kategorie 2*//*
-     *//**TestPoll, 1, Tbettmann, 1, Frage 1, Frage 2, Frage 1 aus Kat. 2*//*
-        String output = "";
-        output += "Name,PollID,PollCreator,Anonymitätsstatus";
-        int amountOfArgumentsBeforeCategories = 4;
-        for(Category category : poll.getCategoryList())
-            output += ',' + category.getCategoryName() + ',' + "Antwortmöglichkeiten";
-        output += '\n';
-        output += poll.getPollName() + ',' + poll.getPollId() + ',' + poll.getPollCreator() + ',' + poll.getAnonymityStatus();
-        for(Category category : poll.getCategoryList()) {
-            for (Question question : category.getQuestionList()) {
-                output += ',' + escapeSpecialCharacters(question.getQuestionMessage()) + ',';
-                LOGGER.info(question.getQuestionType());
-                for(String possibility : question.getAnswerPossibilities())
-                    output +=' ' + possibility;
-                if(question.getQuestionType() == "RangeQuestion")
-                    output += question.getStartValue() + ".." + question.getEndValue() + " in Inkrementen von " + question.getStepSize();
-                if(question.getQuestionType() == "SliderQuestion")
-                    output += question.getStartValue() + ".." + question.getEndValue() + " in Inkrementen von " + question.getStepSize();
-                output += '\n';
-                for(int i = 0; i<amountOfArgumentsBeforeCategories-1; i++) */
-
-    /**
-     * Needs to be -1 because of output + escapeSpecial... that comma can't go away
-     *//*
-                    output += ',';
-            }
-        }
-        output += '\n';
-        return output;*/
-    @RequestMapping(value = "/getFile/{pollId:\\d+}", method = RequestMethod.GET)
-    // This should be a string, I don't know
+    @RequestMapping(value = "/getFile/{pollId:\\d+}", method = RequestMethod.GET) // This should be a string, I don't know
     @ResponseBody
     public FileSystemResource getFile(@PathVariable Long pollId) {
-        return new FileSystemResource(new File("src/main/java/gpse/umfrato/domain/export/files/" + pollId.toString() + ".txt"));
+        return new FileSystemResource(new File(FILES +pollId.toString()+".txt"));
     }
 
-    @RequestMapping(value = "/getResult/{pollId:\\d+}", method = RequestMethod.GET)
-    // This should be a string, I don't know
+    @RequestMapping(value = "/getResult/{pollId:\\d+}", method = RequestMethod.GET) // This should be a string, I don't know
     @ResponseBody
     public FileSystemResource getResult(@PathVariable Long pollId) {
-        return new FileSystemResource(new File("src/main/java/gpse/umfrato/domain/export/files/Results" + pollId.toString() + ".txt"));
+        return new FileSystemResource(new File(FILES+"Results"+pollId.toString()+".txt"));
     }
 
-    @RequestMapping(value = "/getCSV/{pollId:\\d+}", method = RequestMethod.GET)
-    // This should be a string, I don't know
+    @RequestMapping(value = "/getCSV/{pollId:\\d+}", method = RequestMethod.GET) // This should be a string, I don't know
     @ResponseBody
     public FileSystemResource getCSV(@PathVariable Long pollId) {
-        return new FileSystemResource(new File("src/main/java/gpse/umfrato/domain/export/files/CSV" + pollId.toString() + ".txt"));
+        return new FileSystemResource(new File(FILES+"CSV"+pollId.toString()+".txt"));
     }
 
     public void writeToFile(String s, String pollId) throws FileNotFoundException {
-        File file = new File("src/main/java/gpse/umfrato/domain/export/files/" + pollId + ".txt");
+        File file = new File(FILES+pollId+".txt");
         PrintWriter out = new PrintWriter(file);
         out.println(s);
         out.close();
@@ -107,9 +90,9 @@ public class ExportController {
     }
 
     public void writeToFileCSV(String s, String pollId) throws FileNotFoundException {
-        File file = new File("src/main/java/gpse/umfrato/domain/export/files/" + pollId + ".txt");
+        File file = new File(FILES+pollId+".txt");
         PrintWriter out = new PrintWriter(file);
-        for (String index : s.split("\n")) {
+        for(String index : s.split("\n")) {
             out.append(index);
             out.append('\n');
         }
@@ -118,9 +101,9 @@ public class ExportController {
     }
 
     @PostMapping("/toCSVPoll/{pollId:\\d+}")
-    public String toCSVManual(final @PathVariable Long pollId) throws Exception {
+    public String toCSVManual(final @PathVariable Long pollId) throws Exception{
         Poll poll = pollService.getPoll(pollId);
-        writeToFileCSV(exportService.toCSVManual(poll), "CSV" + pollId.toString()); /**Needs to be different because of newline chars*/
+        writeToFileCSV(exportService.toCSVManual(poll), "CSV"+pollId.toString());
         return exportService.toCSVManual(poll);
     }
 
@@ -129,202 +112,104 @@ public class ExportController {
         Poll result = pollService.getPoll(pollId);
         writeToFile(exportService.toJSON(result), pollId.toString());
         return exportService.toJSON(result);
-/*        LOGGER.info(result.toString());
-        ObjectMapper objectMapper = new ObjectMapper()
-            .findAndRegisterModules();
-        try {
-            return objectMapper.writeValueAsString(result);
-        } catch (JsonProcessingException e) {
-            throw new Exception("Serialisierung fehlgeschlagen");
-        }*/
     }
 
-    @PostMapping("/importPoll/{file:[\\s\\S]+}")
-    public Poll fromJSONToPoll(final @PathVariable String file) throws Exception {
-        return exportService.fromJSONToPoll(file);
-/*        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            Poll poll = objectMapper.readValue(json, Poll.class);
-            System.out.println(poll.getPollId());
-            System.out.println(poll.getPollName());
-            return poll;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;*/
+    @PostMapping("/importPoll")
+    public Poll fromJSONToPoll(final @RequestBody String file) throws Exception {
+        Poll poll = exportService.fromJSONToPoll(file);
+        poll.setPollId(null);
+        pollService.createPoll(poll);
+        return poll;
     }
 
     @PostMapping("/toJSONPollResult/{pollId:\\d+}")
-    public String toJSONResult(final @PathVariable Long pollId) throws Exception {
-        List<PollResult> results = pollResultService.getPollResults(pollId);
-        writeToFile(exportService.toJSON(results), "Results" + pollId.toString());
-        return exportService.toJSON(results);
-/*        ObjectMapper objectMapper = new ObjectMapper()
-            .findAndRegisterModules();
-        try {
-            return objectMapper.writeValueAsString(result);
-        } catch (JsonProcessingException e) {
-            throw new Exception("Serialisierung fehlgeschlagen");
-        }*/
-    }
-
-    @PostMapping("/importPollResult")
-    public List<PollResult> fromJSONToResult(final @RequestBody String json) throws Exception {
-        return exportService.fromJSONToResult(json);
-/*        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            PollResult pResult = objectMapper.readValue(json, PollResult.class);
-            return pResult;
-        } catch (IOException e) {
-            e.printStackTrace();
+    public String toJSONResult(final @PathVariable Long pollId, final @RequestBody Long sessionId, final @RequestBody List<FilterCmd> filterList) throws JsonProcessingException, FileNotFoundException {
+        FilterCmd cmd = new FilterCmd();
+        cmd.setBasePollId(pollId);
+        cmd.setBaseQuestionIds(Collections.singletonList(-1L));
+        Statistics statistics = new Statistics(answerService,userService,questionService,pollService,pollResultService,categoryService,consistencyQuestionService,sessionService,cmd);
+        if (sessionId != null) {
+            statistics.loadSessionFilters(sessionId);
+        } else {
+            statistics.loadFilter(filterList);
         }
-        return null;*/
+
+        List<PollResult> results = statistics.filteredResults();
+
+        //List<PollResult> results = pollResultService.getPollResults(pollId);
+        writeToFile(exportService.toJSON(results), "Results"+pollId.toString());
+        return exportService.toJSON(results);
     }
 
-    @PostMapping("/toJSONWithPollResult")
-    public String createExportJSON(Poll poll, List<PollResult> result) {
+    /*@PostMapping("/toJSONWithPollResult")
+    public String createExportJSON(Poll poll, List<PollResult> result){
         return exportService.createExportJSON(poll, result);
-/*        JSONObject combined = new JSONObject();
-        try {
-            JSONObject pollJSON = new JSONObject();
-            pollJSON.getJSONObject(toJSON(poll));
-            combined.put("Poll", pollJSON);
-            JSONObject resultJSON;
-            for(PollResult resultIndex : result) {
-                resultJSON = new JSONObject();
-                resultJSON.getJSONObject(toJSON(resultIndex));
-                combined.put("Results", resultJSON);
-            }
-            return combined.toString();
-        } catch(Exception e){}
-        return null;*/
-    }
+    }*/
 
-    private String formatCSVField(String data) {
-        return String.format("\"{0}\"",
-            data.replace("\"", "\"\"\"")
-                .replace("\n", "")
-                .replace("\r", "")
-        );
-    }
-
-    public String addHeaders(Long pollId) {
+    public String addHeaders(Long pollId){
         Poll pollToConvert = pollService.getPoll(pollId);
         List<Category> categories = pollToConvert.getCategoryList();
         ListIterator<Category> categoryIterator = categories.listIterator();
 
-        String columnNamesList = pollToConvert.getPollName(); /**Table headers*/
-        /**Structure: PollID, PollName, AnonymityStatus, PollCreator*/
-        columnNamesList += pollToConvert.getPollId() + ',' + pollToConvert.getPollName() + ',' + pollToConvert.getAnonymityStatus() + ',' + pollToConvert.getPollCreator() + ',';
-        while (categoryIterator.hasNext()) {
+        StringBuilder columnNamesList = new StringBuilder(pollToConvert.getPollName()); /*Table headers*/
+        /*Structure: PollID, PollName, AnonymityStatus, PollCreator*/
+        columnNamesList.append(pollToConvert.getPollId()).append(',').append(pollToConvert.getPollName()).append(',').append(pollToConvert.getAnonymityStatus()).append(',').append(pollToConvert.getPollCreator()).append(',');
+        while(categoryIterator.hasNext()) {
             Category singularCategory = categoryIterator.next(); //Page
-            ListIterator<Question> questionIterator = singularCategory.getQuestionList().listIterator();
-            while (questionIterator.hasNext()) {
-                Question singularQuestion = questionIterator.next();
+            for (Question singularQuestion : singularCategory.getQuestionList()) {
                 String singularQuestionMessage = singularQuestion.getQuestionMessage();
-                /**TODO: Maybe Object to String will work, I don't know*/
-                columnNamesList += "," + singularQuestionMessage; /**I think it works that way, should give out "PollID, Frage1, Frage2, Frage3, ... regardless of category"*/
+                columnNamesList.append(",").append(singularQuestionMessage); /*I think it works that way, should give out "PollID, Frage1, Frage2, Frage3, ... regardless of category"*/
             }
         }
-        return columnNamesList;
+        return columnNamesList.toString();
     }
 
-    /**So how does it work?: */
-    /**Function iterates over the list of pollResults first filling the first row of Elements with the Questions and then filling the rest with the actual PollResults.*/
-    /**
-     * TODO: Implement way to know what kind of question this was
-     */
+    /*So how does it work?: */
+    /*Function iterates over the list of pollResults first filling the first row of Elements with the Questions and then filling the rest with the actual PollResults.*/
 
     @PostMapping("/answers/{pollId:\\d+}")
     public String convertPollWithResultsToCSV(final @PathVariable Long pollId) {
         String columnNamesList = addHeaders(pollId);
-        /**This is what does the work I guess*/
+        /*This is what does the work I guess*/
 
-        PrintWriter pw = null;
-        try {
-            pw = new PrintWriter(new File("PollData.csv"));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
         StringBuilder builder = new StringBuilder();
 
-        /**IMPORTANT: Structure: PollID; PollTaker; PollResultID; LastEditAt; List of Answers*/
+        /*IMPORTANT: Structure: PollID; PollTaker; PollResultID; LastEditAt; List of Answers*/
         // No need give the headers Like: id, Name on builder.append
-        builder.append(columnNamesList + "\n");
-        List<PollResult> results = pollResultService.getPollResults(pollId); /**TODO: WICHTIG KEINE LISTE VON POLLRESULTS*/
-        ListIterator<PollResult> resultIterator = results.listIterator();
-        while (resultIterator.hasNext()) {
-            PollResult singularResult = resultIterator.next();
+        builder.append(columnNamesList).append("\n");
+        List<PollResult> results = pollResultService.getPollResults(pollId);
+        for (PollResult singularResult : results) {
             ListIterator<Answer> answerIterator = singularResult.getAnswerList().listIterator();
-            builder.append(singularResult.getPollId() + ',' + singularResult.getPollTaker() + ',' + singularResult.getPollResultId() + ',' + singularResult.getLastEditAt());
+            builder.append(singularResult.getPollId()).append(',').append(singularResult.getPollTaker()).append(',').append(singularResult.getPollResultId()).append(',').append(singularResult.getLastEditAt());
             while (answerIterator.hasNext()) {
                 Answer singularAnswer = answerIterator.next();
-                /**Iterate over list to make every Answer one column in the csv table*/
-                builder.append(answerToCSV(singularAnswer) + ',');
+                /*Iterate over list to make every Answer one column in the csv table*/
+                builder.append(answerToCSV(singularAnswer)).append(',');
             }
             builder.append('\n');
         }
-        pw.write(builder.toString());
-        pw.close();
-        LOGGER.info("done!");
-
-        return builder.toString();
-    }
-
-    public String convertReadableQuestionsToCSV(final @PathVariable Long pollId) {
-        Poll pollToConvert = pollService.getPoll(pollId);
-        List<Category> categories = pollToConvert.getCategoryList();
-        ListIterator<Category> categoryIterator = categories.listIterator();
-
-        String columnNamesList = pollToConvert.getPollName(); /**Table headers*/
-        while (categoryIterator.hasNext()) {
-            Category singularCategory = categoryIterator.next(); //Page
-            ListIterator<Question> questionIterator = singularCategory.getQuestionList().listIterator();
-            while (questionIterator.hasNext()) {
-                Question singularQuestion = questionIterator.next();
-                String singularQuestionMessage = singularQuestion.getQuestionMessage();
-                columnNamesList += '\n' + singularQuestionMessage; /**I think it works that way, should give out "PollID, Frage1, Frage2, Frage3, ... regardless of category"*/
-            }
-        }
-
-        /**This is what does the work I guess*/
-
         PrintWriter pw = null;
         try {
             pw = new PrintWriter(new File("PollData.csv"));
+            pw.write(builder.toString());
+            pw.close();
+            return builder.toString();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
+            return "Export failed.";
         }
-        StringBuilder builder = new StringBuilder();
-
-
-        // No need give the headers Like: id, Name on builder.append
-        builder.append(columnNamesList + "\n");
-        pw.write(builder.toString());
-        pw.close();
-        LOGGER.info("done!");
-
-        return builder.toString();
     }
 
     public String answerToCSV(Answer input) {
         ListIterator<String> answerIterator = input.getGivenAnswerList().listIterator();
-        String output = "";
-        while (answerIterator.hasNext()) {
+        StringBuilder output = new StringBuilder();
+        while(answerIterator.hasNext()) {
             String answerForSingularQuestion = answerIterator.next();
-            output += answerForSingularQuestion + ",";
+            output.append(answerForSingularQuestion).append(",");
         }
-        output += '\n';
-        return output;
-    }
-
-    public static String escapeSpecialCharacters(String data) {
-        String escapedData = data.replaceAll("\\R", " ");
-        if (data.contains(",") || data.contains("\"") || data.contains("'")) {
-            data = data.replace("\"", "\"\"");
-            escapedData = "\"" + data + "\"";
-        }
-        return escapedData;
+        output.append('\n');
+        return output.toString();
     }
 
 }
+

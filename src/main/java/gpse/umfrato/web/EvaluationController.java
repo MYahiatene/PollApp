@@ -78,7 +78,7 @@ public class EvaluationController {
         if (input.isEmpty()) {
             return "?";
         }
-        final Statistics calculation = new Statistics(answerService, userService, questionService, pollService, pollResultService, categoryService, consistencyQuestionService, input.get(0));
+        final Statistics calculation = new Statistics(answerService, userService, questionService, pollService, pollResultService, categoryService, consistencyQuestionService, sessionService, input.get(0));
         calculation.loadFilter(input);
         return calculation.generateDiagram();
     }
