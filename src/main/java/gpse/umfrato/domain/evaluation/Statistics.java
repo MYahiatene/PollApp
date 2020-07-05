@@ -6,6 +6,8 @@ import gpse.umfrato.domain.answer.AnswerService;
 import gpse.umfrato.domain.category.Category;
 import gpse.umfrato.domain.category.CategoryService;
 import gpse.umfrato.domain.cmd.FilterCmd;
+import gpse.umfrato.domain.evaluation.Session.SessionService;
+import gpse.umfrato.domain.evaluation.filter.FilterData;
 import gpse.umfrato.domain.evaluation.filter.filterimpl.*;
 import gpse.umfrato.domain.evaluation.filter.Filter;
 import gpse.umfrato.domain.poll.Poll;
@@ -36,8 +38,9 @@ public class Statistics {
     private final PollService pollService;
     private final PollResultService pollResultService;
     private final CategoryService categoryService;
+    private final SessionService sessionService;
     private final ConsistencyQuestionService consistencyQuestionService;
-    private final List<Filter> filters = new ArrayList<>();
+    private List<Filter> filters = new ArrayList<>();
     private final Long pollId;
     private final List<Long> questionIds = new ArrayList<>();
     private final boolean showParticipantsOverTime;
@@ -53,7 +56,7 @@ public class Statistics {
      * @param consistencyQuestionService
      * @param data
      */
-    public Statistics(final AnswerService answerService, final UserService userService, final QuestionService questionService, final PollService pollService, final PollResultService pollResultService, final CategoryService categoryService, final ConsistencyQuestionService consistencyQuestionService, final FilterCmd data) {
+    public Statistics(final AnswerService answerService, final UserService userService, final QuestionService questionService, final PollService pollService, final PollResultService pollResultService, final CategoryService categoryService, final ConsistencyQuestionService consistencyQuestionService, SessionService sessionService, final FilterCmd data) {
         this.answerService = answerService;
         this.userService = userService;
         this.questionService = questionService;
@@ -61,6 +64,7 @@ public class Statistics {
         this.pollResultService = pollResultService;
         this.categoryService = categoryService;
         this.consistencyQuestionService = consistencyQuestionService;
+        this.sessionService = sessionService;
         pollId = data.getBasePollId();
         if(data.getTimeDiagram() == null) {
             showParticipantsOverTime = false;
@@ -117,6 +121,21 @@ public class Statistics {
                 filters.add(filter);
             }
         }
+    }
+
+    public boolean loadSessionFilters(final Long sessionId) {
+        filters = new ArrayList<>();
+        loadFilter(sessionService.getFilters(sessionId));
+        return filters.size() > 0;
+    }
+
+    public List<PollResult> filteredResults()
+    {
+        List<PollResult> prs = pollResultService.getPollResults(pollId);
+        for (final Filter f: filters) {
+            prs = f.filter(prs);
+        }
+        return prs;
     }
 
     public String generateDiagram() {

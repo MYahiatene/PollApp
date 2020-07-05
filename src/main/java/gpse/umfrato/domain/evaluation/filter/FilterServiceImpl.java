@@ -22,14 +22,14 @@ public class FilterServiceImpl implements FilterService {
     }
 
     @Override
-    public List<FilterData> saveFitlerList(List<FilterCmd> filterCmds) {
+    public List<FilterData> saveFilterList(List<FilterCmd> filterCmds) {
         List<FilterData> filter = new ArrayList<>();
         cmdsToFilters(filterCmds,filter);
         return filterRepository.saveAll(filter);
     }
 
     @Override
-    public List<FilterData> updateFitlerList(List<FilterCmd> filterCmds, final List<FilterData> filter) {
+    public List<FilterData> updateFilterList(List<FilterCmd> filterCmds, final List<FilterData> filter) {
         cmdsToFilters(filterCmds,filter);
         return filterRepository.saveAll(filter);
     }
@@ -72,5 +72,36 @@ public class FilterServiceImpl implements FilterService {
             }
             filter.add(fd);
         }
+    }
+
+    public FilterCmd filterToCmd(final FilterData fd)
+    {
+        FilterCmd cmd = new FilterCmd();
+        cmd.setFilterType(fd.getFilterType());
+        cmd.setInvertFilter(fd.getInvertFilter());
+        switch (cmd.getFilterType())
+        {
+            case "dataFilter":
+                cmd.setBasePollId(fd.getBasePollId());
+                cmd.setBaseQuestionIds(fd.getBaseQuestionIds());
+                cmd.setTimeDiagram(fd.getTimeDiagram());
+                return cmd;
+            case "questionAnswer":
+                cmd.setTargetQuestionId(fd.getTargetQuestionId());
+                cmd.setTargetAnswerPossibilities(fd.getTargetAnswerPossibilities());
+                cmd.setIsSlider(fd.getIsSlider());
+                return cmd;
+            case "consistency":
+                cmd.setMinSuccesses(fd.getMinSuccesses());
+                return cmd;
+            case "date":
+                cmd.setStartDate(fd.getStartDate());
+                cmd.setEndDate(fd.getEndDate());
+                return cmd;
+            case "user":
+                cmd.setUserNames(fd.getUserNames());
+                return cmd;
+        }
+        return cmd;
     }
 }
