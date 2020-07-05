@@ -243,7 +243,32 @@
             </v-container>
         </div>
         <div v-else>
-            Not today!
+            <v-container>
+                <v-layout column justify-center align-center>
+                    <v-layout xs12 sm8 md6>
+                        <v-row>
+                            <v-col cols="12" lg="12">
+                                <v-row>
+                                    <v-card>
+                                        <v-card-title class="headline">
+                                            Sie haben an dieser Umfrage bereits teilgenommen!
+                                        </v-card-title>
+                                        <v-card-text>
+                                            <v-container>
+                                                <v-row>
+                                                    Vielen Dank für ihre Teilnahme!
+                                                </v-row>
+                                            </v-container>
+                                        </v-card-text>
+                                    </v-card>
+                                </v-row>
+                            </v-col>
+                            <br />
+                            <v-col cols="12" lg="3"></v-col>
+                        </v-row>
+                    </v-layout>
+                </v-layout>
+            </v-container>
         </div>
     </div>
 </template>
@@ -388,18 +413,21 @@ export default {
                     index = i
                 }
             }
-            if (this.getCategory.questionList[index].textMinimum === undefined) {
+            if (!this.getCategory.questionList[index].textMinimum) {
                 console.log('min is undefined')
                 min = 0
             } else {
+                console.log('min: ', min)
                 min = this.getCategory.questionList[index].textMinimum
             }
-            if (this.getCategory.questionList[index].textMaximum === undefined) {
+            if (!this.getCategory.questionList[index].textMaximum) {
                 console.log('max is undefined')
                 max = 1000
             } else {
+                console.log('max: ', max)
                 max = this.getCategory.questionList[index].textMaximum
             }
+            console.log('min und max', min, max)
             return [
                 (v) => {
                     if (v) return v.length > min || 'Eingabe muss länger als ' + min + ' Zeichen sein!'
