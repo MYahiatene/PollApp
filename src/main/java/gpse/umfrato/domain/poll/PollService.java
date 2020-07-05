@@ -12,7 +12,14 @@ public interface PollService {
      */
     Poll createPoll(Poll poll);
 
+    /**
+     * Saves the new poll in the repository.
+     * @param poll
+     * @return new poll
+     */
     Poll createCopyPoll(final Poll poll);
+
+    Poll createSeriesPoll(final Poll poll);
 
     /**
      * This method returns a list with all polls.
@@ -79,5 +86,9 @@ public interface PollService {
      * @return updated Poll
      */
     Poll checkActivationAndDeactivation(final Poll poll);
+
+    String createSeriesPollName(final Poll poll);
+
+    void calculateNextDate(final Poll poll);
 
 }

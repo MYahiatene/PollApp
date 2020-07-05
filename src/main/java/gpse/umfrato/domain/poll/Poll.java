@@ -118,6 +118,24 @@ public class Poll {
     @OneToMany(orphanRemoval = true)
     private List<Category> categoryList = new ArrayList<>();
 
+    private String repeat;
+
+    private String repeatUntil;
+
+    private String[] day;
+
+    private String[] week;
+
+    private String[] month;
+
+    private int stoppingReason;
+
+    private int level;
+
+    private Long seriesCounter;
+
+    private Calendar nextSeries;
+
 
     /**
      * This constructor receives a poll name and saves in the poll object.
@@ -140,7 +158,9 @@ public class Poll {
     public Poll(final String pollCreator, final String anonymityStatus, final String pollName, final String createdAt,
                 final Calendar activatedAt, final Calendar deactivatedAt, final int pollStatus,
                 final String backgroundColor, final String fontColor, final String logo, final boolean visibility,
-                final boolean categoryChange, final boolean activated, final boolean deactivated) {
+                final boolean categoryChange, final boolean activated, final boolean deactivated, final String repeat,
+                final String repeatUntil, final String[] day, final String[] week, final String[] month,
+                final int stoppingReason, final int level, final Long seriesCounter) {
         this.pollName = pollName;
         this.pollCreator = pollCreator;
         this.anonymityStatus = anonymityStatus;
@@ -155,5 +175,13 @@ public class Poll {
         this.categoryChange = categoryChange;
         this.activated = activated;
         this.deactivated = deactivated;
+        this.repeat = repeat;
+        this.repeatUntil = repeatUntil;
+        this.day = day;
+        this.week = week;
+        this.month = month;
+        this.stoppingReason = stoppingReason;
+        this.level = level;
+        this.seriesCounter = seriesCounter;
     }
 }

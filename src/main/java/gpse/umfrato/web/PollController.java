@@ -70,7 +70,13 @@ public class PollController {
     @PreAuthorize("hasAnyAuthority('Admin', 'Creator')")
     public Long createPoll(final @RequestBody PollCmd pollCmd) {
         try {
-            final Poll poll = pollService.createPoll(pollCmd.getCmdPoll());
+            // create SeriesPoll
+            Poll poll = null;
+            if(pollCmd.getRepeat() != null) {
+                poll = pollService.createSeriesPoll(pollCmd.getCmdPoll());
+            } else {
+                poll = pollService.createPoll(pollCmd.getCmdPoll());
+            }
             if (poll.getAnonymityStatus().equals(ONE)) {
                 final String link = participationLinkService.createParticipationLink().toString();
                 participationLinkService.saveParticipationLink(poll.getPollId(), ALL_USERS, link);
@@ -131,6 +137,7 @@ public class PollController {
      * @param pollId takes the pollId of the specific poll.
      * @return returns the integer value of the activation status.
      */
+    @SuppressWarnings({"checkstyle:LeftCurly", "checkstyle:AvoidNestedBlocks"})
     @PreAuthorize("hasAnyAuthority('Admin', 'Creator')")
     @PostMapping("/activatePoll/{pollId:\\d+}")
     public Integer activatePoll(final @PathVariable Long pollId) {

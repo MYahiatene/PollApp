@@ -41,6 +41,16 @@ public class PollCmd {
 
     private String pollName;
 
+    private String repeat;
+
+    private String repeatUntil;
+
+    private String[] day;
+
+    private String[] week;
+
+    private String[] month;
+
     private int pollStatus;
 
     private boolean visibility;
@@ -50,6 +60,11 @@ public class PollCmd {
     private boolean activated;
 
     private boolean deactivated;
+
+    private int stoppingReason;
+
+    private int level;
+
 
     public Poll getCmdPoll() {
         // parses the activationDAte and deactivationDate from a String to a Calendar
@@ -66,7 +81,7 @@ public class PollCmd {
         }
         final Poll poll = new Poll(pollCreator, anonymityStatus, pollName, pollCreatedAt, activationDate,
             deactivationDate, pollStatus, backgroundColor, fontColor, logo, visibility, categoryChange, activated,
-            deactivated);
+            deactivated, repeat, repeatUntil, day, week, month, stoppingReason, level, 1L);
         return poll;
     }
 
