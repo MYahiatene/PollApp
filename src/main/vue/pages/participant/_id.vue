@@ -470,18 +470,18 @@ export default {
                     if (this.givenAnswers[i] != null) {
                         // for RadioButtons we need answer text and given back are the indizes
                         if (
-                            type === 'ChoiceQuestion' &&
-                            this.getCategory.questionList[i].numberOfPossibleAnswers === 1
+                            (type === 'ChoiceQuestion' &&
+                                this.getCategory.questionList[i].numberOfPossibleAnswers === 1) ||
+                            type === 'RangeQuestion'
                         ) {
+                            console.log('RangeQuestion')
                             this.valueList.push(
-                                this.getCategory.questionList[i].answerPossibilities[
-                                    this.givenAnswers[i].givenAnswerList
-                                ]
+                                this.computedQuestionList[i].answerPossibilities[this.givenAnswers[i].givenAnswerList]
                             )
                         } // for Checkboxes and RangeQuestions it works the same
-                        else if (type === 'ChoiceQuestion' || type === 'RangeQuestion') {
+                        else if (type === 'ChoiceQuestion') {
                             const array = []
-                            for (let j = 0; j < this.givenAnswers.length; j++) {
+                            for (let j = 0; j < this.givenAnswers[i].length; j++) {
                                 array.push(
                                     this.computedQuestionList[i].answerPossibilities[
                                         this.givenAnswers[i].givenAnswerList
@@ -490,18 +490,20 @@ export default {
                             }
                             this.valueList.push(array)
                         } else if (type === 'SortQuestion') {
-                            // ToDo: Hier mal schauen, was schief läuft!
                             const array = []
-                            for (let j = 0; j < this.givenAnswers.length; j++) {
+                            console.log('answersLength', this.givenAnswers[i].length)
+                            for (let j = 0; j < this.givenAnswers[i].givenAnswerList.length; j++) {
                                 array.push(
                                     this.computedQuestionList[i].answerPossibilities[
-                                        this.givenAnswers[i].givenAnswerList
+                                        this.givenAnswers[i].givenAnswerList[j]
                                     ]
                                 )
                             }
                             this.AnswerListsOfSortQuestions[i] = array
+                            // won't be used for SortQuestions, but needs to be correct index
+                            this.valueList.push(array)
                         } else {
-                            this.valueList.push(this.givenAnswers[i].givenAnswerList)
+                            this.valueList.push(this.givenAnswers[i].givenAnswerList[0])
                         }
                     } else {
                         switch (type) {
@@ -509,8 +511,7 @@ export default {
                                 this.valueList.push('')
                                 break
                             case 'SlideQuestion':
-                                this.valueList.push(0)
-                                // TODO: startValue
+                                this.valueList.push(this.getCategory.questionList[i].startValue)
                                 break
                             case 'ChoiceQuestion':
                                 this.valueList.push([])
