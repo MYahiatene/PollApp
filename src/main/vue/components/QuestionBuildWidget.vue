@@ -25,15 +25,15 @@
                     <v-row>
                         <component
                             :questionData="questionData"
-                            :categoryData="categoryData"
                             :is="questionType"
+                            :categoryData="categoryData"
                             :buildIndex:="buildIndex"
                         ></component>
                     </v-row>
                     <v-row>
                         <v-col cols="9"></v-col>
                         <v-col cols="2">
-                            <v-btn @click="createQuestion" :disabled="questionMessageBool">
+                            <v-btn :disabled="questionMessageBool" @click="createQuestion">
                                 <v-icon color="primary" left>
                                     mdi-plus
                                 </v-icon>
@@ -94,10 +94,16 @@ export default {
             questionToLoad: 'pollOverview/questionToLoad',
             getQuestionMessage: 'questionOverview/getQuestionMessage',
             getBuildIndex: 'questionOverview/getBuildIndex',
+            getSaveButtonStatus: 'questionOverview/getSaveButtonStatus',
         }),
         questionMessageBool: {
             get() {
-                return !(this.questionType.length && this.questionMessageModel.length)
+                return !(
+                    this.questionType.length &&
+                    this.questionMessageModel.length &&
+                    this.getQuestion.answerPossibilities.length &&
+                    this.getSaveButtonStatus
+                )
             },
         },
         buildIndex: {
@@ -131,7 +137,6 @@ export default {
     methods: {
         createQuestion() {
             if (this.buildIndex === 1) {
-                console.log(this.getQuestion.answerPossibilities)
                 this.$axios
                     .post('/addquestion', {
                         pollId: this.$route.params.QuestionOverview,
@@ -177,13 +182,10 @@ export default {
                     hideValues: this.getQuestion.hideValues,
                 })
             }
-            console.log('BuildIndex:\n')
-            console.log(this.buildIndex)
-            console.log('QuestionMessage:\n' + this.getQuestion.questionMessage)
-            console.log('QuestionId:\n' + this.getQuestion.questionId)
             this.setBuildIndex(0)
         },
         ...mapMutations({
+            setSaveButtonStatus: 'questionOverview/setSaveButtonStatus',
             setQuestionMessage: 'pollOverview/setQuestionMessage',
             setQuestionType: 'questionOverview/setQuestionType',
             setBuildIndex: 'questionOverview/setBuildIndex',
