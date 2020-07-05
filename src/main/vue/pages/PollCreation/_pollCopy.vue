@@ -199,7 +199,6 @@
                             <v-menu
                                 ref="menu"
                                 v-model="menuA"
-                                :disabled="switch0"
                                 :close-on-content-click="false"
                                 transition="scale-transition"
                                 offset-y
@@ -209,7 +208,6 @@
                                 <template v-slot:activator="{ on }">
                                     <v-text-field
                                         v-model="activateDate"
-                                        :disabled="switch0"
                                         label="Datum"
                                         persistent-hint
                                         @blur="date = parseDate(activateDate)"
@@ -218,7 +216,6 @@
                                 </template>
                                 <v-date-picker
                                     v-model="date"
-                                    :disabled="switch0"
                                     no-title
                                     show-current="true"
                                     locale="de"
@@ -253,7 +250,6 @@
                             <v-menu
                                 ref="menu"
                                 v-model="menuD"
-                                :disabled="switch0"
                                 :close-on-content-click="false"
                                 transition="scale-transition"
                                 offset-y
@@ -263,7 +259,6 @@
                                 <template v-slot:activator="{ on }">
                                     <v-text-field
                                         v-model="deactivateDate"
-                                        :disabled="switch0"
                                         label="Datum"
                                         persistent-hint
                                         @blur="date = parseDate(deactivateDate)"
@@ -272,7 +267,6 @@
                                 </template>
                                 <v-date-picker
                                     v-model="date"
-                                    :disabled="switch0"
                                     no-title
                                     show-current="true"
                                     locale="de"
