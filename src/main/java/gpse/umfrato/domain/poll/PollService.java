@@ -42,6 +42,13 @@ public interface PollService {
      */
     Integer activatePoll(final Long pollId);
 
+    /**
+     * This method deactivates the poll.
+     * @param pollId the id of the poll which will be deactivated
+     * @return returns the poll deactivation status
+     */
+    Integer deactivatePoll(final Long pollId);
+
     List<Poll> getLastEditedPolls();
 
     /**

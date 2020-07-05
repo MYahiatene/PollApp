@@ -261,7 +261,7 @@ import visualEvaluationSettings from '../../components/visualEvaluationSettings'
 import TextQuestionEvaluationWidget from '../../components/TextQuestionEvaluationWidget'
 import FilterForm from '../../components/filterForm'
 import SessionManager from '../../components/SessionManager'
-import SortQuestionEvaluationWidget from '../SortQuestionEvaluationWidget'
+import SortQuestionEvaluationWidget from '../../components/SortQuestionEvaluationWidget'
 
 export default {
     name: 'BaseEvaluationPage',

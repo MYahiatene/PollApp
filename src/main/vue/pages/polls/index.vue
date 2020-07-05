@@ -52,62 +52,53 @@
                                     multi-sort
                                     no-data-text="Es gibt noch keine Umfragen"
                                     no-results-text="Keine passenden Umfragen gefunden"
+                                    loading-text="Lade Umfragen"
                                     :footer-props="footerProps"
                                 >
                                     <template v-slot:item.actions="{ item }">
-                                        <v-chip>
-                                            <v-tooltip bottom>
-                                                <template v-slot:activator="{ on, attrs }">
-                                                    <v-btn icon color="primary" v-bind="attrs" v-on="on">
-                                                        <v-icon @click="itemStatusAction(item)">
-                                                            {{ item.statusIcon }}
-                                                        </v-icon>
-                                                    </v-btn>
-                                                </template>
-                                                <span> {{ item.statusText }}</span>
-                                            </v-tooltip>
+                                        <v-tooltip bottom>
+                                            <template v-slot:activator="{ on, attrs }">
+                                                <v-btn icon color="primary" v-bind="attrs" v-on="on">
+                                                    <v-icon @click="itemStatusAction(item)">
+                                                        {{ item.statusIcon }}
+                                                    </v-icon>
+                                                </v-btn>
+                                            </template>
+                                            <span> {{ item.statusText }}</span>
+                                        </v-tooltip>
 
-                                            <v-tooltip bottom>
-                                                <template v-slot:activator="{ on, attrs }">
-                                                    <v-btn icon color="primary" v-bind="attrs" v-on="on">
-                                                        <v-icon @click="itemAction1(item)">
-                                                            {{ item.action1Icon }}</v-icon
-                                                        >
-                                                    </v-btn>
-                                                </template>
-                                                <span> {{ item.action1Text }}</span>
-                                            </v-tooltip>
-                                            <v-tooltip bottom>
-                                                <template v-slot:activator="{ on, attrs }">
-                                                    <v-btn icon color="primary" v-bind="attrs" v-on="on">
-                                                        <v-icon @click="itemAction2(item)">
-                                                            {{ item.action2Icon }}</v-icon
-                                                        >
-                                                    </v-btn>
-                                                </template>
-                                                <span> {{ item.action2Text }}</span>
-                                            </v-tooltip>
-                                            <v-tooltip bottom>
-                                                <template v-slot:activator="{ on, attrs }">
-                                                    <v-btn icon color="primary" v-bind="attrs" v-on="on">
-                                                        <v-icon @click="itemAction3(item)">
-                                                            {{ item.action3Icon }}</v-icon
-                                                        >
-                                                    </v-btn>
-                                                </template>
-                                                <span> {{ item.action3Text }}</span>
-                                            </v-tooltip>
-                                            <v-tooltip bottom>
-                                                <template v-slot:activator="{ on, attrs }">
-                                                    <v-btn icon color="primary" v-bind="attrs" v-on="on">
-                                                        <v-icon @click="itemAction4(item)">
-                                                            {{ item.action4Icon }}</v-icon
-                                                        >
-                                                    </v-btn>
-                                                </template>
-                                                <span> {{ item.action4Text }}</span>
-                                            </v-tooltip>
-                                        </v-chip>
+                                        <v-tooltip bottom>
+                                            <template v-slot:activator="{ on, attrs }">
+                                                <v-btn icon color="primary" v-bind="attrs" v-on="on">
+                                                    <v-icon @click="itemAction1(item)"> {{ item.action1Icon }}</v-icon>
+                                                </v-btn>
+                                            </template>
+                                            <span> {{ item.action1Text }}</span>
+                                        </v-tooltip>
+                                        <v-tooltip bottom>
+                                            <template v-slot:activator="{ on, attrs }">
+                                                <v-btn icon color="primary" v-bind="attrs" v-on="on">
+                                                    <v-icon @click="itemAction2(item)"> {{ item.action2Icon }}</v-icon>
+                                                </v-btn>
+                                            </template>
+                                            <span> {{ item.action2Text }}</span>
+                                        </v-tooltip>
+                                        <v-tooltip bottom>
+                                            <template v-slot:activator="{ on, attrs }">
+                                                <v-btn icon color="primary" v-bind="attrs" v-on="on">
+                                                    <v-icon @click="itemAction3(item)"> {{ item.action3Icon }}</v-icon>
+                                                </v-btn>
+                                            </template>
+                                            <span> {{ item.action3Text }}</span>
+                                        </v-tooltip>
+                                        <v-tooltip bottom>
+                                            <template v-slot:activator="{ on, attrs }">
+                                                <v-btn icon color="primary" v-bind="attrs" v-on="on">
+                                                    <v-icon @click="itemAction4(item)"> {{ item.action4Icon }}</v-icon>
+                                                </v-btn>
+                                            </template>
+                                            <span> {{ item.action4Text }}</span>
+                                        </v-tooltip>
                                     </template>
                                 </v-data-table>
                             </template>

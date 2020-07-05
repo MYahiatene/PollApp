@@ -109,7 +109,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import BarChartView from '../components/BarChartView'
+import BarChartView from './BarChartView'
 
 export default {
     name: 'SortQuestionEvaluationWidget',

@@ -1,7 +1,7 @@
 <template>
     <div>
         <div>
-            <v-container class="grey lighten-5">
+            <v-card>
                 <v-card-title>Erinnerung an die Teilnehmer der Umfrage schicken</v-card-title>
                 <v-container fluid>
                     <v-row>
@@ -56,7 +56,7 @@
                         </v-col>
                     </v-row>
                 </v-container>
-            </v-container>
+            </v-card>
         </div>
     </div>
 </template>

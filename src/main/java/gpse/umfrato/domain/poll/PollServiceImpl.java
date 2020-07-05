@@ -105,7 +105,22 @@ class PollServiceImpl implements PollService {
     @Override
     public Integer activatePoll(final Long pollId) {
         final Poll poll = pollRepository.getOne(pollId);
-        poll.setPollStatus(poll.getPollStatus() + 1);
+        poll.setPollStatus(1);
+        poll.setActivatedDate(Calendar.getInstance());
+        pollRepository.save(poll);
+        return poll.getPollStatus();
+    }
+
+    /**
+     * This method activates the poll.
+     * @param pollId the id of the poll which will be activated
+     * @return returns the poll activation status
+     */
+    @Override
+    public Integer deactivatePoll(final Long pollId) {
+        final Poll poll = pollRepository.getOne(pollId);
+        poll.setPollStatus(2);
+        poll.setDeactivatedDate(Calendar.getInstance());
         pollRepository.save(poll);
         return poll.getPollStatus();
     }
