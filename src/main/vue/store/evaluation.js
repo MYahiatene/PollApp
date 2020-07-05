@@ -410,9 +410,9 @@ export const actions = {
     },
 
     async importPoll({ state, commit }, file) {
-        console.log('Loaded file: ', file)
-        const response = await this.$axios.post('/export/importPoll/' + file)
-        console.log('response: ', response)
-        return response
+        console.log('Loaded file: ', JSON.parse(file)) // .replace(/#/g, encodeURIComponent('#')))
+        const data = JSON.parse(file)
+        const resource = await this.$axios.$post('/export/importPoll/', data)
+        console.log('Resource: ', resource)
     },
 }

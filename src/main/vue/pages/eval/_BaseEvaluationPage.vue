@@ -232,7 +232,7 @@ that each display a basic evaluation of one specific question-->
                 <v-card-title>Der Server hat noch nicht geantwortet</v-card-title>
             </v-card>
         </v-container>
-        <v-container>
+        <!--<v-container>
             <v-btn class="pl-4" @click="exportAnswers()">Antworten exportieren </v-btn>
             <v-btn class="pl-4" @click="exportResults()">Antworten exportieren </v-btn>
             <v-btn class="pl-4" @click="exportCSV()">Antworten exportierenCSV </v-btn>
@@ -240,7 +240,9 @@ that each display a basic evaluation of one specific question-->
                 Datei hochladen
                 <input type="file" @change="uploadFile" />
             </v-col>
-        </v-container>
+        </v-container>-->
+        <export-widget></export-widget>
+        <import-widget></import-widget>
     </v-container>
 </template>
 
@@ -253,11 +255,15 @@ import TextQuestionEvaluationWidget from '../../components/TextQuestionEvaluatio
 import FilterForm from '../../components/filterForm'
 import SessionManager from '../../components/SessionManager'
 import SortQuestionEvaluationWidget from '../SortQuestionEvaluationWidget'
+import ExportWidget from '../../components/exportWidget'
+import ImportWidget from '../../components/importWidget'
 
 export default {
     name: 'BaseEvaluationPage',
     components: {
         SessionManager,
+        ImportWidget,
+        ExportWidget,
         FilterForm,
         AuthGate,
         ChoiceQuestionEvaluationWidget,

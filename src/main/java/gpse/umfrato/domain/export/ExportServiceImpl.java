@@ -19,94 +19,79 @@ public class ExportServiceImpl implements ExportService {
 
     @Override
     public String toCSVManual(Poll poll) {
-        /**Name, PollID, Creator, Anonymität, Kategorie 1, Kategorie 1, Kategorie 2*/
-        /**TestPoll, 1, Tbettmann, 1, Frage 1, Frage 2, Frage 1 aus Kat. 2*/
-        String output = "";
-        output += "Name,PollID,PollCreator,Anonymitätsstatus";
+        /*Name, PollID, Creator, Anonymität, Kategorie 1, Kategorie 1, Kategorie 2*/
+        /*TestPoll, 1, Tbettmann, 1, Frage 1, Frage 2, Frage 1 aus Kat. 2*/
+        StringBuilder output = new StringBuilder();
+        output.append("Name,PollID,PollCreator,Anonymitätsstatus");
         int amountOfArgumentsBeforeCategories = 4;
         for (Category category : poll.getCategoryList()) {
-            output += ',' + category.getCategoryName() + ',' + "Antwortmöglichkeiten";
+            output.append(',').append(category.getCategoryName()).append(',').append("Antwortmöglichkeiten");
         }
-        output += '\n';
-        output += poll.getPollName() + ',' + poll.getPollId() + ',' + poll.getPollCreator() + ',' + poll.getAnonymityStatus();
+        output.append('\n');
+        output.append(poll.getPollName()).append(',').append(poll.getPollId()).append(',').append(poll.getPollCreator()).append(',').append(poll.getAnonymityStatus());
         for (Category category : poll.getCategoryList()) {
             for (Question question : category.getQuestionList()) {
-                output += ',' + escapeSpecialCharacters(question.getQuestionMessage()) + ',';
+                output.append(',').append(escapeSpecialCharacters(question.getQuestionMessage())).append(',');
                 for (String possibility : question.getAnswerPossibilities()) {
-                    output += ' ' + possibility;
+                    output.append(' ').append(possibility);
                 }
                 if (question.getQuestionType().equals("RangeQuestion")) {
-                    output += question.getStartValue() + ".." + question.getEndValue() + " in Inkrementen von " + question.getStepSize();
+                    output.append(question.getStartValue()).append("..").append(question.getEndValue()).append(" in Inkrementen von ").append(question.getStepSize());
                 }
                 if (question.getQuestionType().equals("SliderQuestion")) {
-                    output += question.getStartValue() + ".." + question.getEndValue() + " in Inkrementen von " + question.getStepSize();
+                    output.append(question.getStartValue()).append("..").append(question.getEndValue()).append(" in Inkrementen von ").append(question.getStepSize());
                 }
-                output += '\n';
-                for (int i = 0; i < amountOfArgumentsBeforeCategories - 1; i++) /**Needs to be -1 because of output + escapeSpecial... that comma can't go away*/ {
-                    output += ',';
-                }
+                output.append('\n');
+                /*Needs to be -1 because of output + escapeSpecial... that comma can't go away*/
+                output.append(",".repeat(amountOfArgumentsBeforeCategories - 1));
             }
         }
-        output += '\n';
-        return output;
+        output.append('\n');
+        return output.toString();
     }
 
     @Override
-    public String toJSON(Poll result) throws Exception {
+    public String toJSON(Poll result) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper()
             .findAndRegisterModules();
-        try {
             return objectMapper.writeValueAsString(result);
-        } catch (JsonProcessingException e) {
-            return ("Serialisierung fehlgeschlagen");
-        }
     }
 
     @Override
     public Poll fromJSONToPoll(String json) {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
-            Poll poll = objectMapper.readValue(json, Poll.class);
-            return poll;
+            return objectMapper.readValue(json, Poll.class);
         } catch (IOException e) {
             e.printStackTrace();
         }
         return null;
     }
 
-    public String toJSONSingularPR(PollResult result) throws Exception {
+    public String toJSONSingularPR(PollResult result) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper()
             .findAndRegisterModules();
-        try {
             return objectMapper.writeValueAsString(result);
-        } catch (JsonProcessingException e) {
-            return "Serialisierung fehlgeschlagen";
-        }
     }
 
     @Override
-    public String toJSON(List<PollResult> result) throws Exception {
+    public String toJSON(List<PollResult> result) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper()
             .findAndRegisterModules();
-        try {
             return objectMapper.writeValueAsString(result);
-        } catch (JsonProcessingException e) {
 
-            return "Serialisierung fehlgeschlagen";
-        }
     }
 
     @Override
     public List<PollResult> fromJSONToResult(String json) {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
-            List<PollResult> pResult = objectMapper.readValue(json, new TypeReference<List<PollResult>>() {
+            return objectMapper.readValue(json, new TypeReference<List<PollResult>>() {
             });
-            return pResult;
         } catch (IOException e) {
             e.printStackTrace();
+            return null;
         }
-        return null;
     }
 
     @Override
@@ -123,10 +108,10 @@ public class ExportServiceImpl implements ExportService {
                 combined.put("Results", resultJSON);
             }
             return combined.toString();
-        } catch (Exception e) {
+        } catch(JsonProcessingException e){
             e.printStackTrace();
+            return null;
         }
-        return null;
     }
 
     public static String escapeSpecialCharacters(String data) {
