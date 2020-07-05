@@ -36,12 +36,25 @@ public interface PollService {
     String createAnonymousUsername();
 
     /**
-     * This method activates the poll.
-     * @param pollId the id of the poll which will be activated
+     * This method lets the poll-status progress.
+     * @param pollId the id of the poll which will be increased
      * @return returns the poll activation status
      */
-    Integer activatePoll(final Long pollId);
+    Integer increasePollStatus(final Long pollId);
 
+    /**
+     * This method tries to decrease the poll-status.
+     * if the given poll has the status 1 it will be returned to 0,
+     * otherwise the method will do nothing.
+     * @param pollId the id of the poll which will be decreased
+     * @return returns the poll activation status
+     */
+    Integer decreasePollStatus(final Long pollId);
+
+    /**
+     * This method returns recently edited polls.
+     * @return returns the 5 most recently edited polls
+     */
     List<Poll> getLastEditedPolls();
 
     /**

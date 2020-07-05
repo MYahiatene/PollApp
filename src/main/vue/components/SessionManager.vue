@@ -1,5 +1,5 @@
 <template>
-    <v-dialog overlay-color="background" v-model="dialog" width="800" overlay-opacity="1">
+    <v-dialog overlay-color="background" v-model="dialog" width="800" overlay-opacity="0.75">
         <template v-slot:activator="{ on }">
             <v-btn color="primary" v-on="on" class="ma-2">
                 Sessions
@@ -94,7 +94,6 @@ export default {
             sessionTitle: '',
             choosenSessionTitle: '',
             titleErrorMessage: '',
-            dialog: false,
             headers: [
                 { text: 'Name', value: 'sessionTitle' },
                 { text: 'Zuletzt bearbeitet', value: 'lastEdited' },

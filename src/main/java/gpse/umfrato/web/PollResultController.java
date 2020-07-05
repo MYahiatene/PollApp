@@ -1,16 +1,13 @@
 package gpse.umfrato.web;
 
-import com.fasterxml.jackson.databind.deser.Deserializers;
 import gpse.umfrato.domain.cmd.AnswerCmd;
 import gpse.umfrato.domain.cmd.PollResultCmd;
 import gpse.umfrato.domain.pollresult.PollResult;
 import gpse.umfrato.domain.pollresult.PollResultService;
-import org.aspectj.apache.bcel.classfile.Module;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.constraints.Null;
 import java.util.logging.Logger;
 
 /**
@@ -55,8 +52,8 @@ public class PollResultController {
      */
     @PostMapping("/participationToPollResult")
     public void participationToPollResult(final @RequestBody PollResultCmd pollResultCmd) {
-        LOGGER.info("PollResultCmd " + pollResultCmd.getPollTaker() + pollResultCmd.getPollId() );
-        try{
+        LOGGER.info("PollResultCmd " + pollResultCmd.getPollTaker() + pollResultCmd.getPollId());
+        try {
             pollResultService.addParticipatedToPollResult(pollResultCmd.getPollTaker(), pollResultCmd.getPollId());
         } catch (NullPointerException e) {
             LOGGER.info("Null Pointer Exception!");
@@ -72,7 +69,7 @@ public class PollResultController {
     public Boolean participated(final @RequestBody PollResultCmd pollResultCmd) {
         LOGGER.info(pollResultCmd.getPollTaker());
         LOGGER.info(pollResultCmd.getPollId().toString());
-        Boolean participated = pollResultService.getParticipated(pollResultCmd.getPollTaker(), pollResultCmd.getPollId());
+        final Boolean participated = pollResultService.getParticipated(pollResultCmd.getPollTaker(), pollResultCmd.getPollId());
         return participated;
     }
 }

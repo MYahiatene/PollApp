@@ -28,7 +28,7 @@ public class ConsistencyFilter implements Filter {
             for (final ConsistencyQuestion cq: consistencyQuestionList) {
                 List<String> givenAnswers1 = new ArrayList<>();
                 List<String> givenAnswers2 = new ArrayList<>();
-                for (Answer a: pr.getAnswerList()) {
+                for (final Answer a: pr.getAnswerList()) {
                     if (cq.getQuestion1Id().equals(a.getQuestionId())) {
                         givenAnswers1 = a.getGivenAnswerList();
                     }
@@ -38,11 +38,11 @@ public class ConsistencyFilter implements Filter {
                 }
                 int matched = 0;
                 boolean matchA = false;
-                for (String s: givenAnswers1) {
+                for (final String s: givenAnswers1) {
                     if (cq.getQuestion1Slider()) {
-                        double value = Double.parseDouble(s);
-                        double min = Double.parseDouble(cq.getAnswer1Indices().get(0));
-                        double max = Double.parseDouble(cq.getAnswer1Indices().get(1));
+                        final double value = Double.parseDouble(s);
+                        final double min = Double.parseDouble(cq.getAnswer1Indices().get(0));
+                        final double max = Double.parseDouble(cq.getAnswer1Indices().get(1));
                         if (min <= value && value <= max) {
                             matchA = true;
                             break;
@@ -58,11 +58,11 @@ public class ConsistencyFilter implements Filter {
                     matched++;
                 }
                 boolean matchB = false;
-                for (String s: givenAnswers2) {
+                for (final String s: givenAnswers2) {
                     if (cq.getQuestion2Slider()) {
-                        double value = Double.parseDouble(s);
-                        double min = Double.parseDouble(cq.getAnswer2Indices().get(0));
-                        double max = Double.parseDouble(cq.getAnswer2Indices().get(1));
+                        final double value = Double.parseDouble(s);
+                        final double min = Double.parseDouble(cq.getAnswer2Indices().get(0));
+                        final double max = Double.parseDouble(cq.getAnswer2Indices().get(1));
                         if (min <= value && value <= max) {
                             matchB = true;
                             break;

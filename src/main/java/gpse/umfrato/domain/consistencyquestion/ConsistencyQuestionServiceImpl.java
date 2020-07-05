@@ -36,7 +36,7 @@ public class ConsistencyQuestionServiceImpl implements ConsistencyQuestionServic
 
     @Override
     public List<ConsistencyQuestion> getAllConsistencyQuestions(final long question1Id, final long question2Id) {
-        return consistencyQuestionRepository.findConsistencyQuestionsByQuestion1IdOrQuestion2Id(question1Id,question2Id);
+        return consistencyQuestionRepository.findConsistencyQuestionsByQuestion1IdOrQuestion2Id(question1Id, question2Id);
     }
 
     @Override
@@ -47,7 +47,7 @@ public class ConsistencyQuestionServiceImpl implements ConsistencyQuestionServic
         consistencyQuestionRepository.save(cq);
     }
 
-    private static void cqCmdToCq(final ConsistencyQuestionCmd consistencyQuestionCmd,final ConsistencyQuestion cq) {
+    private static void cqCmdToCq(final ConsistencyQuestionCmd consistencyQuestionCmd, final ConsistencyQuestion cq) {
         cq.setPollId(consistencyQuestionCmd.getPollId());
         cq.setQuestion1Id(consistencyQuestionCmd.getQuestion1Id());
         cq.setQuestion1Slider(consistencyQuestionCmd.getQuestion1Slider());

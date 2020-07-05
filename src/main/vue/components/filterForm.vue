@@ -373,6 +373,7 @@ export default {
             this.selectedQuestions.push(this.questionTitles[i])
         }
         this.updateNumberOfConsistencyQuestions()
+        this.saveToStore()
     },
     methods: {
         ...mapActions({
@@ -432,18 +433,6 @@ export default {
                 }
             }
             console.log(filterData)
-            // for (let f = 0; f < this.qafilterList.length; f++) {
-            //     if (this.qafilterList[f].active) {
-            //         filterData.push({
-            //             filterType: 'qaFilter',
-            //             invertFilter: false,
-            //             targetPollId: this.pollIndex,
-            //             targetCategoryId: this.qafilterList[f].categoryId,
-            //             targetQuestionId: this.qafilterList[f].questionId,
-            //             targetAnswerPossibilities: this.qafilterList[f].answerIds,
-            //         })
-            //     }
-            // }
             await this.sendFilter(filterData)
             this.$emit('close-event')
         },
@@ -555,7 +544,6 @@ export default {
                 }
 
                 for (let i = 0; i < this.filters.length; i++) {
-                    console.log('bu')
                     if (this.filters[i].filterType === 'consistency') {
                         console.log('consis filter')
                         this.minConsistencyValue = this.filters[i].minSuccesses

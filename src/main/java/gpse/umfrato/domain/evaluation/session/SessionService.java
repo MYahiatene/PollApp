@@ -1,10 +1,7 @@
-package gpse.umfrato.domain.evaluation.Session;
+package gpse.umfrato.domain.evaluation.session;
 
-import gpse.umfrato.domain.cmd.ConsistencyQuestionCmd;
 import gpse.umfrato.domain.cmd.FilterCmd;
 import gpse.umfrato.domain.cmd.SessionCmd;
-import gpse.umfrato.domain.evaluation.filter.Filter;
-import gpse.umfrato.domain.evaluation.filter.FilterData;
 
 import java.util.List;
 

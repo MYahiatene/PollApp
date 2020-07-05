@@ -1,10 +1,6 @@
 package gpse.umfrato.domain.evaluation.filter;
 
 import gpse.umfrato.domain.cmd.FilterCmd;
-import gpse.umfrato.domain.evaluation.filter.filterimpl.ConsistencyFilter;
-import gpse.umfrato.domain.evaluation.filter.filterimpl.DateFilter;
-import gpse.umfrato.domain.evaluation.filter.filterimpl.QuestionFilter;
-import gpse.umfrato.domain.evaluation.filter.filterimpl.UserFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,20 +13,20 @@ public class FilterServiceImpl implements FilterService {
     private final FilterRepository filterRepository;
 
     @Autowired
-    public FilterServiceImpl(FilterRepository filterRepository) {
+    public FilterServiceImpl(final FilterRepository filterRepository) {
         this.filterRepository = filterRepository;
     }
 
     @Override
-    public List<FilterData> saveFilterList(List<FilterCmd> filterCmds) {
-        List<FilterData> filter = new ArrayList<>();
-        cmdsToFilters(filterCmds,filter);
+    public List<FilterData> saveFilterList(final List<FilterCmd> filterCmds) {
+        final List<FilterData> filter = new ArrayList<>();
+        cmdsToFilters(filterCmds, filter);
         return filterRepository.saveAll(filter);
     }
 
     @Override
-    public List<FilterData> updateFilterList(List<FilterCmd> filterCmds, final List<FilterData> filter) {
-        cmdsToFilters(filterCmds,filter);
+    public List<FilterData> updateFilterList(final List<FilterCmd> filterCmds, final List<FilterData> filter) {
+        cmdsToFilters(filterCmds, filter);
         return filterRepository.saveAll(filter);
     }
 
@@ -39,14 +35,12 @@ public class FilterServiceImpl implements FilterService {
         filterRepository.deleteById(filterId);
     }
 
-    private void cmdsToFilters(List<FilterCmd> filterCmds, List<FilterData> filter) {
-        for(FilterCmd cmd: filterCmds)
-        {
-            FilterData fd = new FilterData();
+    private void cmdsToFilters(final List<FilterCmd> filterCmds, final List<FilterData> filter) {
+        for (final FilterCmd cmd: filterCmds) {
+            final FilterData fd = new FilterData();
             fd.setFilterType(cmd.getFilterType());
             fd.setInvertFilter(cmd.getInvertFilter());
-            switch (fd.getFilterType())
-            {
+            switch (fd.getFilterType()) {
                 case "dataFilter":
                     fd.setBasePollId(cmd.getBasePollId());
                     fd.setBaseQuestionIds(cmd.getBaseQuestionIds());
@@ -75,13 +69,11 @@ public class FilterServiceImpl implements FilterService {
     }
 
     @Override
-    public FilterCmd filterToCmd(final FilterData fd)
-    {
-        FilterCmd cmd = new FilterCmd();
+    public FilterCmd filterToCmd(final FilterData fd) {
+        final FilterCmd cmd = new FilterCmd();
         cmd.setFilterType(fd.getFilterType());
         cmd.setInvertFilter(fd.getInvertFilter());
-        switch (cmd.getFilterType())
-        {
+        switch (cmd.getFilterType()) {
             case "dataFilter":
                 cmd.setBasePollId(fd.getBasePollId());
                 cmd.setBaseQuestionIds(fd.getBaseQuestionIds());

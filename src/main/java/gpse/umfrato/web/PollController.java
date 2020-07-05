@@ -131,9 +131,20 @@ public class PollController {
      * @param pollId takes the pollId of the specific poll.
      * @return returns the integer value of the activation status.
      */
-    @PostMapping("/activatePoll/{pollId:\\d+}")
-    public Integer activatePoll(final @PathVariable Long pollId) {
-        return pollService.activatePoll(pollId);
+    @PostMapping("/addPollStatus/{pollId:\\d+}")
+    public Integer addPollStatus(final @PathVariable Long pollId) {
+        return pollService.increasePollStatus(pollId);
+    }
+
+    /**
+     * This method is used to set the activation status of a poll.
+     *
+     * @param pollId takes the pollId of the specific poll.
+     * @return returns the integer value of the activation status.
+     */
+    @PostMapping("/removePollStatus/{pollId:\\d+}")
+    public Integer removePollStatus(final @PathVariable Long pollId) {
+        return pollService.decreasePollStatus(pollId);
     }
 
     /**
@@ -161,7 +172,7 @@ public class PollController {
     // @GetMapping("/getUsername")
     @RequestMapping(value = "/getUsername/{link}", method = RequestMethod.POST)
     public String getUsername(final @PathVariable String link) {
-        Poll poll = pollService.getPoll(participationLinkService.getPollIdFromParticipationLink(link));
+        final Poll poll = pollService.getPoll(participationLinkService.getPollIdFromParticipationLink(link));
         if (poll.getAnonymityStatus().equals("1")) {
             return pollService.createAnonymousUsername();
         } else {
@@ -214,8 +225,7 @@ public class PollController {
 
     @PostMapping("/poll/editcq/{cqId:\\d+}")
     public void editConsistencyQuestion(final @PathVariable long cqId, final @RequestBody
-        ConsistencyQuestionCmd consistencyQuestionCmd)
-    {
+        ConsistencyQuestionCmd consistencyQuestionCmd) {
         consistencyQuestionService.editConsistencyQuestion(cqId, consistencyQuestionCmd);
     }
 

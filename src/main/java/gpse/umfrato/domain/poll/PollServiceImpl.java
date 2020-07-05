@@ -98,14 +98,45 @@ class PollServiceImpl implements PollService {
     }
 
     /**
-     * This method activates the poll.
-     * @param pollId the id of the poll which will be activated
+     * This method lets the poll-status progress.
+     * @param pollId the id of the poll which will be increased
      * @return returns the poll activation status
      */
     @Override
-    public Integer activatePoll(final Long pollId) {
+    public Integer increasePollStatus(final Long pollId) {
         final Poll poll = pollRepository.getOne(pollId);
-        poll.setPollStatus(poll.getPollStatus() + 1);
+        switch (poll.getPollStatus()) {
+            case 0:
+                poll.setPollStatus(1);
+                break;
+            case 1:
+                poll.setPollStatus(2);
+                poll.setActivatedDate(Calendar.getInstance());
+                break;
+            case 2:
+                poll.setPollStatus(3);
+                poll.setDeactivatedDate(Calendar.getInstance());
+                break;
+            default:
+                break;
+        }
+        pollRepository.save(poll);
+        return poll.getPollStatus();
+    }
+
+    /**
+     * This method tries to decrease the poll-status.
+     * if the given poll has the status 1 it will be returned to 0,
+     * otherwise the method will do nothing.
+     * @param pollId the id of the poll which will be decreased
+     * @return returns the poll activation status
+     */
+    @Override
+    public Integer decreasePollStatus(final Long pollId) {
+        final Poll poll = pollRepository.getOne(pollId);
+        if (poll.getPollStatus() == 1) {
+            poll.setPollStatus(0);
+        }
         pollRepository.save(poll);
         return poll.getPollStatus();
     }
@@ -151,18 +182,18 @@ class PollServiceImpl implements PollService {
     /**
      * Checks if a poll should be automatically activated/deactivated and if the activationDAte/deactivationDate is
      * reached, the pollStatus is updated.
-     * @param poll
+     * @param poll the poll to check
      * @return updated Poll
      */
     @Override
     public Poll checkActivationAndDeactivation(final Poll poll) {
         final Calendar now = Calendar.getInstance();
         // now.set(Calendar.MONTH, now.get(Calendar.MONTH)+1);
-        if (poll.isActivated() && poll.getPollStatus() == 0 && poll.getActivatedDate().before(now)) {
-            activatePoll(poll.getPollId());
+        if (poll.isActivated() && poll.getPollStatus() == 1 && poll.getActivatedDate().before(now)) {
+            increasePollStatus(poll.getPollId());
         }
-        if (poll.isDeactivated() && poll.getPollStatus() == 1 && poll.getDeactivatedDate().before(now)) {
-            activatePoll(poll.getPollId());
+        if (poll.isDeactivated() && poll.getPollStatus() == 2 && poll.getDeactivatedDate().before(now)) {
+            increasePollStatus(poll.getPollId());
         }
         return pollRepository.findById(poll.getPollId()).orElseThrow(EntityNotFoundException::new);
     }

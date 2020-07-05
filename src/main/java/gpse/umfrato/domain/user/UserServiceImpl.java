@@ -4,7 +4,6 @@ import gpse.umfrato.domain.mail.MailService;
 import gpse.umfrato.domain.password.RandomPasswordGenerator;
 import gpse.umfrato.web.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.logging.LoggerGroup;
 import org.springframework.context.annotation.Primary;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -20,9 +19,9 @@ import java.util.logging.Logger;
 @Service
 class UserServiceImpl implements UserService {
 
+    private static final Logger LOGGER = Logger.getLogger("UserServiceImpl");
     private final UserRepository userRepository;
     private final MailService mailService;
-    private static final Logger LOGGER = Logger.getLogger("UserServiceImpl");
 
     @Autowired
     public UserServiceImpl(final UserRepository userRepository, final MailService mailService) {

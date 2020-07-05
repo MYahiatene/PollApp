@@ -21,7 +21,7 @@ public class User implements UserDetails {
      * The serial version of the object user.
      */
     private static final long serialVersionUID = 0L;
-    private static final java.util.logging.Logger LOGGER = Logger.getLogger("User");
+    private static final Logger LOGGER = Logger.getLogger("User");
 
     /**
      * This attribute represents the username of the user.

@@ -10,10 +10,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @RequestMapping("/api")
 @RestController
@@ -32,7 +29,7 @@ public class MailController {
         this.participationLinkService = participationLinkService;
     }
 
-    @PostMapping(value = "/sendEmail")
+    @PostMapping("/sendEmail")
     public String sendEmail(final @RequestBody MailCmd mailCmd) {
 
         try {
@@ -41,31 +38,28 @@ public class MailController {
 
             String invitationLink;
 
-            for (final String mail : mailCmd.getMailList()) {
+            for (final String mail: mailCmd.getMailList()) {
 
                 if (mailCmd.getAnonymityStatus().equals("3")) { // 3 = nicht anonym
 
                     invitationLink = participationLinkService.createParticipationLink().toString();
-                    participationLinkService.saveParticipationLink(mailCmd.getPollId(), mail,
-                        invitationLink.toString());
+                    participationLinkService.saveParticipationLink(mailCmd.getPollId(), mail, invitationLink);
 
                 } else if (mailCmd.getAnonymityStatus().equals("2")) { // 2 = teilanonym, Username ist unique Key
 
                     invitationLink = participationLinkService.createParticipationLink().toString();
-                    participationLinkService.saveParticipationLink(mailCmd.getPollId(), mail, invitationLink.toString()
-                    );
+                    participationLinkService.saveParticipationLink(mailCmd.getPollId(), mail, invitationLink);
 
                 } else { // 1 = anonym, es ist jedes mal der selbe Link
 
                     final List<ParticipationLink> participationLinks = participationLinkService.getAllParticipationLinks(mailCmd.getPollId());
                     invitationLink = participationLinks.get(0).getGeneratedParticipationLink();
-                    participationLinkService.saveParticipationLink(mailCmd.getPollId(), mail, invitationLink
-                    );
+                    participationLinkService.saveParticipationLink(mailCmd.getPollId(), mail, invitationLink);
 
                 }
 
                 String mailText = mailCmd.getEmailMessage();
-                mailText = mailText.replace("{link}", invitationLink.toString());
+                mailText = mailText.replace("{link}", invitationLink);
                 message.setTo(mail);
                 message.setSubject(mailCmd.getEmailSubject());
                 message.setText(mailText);
@@ -88,7 +82,7 @@ public class MailController {
 
     }
 
-    @PostMapping(value = "/sendRemindEmail")
+    @PostMapping("/sendRemindEmail")
     public String sendRemindEmail(final @RequestBody MailCmd mailCmd) {
         try {
 
