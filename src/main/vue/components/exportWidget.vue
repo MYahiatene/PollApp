@@ -84,21 +84,24 @@ export default {
         },
     },
 
-        methods: {
-            ...mapActions({initialize: 'evaluation/initialize', updateData: 'evaluation/updateData'}),
+    methods: {
+        ...mapActions({ initialize: 'evaluation/initialize', updateData: 'evaluation/updateData' }),
 
         exportAnswers() {
-            this.$store.dispatch('evaluation/exportAnswers', this.pollId) // This should be PollId
+            const pollId = this.pollId
+            this.$store.dispatch('evaluation/exportAnswers', pollId) // This should be PollId
             this.downloadClick(this.pollId)
         },
 
         exportResults() {
-            this.$store.dispatch('evaluation/exportResults', {this.pollId} ) // This should be PollId
+            const pollId = this.pollId
+            this.$store.dispatch('evaluation/exportResults', { pollId }) // This should be PollId
             this.downloadClickResult(this.pollId)
         },
 
         exportCSV() {
-            this.$store.dispatch('evaluation/exportCSV', this.pollId) // This should be PollId
+            const pollId = this.pollId
+            this.$store.dispatch('evaluation/exportCSV', pollId) // This should be PollId
             this.downloadClickCSV(this.pollId)
         },
 
@@ -124,7 +127,7 @@ export default {
                 console.log(this.$store.dispatch('evaluation/importPoll', e.target.result))
             }
         },
-},
+    },
 }
 </script>
 

@@ -201,6 +201,14 @@
                                         >
                                             Zurücksetzen
                                         </v-btn>
+                                        <v-btn
+                                            v-if="!sqWasAnsweredList[index]"
+                                            @click="saveAnswerSortQuestion(index, question)"
+                                            :color="backgroundColor"
+                                            class="ma-2"
+                                        >
+                                            Reihenfolge so übernehmen
+                                        </v-btn>
                                     </div>
                                 </v-card>
                             </v-list>
@@ -258,11 +266,7 @@
                                             Sie haben an dieser Umfrage bereits teilgenommen!
                                         </v-card-title>
                                         <v-card-text>
-                                            <v-container>
-                                                <v-row>
-                                                    Vielen Dank für ihre Teilnahme!
-                                                </v-row>
-                                            </v-container>
+                                            Vielen Dank für ihre Teilnahme!
                                         </v-card-text>
                                     </v-card>
                                 </v-row>
@@ -419,13 +423,11 @@ export default {
                 }
             }
             if (!this.getCategory.questionList[index].textMinimum) {
-                console.log('min is undefined')
                 min = 0
             } else {
                 min = this.getCategory.questionList[index].textMinimum
             }
             if (!this.getCategory.questionList[index].textMaximum) {
-                console.log('max is undefined')
                 max = 1000
             } else {
                 max = this.getCategory.questionList[index].textMaximum
@@ -492,8 +494,6 @@ export default {
                 const type = this.getCategory.questionList[i].questionType
 
                 if (this.givenAnswers !== []) {
-                    console.log('valueList:', this.valueList)
-                    console.log(i, this.givenAnswers[i])
                     if (this.givenAnswers[i] != null) {
                         // for RadioButtons we need answer text and given back are the indizes
                         if (
@@ -501,7 +501,6 @@ export default {
                                 this.getCategory.questionList[i].numberOfPossibleAnswers === 1) ||
                             type === 'RangeQuestion'
                         ) {
-                            console.log('RangeQuestion')
                             this.valueList.push(
                                 this.computedQuestionList[i].answerPossibilities[this.givenAnswers[i].givenAnswerList]
                             )
@@ -518,7 +517,6 @@ export default {
                             this.valueList.push(array)
                         } else if (type === 'SortQuestion') {
                             const array = []
-                            console.log('answersLength', this.givenAnswers[i].length)
                             for (let j = 0; j < this.givenAnswers[i].givenAnswerList.length; j++) {
                                 array.push(
                                     this.computedQuestionList[i].answerPossibilities[
@@ -534,7 +532,22 @@ export default {
                             this.valueList.push(this.givenAnswers[i].givenAnswerList[0])
                         }
                     } else {
-                        this.valueList.push(this.givenAnswers[i])
+                        switch (type) {
+                            case 'TextQuestion':
+                                this.valueList.push('')
+                                break
+                            case 'SlideQuestion':
+                                this.valueList.push(this.getCategory.questionList[i].startValue)
+                                break
+                            case 'ChoiceQuestion':
+                                this.valueList.push([])
+                                break
+                            case 'RangeQuestion':
+                                this.valueList.push([])
+                                break
+                            case 'SortQuestion':
+                                break
+                        }
                     }
                 } else {
                     switch (type) {
@@ -574,7 +587,6 @@ export default {
             // wird nur ausgeführt, wenn im Textfeld was steht
             if (x !== 0) {
                 x[2] = this.getPoll[1].data.pollId
-                console.log('Answer to save: ', x)
                 this.$store.dispatch('participant/saveAnswerPossibility', x)
                 // delete ownAnswer of the now saved question from the array
                 for (let i = 0; i < this.ownAnswers.length; i++) {
@@ -690,7 +702,6 @@ export default {
          * @param question The question object, so it can get the QuestionID
          */
         saveAnswerField(e, question) {
-            console.log('textMultiline: ', question.textMultiline)
             const answerList = []
             let answer = ''
             let stringcounter = 0
@@ -725,11 +736,6 @@ export default {
             this.answerObj.answerList = [e]
             this.answerObj.pollId = this.getPoll[1].data.pollId
             this.answerObj.questionId = question.questionId
-            console.log('startValue', question.startValue)
-            console.log('endValue', question.endValue)
-            console.log('stepSize', question.stepSize)
-            console.log('value', e)
-            console.log('valueList', this.valueList[index])
 
             this.saveAnswer()
         },
@@ -752,12 +758,9 @@ export default {
             }
             this.answerObj.pollId = this.getPoll[1].data.pollId
             this.answerObj.questionId = question.questionId
-            console.log('AnswerObj.answerList:')
-            console.log(this.answerObj.answerList)
             this.sqWasAnsweredList[index] = true
             this.$forceUpdate()
             this.saveAnswer()
-
         },
         /**
          * Moves the slider one step to the left, if possible.
@@ -829,9 +832,6 @@ export default {
                 pollTaker: this.getUsername,
                 pollId: this.getPoll[1].data.pollId,
             }
-            /* await this.$store
-                .dispatch('participant/participatedInfo', userObj)
-                .then((this.participated = this.getParticipated), console.log('participated', this.participated)) */
             await this.$axios
                 .post('/participated', userObj)
                 .catch()
@@ -860,13 +860,9 @@ export default {
                 .catch()
                 .then((result) => {
                     if (result.data.answerList !== undefined) {
-                        console.log('Result ist vorhanden')
                         this.givenAnswers = result.data.answerList
-                        console.log(this.givenAnswers)
                     } else {
-                        console.log('Result ist nicht vorhanden')
                         this.givenAnswers = []
-                        console.log(this.givenAnswers)
                     }
                 })
         },
@@ -881,8 +877,6 @@ export default {
          * Is called when clicked on "Absenden".
          */
         saveParticipatedPoll() {
-            console.log('Ich werde aufgerufen!')
-            console.log(this.getUsername)
             const userObj = {
                 pollTaker: this.getUsername,
                 pollId: this.getPoll[1].data.pollId,
