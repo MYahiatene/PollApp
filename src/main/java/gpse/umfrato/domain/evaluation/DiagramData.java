@@ -423,19 +423,21 @@ public class DiagramData {
         int calcTendency(String input){
             int tendency = 0;
             List<String> wordList = Arrays.asList(input.split("[ .,;:?\\-_=()/&%$§!#'+*~|<>]+"));
-            for(String word : wordList)
-                if(Arrays.asList(positiveWords).contains(word.toLowerCase()))
+            for(String word : wordList) {
+                if (Arrays.asList(positiveWords).contains(word.toLowerCase()))
                     tendency += Collections.frequency(wordList, word.toLowerCase());
-                else if(Arrays.asList(negativeWords).contains(word.toLowerCase()))
+                else if (Arrays.asList(negativeWords).contains(word.toLowerCase()))
                     tendency -= Collections.frequency(wordList, word.toLowerCase());
+            }
             return tendency;
         }
 
         List<JSObject> doWordStuff(List<TextAnswer> input){ //Antworten Darstellen
-            List<JSObject> outputList = new ArrayList<>();
-            for(TextAnswer ta : input)
-                outputList.add(new JSObject(ta.text.split("[ .,;:?\\-_=()/&%$§!#'+*~|<>]+").length, ta.text, calcTendency(ta.text), ta.edited, ta.creator)); // Antwortlänge, Antwort, Antworttendenz
-            return outputList;
+        List<JSObject> outputList = new ArrayList<>();
+        for(TextAnswer ta : input) {
+            outputList.add(new JSObject(ta.text.split("[ .,;:?\\-_=()/&%$§!#'+*~|<>]+").length, ta.text, calcTendency(ta.text), ta.edited, ta.creator)); // Antwortlänge, Antwort, Antworttendenz
+        }
+        return outputList;
         }
 
         List<JSObject> doWordFrequencyStuff(List<TextAnswer> input){ //Wortfrequenzen darstekken
@@ -443,9 +445,11 @@ public class DiagramData {
             for(TextAnswer ta : input)
                 answers.add(ta.text);
             List<JSObject> duplicateList = new ArrayList<>();
-            for(String answer : answers) //Wir brauchen nur die Strings
-                for(String word : answer.split("[ .,;:?\\-_=()/&%$§!#'+*~|<>]+"))
+            for(String answer : answers) {//Wir brauchen nur die Strings
+                for (String word : answer.split("[ .,;:?\\-_=()/&%$§!#'+*~|<>]+")) {
                     duplicateList.add(new JSObject(Collections.frequency(input, word), word, 0, "", ""));
+                }
+            }
             Set<JSObject> s = new HashSet<JSObject>(duplicateList);
             return new ArrayList<JSObject>(s);
         }
