@@ -433,7 +433,7 @@ public class DiagramData {
         int calcTendency(final List<String> stringList, final String input) {
             int tendency = 0;
             final List<String> wordList = Arrays.asList(input.split("[ .,;:?\\-_=()/&%$§!#'+*~|<>]+"));
-            for (final String word : wordList) {
+            for (final String word: wordList) {
                 if (Arrays.asList(positiveWords).contains(word.toLowerCase())) {
                     tendency += 1;
                 } else if (Arrays.asList(negativeWords).contains(word.toLowerCase())) {
@@ -445,9 +445,11 @@ public class DiagramData {
 
         List<String> getWordList(List<TextAnswer> input) {
             List<String> stringList = new ArrayList<>();
-            for (TextAnswer ta : input)
-                for(String word : ta.text.toLowerCase().split("[ .,;:?\\-_=()/&%$§!#'+*~|<>]+"))
+            for (TextAnswer ta: input) {
+                for (String word: ta.text.toLowerCase().split("[ .,;:?\\-_=()/&%$§!#'+*~|<>]+")) {
                     stringList.add(word);
+                }
+            }
             return stringList;
         }
 
@@ -459,17 +461,17 @@ public class DiagramData {
             return outputList;
         }
 
-        int getWordFrequency(List<TextAnswer> input, TextAnswer ta){
+        int getWordFrequency(List<TextAnswer> input, TextAnswer ta) {
             List<String> wordList = getWordList(input);
             return Collections.frequency(wordList, ta.text);
 
         }
 
-        List<JSObject> removeDuplicates(final List<JSObject> duplicates){
+        List<JSObject> removeDuplicates(final List<JSObject> duplicates) {
             List<String> keyList = new ArrayList<>();
             List<JSObject> noDuplicates = new ArrayList<>();
-            for(JSObject jso: duplicates){
-                if(!keyList.contains(jso.text)){
+            for (JSObject jso: duplicates) {
+                if (!keyList.contains(jso.text)) {
                     noDuplicates.add(jso);
                     keyList.add(jso.text);
                 }
@@ -485,14 +487,13 @@ public class DiagramData {
             final List<JSObject> duplicateList = new ArrayList<>();
             for (final String answer: answers) { //Wir brauchen nur die Strings
                 for (final String word: answer.split("[ .,;:?\\-_=()/&%$§!#'+*~|<>]+")) {
-                    duplicateList.add(new JSObject(0, word, 0, Collections.frequency(getWordList(input), word.toLowerCase()),"", ""));
+                    duplicateList.add(new JSObject(0, word, 0, Collections.frequency(getWordList(input), word.toLowerCase()), "", ""));
                 }
             }
             return removeDuplicates(duplicateList);
         }
 
-        @Override
-        public String toJSON() {
+        @Override public String toJSON() {
             final ObjectMapper mapper = new ObjectMapper();
             try {
                 return mapper.writeValueAsString(this);
@@ -626,22 +627,44 @@ public class DiagramData {
                 step = 1L;
             }
             final List<String> answerPossibilities = new ArrayList<>();
-            String patternString = "MM.yyyy";
-            if (step < 60 * 60 * 24 * 30) {
-                patternString = "dd." + patternString;
+            if(participantsOverRelativeTime)
+            {
+                String patternString = "T+";
+                if (step < 60 * 60 * 24 * 30) {
+                    patternString = "dd." + patternString;
+                }
+                if (step < 60 * 60 * 24) {
+                    patternString += " HH";
+                }
+                if (step < 60 * 60) {
+                    patternString += ":mm";
+                }
+                if (step < 60) {
+                    patternString += ":ss";
+                }
+                final DateFormat df = new SimpleDateFormat(patternString, Locale.GERMAN);
+                for (long date = min.getTime(); date <= max.getTime(); date += step * 1000) {
+                    answerPossibilities.add(df.format(new Date(date)));
+                }
             }
-            if (step < 60 * 60 * 24) {
-                patternString += " HH";
-            }
-            if (step < 60 * 60) {
-                patternString += ":mm";
-            }
-            if (step < 60) {
-                patternString += ":ss";
-            }
-            final DateFormat df = new SimpleDateFormat(patternString, Locale.GERMAN);
-            for (long date = min.getTime(); date <= max.getTime(); date += step * 1000) {
-                answerPossibilities.add(df.format(new Date(date)));
+            else {
+                String patternString = "MM.yyyy";
+                if (step < 60 * 60 * 24 * 30) {
+                    patternString = "dd." + patternString;
+                }
+                if (step < 60 * 60 * 24) {
+                    patternString += " HH";
+                }
+                if (step < 60 * 60) {
+                    patternString += ":mm";
+                }
+                if (step < 60) {
+                    patternString += ":ss";
+                }
+                final DateFormat df = new SimpleDateFormat(patternString, Locale.GERMAN);
+                for (long date = min.getTime(); date <= max.getTime(); date += step * 1000) {
+                    answerPossibilities.add(df.format(new Date(date)));
+                }
             }
             participantsOverTime = new ChoiceData(0, "Teilnahmen über Zeit", answerPossibilities);
             for (final Date d: datesList) {
@@ -672,7 +695,9 @@ public class DiagramData {
                             case TEXT_QUESTION:
                                 if (!a.getGivenAnswerList().isEmpty()) {
                                     final TextData td = (TextData) qd;
-                                    td.addAnswer(pr.getPollResultId(), a.getGivenAnswerList().get(a.getGivenAnswerList().size() - 1), pr.getLastEditAt(), pr.getPollTaker());
+                                    td.addAnswer(pr.getPollResultId(),
+                                            a.getGivenAnswerList().get(a.getGivenAnswerList().size() - 1),
+                                            pr.getLastEditAt(), pr.getPollTaker());
                                 }
                                 break;
                             case SORT_QUESTION:
