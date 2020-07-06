@@ -2,6 +2,8 @@ export const state = () => ({
     Polls: [],
     error: '',
     index: -1,
+    qrTitle: '',
+    qrLink: '',
 })
 export const getters = {
     getPolls(state) {
@@ -13,10 +15,22 @@ export const getters = {
     getPoll(state) {
         return state.Polls[state.index]
     },
+    getQrTitle(state) {
+        return state.qrTitle
+    },
+    getQrLink(state) {
+        return state.qrLink
+    },
 }
 export const mutations = {
     setPolls(state, data) {
         state.Polls = data.data
+    },
+    setQrTitle(state, title) {
+        state.qrTitle = title
+    },
+    setQrLink(state, link) {
+        state.qrLink = link
     },
     saveError(state, error) {
         state.error = error
