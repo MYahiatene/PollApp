@@ -10,6 +10,7 @@ import gpse.umfrato.domain.evaluation.Statistics;
 import gpse.umfrato.domain.export.ExportService;
 import gpse.umfrato.domain.participationlinks.ParticipationLinkService;
 import gpse.umfrato.domain.poll.Poll;
+import gpse.umfrato.domain.poll.PollRepository;
 import gpse.umfrato.domain.poll.PollService;
 import gpse.umfrato.domain.pollresult.PollResult;
 import gpse.umfrato.domain.pollresult.PollResultService;
@@ -23,7 +24,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.net.MalformedURLException;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 @RequestMapping("/api/export/")
@@ -40,12 +43,13 @@ public class ExportController {
     private final SessionService sessionService;
     private final ConsistencyQuestionService consistencyQuestionService;
     private final ParticipationLinkService participationLinkService;
+    private final PollRepository pollRepository;
     private static final String ONE = "1";
     private static final String ALL_USERS = "allUsers";
     private Integer fileNumber = 0;
 
     @Autowired
-    public ExportController(final PollService pollService, final PollResultService pollResultService, final ExportService exportService, final QuestionService questionService, final CategoryService categoryService, final ConsistencyQuestionService consistencyQuestionService, final SessionService sessionService, final ParticipationLinkService participationLinkService) {
+    public ExportController(final PollService pollService, final PollResultService pollResultService, final ExportService exportService, final QuestionService questionService, final CategoryService categoryService, final ConsistencyQuestionService consistencyQuestionService, final SessionService sessionService, final ParticipationLinkService participationLinkService, final PollRepository pollRepository) {
         this.pollService = pollService;
         this.pollResultService = pollResultService;
         this.exportService = exportService;
@@ -54,6 +58,7 @@ public class ExportController {
         this.consistencyQuestionService = consistencyQuestionService;
         this.sessionService = sessionService;
         this.participationLinkService = participationLinkService;
+        this.pollRepository = pollRepository;
     }
 
     @RequestMapping(value = "/getFile/{fileNumber:\\d+}", method = RequestMethod.GET)
@@ -90,11 +95,22 @@ public class ExportController {
     @PostMapping("/importPoll")
     public Long fromJSONToPoll(final @RequestBody String file) throws MalformedURLException {
         final PollCmd pollCmd = exportService.fromJSONToPoll(file);
-        final Poll poll = pollService.createCopyPoll(pollCmd.getCmdPoll());
-        if (poll.getAnonymityStatus().equals(ONE)) {
+        Calendar actCalendar = Calendar.getInstance();
+        Date actDate = new Date(Long.parseLong(pollCmd.getActivatedDate()));
+        actCalendar.setTime(actDate);
+        pollCmd.setActivatedDate(actCalendar.toString());
+        Calendar deactCalendar = Calendar.getInstance();
+        Date deactDate = new Date(Long.parseLong(pollCmd.getDeactivatedDate()));
+        actCalendar.setTime(deactDate);
+        pollCmd.setDeactivatedDate(deactCalendar.toString());
+        final Poll poll = new Poll(pollCmd.getPollCreator(), pollCmd.getAnonymityStatus(), pollCmd.getPollName(), pollCmd.getCreationDate(), actCalendar,
+            deactCalendar, pollCmd.getPollStatus(), pollCmd.getBackgroundColor(), pollCmd.getFontColor(), pollCmd.getLogo(), pollCmd.isVisibility(), pollCmd.isCategoryChange(), pollCmd.isActivated(),
+            pollCmd.isDeactivated());
+        /*if (poll.getAnonymityStatus().equals(ONE)) {
             final String link = participationLinkService.createParticipationLink().toString();
             participationLinkService.saveParticipationLink(poll.getPollId(), ALL_USERS, link);
-        }
+        }*/
+        pollRepository.save(poll);
         return poll.getPollId();
     }
 
