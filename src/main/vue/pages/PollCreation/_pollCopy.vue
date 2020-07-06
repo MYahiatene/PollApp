@@ -41,7 +41,7 @@
                         <v-switch v-model="switch0" label="Als Serienumfrage erstellen"></v-switch>
                     </v-row>
                     <v-row v-if="switch0" no-gutters>
-                        <v-col cols="12" lg="5">
+                        <v-col cols="12" lg="6">
                             <v-card class="mt-5">
                                 <v-card-title>Dynmischer Name</v-card-title>
                                 <v-card-text
@@ -66,18 +66,22 @@
                                     <v-col>
                                         <v-row no-gutters>
                                             <v-text-field
-                                                v-model="rythm"
+                                                v-model="rhythm"
                                                 class="mr-5 ml-3"
                                                 label="Rythmus"
                                                 prefix="Alle"
                                                 hint="z.B. Alle 2 Wochen"
-                                                type="number"
+                                                type="Number"
                                                 min="1"
+                                                :required="switch0"
+                                                :rules="rhythmRules"
                                             />
                                             <v-overflow-btn
                                                 class="mr-3 ml-5"
+                                                v-model="selectedLevelAsText"
                                                 dense
                                                 label="Zeiteinheit"
+                                                :required="switch0"
                                                 :items="levels"
                                                 @change="(value) => switchLevel(value)"
                                             />
@@ -88,21 +92,24 @@
                                         </v-label>
                                         <v-row>
                                             <v-text-field
-                                                v-if="selectedLevel > 0"
-                                                v-model="day"
+                                                v-if="selectedLevel > 2"
+                                                v-model="month"
                                                 class="mr-5 ml-5"
-                                                :label="dayLabel"
-                                                :hint="dayHint"
+                                                label="Monat im Jahr"
+                                                prefix=""
+                                                hint="z.B. Monat 3"
                                                 min="1"
-                                                max="365"
-                                                @change="(value) => loggen(value)"
+                                                max="12"
+                                                :rules="monthRules"
                                             />
                                             <v-text-field
                                                 v-if="selectedLevel > 1"
                                                 v-model="week"
                                                 class="mr-5 ml-5"
                                                 :label="
-                                                    selectedLevel > 2 && month <= 0 ? 'Kalenderwoche' : 'Woche im Monat'
+                                                    selectedLevel > 2 && stringToList(month).length > 0 <= 0
+                                                        ? 'Kalenderwoche'
+                                                        : 'Woche im Monat'
                                                 "
                                                 :hint="
                                                     selectedLevel > 2
@@ -113,16 +120,18 @@
                                                 "
                                                 min="1"
                                                 :max="selectedLevel > 2 && month <= 0 ? 53 : 4"
+                                                :rules="weekRules"
                                             />
                                             <v-text-field
-                                                v-if="selectedLevel > 2"
-                                                v-model="month"
+                                                v-if="selectedLevel > 0"
+                                                v-model="day"
                                                 class="mr-5 ml-5"
-                                                label="Monat im Jahr"
-                                                prefix=""
-                                                hint="z.B. Monat 3"
+                                                :label="dayLabel"
+                                                :hint="dayHint"
                                                 min="1"
-                                                max="12"
+                                                max="365"
+                                                :required="switch0"
+                                                :rules="dayRules"
                                             />
                                         </v-row>
                                     </v-col>
@@ -137,12 +146,13 @@
                                             v-model="selectedDeactivation"
                                             label="Deaktivierungsgrund"
                                             :items="deactivationReasons"
+                                            :required="switch0"
                                         />
                                     </v-row>
                                     <v-row v-if="selectedDeactivation === 'Datum'">
                                         <v-menu
                                             ref="menu"
-                                            v-model="menuA"
+                                            v-model="menuF"
                                             :close-on-content-click="false"
                                             transition="scale-transition"
                                             offset-y
@@ -154,6 +164,7 @@
                                                     v-model="finishingString"
                                                     label="Umfrage läuft bis einschließlich"
                                                     @blur="finishingDate = parseDate(finishingString)"
+                                                    :required="selectedDeactivation === 'Datum'"
                                                     v-on="on"
                                                 />
                                             </template>
@@ -177,10 +188,10 @@
                                                 selectedDeactivation +
                                                 (selectedDeactivation === 'Teilnehmerzahl' ? ' unter' : '')
                                             "
+                                            :required="selectedDeactivation !== 'Datum'"
                                             :suffix="selectedDeactivation === 'Umfragenanzahl' ? 'erreicht' : ''"
                                             type="Number"
                                             min="1"
-                                            @change="(value) => loggen(value)"
                                         />
                                     </v-row>
                                 </v-col>
@@ -191,7 +202,7 @@
                         <v-switch
                             v-model="switch1"
                             :disabled="switch0"
-                            :label="switch0 ? 'lege allgemeine Aktivierungszeit fest' : 'lege Aktivierungsdatum fest'"
+                            :label="switch0 ? 'lege allgemeines Aktivierungsdatum fest' : 'lege Aktivierungsdatum fest'"
                         ></v-switch>
                     </v-row>
                     <v-row v-if="switch1 || switch0" no-gutters>
@@ -210,6 +221,7 @@
                                         v-model="activateDate"
                                         label="Datum"
                                         persistent-hint
+                                        :required="switch0"
                                         @blur="date = parseDate(activateDate)"
                                         v-on="on"
                                     />
@@ -241,7 +253,7 @@
                             v-model="switch2"
                             :disabled="switch0"
                             :label="
-                                switch0 ? 'lege allgemeine Deaktivierungszeit fest' : 'lege Deaktivierungsdatum fest'
+                                switch0 ? 'lege allgemeines Deaktivierungsdatum fest' : 'lege Deaktivierungsdatum fest'
                             "
                         ></v-switch>
                     </v-row>
@@ -261,6 +273,7 @@
                                         v-model="deactivateDate"
                                         label="Datum"
                                         persistent-hint
+                                        :required="switch0"
                                         @blur="date = parseDate(deactivateDate)"
                                         v-on="on"
                                     />
@@ -324,8 +337,10 @@
                 </v-container>
 
                 <br />
-                <v-btn :disabled="!valid" color="success" class="mr-4" @click="goHome()">Erstellen</v-btn>
-                <v-btn :disabled="!valid" color="success" class="mr-4" @click="goToNewPoll()"
+                <v-btn :disabled="!valid || !serialPollValid" color="success" class="mr-4" @click="goHome()"
+                    >Erstellen</v-btn
+                >
+                <v-btn :disabled="!valid || !serialPollValid" color="success" class="mr-4" @click="goToNewPoll()"
                     >Erstellen und bearbeiten</v-btn
                 >
             </v-form>
@@ -342,7 +357,7 @@ export default {
         return {
             pollId: 0,
             categoryList: [],
-            switch0: false,
+            switch0: true,
             switch1: false,
             switch2: false,
             switch3: false,
@@ -364,18 +379,20 @@ export default {
             deactivated: null,
             menuA: false,
             menuD: false,
+            menuF: false,
             selectedAnonymityType: '',
             levels: ['Tage', 'Wochen', 'Monate', 'Jahre'],
-            selectedLevel: 0,
+            selectedLevel: -1,
+            selectedLevelAsText: '',
             deactivationReasons: ['Datum', 'Umfragenanzahl', 'Teilnehmerzahl'],
             selectedDeactivation: '',
             finishingDate: '',
             finishingString: '',
             finishingNumber: null,
-            rythm: null,
-            day: null,
-            week: null,
-            month: null,
+            rhythm: '',
+            day: '',
+            week: '',
+            month: '',
             anonymityTypes: [
                 {
                     text: 'Anonym',
@@ -392,6 +409,13 @@ export default {
             ],
             titleRules: [(v) => !!v || 'Titel fehlt'],
             anonymityRules: [(v) => !!v || 'Anonymitätsgrad fehlt.'],
+            rhythmRules: [
+                (v) => !!v || 'Rythmus ist nicht angegeben',
+                (v) => Number(v) % 1 === 0 || 'Rythmus muss ganze Zahl sein',
+            ],
+            dayRules: [(v) => this.dayValid(v)],
+            weekRules: [(v) => this.weekValid(v)],
+            monthRules: [(v) => this.monthValid(v)],
         }
     },
     /**
@@ -463,25 +487,106 @@ export default {
             this.$refs.form.validate()
         },
         stringToList(text) {
+            const validChars = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'] // simpler than JS's ' ' == 0 etc.
             const list = []
             if (text) {
                 const asArray = text.split('')
                 let elem = ''
                 for (let i = 0; i < asArray.length; i++) {
-                    const numberValue = Number(asArray[i])
-                    if (!isNaN(numberValue) && numberValue > 0) {
+                    if (validChars.includes(asArray[i])) {
                         elem = elem + asArray[i]
                     } else {
-                        list.push(elem)
+                        if (!list.includes(Number(elem)) && elem.length > 0) {
+                            list.push(Number(elem))
+                        }
                         elem = ''
                     }
                 }
                 if (elem.length > 0) {
-                    list.push(elem)
+                    if (!list.includes(Number(elem))) {
+                        list.push(Number(elem))
+                    }
                 }
             }
-
+            list.sort((a, b) => {
+                return a - b
+            })
+            console.log(list)
             return list
+        },
+        serialPollValid() {
+            if (this.switch0) {
+                if (
+                    this.dayValid(this.day) &&
+                    this.rhythm > 0 &&
+                    this.selectedLevel > -1 &&
+                    !!this.selectedDeactivation
+                ) {
+                    switch (this.selectedDeactivation) {
+                        case 'Datum':
+                            return this.finishingString.length > 0
+                        case 'Umfragenanzahl':
+                        case 'Teilnehmerzahl':
+                            return this.finishingNumber > 0
+                    }
+                    return false
+                }
+                return false
+            }
+            return true
+        },
+        dayValid(dayString) {
+            const list = this.stringToList(dayString)
+            const monthContext = this.monthValid(this.month) === true && this.month.length > 0
+            const weekContext = this.weekValid(this.week) === true && this.week.length > 0
+            console.log('monthContext:', monthContext)
+            console.log('weekContext:', weekContext)
+            if (list.length > 0) {
+                for (const elem of list) {
+                    if (weekContext && (elem < 1 || elem > 7)) {
+                        return 'Kein Wochentag: "' + elem + '"'
+                    } else if (monthContext && (elem < 1 || elem > 31)) {
+                        return 'Kein Tag im Monat: "' + elem + '"'
+                    } else if (elem < 1 || elem > 365) {
+                        return 'Kein Tag im Jahr: "' + elem + '"'
+                    }
+                }
+                return true
+            } else if (dayString.length > 0) {
+                return 'Tagangabe ungültig'
+            } else {
+                return 'Keine Tagangabe vorhanden'
+            }
+        },
+        weekValid(weekString) {
+            const list = this.stringToList(weekString)
+            const monthContext = this.monthValid(this.month) === true && this.month.length > 0
+            console.log('monthContextForWeek:', monthContext)
+            if (list.length > 0 || weekString.length === 0) {
+                for (const elem of list) {
+                    if (monthContext && (elem < 1 || elem > 5)) {
+                        return 'Keine Woche im Monat: "' + elem + '"'
+                    } else if (elem < 1 || elem > 53) {
+                        return 'Keine Kalenderwoche: "' + elem + '"'
+                    }
+                }
+                return true
+            } else {
+                return 'Wochenangabe ungültig'
+            }
+        },
+        monthValid(monthString) {
+            const list = this.stringToList(monthString)
+            if (list.length > 0 || monthString.length === 0) {
+                for (const elem of list) {
+                    if (elem < 1 || elem > 12) {
+                        return 'Kein Monat: "' + elem + '"'
+                    }
+                }
+                return true
+            } else {
+                return 'Monatsangabe ungültig'
+            }
         },
         /**
          * Puts all information in an object and directly access axios over above declared instance at PostMapping
@@ -507,7 +612,7 @@ export default {
                 activated: this.switch1,
                 deactivated: this.switch2,
                 level: this.selectedLevel,
-                repeat: this.rythm,
+                repeat: this.rhythm,
                 repeatUntil:
                     this.deactivationReasons.indexOf(this.selectedDeactivation) === 0
                         ? this.finishingDate
@@ -574,9 +679,6 @@ export default {
         async goHome() {
             await this.sendData()
             await this.$router.push('/polls')
-        },
-        loggen(value) {
-            console.log(this.stringToList(value))
         },
         async goToNewPoll() {
             await this.sendData()
