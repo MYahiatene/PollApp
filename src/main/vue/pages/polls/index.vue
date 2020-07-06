@@ -581,6 +581,19 @@ export default {
                 .catch((reason) => {
                     console.log(reason)
                 })
+            await this.$axios
+                .post('/addquestion', {
+                    pollId: newPollId,
+                    questionType: 'SortQuestion',
+                    questionMessage: 'Sortierfrage',
+                    answerPossibilities: ['A', 'B', 'C', 'D', 'E'],
+                })
+                .then((response) => {
+                    console.log(response)
+                })
+                .catch((reason) => {
+                    console.log(reason)
+                })
             this.progressColorA = '#006eff'
             this.initialize()
         },
@@ -647,6 +660,20 @@ export default {
                     pollId: 1,
                     questionId: 10,
                     answerList: [Math.floor((Math.random() * 50000) / 10)],
+                })
+                const array = ['0', '1', '2', '3', '4']
+                let a, b
+                for (let k = array.length - 1; k > 0; k--) {
+                    a = Math.floor(Math.random() * (k + 1))
+                    b = array[k]
+                    array[k] = array[a]
+                    array[a] = b
+                }
+                await this.$store.dispatch('participant/saveAnswer', {
+                    username: '' + i,
+                    pollId: 1,
+                    questionId: 11,
+                    answerList: array,
                 })
             }
         },
