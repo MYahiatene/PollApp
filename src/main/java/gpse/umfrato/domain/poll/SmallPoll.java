@@ -8,6 +8,7 @@ import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
@@ -56,15 +57,15 @@ public class SmallPoll {
     @SuppressWarnings({"checkstyle:LeftCurly", "checkstyle:RightCurly", "checkstyle:OperatorWrap"})
     public SmallPoll(Poll original, PollResultService pollResultService, ParticipationLinkService participationLinkService)
     {
-        final SimpleDateFormat df = new SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.GERMAN);
+        final DateTimeFormatter df = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm", Locale.GERMAN);
         this.pollId = original.getPollId();
         this.pollName = original.getPollName();
         this.pollCreator = original.getPollCreator();
-        this.creationDate = original.getCreationDate();
-        this.lastEditAt = original.getLastEditAt();
+        this.creationDate = df.format(original.getCreationDate());
+        this.lastEditAt = df.format(original.getLastEditAt());
         this.lastEditFrom = original.getLastEditFrom();
-        this.activatedDate = original.isActivated() ? df.format(original.getActivatedDate().getTime()) : DEFAULT;
-        this.deactivatedDate = original.isDeactivated() ? df.format(original.getDeactivatedDate().getTime()) : DEFAULT;
+        this.activatedDate = original.isActivated() ? df.format(original.getActivatedDate()) : DEFAULT;
+        this.deactivatedDate = original.isDeactivated() ? df.format(original.getDeactivatedDate()) : DEFAULT;
         this.anonymityStatus = original.getAnonymityStatus();
         this.pollStatus = original.getPollStatus();
         this.participationLinks = participationLinkService.getAllParticipationLinks(pollId);

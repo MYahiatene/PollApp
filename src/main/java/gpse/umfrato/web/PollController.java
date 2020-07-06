@@ -17,6 +17,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.MalformedURLException;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -291,13 +292,13 @@ public class PollController {
     }
     @GetMapping("/getActDate")
     public String getActDate(final @RequestParam long pollId) {
-        final Calendar date = pollService.getPoll(pollId).getActivatedDate();
+        final ZonedDateTime date = pollService.getPoll(pollId).getActivatedDate();
         return pollService.parseDate(date);
     }
 
     @GetMapping("/getDeactDate")
     public String getDeactDate(final @RequestParam long pollId) {
-        final Calendar date = pollService.getPoll(pollId).getDeactivatedDate();
+        final ZonedDateTime date = pollService.getPoll(pollId).getDeactivatedDate();
         return pollService.parseDate(date);
     }
 

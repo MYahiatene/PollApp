@@ -117,22 +117,22 @@ public class Poll {
     @OneToMany(orphanRemoval = true)
     private List<Category> categoryList = new ArrayList<>();
 
-    private String repeat;
+    private Integer repeat;
 
     private String repeatUntil;
 
     @ElementCollection
-    private List<String> day = new ArrayList<>();
+    private List<Integer> day = new ArrayList<>();
 
     @ElementCollection
-    private List<String> week = new ArrayList<>();
+    private List<Integer> week = new ArrayList<>();
 
     @ElementCollection
-    private List<String> month = new ArrayList<>();
+    private List<Integer> month = new ArrayList<>();
 
-    private int stoppingReason;
+    private Integer stoppingReason;
 
-    private int level;
+    private Integer level;
 
     private Long seriesCounter;
 
@@ -160,9 +160,9 @@ public class Poll {
     public Poll(final String pollCreator, final String anonymityStatus, final String pollName, final ZonedDateTime createdAt,
                 final ZonedDateTime activatedAt, final ZonedDateTime deactivatedAt, final int pollStatus,
                 final String backgroundColor, final String fontColor, final String logo, final boolean visibility,
-                final boolean categoryChange, final boolean activated, final boolean deactivated, final String repeat,
-                final String repeatUntil, final List<String> day, final List<String> week, final List<String> month,
-                final int stoppingReason, final int level, final Long seriesCounter) {
+                final boolean categoryChange, final boolean activated, final boolean deactivated, final Integer repeat,
+                final String repeatUntil, final List<Integer> day, final List<Integer> week, final List<Integer> month,
+                final Integer stoppingReason, final Integer level, final Long seriesCounter) {
         this.pollName = pollName;
         this.pollCreator = pollCreator;
         this.anonymityStatus = anonymityStatus;

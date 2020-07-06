@@ -1,5 +1,6 @@
 package gpse.umfrato.domain.poll;
 
+import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.List;
 
@@ -77,7 +78,7 @@ public interface PollService {
      * @param date Calendar with date and time information
      * @return date as a String
      */
-    String parseDate(final Calendar date);
+    String parseDate(final ZonedDateTime date);
 
     /**
      * Checks if a poll should be automatically activated/deactivated and if the activationDAte/deactivationDate is

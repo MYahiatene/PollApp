@@ -44,15 +44,15 @@ public class PollCmd {
 
     private String pollName;
 
-    private String repeat;
+    private Integer repeat;
 
     private String repeatUntil;
 
-    private List<String> day;
+    private List<Integer> day;
 
-    private List<String> week;
+    private List<Integer> week;
 
-    private List<String> month;
+    private List<Integer> month;
 
     private int pollStatus;
 
@@ -64,26 +64,18 @@ public class PollCmd {
 
     private boolean deactivated;
 
-    private int stoppingReason;
+    private Integer stoppingReason;
 
-    private int level;
+    private Integer level;
 
 
     public Poll getCmdPoll() {
         // parses the activationDAte and deactivationDate from a String to a Calendar
-        final ZonedDateTime activationDate = ZonedDateTime.now();
-        final ZonedDateTime deactivationDate = ZonedDateTime.now();
-        try {
-            final DateTimeFormatter df = DateTimeFormatter.ofPattern("dd.MM.yyyy&HH:mm", Locale.GERMAN);
-            final ZonedDateTime activation = ZonedDateTime.parse(activatedAt,df);
-            activationDate.setTime(activation);
-            final ZonedDateTime deactivation = ZonedDateTime.parse(deactivatedAt,df);
-            deactivationDate.setTime(deactivation);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        final Poll poll = new Poll(pollCreator, anonymityStatus, pollName, ZonedDateTime.parse(activatedAt,df), activationDate,
-            deactivationDate, pollStatus, backgroundColor, fontColor, logo, visibility, categoryChange, activated,
+        final DateTimeFormatter df = DateTimeFormatter.ofPattern("dd.MM.yyyy&HH:mm", Locale.GERMAN);
+        final ZonedDateTime activation = ZonedDateTime.parse(activatedAt,df);
+        final ZonedDateTime deactivation = ZonedDateTime.parse(deactivatedAt,df);
+        final Poll poll = new Poll(pollCreator, anonymityStatus, pollName, ZonedDateTime.parse(activatedAt,df), activation,
+            deactivation, pollStatus, backgroundColor, fontColor, logo, visibility, categoryChange, activated,
             deactivated, repeat, repeatUntil, day, week, month, stoppingReason, level, 1L);
         return poll;
     }
