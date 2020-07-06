@@ -3,10 +3,12 @@ package gpse.umfrato.web;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import gpse.umfrato.domain.category.CategoryService;
 import gpse.umfrato.domain.cmd.FilterCmd;
+import gpse.umfrato.domain.cmd.PollCmd;
 import gpse.umfrato.domain.consistencyquestion.ConsistencyQuestionService;
 import gpse.umfrato.domain.evaluation.session.SessionService;
 import gpse.umfrato.domain.evaluation.Statistics;
 import gpse.umfrato.domain.export.ExportService;
+import gpse.umfrato.domain.participationlinks.ParticipationLinkService;
 import gpse.umfrato.domain.poll.Poll;
 import gpse.umfrato.domain.poll.PollService;
 import gpse.umfrato.domain.pollresult.PollResult;
@@ -20,6 +22,7 @@ import javax.activation.UnsupportedDataTypeException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
+import java.net.MalformedURLException;
 import java.util.Collections;
 import java.util.List;
 
@@ -36,10 +39,13 @@ public class ExportController {
     private final CategoryService categoryService;
     private final SessionService sessionService;
     private final ConsistencyQuestionService consistencyQuestionService;
+    private final ParticipationLinkService participationLinkService;
+    private static final String ONE = "1";
+    private static final String ALL_USERS = "allUsers";
     private Integer fileNumber = 0;
 
     @Autowired
-    public ExportController(final PollService pollService, final PollResultService pollResultService, final ExportService exportService, final QuestionService questionService, final CategoryService categoryService, final ConsistencyQuestionService consistencyQuestionService, final SessionService sessionService) {
+    public ExportController(final PollService pollService, final PollResultService pollResultService, final ExportService exportService, final QuestionService questionService, final CategoryService categoryService, final ConsistencyQuestionService consistencyQuestionService, final SessionService sessionService, final ParticipationLinkService participationLinkService) {
         this.pollService = pollService;
         this.pollResultService = pollResultService;
         this.exportService = exportService;
@@ -47,6 +53,7 @@ public class ExportController {
         this.categoryService = categoryService;
         this.consistencyQuestionService = consistencyQuestionService;
         this.sessionService = sessionService;
+        this.participationLinkService = participationLinkService;
     }
 
     @RequestMapping(value = "/getFile/{fileNumber:\\d+}", method = RequestMethod.GET)
@@ -81,11 +88,14 @@ public class ExportController {
     }
 
     @PostMapping("/importPoll")
-    public Poll fromJSONToPoll(final @RequestBody String file) {
-        final Poll poll = exportService.fromJSONToPoll(file);
-        poll.setPollId(null);
-        pollService.createPoll(poll);
-        return poll;
+    public Long fromJSONToPoll(final @RequestBody String file) throws MalformedURLException {
+        final PollCmd pollCmd = exportService.fromJSONToPoll(file);
+        final Poll poll = pollService.createCopyPoll(pollCmd.getCmdPoll());
+        if (poll.getAnonymityStatus().equals(ONE)) {
+            final String link = participationLinkService.createParticipationLink().toString();
+            participationLinkService.saveParticipationLink(poll.getPollId(), ALL_USERS, link);
+        }
+        return poll.getPollId();
     }
 
     @PostMapping("/Poll/{pollId:\\d+}")

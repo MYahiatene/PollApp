@@ -1,6 +1,7 @@
 package gpse.umfrato.domain.export;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import gpse.umfrato.domain.cmd.PollCmd;
 import gpse.umfrato.domain.poll.Poll;
 import gpse.umfrato.domain.pollresult.PollResult;
 
@@ -13,7 +14,7 @@ public interface ExportService {
 
     String toJSON(Poll result) throws JsonProcessingException;
 
-    Poll fromJSONToPoll(String json);
+    PollCmd fromJSONToPoll(String json);
 
     String toJSON(List<PollResult> result) throws JsonProcessingException;
 

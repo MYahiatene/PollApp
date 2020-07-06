@@ -126,8 +126,8 @@ public class Poll {
      * @param pollName        the name of the poll
      * @param anonymityStatus the anonymityStatus of the poll
      * @param createdAt       the date when the poll is created
-     * @param activatedAt     the date when the poll activated
-     * @param deactivatedAt   the date when the poll deactivates
+     * @param activatedDate     the date when the poll activated
+     * @param deactivatedDate   the date when the poll deactivates
      * @param pollStatus      the status (activated/deactivated) of the poll
      * @param backgroundColor the background color displayed on the website
      * @param fontColor       the color used for all questions
@@ -138,15 +138,15 @@ public class Poll {
      * @param deactivated     whether the poll should be deactivated automatically
      */
     public Poll(final String pollCreator, final String anonymityStatus, final String pollName, final String createdAt,
-                final Calendar activatedAt, final Calendar deactivatedAt, final int pollStatus,
+                final Calendar activatedDate, final Calendar deactivatedDate, final int pollStatus,
                 final String backgroundColor, final String fontColor, final String logo, final boolean visibility,
                 final boolean categoryChange, final boolean activated, final boolean deactivated) {
         this.pollName = pollName;
         this.pollCreator = pollCreator;
         this.anonymityStatus = anonymityStatus;
         this.creationDate = createdAt;
-        this.activatedDate = activatedAt;
-        this.deactivatedDate = deactivatedAt;
+        this.activatedDate = activatedDate;
+        this.deactivatedDate = deactivatedDate;
         this.pollStatus = pollStatus;
         this.backgroundColor = backgroundColor;
         this.fontColor = fontColor;
