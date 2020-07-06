@@ -36,6 +36,7 @@ public class Statistics {
     private final Long pollId;
     private final List<Long> questionIds = new ArrayList<>();
     private final boolean showParticipantsOverTime;
+    private final boolean participantsOverRelativeTime;
 
     /**
      * Initializes the Statistic.
@@ -60,6 +61,11 @@ public class Statistics {
             showParticipantsOverTime = false;
         } else {
             showParticipantsOverTime = data.getTimeDiagram();
+        }
+        if (data.getTimeDiagramRelative() == null) {
+            participantsOverRelativeTime = false;
+        } else {
+            participantsOverRelativeTime = data.getTimeDiagramRelative();
         }
         final List<Category> categories = categoryService.getAllCategories(pollId);
         questionIds.addAll(data.getBaseQuestionIds());
@@ -162,7 +168,7 @@ public class Statistics {
             LOGGER.warning("Leere Umfrage");
             return response + "[]}";
         }
-        final DiagramData dd = new DiagramData(poll, prs, showParticipantsOverTime, questionIds, categoryService, questionService);
+        final DiagramData dd = new DiagramData(poll, prs, showParticipantsOverTime, participantsOverRelativeTime, questionIds, categoryService, questionService);
         return response + dd.toJSON() + "}";
     }
 }

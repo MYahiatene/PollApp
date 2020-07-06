@@ -160,6 +160,12 @@
                             Hier können Sie den Antwortzeitpunkt der Teilnehmer, die Sie betrachten wollen festlegen.
 
                             <v-switch label="Teilnahme über Zeit darstellen" v-model="showTimeDiagram"> </v-switch>
+                            <v-switch
+                                v-if="showTimeDiagram"
+                                label="Relativ zur Umfragestartzeit"
+                                v-model="relativeTimeDiagram"
+                            >
+                            </v-switch>
 
                             <v-row>
                                 <v-col colls="12" lg="10">
@@ -306,6 +312,7 @@ export default {
                 ],
             },
             showTimeDiagram: false,
+            relativeTimeDiagram: false,
             consistencyOn: false,
         }
     },
@@ -389,6 +396,7 @@ export default {
                 basePollId: this.polls[this.pollIndex].pollId,
                 baseQuestionIds: this.chosenQuestionIds, // these are questionIDs
                 timeDiagram: this.showTimeDiagram,
+                timeDiagramRelative: this.relativeTimeDiagram,
             })
             filterData.push({
                 filterType: 'consistency',

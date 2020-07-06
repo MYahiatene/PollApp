@@ -45,6 +45,7 @@ public class FilterServiceImpl implements FilterService {
                     fd.setBasePollId(cmd.getBasePollId());
                     fd.setBaseQuestionIds(cmd.getBaseQuestionIds());
                     fd.setTimeDiagram(cmd.getTimeDiagram());
+                    fd.setTimeDiagramRelative(cmd.getTimeDiagramRelative());
                     break;
                 case "questionAnswer":
                     fd.setTargetQuestionId(cmd.getTargetQuestionId());
@@ -78,6 +79,7 @@ public class FilterServiceImpl implements FilterService {
                 cmd.setBasePollId(fd.getBasePollId());
                 cmd.setBaseQuestionIds(fd.getBaseQuestionIds());
                 cmd.setTimeDiagram(fd.getTimeDiagram());
+                cmd.setTimeDiagramRelative(fd.getTimeDiagramRelative());
                 return cmd;
             case "questionAnswer":
                 cmd.setTargetQuestionId(fd.getTargetQuestionId());
