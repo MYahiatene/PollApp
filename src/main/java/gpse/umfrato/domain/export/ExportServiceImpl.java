@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gpse.umfrato.domain.answer.Answer;
 import gpse.umfrato.domain.category.Category;
+import gpse.umfrato.domain.cmd.PollCmd;
 import gpse.umfrato.domain.poll.Poll;
 import gpse.umfrato.domain.pollresult.PollResult;
 import gpse.umfrato.domain.question.Question;
@@ -122,10 +123,10 @@ public class ExportServiceImpl implements ExportService {
     }
 
     @Override
-    public Poll fromJSONToPoll(final String json) {
+    public PollCmd fromJSONToPoll(final String json) {
         try {
             final ObjectMapper objectMapper = new ObjectMapper();
-            return objectMapper.readValue(json, Poll.class);
+            return objectMapper.readValue(json, PollCmd.class);
         } catch (IOException e) {
             e.printStackTrace();
         }

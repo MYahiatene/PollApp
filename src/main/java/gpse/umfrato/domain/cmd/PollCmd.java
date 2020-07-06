@@ -8,6 +8,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.logging.Logger;
 
@@ -23,13 +24,19 @@ public class PollCmd {
 
     private String pollCreator;
 
-    private String pollCreatedAt;
+    private String creationDate;
 
-    //private String lastEditAt;
+    private String lastEditAt;
 
-    private String activatedAt;
+    private String lastEditFrom;
 
-    private String deactivatedAt;
+    private String activatedDate;
+
+    private String deactivatedDate;
+
+    private String participationLink;
+
+    private List<CategoryCmd> categoryList;
 
     private String anonymityStatus;
 
@@ -57,14 +64,14 @@ public class PollCmd {
         final Calendar deactivationDate = Calendar.getInstance();
         try {
             final DateFormat df = new SimpleDateFormat("dd.MM.yyyy&HH:mm", Locale.GERMAN);
-            final Date activation = df.parse(activatedAt);
+            final Date activation = df.parse(activatedDate);
             activationDate.setTime(activation);
-            final Date deactivation = df.parse(deactivatedAt);
+            final Date deactivation = df.parse(deactivatedDate);
             deactivationDate.setTime(deactivation);
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        final Poll poll = new Poll(pollCreator, anonymityStatus, pollName, pollCreatedAt, activationDate,
+        final Poll poll = new Poll(pollCreator, anonymityStatus, pollName, creationDate, activationDate,
             deactivationDate, pollStatus, backgroundColor, fontColor, logo, visibility, categoryChange, activated,
             deactivated);
         return poll;
