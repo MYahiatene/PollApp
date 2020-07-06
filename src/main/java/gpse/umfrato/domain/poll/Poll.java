@@ -122,11 +122,14 @@ public class Poll {
 
     private String repeatUntil;
 
-    private String[] day;
+    @ElementCollection
+    private List<String> day = new ArrayList<>();
 
-    private String[] week;
+    @ElementCollection
+    private List<String> week = new ArrayList<>();
 
-    private String[] month;
+    @ElementCollection
+    private List<String> month = new ArrayList<>();
 
     private int stoppingReason;
 
@@ -159,7 +162,7 @@ public class Poll {
                 final Calendar activatedAt, final Calendar deactivatedAt, final int pollStatus,
                 final String backgroundColor, final String fontColor, final String logo, final boolean visibility,
                 final boolean categoryChange, final boolean activated, final boolean deactivated, final String repeat,
-                final String repeatUntil, final String[] day, final String[] week, final String[] month,
+                final String repeatUntil, final List<String> day, final List<String> week, final List<String> month,
                 final int stoppingReason, final int level, final Long seriesCounter) {
         this.pollName = pollName;
         this.pollCreator = pollCreator;

@@ -198,6 +198,7 @@ class PollServiceImpl implements PollService {
     @SuppressWarnings("checkstyle:AvoidNestedBlocks")
     @Override
     public String createSeriesPollName(final Poll poll) {
+        // TODO: Wochentage richtig setzen
         String name = poll.getPollName();
         if (name.contains(":nr:")) {
             name = name.replace(":nr:", poll.getSeriesCounter().toString());
@@ -259,154 +260,199 @@ class PollServiceImpl implements PollService {
     @Override
     public void calculateNextDate(final Poll poll) {
         // TODO: day[0] oder day[day.length-1] ? -> letztes element der schleife auch noch prüfen?
-        // TODO: String arrays zu int arrays umwandeln?
+        // TODO: List<String> von week, day, month zu List <int> umwandeln?
         // TODO: ähnliche if schleifen zu Methoden extrahieren fuer bessere übersichtlichkeit
+        // TODO: setzt voraus, dass day nicht leer ist => frontend
+        // TODO: setzt voraus, dass die reihenfolge im array, der reihenfolge in einer Woche entspricht
+        // TODO: Sonntag als 1. Element der Woche in Kalender, aber nicht normal
+        // TODO: bei Monaten Anzahl an Tagne berücksichtigen
+        // TODO: beim ersten mal startet es erst in 2 Wochen/Monaten etc. -> noch im selben monat starten?
+        // TODO: week_of_day ist was anderes als wir es verstehen
         final String repeat = poll.getRepeat();
-        final String[] day = poll.getDay();
-        final String[] week = poll.getDay();
-        final String[] month = poll.getMonth();
+        final List<String> day = poll.getDay();
+        final List<String> week = poll.getWeek();
+        final List<String> month = poll.getMonth();
         final int level = poll.getLevel();
         final Calendar prev = poll.getActivatedDate();
         Calendar next = prev;
 
         LOGGER.info("Start calculateNextDate");
         if (level == 0) {
+            // adds the number of days, which represent the repetition, to the current date
             next.add(Calendar.DATE, Integer.parseInt(repeat));
             LOGGER.info("next: " + next.toString());
             LOGGER.info(parseDate(next));
             poll.setNextSeries(next);
         } else if (level == 1) {
-            // TODO: setzt voraus, dass day nicht leer ist => frontend
-            // TODO: setzt voraus, dass die reihenfolge im array, der reihenfolge in einer Woche entspricht
-            // TODO: Sonntag als 1. Element der Woche in Kalender, aber nicht normal
+            // days per x weeks given
             boolean first = true;
-            for (int i = 0; i < day.length-1; i++) {
-                if (prev.get(Calendar.DAY_OF_WEEK) == Integer.parseInt(day[i])) {
-                    next.add(Calendar.DATE, Integer.parseInt(day[i + 1]) - Integer.parseInt(day[i]));
+            // if there are later days within the cycle, the next activation date will be the next day in days[]
+            for (int i = 0; i < day.size()-1; i++) {
+                if (prev.get(Calendar.DAY_OF_WEEK) == Integer.parseInt(day.get(i)) && first) {
+                    next.set(Calendar.DAY_OF_WEEK, Integer.parseInt(day.get(i + 1)));
                     poll.setNextSeries(next);
                     first = false;
                 }
             }
+            // if the last day of the cycle is reached the new day will be in the given repeated time at the first day
+            // of the cycle
             if (first) {
                 next.add(Calendar.WEEK_OF_YEAR, Integer.parseInt(repeat));
-                next.set(Calendar.DAY_OF_WEEK, Integer.parseInt(day[0]));
+                next.set(Calendar.DAY_OF_WEEK, Integer.parseInt(day.get(0)));
                 poll.setNextSeries(next);
             }
             LOGGER.info("next: " + next.toString());
             LOGGER.info(parseDate(next));
         } else if (level == 2) {
-            // TODO: setzt voraus, dass day nicht leer ist => frontend
-            // TODO: setzt voraus, dass die reihenfolge im array, der reihenfolge in einer Woche entspricht
-            // nur Tage im Monat angegeben
-            if (week.length == 0) {
+            if (week.size() == 0) {
+                LOGGER.info("no week given");
+                // days per x months given
                 boolean first = true;
-                for (int i = 0; i < day.length - 1; i++) {
-                    if (prev.get(Calendar.DAY_OF_MONTH) == Integer.parseInt(day[i])) {
-                        next.add(Calendar.DATE, Integer.parseInt(day[i + 1]) - Integer.parseInt(day[i]));
+                // if there are later days within the cycle, the next activation date will be the next day in days[]
+                for (int i = 0; i < day.size() - 1; i++) {
+                    if (prev.get(Calendar.DAY_OF_MONTH) == Integer.parseInt(day.get(i)) && first) {
+                        next.set(Calendar.DAY_OF_MONTH, Integer.parseInt(day.get(i + 1)));
                         poll.setNextSeries(next);
                         first = false;
                     }
                 }
+                // if the last day of the cycle is reached the new day will be in the given repeated time at the first
+                // day of the next cycle
                 if (first) {
                     next.add(Calendar.MONTH, Integer.parseInt(repeat));
-                    next.set(Calendar.DAY_OF_MONTH, Integer.parseInt(day[0]));
+                    next.set(Calendar.DAY_OF_MONTH, Integer.parseInt(day.get(0)));
                     poll.setNextSeries(next);
                 }
                 LOGGER.info("next: " + next.toString());
                 LOGGER.info(parseDate(next));
             } else {
-                // Tage in Wochen des Monats angegeben
+                LOGGER.info("day, week and month given");
+                LOGGER.info("day of the week: " + prev.get(Calendar.DAY_OF_WEEK));
+                LOGGER.info("week of the month: " + prev.get(Calendar.WEEK_OF_MONTH));
+                // days in weeks per months
                 boolean first = true;
-                for (int i = 0; i < week.length - 1; i++) {
-                    for (int j = 0; j < day.length - 1; j++) {
-                        if (prev.get(Calendar.DAY_OF_WEEK) == Integer.parseInt(day[j])
-                            && prev.get(Calendar.WEEK_OF_MONTH) == Integer.parseInt(week[i])) {
-                            next.set(Calendar.DAY_OF_WEEK, Integer.parseInt(day[j + 1]));
+                // more than one week and more than one day per week given
+                for (int i = 0; i < week.size() - 1; i++) {
+                    for (int j = 0; j < day.size() - 1; j++) {
+                        if (prev.get(Calendar.DAY_OF_WEEK) == Integer.parseInt(day.get(j)) && first
+                            && prev.get(Calendar.WEEK_OF_MONTH) == Integer.parseInt(week.get(i))) {
+                            next.set(Calendar.DAY_OF_WEEK, Integer.parseInt(day.get(j + 1)));
                             poll.setNextSeries(next);
                             first = false;
                         }
                     }
-                    if (first && prev.get(Calendar.WEEK_OF_MONTH) == Integer.parseInt(week[i])) {
-                        next.set(Calendar.DAY_OF_WEEK, Integer.parseInt(day[0]));
-                        next.set(Calendar.WEEK_OF_MONTH, Integer.parseInt(week[i+1]));
+                    if (first && prev.get(Calendar.WEEK_OF_MONTH) == Integer.parseInt(week.get(i))) {
+                        next.set(Calendar.DAY_OF_WEEK, Integer.parseInt(day.get(0)));
+                        next.set(Calendar.WEEK_OF_MONTH, Integer.parseInt(week.get(i+1)));
                         poll.setNextSeries(next);
                         first = false;
                     }
                 }
+                // more than one day per week given
+                for (int j = 0; j < day.size() - 1; j++) {
+                    if (prev.get(Calendar.DAY_OF_WEEK) == Integer.parseInt(day.get(j)) && first
+                        && prev.get(Calendar.WEEK_OF_MONTH) == Integer.parseInt(week.get(0))) {
+                        next.set(Calendar.DAY_OF_WEEK, Integer.parseInt(day.get(j + 1)));
+                        poll.setNextSeries(next);
+                        first = false;
+                    }
+                }
+                // last day of cycle reached, calculates the first day of the new one
                 if (first) {
-                    next.set(Calendar.DAY_OF_WEEK, Integer.parseInt(day[0]));
-                    next.set(Calendar.WEEK_OF_MONTH, Integer.parseInt(week[0]));
+                    next.add(Calendar.MONTH, Integer.parseInt(repeat));
+                    next.set(Calendar.WEEK_OF_MONTH, Integer.parseInt(week.get(0)));
+                    next.set(Calendar.DAY_OF_WEEK, Integer.parseInt(day.get(0)));
                     poll.setNextSeries(next);
                 }
                 LOGGER.info("next: " + next.toString());
                 LOGGER.info(parseDate(next));
             }
         } else if (level == 3) {
-            // nur Tag im Jahr angegeben
-            if (week.length == 0 && month.length == 0) {
+            // days per year given
+            LOGGER.info("day of the year" + prev.get(Calendar.DAY_OF_YEAR));
+            if (week.size() == 0 && month.size() == 0) {
                 boolean first = true;
-                for (int i = 0; i < day.length - 1; i++) {
-                    if (prev.get(Calendar.DAY_OF_YEAR) == Integer.parseInt(day[i])) {
-                        next.add(Calendar.DATE, Integer.parseInt(day[i + 1]) - Integer.parseInt(day[i]));
+                for (int i = 0; i < day.size() - 1; i++) {
+                    if (prev.get(Calendar.DAY_OF_YEAR) == Integer.parseInt(day.get(i))) {
+                        next.add(Calendar.DATE, Integer.parseInt(day.get(i + 1)) - Integer.parseInt(day.get(i)));
                         poll.setNextSeries(next);
                         first = false;
                     }
                 }
                 if (first) {
                     next.add(Calendar.YEAR, Integer.parseInt(repeat));
-                    next.set(Calendar.DAY_OF_YEAR, Integer.parseInt(day[0]));
+                    next.set(Calendar.DAY_OF_YEAR, Integer.parseInt(day.get(0)));
                     poll.setNextSeries(next);
                 }
                 LOGGER.info("next: " + next.toString());
                 LOGGER.info(parseDate(next));
-            } else if(month.length == 0) {
-                // Tage in bestimmten Kalenderwochen angegeben
+            } else if(month.size() == 0) {
+                // days of calendar weeks per year
                 boolean first = true;
-                for (int i = 0; i < week.length - 1; i++) {
-                    for (int j = 0; j < day.length - 1; j++) {
-                        if (prev.get(Calendar.DAY_OF_WEEK) == Integer.parseInt(day[j])
-                            && prev.get(Calendar.WEEK_OF_YEAR) == Integer.parseInt(week[i])) {
-                            next.set(Calendar.DAY_OF_WEEK, Integer.parseInt(day[j + 1]));
+                // more than one day and more than one week given
+                LOGGER.info("day of week: " + prev.get(Calendar.DAY_OF_WEEK));
+                LOGGER.info("week of year: " + prev.get(Calendar.WEEK_OF_YEAR));
+                for (int i = 0; i < week.size() - 1; i++) {
+                    for (int j = 0; j < day.size() - 1; j++) {
+                        if (prev.get(Calendar.DAY_OF_WEEK) == Integer.parseInt(day.get(j))
+                            && prev.get(Calendar.WEEK_OF_YEAR) == Integer.parseInt(week.get(i))) {
+                            LOGGER.info("1");
+                            next.set(Calendar.DAY_OF_WEEK, Integer.parseInt(day.get(j + 1)));
                             poll.setNextSeries(next);
                             first = false;
                         }
                     }
-                    if (first && prev.get(Calendar.WEEK_OF_YEAR) == Integer.parseInt(week[i])) {
-                        next.set(Calendar.DAY_OF_WEEK, Integer.parseInt(day[0]));
-                        next.set(Calendar.WEEK_OF_YEAR, Integer.parseInt(week[i+1]));
+                    // next week of the cycle
+                    if (first && prev.get(Calendar.WEEK_OF_YEAR) == Integer.parseInt(week.get(i))) {
+                        LOGGER.info("2");
+                        next.set(Calendar.DAY_OF_WEEK, Integer.parseInt(day.get(0)));
+                        next.set(Calendar.WEEK_OF_YEAR, Integer.parseInt(week.get(i+1)));
                         poll.setNextSeries(next);
                         first = false;
                     }
                 }
+                // more than one day per week given
+                for (int j = 0; j < day.size() - 1; j++) {
+                    if (prev.get(Calendar.DAY_OF_WEEK) == Integer.parseInt(day.get(j)) && first
+                        && prev.get(Calendar.WEEK_OF_YEAR) == Integer.parseInt(week.get(0))) {
+                        LOGGER.info("3");
+                        next.set(Calendar.DAY_OF_WEEK, Integer.parseInt(day.get(j + 1)));
+                        poll.setNextSeries(next);
+                        first = false;
+                    }
+                }
+                // end of cycle reached
                 if (first) {
-                    next.set(Calendar.DAY_OF_WEEK, Integer.parseInt(day[0]));
-                    next.set(Calendar.WEEK_OF_YEAR, Integer.parseInt(week[0]));
+                    LOGGER.info("4");
+                    next.add(Calendar.YEAR, Integer.parseInt(repeat));
+                    next.set(Calendar.DAY_OF_WEEK, Integer.parseInt(day.get(0)));
+                    next.set(Calendar.WEEK_OF_YEAR, Integer.parseInt(week.get(0)));
                     poll.setNextSeries(next);
                 }
                 LOGGER.info("next: " + next.toString());
                 LOGGER.info(parseDate(next));
-            } else if (week.length == 0) {
+            } else if (week.size() == 0) {
                 // Tage in bestimmten Monaten angegeben
                 boolean first = true;
-                for (int i = 0; i < month.length - 1; i++) {
-                    for (int j = 0; j < day.length - 1; j++) {
-                        if (prev.get(Calendar.DAY_OF_MONTH) == Integer.parseInt(day[j])
-                            && prev.get(Calendar.MONTH) == Integer.parseInt(month[i])) {
-                            next.set(Calendar.DAY_OF_MONTH, Integer.parseInt(day[j + 1]));
+                for (int i = 0; i < month.size() - 1; i++) {
+                    for (int j = 0; j < day.size() - 1; j++) {
+                        if (prev.get(Calendar.DAY_OF_MONTH) == Integer.parseInt(day.get(j))
+                            && prev.get(Calendar.MONTH) == Integer.parseInt(month.get(i))) {
+                            next.set(Calendar.DAY_OF_MONTH, Integer.parseInt(day.get(j + 1)));
                             poll.setNextSeries(next);
                             first = false;
                         }
                     }
-                    if (first && prev.get(Calendar.MONTH) == Integer.parseInt(month[i])) {
-                        next.set(Calendar.DAY_OF_MONTH, Integer.parseInt(day[0]));
-                        next.set(Calendar.MONTH, Integer.parseInt(month[i + 1]));
+                    if (first && prev.get(Calendar.MONTH) == Integer.parseInt(month.get(i))) {
+                        next.set(Calendar.DAY_OF_MONTH, Integer.parseInt(day.get(0)));
+                        next.set(Calendar.MONTH, Integer.parseInt(month.get(i + 1)));
                         poll.setNextSeries(next);
                         first = false;
                     }
                 }
                 if (first) {
-                    next.set(Calendar.DAY_OF_MONTH, Integer.parseInt(day[0]));
-                    next.set(Calendar.MONTH, Integer.parseInt(month[0]));
+                    next.set(Calendar.DAY_OF_MONTH, Integer.parseInt(day.get(0)));
+                    next.set(Calendar.MONTH, Integer.parseInt(month.get(0)));
                     poll.setNextSeries(next);
                 }
                 LOGGER.info("next: " + next.toString());
@@ -414,37 +460,37 @@ class PollServiceImpl implements PollService {
             } else {
                 // Tage in bestimmten Wochen bestimmter Monate angegeben
                 boolean first = true;
-                for (int i = 0; i < month.length - 1; i++) {
-                    for (int j = 0; j < week.length - 1; j++) {
-                        for (int k = 0; k < day.length - 1; k++) {
-                            if (prev.get(Calendar.DAY_OF_WEEK) == Integer.parseInt(day[k])
-                                && prev.get(Calendar.WEEK_OF_MONTH) == Integer.parseInt(week[j])
-                                && prev.get(Calendar.MONTH) == Integer.parseInt(month[i])) {
-                                next.set(Calendar.DAY_OF_WEEK, Integer.parseInt(day[k + 1]));
+                for (int i = 0; i < month.size() - 1; i++) {
+                    for (int j = 0; j < week.size() - 1; j++) {
+                        for (int k = 0; k < day.size() - 1; k++) {
+                            if (prev.get(Calendar.DAY_OF_WEEK) == Integer.parseInt(day.get(k))
+                                && prev.get(Calendar.WEEK_OF_MONTH) == Integer.parseInt(week.get(j))
+                                && prev.get(Calendar.MONTH) == Integer.parseInt(month.get(i))) {
+                                next.set(Calendar.DAY_OF_WEEK, Integer.parseInt(day.get(k + 1)));
                                 poll.setNextSeries(next);
                                 first = false;
                             }
                         }
-                        if (first && prev.get(Calendar.WEEK_OF_MONTH) == Integer.parseInt(week[j])
-                            &&prev.get(Calendar.MONTH) == Integer.parseInt(month[i])) {
-                            next.set(Calendar.DAY_OF_MONTH, Integer.parseInt(day[0]));
-                            next.set(Calendar.WEEK_OF_MONTH, Integer.parseInt(week[j + 1]));
+                        if (first && prev.get(Calendar.WEEK_OF_MONTH) == Integer.parseInt(week.get(j))
+                            &&prev.get(Calendar.MONTH) == Integer.parseInt(month.get(i))) {
+                            next.set(Calendar.DAY_OF_MONTH, Integer.parseInt(day.get(0)));
+                            next.set(Calendar.WEEK_OF_MONTH, Integer.parseInt(week.get(j + 1)));
                             poll.setNextSeries(next);
                             first = false;
                         }
                     }
-                    if (first && prev.get(Calendar.MONTH) == Integer.parseInt(month[i])) {
-                        next.set(Calendar.DAY_OF_MONTH, Integer.parseInt(day[0]));
-                        next.set(Calendar.WEEK_OF_MONTH, Integer.parseInt(week[0]));
-                        next.set(Calendar.MONTH, Integer.parseInt(month[i + 1]));
+                    if (first && prev.get(Calendar.MONTH) == Integer.parseInt(month.get(i))) {
+                        next.set(Calendar.DAY_OF_MONTH, Integer.parseInt(day.get(0)));
+                        next.set(Calendar.WEEK_OF_MONTH, Integer.parseInt(week.get(0)));
+                        next.set(Calendar.MONTH, Integer.parseInt(month.get(i + 1)));
                         poll.setNextSeries(next);
                         first = false;
                     }
                 }
                 if (first) {
-                    next.set(Calendar.DAY_OF_MONTH, Integer.parseInt(day[0]));
-                    next.set(Calendar.WEEK_OF_MONTH, Integer.parseInt(week[0]));
-                    next.set(Calendar.MONTH, Integer.parseInt(month[0]));
+                    next.set(Calendar.DAY_OF_MONTH, Integer.parseInt(day.get(0)));
+                    next.set(Calendar.WEEK_OF_MONTH, Integer.parseInt(day.get(0)));
+                    next.set(Calendar.MONTH, Integer.parseInt(day.get(0)));
                     poll.setNextSeries(next);
                     first = false;
                 }

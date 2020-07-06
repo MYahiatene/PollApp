@@ -8,6 +8,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.logging.Logger;
 
@@ -45,11 +46,11 @@ public class PollCmd {
 
     private String repeatUntil;
 
-    private String[] day;
+    private List<String> day;
 
-    private String[] week;
+    private List<String> week;
 
-    private String[] month;
+    private List<String> month;
 
     private int pollStatus;
 
