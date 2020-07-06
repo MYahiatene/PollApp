@@ -428,25 +428,51 @@ public class DiagramData {
             this.frequency = doWordFrequencyStuff(this.answers);
         }
 
-        int calcTendency(final String input) {
+        int calcTendency(final List<String> stringList, final String input) {
             int tendency = 0;
             final List<String> wordList = Arrays.asList(input.split("[ .,;:?\\-_=()/&%$§!#'+*~|<>]+"));
             for (final String word : wordList) {
                 if (Arrays.asList(positiveWords).contains(word.toLowerCase())) {
-                    tendency += Collections.frequency(wordList, word.toLowerCase());
+                    tendency += 1;
                 } else if (Arrays.asList(negativeWords).contains(word.toLowerCase())) {
-                    tendency -= Collections.frequency(wordList, word.toLowerCase());
+                    tendency -= 1;
                 }
             }
             return tendency;
         }
 
+        List<String> getWordList(List<TextAnswer> input) {
+            List<String> stringList = new ArrayList<>();
+            for (TextAnswer ta : input)
+                for(String word : ta.text.toLowerCase().split("[ .,;:?\\-_=()/&%$§!#'+*~|<>]+"))
+                    stringList.add(word);
+            return stringList;
+        }
+
         List<JSObject> doWordStuff(final List<TextAnswer> input) { //Antworten Darstellen
             final List<JSObject> outputList = new ArrayList<>();
             for (final TextAnswer ta: input) {
-                outputList.add(new JSObject(ta.text.split("[ .,;:?\\-_=()/&%$§!#'+*~|<>]+").length, ta.text, calcTendency(ta.text), ta.edited, ta.creator)); // Antwortlänge, Antwort, Antworttendenz
+                outputList.add(new JSObject(ta.text.split("[ .,;:?\\-_=()/&%$§!#'+*~|<>]+").length, ta.text, calcTendency(getWordList(input), ta.text), getWordFrequency(input, ta), ta.edited, ta.creator)); // Antwortlänge, Antwort, Antworttendenz
             }
             return outputList;
+        }
+
+        int getWordFrequency(List<TextAnswer> input, TextAnswer ta){
+            List<String> wordList = getWordList(input);
+            return Collections.frequency(wordList, ta.text);
+
+        }
+
+        List<JSObject> removeDuplicates(final List<JSObject> duplicates){
+            List<String> keyList = new ArrayList<>();
+            List<JSObject> noDuplicates = new ArrayList<>();
+            for(JSObject jso: duplicates){
+                if(!keyList.contains(jso.text)){
+                    noDuplicates.add(jso);
+                    keyList.add(jso.text);
+                }
+            }
+            return noDuplicates;
         }
 
         List<JSObject> doWordFrequencyStuff(final List<TextAnswer> input) { //Wortfrequenzen darstellen
@@ -454,13 +480,13 @@ public class DiagramData {
             for (final TextAnswer ta: input) {
                 answers.add(ta.text);
             }
-            final Set<JSObject> duplicateList = new HashSet<>();
+            final List<JSObject> duplicateList = new ArrayList<>();
             for (final String answer: answers) { //Wir brauchen nur die Strings
                 for (final String word: answer.split("[ .,;:?\\-_=()/&%$§!#'+*~|<>]+")) {
-                    duplicateList.add(new JSObject(Collections.frequency(input, word), word, 0, "", ""));
+                    duplicateList.add(new JSObject(0, word, 0, Collections.frequency(getWordList(input), word.toLowerCase()),"", ""));
                 }
             }
-            return new ArrayList<JSObject>(duplicateList);
+            return removeDuplicates(duplicateList);
         }
 
         @Override
@@ -478,13 +504,15 @@ public class DiagramData {
             public int value;
             public String text;
             public int tendency;
+            public int frequency;
             public String edited;
             public String creator;
 
-            JSObject(final int value, final String text, final int tendency, final String edited, final String creator) {
+            JSObject(final int value, final String text, final int tendency, int frequency, final String edited, final String creator) {
                 this.value = value;
                 this.text = text;
                 this.tendency = tendency;
+                this.frequency = frequency;
                 this.edited = edited;
                 this.creator = creator;
             }

@@ -32,7 +32,7 @@
                                     <v-card v-if="tableView" class="ma-1" flat>
                                         <v-data-table
                                             :headers="tableHeaders"
-                                            :items="prepareAnswers"
+                                            :items="answers"
                                             :search="search"
                                             :custom-filter="filterOnlyCapsText"
                                             class="elevation-1"
@@ -44,7 +44,7 @@
                                     <v-card v-if="tableView" class="ma-1" flat>
                                         <v-data-table
                                             :headers="freqHeaders"
-                                            :items="prepareWordFrequencies"
+                                            :items="frequency"
                                             :search="search"
                                             :custom-filter="filterOnlyCapsText"
                                             class="elevation-1"
@@ -103,14 +103,14 @@ export default {
             wordFrequenz: {},
             tableHeaders: [
                 { text: 'Antwort', value: 'text', sortable: false },
-                { text: 'Länge', value: 'wordLength', sortable: true },
-                { text: 'Beantwortet', value: 'answered', sortable: true },
-                { text: 'Benutzer', value: 'creatorasdasd', sortable: true },
+                { text: 'Länge', value: 'value', sortable: true },
+                { text: 'Beantwortet', value: 'edited', sortable: true },
+                { text: 'Benutzer', value: 'creator', sortable: true },
                 { text: 'Tendenzindex', value: 'tendency', sortable: true },
             ],
             freqHeaders: [
                 { text: 'Wort', value: 'text', sortable: false },
-                { text: 'Frequenz', value: 'value', sortable: true },
+                { text: 'Frequenz', value: 'frequency', sortable: true },
             ],
             fillers: [
                 'nicht',
@@ -523,7 +523,16 @@ export default {
         }),
 
         answers() {
-            return this.diagramData[this.questionID].answers
+            console.log('DiagramData')
+            console.log(this.diagramData)
+            console.log('FUCK GSE 526')
+            console.log(this.diagramData[this.questionID].texts)
+            return this.diagramData[this.questionID].texts
+        },
+        frequency() {
+            console.log('FUCK GSE 531')
+            console.log(this.diagramData[this.questionID].frequency)
+            return this.diagramData[this.questionID].frequency
         },
 
         prepareAnswers() {
