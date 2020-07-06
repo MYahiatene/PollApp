@@ -49,6 +49,66 @@
                                         <exportWidget :exportResult="false" @done="exportWidgetDialog = false" />
                                     </v-dialog>
                                 </template>
+                                <template>
+                                    <v-dialog v-model="qrDialog" overlay-color="background" overlay-opacity="0.75">
+                                        <v-card>
+                                            <v-card-title>QR-Code zu {{ qrTitle }} konfigurieren</v-card-title>
+                                            <v-row>
+                                                <v-col>
+                                                    <v-row>
+                                                        <v-col>
+                                                            <v-label> Vordergrundfarbe:</v-label>
+                                                            <v-color-picker v-model="qrForeground" />
+                                                        </v-col>
+                                                        <v-col>
+                                                            <v-label>Hintergrundfarbe:</v-label>
+                                                            <v-color-picker v-model="qrBackground" />
+                                                        </v-col>
+                                                    </v-row>
+                                                    <v-row>
+                                                        <v-col>
+                                                            <v-label
+                                                                >Redundanzbits in Prozent: (Mehr Redundanz: Robuster
+                                                                gegen Verdeckung aber größer und schwieriger zu
+                                                                Scannen)</v-label
+                                                            >
+                                                            <v-overflow-btn
+                                                                v-model="qrSelectedLevel"
+                                                                label="Redundanz"
+                                                                :items="qrLevelTexts"
+                                                            />
+                                                        </v-col>
+                                                    </v-row>
+                                                    <v-row>
+                                                        <v-col>
+                                                            <v-label>Größe in Pixel:</v-label>
+                                                            <v-text-field
+                                                                v-model="qrSize"
+                                                                label="Höhe/Breite des Qr Codes"
+                                                                type="Number"
+                                                            />
+                                                        </v-col>
+                                                    </v-row>
+                                                </v-col>
+                                                <v-col>
+                                                    <v-card-subtitle>
+                                                        Zum Kopieren oder Speichern einfach mit der rechten Maustaste in
+                                                        den QR-Code clicken
+                                                    </v-card-subtitle>
+                                                    <v-card class="ma-8">
+                                                        <qrcode-vue
+                                                            :value="qrLink"
+                                                            :size="qrSize"
+                                                            :level="qrLevels[qrLevelTexts.indexOf(qrSelectedLevel)]"
+                                                            :foreground="qrForeground"
+                                                            :background="qrBackground"
+                                                        />
+                                                    </v-card>
+                                                </v-col>
+                                            </v-row>
+                                        </v-card>
+                                    </v-dialog>
+                                </template>
                                 <import-widget></import-widget>
                             </v-toolbar>
                         </template>
@@ -159,6 +219,26 @@
                                                 <v-btn
                                                     icon
                                                     color="primary"
+                                                    :disabled="
+                                                        item.pollStatus < 1 ||
+                                                        item.pollStatus > 2 ||
+                                                        item.anonymityStatus !== '1'
+                                                    "
+                                                    v-bind="attrs"
+                                                    v-on="on"
+                                                >
+                                                    <v-icon @click="generateQR(item)">
+                                                        mdi-qrcode
+                                                    </v-icon>
+                                                </v-btn>
+                                            </template>
+                                            <span> QR-Code generieren</span>
+                                        </v-tooltip>
+                                        <v-tooltip bottom>
+                                            <template v-slot:activator="{ on, attrs }">
+                                                <v-btn
+                                                    icon
+                                                    color="primary"
                                                     :disabled="item.pollStatus === 2"
                                                     v-bind="attrs"
                                                     v-on="on"
@@ -194,12 +274,18 @@
 </template>
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
+import QrcodeVue from 'qrcode.vue'
 import AuthGate from '../../components/AuthGate'
 import ImportWidget from '../../components/importWidget'
 import ExportWidget from '../../components/exportWidget'
 export default {
     name: 'Navigation',
-    components: { ExportWidget, ImportWidget, AuthGate },
+    components: {
+        QrcodeVue,
+        ExportWidget,
+        ImportWidget,
+        AuthGate,
+    },
     data() {
         return {
             hovered: false,
@@ -215,6 +301,17 @@ export default {
             showAll: false,
             exportWidgetDialog: false,
             exportPollId: -1,
+            qrDialog: false,
+            qrFile: '',
+            qrLink: '',
+            qrTitle: '',
+            qrSize: 300,
+            qrLevels: ['L', 'M', 'Q', 'H'],
+            qrLevelTexts: ['7%', '15%', '25%', '30%'],
+            qrSelectedLevel: '25%',
+            qrForeground: '#000000',
+            qrBackground: '#FFFFFF',
+            qrFilename: '',
             contextActions: [
                 { title: 'Beantworten', link: '/' },
                 { title: 'Bearbeiten', link: '/polls/' },
@@ -369,6 +466,16 @@ export default {
             }
             navigator.clipboard.writeText(links)
             alert('Link(s) kopiert: ' + links.slice(0, 120) + (links.length > 117 ? '...' : ''))
+        },
+        generateQR(item) {
+            let links = ''
+            for (let i = 0; i < item.participationLinks.length; i++) {
+                links = item.participationLinks[i].generatedParticipationLink
+            }
+            this.qrTitle = item.pollName
+            this.qrLink = links
+            this.qrFilename = item.pollName + ' QRCode'
+            this.qrDialog = true
         },
         deletePoll(item) {
             const index = this.items.indexOf(item)

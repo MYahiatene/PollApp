@@ -28,6 +28,8 @@ public class FilterData {
 
     private Boolean timeDiagram;
 
+    private Boolean timeDiagramRelative;
+
     //QuestionFilter
     private Long targetQuestionId;
 

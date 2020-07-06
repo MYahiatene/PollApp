@@ -41,6 +41,8 @@ public class DiagramData {
     @JsonIgnore
     private boolean showParticipantsOverTime = true;
     @JsonIgnore
+    private boolean participantsOverRelativeTime = false;
+    @JsonIgnore
     private ChoiceData participantsOverTime;
 
     interface QuestionData {
@@ -520,13 +522,14 @@ public class DiagramData {
     }
 
     public DiagramData(final Poll poll, final List<PollResult> results, final boolean showParticipantsOverTime,
-                       final List<Long> questionIds, final CategoryService categoryService,
-                       final QuestionService questionService) {
+                       final boolean participantsOverRelativeTime, final List<Long> questionIds,
+                       final CategoryService categoryService, final QuestionService questionService) {
         this.categoryService = categoryService;
         this.questionService = questionService;
         this.poll = poll;
         this.questionIds = questionIds;
         this.showParticipantsOverTime = showParticipantsOverTime;
+        this.participantsOverRelativeTime = participantsOverRelativeTime;
         loadData(results);
     }
 
@@ -588,12 +591,19 @@ public class DiagramData {
      * gathers all lastEditedAt dates and prepares them to be displayed in a diagram.
      * @param results the pollResults from which the dates come
      */
-    private void generateParticipantsOverTime(final List<PollResult> results) {
+    private void generateParticipantsOverTime(final List<PollResult> results, final long pollStartTime) {
         final List<Date> datesList = new ArrayList<>();
         for (final PollResult pr: results) {
             try {
                 datesList.add(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.GERMAN).parse(pr.getLastEditAt()));
             } catch (ParseException ignored) {
+            }
+        }
+        if(participantsOverRelativeTime)
+        {
+            for(Date d:datesList)
+            {
+                d.setTime(d.getTime() - pollStartTime);
             }
         }
         if (datesList.isEmpty()) {
@@ -679,7 +689,7 @@ public class DiagramData {
             }
         }
         if (showParticipantsOverTime) {
-            generateParticipantsOverTime(results);
+            generateParticipantsOverTime(results,poll.getActivatedDate().getTime().getTime());
         }
         for (final QuestionData qd: questionList) {
             qd.statistics();
