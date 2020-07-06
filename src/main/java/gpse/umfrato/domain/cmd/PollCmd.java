@@ -6,6 +6,8 @@ import lombok.Data;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -69,18 +71,18 @@ public class PollCmd {
 
     public Poll getCmdPoll() {
         // parses the activationDAte and deactivationDate from a String to a Calendar
-        final Calendar activationDate = Calendar.getInstance();
-        final Calendar deactivationDate = Calendar.getInstance();
+        final ZonedDateTime activationDate = ZonedDateTime.now();
+        final ZonedDateTime deactivationDate = ZonedDateTime.now();
         try {
-            final DateFormat df = new SimpleDateFormat("dd.MM.yyyy&HH:mm", Locale.GERMAN);
-            final Date activation = df.parse(activatedAt);
+            final DateTimeFormatter df = DateTimeFormatter.ofPattern("dd.MM.yyyy&HH:mm", Locale.GERMAN);
+            final ZonedDateTime activation = ZonedDateTime.parse(activatedAt,df);
             activationDate.setTime(activation);
-            final Date deactivation = df.parse(deactivatedAt);
+            final ZonedDateTime deactivation = ZonedDateTime.parse(deactivatedAt,df);
             deactivationDate.setTime(deactivation);
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        final Poll poll = new Poll(pollCreator, anonymityStatus, pollName, pollCreatedAt, activationDate,
+        final Poll poll = new Poll(pollCreator, anonymityStatus, pollName, ZonedDateTime.parse(activatedAt,df), activationDate,
             deactivationDate, pollStatus, backgroundColor, fontColor, logo, visibility, categoryChange, activated,
             deactivated, repeat, repeatUntil, day, week, month, stoppingReason, level, 1L);
         return poll;

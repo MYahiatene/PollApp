@@ -612,7 +612,7 @@ export default {
                 activated: this.switch1,
                 deactivated: this.switch2,
                 level: this.selectedLevel,
-                repeat: this.rhythm,
+                repeat: Number(this.rhythm),
                 repeatUntil:
                     this.deactivationReasons.indexOf(this.selectedDeactivation) === 0
                         ? this.finishingDate

@@ -5,8 +5,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -32,14 +32,13 @@ public class Poll {
     /**
      * This attribute represents the date when the poll was created.
      */
-    //TODO: zu Date machen?
-    private String creationDate;
+    private ZonedDateTime creationDate;
 
     /**
      * This attribute represents the date when the poll was edited the last time.
      */
     // @JsonIgnore
-    private String lastEditAt;
+    private ZonedDateTime lastEditAt;
 
     /**
      * This attribute represents the user who edited the poll the last time.
@@ -50,12 +49,12 @@ public class Poll {
     /**
      * This attribute represents the date and time when the poll is/was activated.
      */
-    private Calendar activatedDate;
+    private ZonedDateTime activatedDate;
 
     /**
      * This attribute represents the date and time when the poll is/was deactivated.
      */
-    private Calendar deactivatedDate;
+    private ZonedDateTime deactivatedDate;
 
     /**
      * This attribute represents the status of the anonymity if it is anonymous, part-anonymous
@@ -137,7 +136,7 @@ public class Poll {
 
     private Long seriesCounter;
 
-    private Calendar nextSeries;
+    private ZonedDateTime nextSeries;
 
 
     /**
@@ -158,8 +157,8 @@ public class Poll {
      * @param activated       whether the poll should be activated automatically
      * @param deactivated     whether the poll should be deactivated automatically
      */
-    public Poll(final String pollCreator, final String anonymityStatus, final String pollName, final String createdAt,
-                final Calendar activatedAt, final Calendar deactivatedAt, final int pollStatus,
+    public Poll(final String pollCreator, final String anonymityStatus, final String pollName, final ZonedDateTime createdAt,
+                final ZonedDateTime activatedAt, final ZonedDateTime deactivatedAt, final int pollStatus,
                 final String backgroundColor, final String fontColor, final String logo, final boolean visibility,
                 final boolean categoryChange, final boolean activated, final boolean deactivated, final String repeat,
                 final String repeatUntil, final List<String> day, final List<String> week, final List<String> month,

@@ -3,6 +3,7 @@ package gpse.umfrato.domain.evaluation;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.ser.ZonedDateTimeSerializer;
 import gpse.umfrato.domain.answer.Answer;
 import gpse.umfrato.domain.category.Category;
 import gpse.umfrato.domain.category.CategoryService;
@@ -16,6 +17,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.text.*;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -493,14 +496,11 @@ public class DiagramData {
                 }
             }
         }
-        final List<Date> datesList = new ArrayList<>();
+        final List<ZonedDateTime> datesList = new ArrayList<>();
+        DateTimeFormatter df = DateTimeFormatter.ofPattern("yy-MM-dd HH:mm:ss",Locale.GERMANY);
         for (final PollResult pr: results) {
             if(showParticipantsOverTime) {
-                try {
-                    datesList.add(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(pr.getLastEditAt()));
-                } catch (ParseException pe) {
-                    continue;
-                }
+                datesList.add(ZonedDateTime.parse(pr.getLastEditAt(),df));
             }
             for (final Answer a: pr.getAnswerList()) {
                 for (final QuestionData qd: questionList) {
@@ -535,19 +535,19 @@ public class DiagramData {
             if (datesList.isEmpty()) {
                 showParticipantsOverTime = false;
             } else {
-                Date min = datesList.get(0);
-                Date max = datesList.get(0);
-                for (final Date d: datesList) {
-                    if (d.after(max)) {
+                ZonedDateTime min = datesList.get(0);
+                ZonedDateTime max = datesList.get(0);
+                for (final ZonedDateTime d: datesList) {
+                    if (d.compareTo(max) > 0) {
                         max = d;
-                    } else if (d.before(min)) {
+                    } else if (d.compareTo(min) < 0) {
                         min = d;
                     }
                 }
                 // System.out.println(min);
                 // System.out.println(max);
-                final long start = min.getTime() / 1000;
-                final long end = max.getTime() / 1000;
+                final long start = min.toEpochSecond();
+                final long end = max.toEpochSecond();
                 final long diff = end - start;
                 long step = diff / 9;
                 if (step < 1L) {
@@ -572,14 +572,15 @@ public class DiagramData {
                     patternString += ":ss";
                 }
                 // System.out.println(patternString);
-                final DateFormat df = new SimpleDateFormat(patternString);
-                for (long date = min.getTime(); date <= max.getTime(); date += step*1000) {
-                    answerPossibilities.add(df.format(new Date(date)));
+                final DateTimeFormatter finalDf = DateTimeFormatter.ofPattern(patternString, Locale.GERMANY);
+
+                for (ZonedDateTime date = min; date.compareTo(max) < 0; date.plusSeconds(step)) {
+                    answerPossibilities.add(finalDf.format(date));
                 }
                 // System.out.println(answerPossibilities);
                 participantsOverTime = new ChoiceData(0, "Teilnahmen über Zeit", answerPossibilities);
-                for (final Date d: datesList) {
-                    final long slot = (d.getTime() / 1000 - start) / step;
+                for (final ZonedDateTime d: datesList) {
+                    final long slot = (d.toEpochSecond() - start) / step;
                     participantsOverTime.addAnswer((double) slot);
                 }
                 participantsOverTime.statistics();
