@@ -579,7 +579,7 @@ class PollServiceImpl implements PollService {
     ZonedDateTime deltaNew(ZonedDateTime originalStart, ZonedDateTime originalEnd, ZonedDateTime nowStart) {
         Duration delta = Duration.between(originalStart.toLocalDate(), originalEnd.toLocalDate());
         ZonedDateTime nowEnd = nowStart.plus(delta);
-        System.out.println("Now Start: " + nowStart + " Now End: " + nowEnd);
+        // System.out.println("Now Start: " + nowStart + " Now End: " + nowEnd);
         return nowEnd;
     }
 

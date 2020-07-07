@@ -593,7 +593,7 @@ public class DiagramData {
                     tPlus = deltaString + String.format("%dss", delta.toSeconds());
                 }
 
-                System.out.println(tPlus);
+                // System.out.println(tPlus);
 
                 // System.out.println(patternString);
                 final DateTimeFormatter finalDf = DateTimeFormatter.ofPattern(patternString, Locale.GERMANY);
