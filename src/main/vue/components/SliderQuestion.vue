@@ -29,15 +29,9 @@
             ></v-text-field>
         </v-row>
         <v-row no-gutters>
-            <v-switch v-model="openLower" label="Offene untere Grenze" @change="clearLower()"></v-switch>
-        </v-row>
-        <v-row v-if="openLower" no-gutters>
             <v-text-field label="Minimumbeschriftung" v-model="lowerText" hint="bspw. 'weniger als X'"></v-text-field>
         </v-row>
         <v-row no-gutters>
-            <v-switch v-model="openUpper" label="Offene obere Grenze" @change="clearUpper()"></v-switch>
-        </v-row>
-        <v-row v-if="openUpper" no-gutters>
             <v-text-field label="Maximumbeschriftung" v-model="upperText" hint="bspw. 'mehr als X'"></v-text-field>
         </v-row>
         <v-row no-gutters>
@@ -153,6 +147,7 @@ export default {
     mounted() {
         this.openLower = this.getQuestion.belowMessage
         this.openUpper = this.getQuestion.aboveMessage
+        // this.setSaveButtonStatus(true) ToDo: Figure out why this doesn't work
     },
     methods: {
         ...mapMutations({
