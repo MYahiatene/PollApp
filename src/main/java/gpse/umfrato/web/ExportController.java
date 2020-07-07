@@ -96,10 +96,12 @@ public class ExportController {
     public Long fromJSONToPoll(final @RequestBody String file) throws MalformedURLException {
         final PollCmd pollCmd = exportService.fromJSONToPoll(file);
         Calendar actCalendar = Calendar.getInstance();
+        System.out.println("ActDate: "+pollCmd.getActivatedDate());
         Date actDate = new Date(Long.parseLong(pollCmd.getActivatedDate()));
         actCalendar.setTime(actDate);
         pollCmd.setActivatedDate(actCalendar.toString());
         Calendar deactCalendar = Calendar.getInstance();
+        System.out.println("DeactDate: "+pollCmd.getDeactivatedDate());
         Date deactDate = new Date(Long.parseLong(pollCmd.getDeactivatedDate()));
         actCalendar.setTime(deactDate);
         pollCmd.setDeactivatedDate(deactCalendar.toString());
