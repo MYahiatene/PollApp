@@ -91,14 +91,18 @@
                                             <!--Checkboxes, so that multiple answers are technically allowed,
                                         not able to save them yet-->
                                             <v-list v-for="answer in question.answerPossibilities" :key="answer.text">
+                                                <!--:error="disableCheckbox(index, question, answer)"
+                                                    error-messages="This is wrong!"-->
                                                 <v-checkbox
                                                     class="my-n2 mx-3"
                                                     dense
                                                     :label="answer"
                                                     :color="fontColor"
                                                     :value="answer"
+                                                    :error="errorCheckbox(index, question)"
+                                                    :error-messages="errorMessageCheckbox"
                                                     v-model="valueList[index]"
-                                                    @change="saveAnswerCheckbox($event, question, answer)"
+                                                    @change="saveAnswerCheckbox($event, question, answer, index)"
                                                 ></v-checkbox>
                                             </v-list>
                                             <div v-if="question.userAnswers">
@@ -320,6 +324,7 @@ export default {
             lastInput: 'Letzte Eingabe',
             valueList: [],
             participated: false,
+            errorMessageCheckbox: '',
         }
     },
     /**
@@ -484,6 +489,19 @@ export default {
         },
     },
     methods: {
+        errorCheckbox(i, question) {
+            if (this.valueList[i]) {
+                if (Object.keys(this.valueList[i]).length > question.numberOfPossibleAnswers) {
+                    console.log('false')
+                    return true
+                } else {
+                    console.log('true')
+                    return false
+                }
+            }
+            console.log('true')
+            return false
+        },
         /**
          * This method creates valueList which for every question type, but sortQuestion is used as v-model to show
          * already given answers by the user, or nothing at all, if there are no previous given answers.
@@ -666,7 +684,23 @@ export default {
          * @param question The question object, so it can get the QuestionID
          * @param answer The answer object, so it can get the answer possibilities.
          */
-        saveAnswerCheckbox(e, question, answer) {
+        saveAnswerCheckbox(e, question, answer, index) {
+            console.log(question.numberOfPossibleAnswers)
+            if (this.valueList[index]) {
+                if (Object.keys(this.valueList[index]).length > question.numberOfPossibleAnswers) {
+                    this.errorMessageCheckbox = 'Maximal ' + question.numberOfPossibleAnswers + ' Antworten!'
+                    for (let j = 0; j < Object.keys(this.valueList[index]).length; j++) {
+                        // this.valueList[i].length;
+                        if (this.valueList[index][j] === answer) {
+                            console.log('richitge antwort gefunden')
+                            this.valueList[index].splice(question.numberOfPossibleAnswers, 1)
+                        }
+                    }
+                    return true
+                } else {
+                    this.errorMessageCheckbox = ''
+                }
+            }
             this.showAnswerMultipleChoice()
             const objectIndex = this.givenAnswers.indexOf('Object')
             if (objectIndex !== -1) {
