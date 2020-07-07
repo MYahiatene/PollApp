@@ -373,7 +373,6 @@ class PollServiceImpl implements PollService {
                     // days of calendar weeks per year
                     boolean first = true;
                     // more than one day and more than one week given
-                    // TODO: hier
                     for (int i = 0; i < week.size() - 1; i++) {
                         for (int j = 0; j < day.size() - 1; j++) {
                             if (first && prev.getDayOfWeek().getValue() < day.get(j + 1) && prev.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR) == week.get(i)) {
@@ -392,7 +391,7 @@ class PollServiceImpl implements PollService {
                     }
                     // more than one day per week given
                     for (int j = 0; j < day.size() - 1; j++) {
-                        if (prev.getDayOfWeek().getValue() == day.get(j) && first && prev.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR) == week.get(0)) {
+                        if (prev.getDayOfWeek().getValue() < day.get(j + 1) && first && (prev.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR) == week.get(0) || prev.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR) == week.get(week.size()-1))) {
                             next = next.with(TemporalAdjusters.next(DayOfWeek.of(day.get(j + 1))));
                             poll.setNextSeries(next);
                             first = false;
@@ -401,13 +400,14 @@ class PollServiceImpl implements PollService {
                     // end of cycle reached
                     if (first) {
                         next = next.plusYears(repeat);
-                        next = next.with(IsoFields.WEEK_OF_WEEK_BASED_YEAR, week.get(0));
                         next = next.with(TemporalAdjusters.next(DayOfWeek.of(day.get(0))));
+                        next = next.with(IsoFields.WEEK_OF_WEEK_BASED_YEAR, week.get(0));
                         poll.setNextSeries(next);
                     }
                     LOGGER.info("next: " + next.toString());
                     LOGGER.info(parseDate(next));
                 } else if (week.size() == 0) {
+                    // TODO: hier
                     final int prevMonth = prev.getMonthValue();
                     // month +, prevMonth, weil month bei 0 startet
                     // days per month given
@@ -415,14 +415,21 @@ class PollServiceImpl implements PollService {
                     // more than one day and more than one month given
                     for (int i = 0; i < month.size() - 1; i++) {
                         for (int j = 0; j < day.size() - 1; j++) {
-                            if (prev.getDayOfMonth() == day.get(j) && first && prevMonth == month.get(i)) {
+                            if (prev.getDayOfMonth() < day.get(j + 1) && first && prevMonth == month.get(i)) {
                                 next = next.withDayOfMonth(day.get(j + 1));
                                 poll.setNextSeries(next);
                                 first = false;
                             }
                         }
+                        // one day per month given; starts at future day in same month
+                        if(first && prev.getDayOfMonth() < day.get(0) && prevMonth == month.get(i))
+                        {
+                            next = next.withDayOfMonth(day.get(0));
+                            poll.setNextSeries(next);
+                            first = false;
+                        }
                         // next month of the cycle
-                        if (first && prevMonth == month.get(i)) {
+                        if (first && prevMonth < month.get(i + 1)) {
                             next = next.withDayOfMonth(day.get(0));
                             next = next.withMonth(month.get(i + 1));
                             poll.setNextSeries(next);
@@ -431,13 +438,20 @@ class PollServiceImpl implements PollService {
                     }
                     // more than one day per month given
                     for (int j = 0; j < day.size() - 1; j++) {
-                        if (prev.getDayOfMonth() == day.get(j) && first && prevMonth == month.get(0)) {
+                        if (prev.getDayOfMonth() < day.get(j + 1) && first && (prevMonth == month.get(0) || prevMonth == month.get(month.size() - 1))) {
                             next = next.withDayOfMonth(day.get(j + 1));
                             poll.setNextSeries(next);
                             first = false;
                         }
                     }
-                    //end of cycle reached
+                    // one day and one month given; starts at future day in same year
+                    if(first && ((prev.getDayOfMonth() < day.get(0) && prevMonth == month.get(0)) || prevMonth < month.get(0))) {
+                        next = next.withMonth(month.get(0));
+                        next = next.withDayOfMonth(day.get(0));
+                        poll.setNextSeries(next);
+                        first = false;
+                    }
+                    // end of cycle reached
                     if (first) {
                         next = next.plusYears(repeat);
                         next = next.withDayOfMonth(day.get(0));
