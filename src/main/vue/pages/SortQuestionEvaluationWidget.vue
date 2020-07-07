@@ -213,7 +213,7 @@ export default {
 
     mounted() {
         this.computeData()
-        // this.createChartData()
+        this.createChartData()
     },
 
     methods: {
@@ -240,147 +240,10 @@ export default {
                     })
                 }
             }
+            this.DiagramKey += 1
         },
 
-        // createChartData() {
-        //     for (let i = 0; i < this.arrayOfValues.length; i++) {
-        //         this.chartdataSets.push({ labels: [], datasets: [] })
-        //         for (let j = 0; j < this.sortData.answerPossibilities.length; j++) {
-        //             this.chartdataSets[i].labels.push('Position ' + (j + 1) + '')
-        //         }
-        //         this.chartdataSets[i].datasets.push({
-        //             label: this.arrayOfValues[i].itemName,
-        //             backgroundColor: this.$vuetify.theme.currentTheme.primary,
-        //             data: this.arrayOfValues[i].wasAtPositionNumbers,
-        //         })
-        //     }
-        // },
-
         computeData() {
-            // if (this.sortData.answerPossibilities.length !== this.sortData.answerList[0].length) {
-            //     console.log('Fehlerhafte Daten in sortData')
-            // }
-            // // initializing a array that has size nxn with n = number of items
-            //
-            // for (let i = 0; i < this.sortData.answerList[0].length; i++) {
-            //     this.arrayOfValues.push({
-            //         itemID: i,
-            //         itemName: this.sortData.answerPossibilities[i],
-            //         wasAtPositionNumbers: [],
-            //         meanPositionValue: 0,
-            //         meanPosition: -1,
-            //         twin: -1,
-            //         show: false,
-            //         variance: 0,
-            //         standardDeviation: 0,
-            //     })
-            //     for (let j = 0; j < this.sortData.answerList[0].length; j++) {
-            //         this.arrayOfValues[i].wasAtPositionNumbers.push(0)
-            //     }
-            // }
-            //
-            // console.log(this.arrayOfValues)
-            //
-            // // in this array we store for each item (i) and each position (j) how many times the item was placed in that position
-            //
-            // for (let i = 0; i < this.sortData.answerList.length; i++) {
-            //     for (let j = 0; j < this.sortData.answerList[i].length; j++) {
-            //         this.arrayOfValues[this.sortData.answerList[i][j]].wasAtPositionNumbers[j] += 1
-            //     }
-            // }
-            //
-            // // Now we compute the mean order.
-            //
-            // // every item gets a mean position value computed from the number it was placed on a position times the index of that position
-            //
-            // for (let i = 0; i < this.arrayOfValues.length; i++) {
-            //     for (let j = 0; j < this.arrayOfValues[i].wasAtPositionNumbers.length; j++) {
-            //         this.arrayOfValues[i].meanPositionValue += this.arrayOfValues[i].wasAtPositionNumbers[j] * (j + 1)
-            //     }
-            //
-            //     this.arrayOfValues[i].meanPositionValue =
-            //         this.arrayOfValues[i].meanPositionValue / this.sortData.answerList.length
-            // }
-            //
-            // // we sort the items according to their mean position values and save the order in orderedItems
-            //
-            // const orderedItems = []
-            //
-            // let lowestMeanPositionValue = this.arrayOfValues.length * this.arrayOfValues.length
-            // let firstItem = this.arrayOfValues.length + 1
-            //
-            // for (let j = 0; j < this.arrayOfValues.length; j++) {
-            //     for (let i = 0; i < this.arrayOfValues.length; i++) {
-            //         if (this.arrayOfValues[i].meanPosition === -1) {
-            //             if (lowestMeanPositionValue >= this.arrayOfValues[i].meanPositionValue) {
-            //                 if (lowestMeanPositionValue === this.arrayOfValues[i].meanPositionValue) {
-            //                     if (firstItem !== i) {
-            //                         console.log('item ' + i + ' is duplicate to ' + firstItem)
-            //                         this.arrayOfValues[i].twin = firstItem
-            //                     }
-            //                 }
-            //                 lowestMeanPositionValue = this.arrayOfValues[i].meanPositionValue
-            //                 firstItem = i
-            //                 console.log('i: ' + i)
-            //                 console.log('first: ' + firstItem)
-            //             }
-            //         }
-            //     }
-            //
-            //     console.log('first ' + firstItem + 'position ' + j)
-            //
-            //     this.arrayOfValues[firstItem].meanPosition = j
-            //     orderedItems[j] = firstItem
-            //     lowestMeanPositionValue = this.arrayOfValues.length + 1
-            // }
-            //
-            // // Now we compute the variance and standard deviation of the wasAtPositionNumbers
-            //
-            // for (let i = 0; i < this.arrayOfValues.length; i++) {
-            //     for (let j = 0; j < this.arrayOfValues[i].wasAtPositionNumbers.length; j++) {
-            //         this.arrayOfValues[i].variance +=
-            //             this.arrayOfValues[i].wasAtPositionNumbers[j] *
-            //             (j + 1 - this.arrayOfValues[i].meanPositionValue) ** 2
-            //     }
-            //
-            //     this.arrayOfValues[i].variance = this.arrayOfValues[i].variance / this.sortData.answerList.length
-            //
-            //     this.arrayOfValues[i].standardDeviation = Math.sqrt(this.arrayOfValues[i].variance)
-            // }
-            //
-            // // Now we build the meanOrder Array by pushing an Array of items for each position
-            //
-            // let position = 0
-            // for (let i = 0; i < orderedItems.length; i++) {
-            //     this.meanOrder.push([])
-            //     let twinsLeft = true
-            //     let currentItem = this.arrayOfValues[orderedItems[i]]
-            //     console.log('arrayOfValues[orderedItems[i] with i as ' + i + 'is')
-            //     console.log(currentItem)
-            //
-            //     while (twinsLeft) {
-            //         this.meanOrder[position].push(currentItem)
-            //
-            //         console.log('added item ' + currentItem.itemID + 'at position :' + position)
-            //         if (currentItem.twin === -1) {
-            //             console.log('no twins for ' + i)
-            //             twinsLeft = false
-            //         } else {
-            //             currentItem = this.arrayOfValues[currentItem.twin]
-            //             i++
-            //         }
-            //     }
-            //     position++
-            // }
-            //
-            // console.log(this.arrayOfValues)
-            // console.log('ordered')
-            // console.log(orderedItems)
-            // console.log('meanOrder: ')
-            // console.log(this.meanOrder)
-
-            // this.meanOrder = this.diagramData[this.questionID].meanOrder
-
             console.log(this.diagramData[this.questionID].meanOrder)
 
             if (this.diagramData[this.questionID].meanOrder.length === 0) {
@@ -412,30 +275,6 @@ export default {
                 this.span =
                     -this.meanOrder[0][0].meanPositionValue +
                     this.meanOrder[this.meanOrder.length - 1][0].meanPositionValue
-
-                const items = this.answerPossibilites
-                console.log(this.answerPossibilites)
-                console.log(items)
-                for (let i = 0; i < items.length; i++) {
-                    this.chartdataSets.push({ labels: [], datasets: [] })
-                    for (let j = 0; j < items.length; j++) {
-                        this.chartdataSets[i].labels.push('Position ' + (j + 1) + '')
-                    }
-                }
-                console.log('chartData')
-                console.log(this.chartdataSets)
-
-                for (let j = 0; j < this.meanOrder.length; j++) {
-                    for (let k = 0; k < this.meanOrder[j].length; k++) {
-                        console.log(this.meanOrder[j][k].itemID)
-                        this.chartdataSets[this.meanOrder[j][k].itemID].datasets.push({
-                            label: this.meanOrder[j][k].itemName,
-                            backgroundColor: this.$vuetify.theme.currentTheme.primary,
-                            data: this.meanOrder[j][k].wasAtPositionNumbers,
-                        })
-                    }
-                }
-                this.DiagramKey += 1
             }
         },
     },

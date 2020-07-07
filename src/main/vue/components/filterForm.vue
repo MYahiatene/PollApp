@@ -244,29 +244,9 @@ export default {
             dateKey: 0,
             qafilter: true,
             datefilter: true,
-            qafilterList: [
-                // {
-                //     active: true,
-                //     filterId: 0,
-                //     filterType: 'qaFilter',
-                //     questionId: -1,
-                //     categoryIndex: -1,
-                //     questionIndex: -1,
-                //     answerIndices: [],
-                //     invertFilter: false,
-                // },
-            ],
+            qafilterList: [],
 
-            dateFilterList: [
-                // {
-                //     active: true,
-                //     filterIndex: 0,
-                //     filterType: 'date',
-                //     endDate: '',
-                //     startDate: '',
-                //     invertFilter: false,
-                // },
-            ],
+            dateFilterList: [],
 
             chosenPoll: '',
             selectedQuestions: [],
@@ -274,29 +254,7 @@ export default {
 
             dialog: false,
 
-            filterData: [
-                /* {
-                    pollId: 1,
-                    chosenQuestions: [11, 12, 32, 4, 50, 8], // these are questionIDs
-                    filterType: 'dataFilter',
-                },
-                {
-                    filterType: 'questionAnswer', // 'consistency', 'dataFilter'
-                    invertFilter: false,
-                    targetQuestionId: 3, // within a category
-                    targetAnswerPossibilities: ['2', '3', '5'], // or within an answerlist of a question
-                },
-                {
-                    filterType: 'consistency',
-                    minSuccesses: 0, // von 0 (aus) bis zur Länge der Konsistenzfragen
-                },
-                {
-                    filterType: 'date',
-                    startDate: ' ',
-                    endDate: ' ',
-                    invertFilter: false,
-                }, */
-            ],
+            filterData: [],
 
             filterData1: {
                 pollId: 1,
@@ -573,9 +531,16 @@ export default {
                     if (this.filters[i].filterType === 'questionAnswer') {
                         console.log('qa filter')
                         const a = []
-                        for (let j = 0; j < this.filters[i].targetAnswerPossibilities.length; j++) {
-                            a.push(parseInt(this.filters[i].targetAnswerPossibilities[j]))
+                        if (this.filters[i].isSlider) {
+                            for (let j = 0; j < this.filters[i].targetAnswerPossibilities.length; j++) {
+                                a.push(parseFloat(this.filters[i].targetAnswerPossibilities[j]))
+                            }
+                        } else {
+                            for (let j = 0; j < this.filters[i].targetAnswerPossibilities.length; j++) {
+                                a.push(parseInt(this.filters[i].targetAnswerPossibilities[j]))
+                            }
                         }
+
                         const id = this.qafilterList.length
                         this.qafilterList.push({
                             active: true,
@@ -595,6 +560,8 @@ export default {
                     }
 
                     console.log(this.dateFilterList)
+
+                    console.log('qaFilter in FF')
 
                     console.log(this.qafilterList)
 
@@ -617,28 +584,8 @@ export default {
             }
             this.minConsistencyValue = 0
             this.updateConsistencyOn()
-            this.qafilterList = [
-                // {
-                //     active: true,
-                //     filterId: 0,
-                //     filterType: 'qaFilter',
-                //     categoryIndex: -1,
-                //     questionId: -1,
-                //     questionIndex: -1,
-                //     answerIndices: [],
-                //     invertFilter: false,
-                // },
-            ]
-            this.dateFilterList = [
-                // {
-                //     active: true,
-                //     filterIndex: 0,
-                //     filterType: 'date',
-                //     endDate: '',
-                //     startDate: '',
-                //     invertFilter: false,
-                // },
-            ]
+            this.qafilterList = []
+            this.dateFilterList = []
             this.addDateFilter()
             this.addQAFilter()
             this.updateFilter()

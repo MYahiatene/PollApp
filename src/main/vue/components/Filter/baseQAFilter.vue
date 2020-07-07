@@ -48,7 +48,7 @@
             </template>
         </v-select>
         <div v-if="questions[questionIndex] && questions[questionIndex].questionType === 'SliderQuestion'">
-            eine Antwort in folgendem Bereich
+            {{ sliderConditional }} Antwort in folgendem Bereich
             <v-range-slider
                 v-model="range"
                 :min="questions[questionIndex].startValue"
@@ -144,6 +144,14 @@ export default {
                 return ''
             }
         },
+
+        sliderConditional() {
+            if (this.invertFilter) {
+                return 'KEINE'
+            } else {
+                return 'eine'
+            }
+        },
         pollTitles() {
             const pollTitles = Object.assign([{}], this.polls)
             for (let i = 0; i < pollTitles.length; i++) {
@@ -220,6 +228,7 @@ export default {
         },
     },
     mounted() {
+        console.log('mount QA Filter')
         this.categoryIndex = this.initialCategoryIndex
         this.questionIndex = this.initialQuestionIndex
         this.answerIndices = this.initialAnswerIndices
@@ -242,6 +251,7 @@ export default {
             this.range[0] = this.initialAnswerIndices[0]
             this.range[1] = this.initialAnswerIndices[1]
         }
+        console.log(this.range)
         this.$forceUpdate()
     },
     methods: {
