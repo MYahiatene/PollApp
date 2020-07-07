@@ -539,8 +539,9 @@ export default {
         },
         dayValid(dayString) {
             const list = this.stringToList(dayString)
-            const monthContext = this.monthValid(this.month) === true && this.month.length > 0
-            const weekContext = this.weekValid(this.week) === true && this.week.length > 0
+            const monthContext =
+                (this.monthValid(this.month) === true && this.month.length > 0) || this.selectedLevel === 2
+            const weekContext = (this.weekValid(this.week) === true && this.week.length > 0) || this.selectedLevel === 1
             console.log('monthContext:', monthContext)
             console.log('weekContext:', weekContext)
             if (list.length > 0) {
@@ -562,7 +563,8 @@ export default {
         },
         weekValid(weekString) {
             const list = this.stringToList(weekString)
-            const monthContext = this.monthValid(this.month) === true && this.month.length > 0
+            const monthContext =
+                (this.monthValid(this.month) === true && this.month.length > 0) || this.selectedLevel === 2
             console.log('monthContextForWeek:', monthContext)
             if (list.length > 0 || weekString.length === 0) {
                 for (const elem of list) {
