@@ -629,7 +629,7 @@ public class DiagramData {
             final List<String> answerPossibilities = new ArrayList<>();
             if(participantsOverRelativeTime)
             {
-                String patternString = "T+";
+                /* String patternString = "T+";
                 if (step < 60 * 60 * 24 * 30) {
                     patternString = "dd." + patternString;
                 }
@@ -645,7 +645,7 @@ public class DiagramData {
                 final DateFormat df = new SimpleDateFormat(patternString, Locale.GERMAN);
                 for (long date = min.getTime(); date <= max.getTime(); date += step * 1000) {
                     answerPossibilities.add(df.format(new Date(date)));
-                }
+                } */
             }
             else {
                 String patternString = "MM.yyyy";

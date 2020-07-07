@@ -71,130 +71,132 @@
                                     :footer-props="footerProps"
                                 >
                                     <template v-slot:item.actions="{ item }">
-                                        <v-tooltip bottom>
-                                            <template v-slot:activator="{ on, attrs }">
-                                                <v-btn icon color="primary" v-bind="attrs" v-on="on">
-                                                    <v-icon @click="itemStatusAction(item)">
-                                                        {{ item.statusIcon }}
-                                                    </v-icon>
-                                                </v-btn>
-                                            </template>
-                                            <span> {{ item.statusText }}</span>
-                                        </v-tooltip>
-                                        <v-tooltip bottom>
-                                            <template v-slot:activator="{ on, attrs }">
-                                                <v-btn icon color="primary" v-bind="attrs" v-on="on">
-                                                    <v-icon @click="itemAction(item)">
-                                                        {{ item.actionIcon }}
-                                                    </v-icon>
-                                                </v-btn>
-                                            </template>
-                                            <span> {{ item.actionText }}</span>
-                                        </v-tooltip>
-                                        <v-tooltip bottom>
-                                            <template v-slot:activator="{ on, attrs }">
-                                                <v-btn
-                                                    icon
-                                                    color="primary"
-                                                    :disabled="item.pollStatus === 3"
-                                                    v-bind="attrs"
-                                                    v-on="on"
-                                                >
-                                                    <v-icon @click="inviteAction(item)">
-                                                        mdi-account-plus
-                                                    </v-icon>
-                                                </v-btn>
-                                            </template>
-                                            <span> Teilnehmer einladen</span>
-                                        </v-tooltip>
-                                        <v-tooltip bottom>
-                                            <template v-slot:activator="{ on, attrs }">
-                                                <v-btn
-                                                    icon
-                                                    color="primary"
-                                                    :disabled="item.pollStatus < 1 || item.pollStatus > 2"
-                                                    v-bind="attrs"
-                                                    v-on="on"
-                                                >
-                                                    <v-icon @click="reminderAction(item)">
-                                                        mdi-message-alert
-                                                    </v-icon>
-                                                </v-btn>
-                                            </template>
-                                            <span> Teilnehmer benachrichtigen</span>
-                                        </v-tooltip>
-                                        <v-tooltip bottom>
-                                            <template v-slot:activator="{ on, attrs }">
-                                                <v-btn icon color="primary" v-bind="attrs" v-on="on">
-                                                    <v-icon @click="exportPoll(item)">
-                                                        mdi-cloud-download
-                                                    </v-icon>
-                                                </v-btn>
-                                            </template>
-                                            <span> Umfrage exportieren </span>
-                                        </v-tooltip>
-                                        <v-tooltip bottom>
-                                            <template v-slot:activator="{ on, attrs }">
-                                                <v-btn icon color="primary" v-bind="attrs" v-on="on">
-                                                    <v-icon @click="copyPoll(item)">
-                                                        mdi-content-copy
-                                                    </v-icon>
-                                                </v-btn>
-                                            </template>
-                                            <span> Umfrage kopieren</span>
-                                        </v-tooltip>
-                                        <v-tooltip bottom>
-                                            <template v-slot:activator="{ on, attrs }">
-                                                <v-btn
-                                                    icon
-                                                    color="primary"
-                                                    :disabled="item.pollStatus < 1 || item.pollStatus > 2"
-                                                    v-bind="attrs"
-                                                    v-on="on"
-                                                >
-                                                    <v-icon @click="setLink(item)">
-                                                        mdi-link-variant
-                                                    </v-icon>
-                                                </v-btn>
-                                            </template>
-                                            <span> Links kopieren</span>
-                                        </v-tooltip>
-                                        <v-tooltip bottom>
-                                            <template v-slot:activator="{ on, attrs }">
-                                                <v-btn
-                                                    icon
-                                                    color="primary"
-                                                    :disabled="
-                                                        item.pollStatus < 1 ||
-                                                        item.pollStatus > 2 ||
-                                                        item.anonymityStatus !== '1'
-                                                    "
-                                                    v-bind="attrs"
-                                                    v-on="on"
-                                                >
-                                                    <v-icon @click="generateQR(item)">
-                                                        mdi-qrcode
-                                                    </v-icon>
-                                                </v-btn>
-                                            </template>
-                                            <span> QR-Code generieren</span>
-                                        </v-tooltip>
-                                        <v-tooltip bottom>
-                                            <template v-slot:activator="{ on, attrs }">
-                                                <v-btn
-                                                    icon
-                                                    color="primary"
-                                                    :disabled="item.pollStatus === 2"
-                                                    v-bind="attrs"
-                                                    v-on="on"
-                                                >
-                                                    <v-icon @click="deletePoll(item)">
-                                                        mdi-delete
-                                                    </v-icon>
-                                                </v-btn>
-                                            </template>
-                                            <span> Umfrage löschen </span>
-                                        </v-tooltip>
+                                        <v-chip>
+                                            <v-tooltip bottom>
+                                                <template v-slot:activator="{ on, attrs }">
+                                                    <v-btn icon color="primary" v-bind="attrs" v-on="on">
+                                                        <v-icon @click="itemStatusAction(item)">
+                                                            {{ item.statusIcon }}
+                                                        </v-icon>
+                                                    </v-btn>
+                                                </template>
+                                                <span> {{ item.statusText }}</span>
+                                            </v-tooltip>
+                                            <v-tooltip bottom>
+                                                <template v-slot:activator="{ on, attrs }">
+                                                    <v-btn icon color="primary" v-bind="attrs" v-on="on">
+                                                        <v-icon @click="itemAction(item)">
+                                                            {{ item.actionIcon }}
+                                                        </v-icon>
+                                                    </v-btn>
+                                                </template>
+                                                <span> {{ item.actionText }}</span>
+                                            </v-tooltip>
+                                            <v-tooltip bottom>
+                                                <template v-slot:activator="{ on, attrs }">
+                                                    <v-btn
+                                                        icon
+                                                        color="primary"
+                                                        :disabled="item.pollStatus === 3"
+                                                        v-bind="attrs"
+                                                        v-on="on"
+                                                    >
+                                                        <v-icon @click="inviteAction(item)">
+                                                            mdi-account-plus
+                                                        </v-icon>
+                                                    </v-btn>
+                                                </template>
+                                                <span> Teilnehmer einladen</span>
+                                            </v-tooltip>
+                                            <v-tooltip bottom>
+                                                <template v-slot:activator="{ on, attrs }">
+                                                    <v-btn
+                                                        icon
+                                                        color="primary"
+                                                        :disabled="item.pollStatus < 1 || item.pollStatus > 2"
+                                                        v-bind="attrs"
+                                                        v-on="on"
+                                                    >
+                                                        <v-icon @click="reminderAction(item)">
+                                                            mdi-message-alert
+                                                        </v-icon>
+                                                    </v-btn>
+                                                </template>
+                                                <span> Teilnehmer benachrichtigen</span>
+                                            </v-tooltip>
+                                            <v-tooltip bottom>
+                                                <template v-slot:activator="{ on, attrs }">
+                                                    <v-btn icon color="primary" v-bind="attrs" v-on="on">
+                                                        <v-icon @click="exportPoll(item)">
+                                                            mdi-cloud-download
+                                                        </v-icon>
+                                                    </v-btn>
+                                                </template>
+                                                <span> Umfrage exportieren </span>
+                                            </v-tooltip>
+                                            <v-tooltip bottom>
+                                                <template v-slot:activator="{ on, attrs }">
+                                                    <v-btn icon color="primary" v-bind="attrs" v-on="on">
+                                                        <v-icon @click="copyPoll(item)">
+                                                            mdi-content-copy
+                                                        </v-icon>
+                                                    </v-btn>
+                                                </template>
+                                                <span> Umfrage kopieren</span>
+                                            </v-tooltip>
+                                            <v-tooltip bottom>
+                                                <template v-slot:activator="{ on, attrs }">
+                                                    <v-btn
+                                                        icon
+                                                        color="primary"
+                                                        :disabled="item.pollStatus < 1 || item.pollStatus > 2"
+                                                        v-bind="attrs"
+                                                        v-on="on"
+                                                    >
+                                                        <v-icon @click="setLink(item)">
+                                                            mdi-link-variant
+                                                        </v-icon>
+                                                    </v-btn>
+                                                </template>
+                                                <span> Links kopieren</span>
+                                            </v-tooltip>
+                                            <v-tooltip bottom>
+                                                <template v-slot:activator="{ on, attrs }">
+                                                    <v-btn
+                                                        icon
+                                                        color="primary"
+                                                        :disabled="
+                                                            item.pollStatus < 1 ||
+                                                            item.pollStatus > 2 ||
+                                                            item.anonymityStatus !== '1'
+                                                        "
+                                                        v-bind="attrs"
+                                                        v-on="on"
+                                                    >
+                                                        <v-icon @click="generateQR(item)">
+                                                            mdi-qrcode
+                                                        </v-icon>
+                                                    </v-btn>
+                                                </template>
+                                                <span> QR-Code generieren</span>
+                                            </v-tooltip>
+                                            <v-tooltip bottom>
+                                                <template v-slot:activator="{ on, attrs }">
+                                                    <v-btn
+                                                        icon
+                                                        color="primary"
+                                                        :disabled="item.pollStatus === 2"
+                                                        v-bind="attrs"
+                                                        v-on="on"
+                                                    >
+                                                        <v-icon @click="deletePoll(item)">
+                                                            mdi-delete
+                                                        </v-icon>
+                                                    </v-btn>
+                                                </template>
+                                                <span> Umfrage löschen </span>
+                                            </v-tooltip>
+                                        </v-chip>
                                     </template>
                                 </v-data-table>
                             </template>
