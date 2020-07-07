@@ -138,7 +138,6 @@ public class PollController {
      * @param pollId takes the pollId of the specific poll.
      * @return returns the integer value of the activation status.
      */
-    @SuppressWarnings({"checkstyle:LeftCurly", "checkstyle:AvoidNestedBlocks"})
     @PreAuthorize("hasAnyAuthority('Admin', 'Creator')")
     @PostMapping("/activatePoll/{pollId:\\d+}")
     public Integer activatePoll(final @PathVariable Long pollId) {

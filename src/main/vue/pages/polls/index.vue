@@ -315,18 +315,25 @@ export default {
             const dd = String(today.getDate()).padStart(2, '0')
             const mm = String(today.getMonth() + 1).padStart(2, '0') // January is 0!
             const yyyy = today.getFullYear()
+            const time =
+                (today.getHours() < 10 ? '0' : '') +
+                today.getHours() +
+                ':' +
+                (today.getMinutes() < 10 ? '0' : '') +
+                today.getMinutes()
             const poll = {
                 pollCreator: 'Jan',
                 anonymityStatus: '1',
                 pollName: 'Beispielumfrage',
-                pollCreatedAt: dd + '.' + mm + '.' + yyyy,
-                activatedAt: dd + '.' + mm + '.' + yyyy,
-                deactivatedAt: dd + '.' + mm + '.' + yyyy,
+                pollCreatedAt: dd + '.' + mm + '.' + yyyy + '&' + time,
+                activatedAt: dd + '.' + mm + '.' + yyyy + '&' + time,
+                deactivatedAt: dd + '.' + mm + '.' + yyyy + '&' + time,
                 pollStatus: 0,
                 categoryChange: true,
                 visibility: true,
                 backgroundColor: '#555555',
                 fontColor: '#fe7312',
+                timeZoneOffset: -new Date().getTimezoneOffset(),
                 logo:
                     'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAADICAIAAAAiOjnJAAAAAXNSR0IArs4c6QAAAARnQU1' +
                     'BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAA4dSURBVHhe7Z2/ixzHEsf93zhz5siZM2WOlL3sZc4UOVMgkAMjHF' +

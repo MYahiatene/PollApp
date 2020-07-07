@@ -6,7 +6,7 @@ import lombok.Data;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
@@ -28,7 +28,7 @@ public class PollCmd {
 
     private String pollCreatedAt;
 
-    //private String lastEditAt;
+    private String lastEditAt;
 
     private String activatedAt;
 
@@ -68,15 +68,22 @@ public class PollCmd {
 
     private Integer level;
 
+    private Integer timeZoneOffset;
 
     public Poll getCmdPoll() {
         // parses the activationDAte and deactivationDate from a String to a Calendar
-        final DateTimeFormatter df = DateTimeFormatter.ofPattern("dd.MM.yyyy&HH:mm", Locale.GERMAN);
-        final ZonedDateTime activation = ZonedDateTime.parse(activatedAt,df);
-        final ZonedDateTime deactivation = ZonedDateTime.parse(deactivatedAt,df);
-        final Poll poll = new Poll(pollCreator, anonymityStatus, pollName, ZonedDateTime.parse(activatedAt,df), activation,
+        final DateTimeFormatter df = DateTimeFormatter.ofPattern("dd.MM.yyyy&HH:mm");
+        final LocalDateTime localActivation = LocalDateTime.parse(activatedAt,df);
+        final LocalDateTime localDeactivation = LocalDateTime.parse(deactivatedAt,df);
+        final LocalDateTime localCreation = LocalDateTime.parse(pollCreatedAt,df);
+        ZoneId timeZone = ZoneId.ofOffset("UTC", ZoneOffset.ofHoursMinutes(timeZoneOffset / 60,timeZoneOffset % 60));
+        final ZonedDateTime activation = localActivation.atZone(timeZone);
+        final ZonedDateTime deactivation = localDeactivation.atZone(timeZone);
+        final ZonedDateTime creation = localCreation.atZone(timeZone);
+        Poll poll = new Poll(pollCreator, anonymityStatus, pollName, creation, activation,
             deactivation, pollStatus, backgroundColor, fontColor, logo, visibility, categoryChange, activated,
             deactivated, repeat, repeatUntil, day, week, month, stoppingReason, level, 1L);
+        poll.setLastEditAt(ZonedDateTime.now());
         return poll;
     }
 

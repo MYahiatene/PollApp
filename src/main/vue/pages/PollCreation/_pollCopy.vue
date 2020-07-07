@@ -50,6 +50,7 @@
                                 </v-card-text>
                                 <v-card-actions>
                                     <v-chip class="ma-1" @click="addNumber">Nummer</v-chip>
+                                    <v-chip class="ma-1" @click="addDate">Datum</v-chip>
                                     <v-chip class="ma-1" @click="addDay">Tag</v-chip>
                                     <v-chip class="ma-1" @click="addMonth">Monat</v-chip>
                                     <v-chip class="ma-1" @click="addYear">Jahr</v-chip>
@@ -77,8 +78,8 @@
                                                 :rules="rhythmRules"
                                             />
                                             <v-overflow-btn
-                                                class="mr-3 ml-5"
                                                 v-model="selectedLevelAsText"
+                                                class="mr-3 ml-5"
                                                 dense
                                                 label="Zeiteinheit"
                                                 :required="switch0"
@@ -163,8 +164,8 @@
                                                 <v-text-field
                                                     v-model="finishingString"
                                                     label="Umfrage läuft bis einschließlich"
-                                                    @blur="finishingDate = parseDate(finishingString)"
                                                     :required="selectedDeactivation === 'Datum'"
+                                                    @blur="finishingDate = parseDate(finishingString)"
                                                     v-on="on"
                                                 />
                                             </template>
@@ -357,7 +358,7 @@ export default {
         return {
             pollId: 0,
             categoryList: [],
-            switch0: true,
+            switch0: false,
             switch1: false,
             switch2: false,
             switch3: false,
@@ -377,6 +378,7 @@ export default {
             deactivatedTime: '',
             activated: null,
             deactivated: null,
+            created: null,
             menuA: false,
             menuD: false,
             menuF: false,
@@ -596,11 +598,20 @@ export default {
         async sendData() {
             this.activated = this.activateDate.concat('&', this.activatedTime)
             this.deactivated = this.deactivateDate.concat('&', this.deactivatedTime)
+            const today = new Date()
+            this.created = this.creationDate.concat(
+                '&',
+                (today.getHours() < 10 ? '0' : '') +
+                    today.getHours() +
+                    ':' +
+                    (today.getMinutes() < 10 ? '0' : '') +
+                    today.getMinutes()
+            )
             const obj = {
                 pollCreator: this.getUsername,
                 anonymityStatus: this.selectedAnonymityType,
                 pollName: this.title,
-                pollCreatedAt: this.creationDate,
+                pollCreatedAt: this.created,
                 activatedAt: this.activated,
                 deactivatedAt: this.deactivated,
                 pollStatus: 0,
@@ -621,6 +632,7 @@ export default {
                 day: this.stringToList(this.day),
                 week: this.stringToList(this.week),
                 month: this.stringToList(this.month),
+                timeZoneOffset: -new Date().getTimezoneOffset(),
             }
             console.log('obj: ', obj)
             if (this.pollId !== '0') {
@@ -639,10 +651,13 @@ export default {
                         this.newPollId = result.data
                     })
             }
-            this.$router.push('/polls')
+            await this.$router.push('/polls')
         },
         addNumber() {
             this.title += ':nr:'
+        },
+        addDate() {
+            this.title += ':tg:.:mt:.:jr:'
         },
         addDay() {
             this.title += ':tg:'
@@ -771,7 +786,7 @@ export default {
                 const response = await this.$store.dispatch('PollCreation/getPollName', this.pollId)
                 console.log(response)
                 this.title = response
-                this.$router.forceUpdate()
+                await this.$router.forceUpdate()
                 return response
             }
             return 'Titel'
@@ -796,7 +811,12 @@ export default {
                 return response
             } else {
                 const today = new Date()
-                this.activatedTime = today.getHours() + ':' + today.getMinutes()
+                this.activatedTime =
+                    (today.getHours() < 10 ? '0' : '') +
+                    today.getHours() +
+                    ':' +
+                    (today.getMinutes() < 10 ? '0' : '') +
+                    today.getMinutes()
             }
         },
         async getDeactDate() {
@@ -810,7 +830,12 @@ export default {
                 return response
             } else {
                 const today = new Date()
-                this.deactivatedTime = today.getHours() + ':' + today.getMinutes()
+                this.deactivatedTime =
+                    (today.getHours() < 10 ? '0' : '') +
+                    today.getHours() +
+                    ':' +
+                    (today.getMinutes() < 10 ? '0' : '') +
+                    today.getMinutes()
             }
         },
         saveTime(e, type) {

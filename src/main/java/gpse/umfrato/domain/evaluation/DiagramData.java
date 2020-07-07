@@ -19,6 +19,7 @@ import lombok.Setter;
 import java.text.*;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.IsoFields;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -589,6 +590,12 @@ public class DiagramData {
         for (final QuestionData qd: questionList) {
             qd.statistics();
         }
+    }
+
+    int getWeekOfMonth(ZonedDateTime date)
+    {
+        ZonedDateTime firstOfMonth = date.withDayOfMonth(1);
+        return 1 + date.getDayOfWeek().get(IsoFields.WEEK_OF_WEEK_BASED_YEAR) - firstOfMonth.getDayOfWeek().get(IsoFields.WEEK_OF_WEEK_BASED_YEAR);
     }
 
     public String toJSON() {

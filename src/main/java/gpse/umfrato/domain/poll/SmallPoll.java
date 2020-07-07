@@ -5,11 +5,8 @@ import gpse.umfrato.domain.participationlinks.ParticipationLink;
 import gpse.umfrato.domain.participationlinks.ParticipationLinkService;
 import gpse.umfrato.domain.pollresult.PollResultService;
 import lombok.Data;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
@@ -71,17 +68,13 @@ public class SmallPoll {
         this.participationLinks = participationLinkService.getAllParticipationLinks(pollId);
         this.categoryCount = original.getCategoryList().size();
         this.questionCount = 0;
-        for(Category c:original.getCategoryList())
-        {
+        for (Category c: original.getCategoryList()) {
             this.questionCount += c.getQuestionList().size();
         }
         this.participantCount = pollResultService.getPollResults(pollId).size();
-        if(this.anonymityStatus.equals("1"))
-        {
+        if (this.anonymityStatus.equals("1")) {
             this.expectedParticipantCount = 0;
-        }
-        else
-        {
+        } else {
             this.expectedParticipantCount = participationLinkService.getAllParticipationLinks(pollId).size();
         }
         StringBuilder sb = new StringBuilder();
@@ -99,30 +92,18 @@ public class SmallPoll {
                 sb.append(" Kategorien.");
             }
             sb.append(" Zuletzt bearbeitet von ").append(lastEditFrom).append(" am ").append(lastEditAt);
-        }
-        else if (pollStatus == 1)
-        {
-            sb.append("Umfrage aktiv seit ").append(activatedDate)
-                    .append(". Bisherige Teilnehmer: ").append(participantCount);
-            if (!anonymityStatus.equals("1"))
-            {
-                sb.append(" / ").append(expectedParticipantCount).append(" (")
-                        .append(participantCount.doubleValue() / expectedParticipantCount.doubleValue() * 100.0)
-                        .append("%)");
+        } else if (pollStatus == 1) {
+            sb.append("Umfrage aktiv seit ").append(activatedDate).append(". Bisherige Teilnehmer: ").append(participantCount);
+            if (!anonymityStatus.equals("1")) {
+                sb.append(" / ").append(expectedParticipantCount).append(" (").append(participantCount.doubleValue() / expectedParticipantCount.doubleValue() * 100.0).append("%)");
             }
             if (original.isDeactivated()) {
                 sb.append(" Wird zum ").append(deactivatedDate).append(" deaktiviert.");
             }
-        }
-        else if(pollStatus == 2)
-        {
-            sb.append("Umfrage deaktiviert seit ").append(deactivatedDate)
-                    .append(". Teilnehmer: ").append(participantCount);
-            if(!anonymityStatus.equals("1"))
-            {
-                sb.append(" / ").append(expectedParticipantCount).append(" (")
-                        .append(participantCount.doubleValue() / expectedParticipantCount.doubleValue() * 100.0)
-                        .append("%)");
+        } else if (pollStatus == 2) {
+            sb.append("Umfrage deaktiviert seit ").append(deactivatedDate).append(". Teilnehmer: ").append(participantCount);
+            if (!anonymityStatus.equals("1")) {
+                sb.append(" / ").append(expectedParticipantCount).append(" (").append(participantCount.doubleValue() / expectedParticipantCount.doubleValue() * 100.0).append("%)");
             }
         }
         this.computedSubtitle = sb.toString();
