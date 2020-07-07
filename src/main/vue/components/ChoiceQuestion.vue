@@ -30,18 +30,29 @@
             </v-row>
             <v-row></v-row>
             <v-row no-gutters>
-                <v-text-field
-                    v-model="numberOfPossibleAnswers"
-                    label="Maximale Antwortanzahl"
-                    :hint="'Maximale Anzahl gleichzeitig auswählbarer Antworten'"
-                    type="number"
-                    min="1"
-                    :max="getQuestion.answerPossibilities.length"
-                    step="1"
-                    value="1"
-                    :rules="answerCountRules"
-                    required
-                ></v-text-field> </v-row
+                <v-col>
+                    <v-switch
+                        v-model="multipleChoice"
+                        @change="updateNumOfPosAns()"
+                        label="Mehrere Antworten erlauben."
+                    >
+                    </v-switch>
+                </v-col>
+                <v-col>
+                    <v-text-field
+                        v-if="multipleChoice"
+                        v-model="numberOfPossibleAnswers"
+                        label="Maximale Antwortanzahl"
+                        :hint="'Maximale Anzahl gleichzeitig auswählbarer Antworten'"
+                        type="number"
+                        min="1"
+                        :max="getQuestion.answerPossibilities.length"
+                        step="1"
+                        :value="getQuestion.answerPossibilities.length"
+                        :rules="answerCountRules"
+                        required
+                    ></v-text-field>
+                </v-col> </v-row
         ></v-form>
         <v-row no-gutters>
             <v-switch v-model="userAnswersPossible" label="Teilnehmer darf eigene Antworten hinzufügen"></v-switch>
@@ -73,6 +84,12 @@ export default {
                     }
                 },
             ],
+            multipleChoice: false,
+        }
+    },
+    mounted() {
+        if (this.numberOfPossibleAnswers > 1) {
+            this.multipleChoice = true
         }
     },
     computed: {
@@ -130,6 +147,14 @@ export default {
                 t: text,
             }
             this.updateAnswer(payload)
+        },
+
+        updateNumOfPosAns() {
+            if (!this.multipleChoice) {
+                this.numberOfPossibleAnswers = 1
+            } else {
+                this.numberOfPossibleAnswers = this.getQuestion.answerPossibilities.length
+            }
         },
     },
 }
