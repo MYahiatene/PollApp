@@ -47,6 +47,10 @@ public class ConsistencyQuestionServiceImpl implements ConsistencyQuestionServic
         consistencyQuestionRepository.save(cq);
     }
 
+    @Override public void deleteAllConsistencyQuestions(long pollId) {
+        consistencyQuestionRepository.deleteAllByPollId(pollId);
+    }
+
     private static void cqCmdToCq(final ConsistencyQuestionCmd consistencyQuestionCmd, final ConsistencyQuestion cq) {
         cq.setPollId(consistencyQuestionCmd.getPollId());
         cq.setQuestion1Id(consistencyQuestionCmd.getQuestion1Id());

@@ -23,7 +23,7 @@ public class Session {
 
     private String sessionTitle;
 
-    @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.EAGER, orphanRemoval = true)
     private List<FilterData> filterList;
 
     @ElementCollection

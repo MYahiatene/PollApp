@@ -2,6 +2,13 @@ package gpse.umfrato.domain.poll;
 
 import gpse.umfrato.domain.category.CategoryRepository;
 import gpse.umfrato.domain.category.CategoryService;
+import gpse.umfrato.domain.consistencyquestion.ConsistencyQuestion;
+import gpse.umfrato.domain.consistencyquestion.ConsistencyQuestionService;
+import gpse.umfrato.domain.evaluation.session.SessionService;
+import gpse.umfrato.domain.participationlinks.ParticipationLink;
+import gpse.umfrato.domain.participationlinks.ParticipationLinkService;
+import gpse.umfrato.domain.pollresult.PollResult;
+import gpse.umfrato.domain.pollresult.PollResultService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +23,10 @@ class PollServiceImpl implements PollService {
     /* default */ final CategoryRepository categoryRepository;
     private final PollRepository pollRepository;
     private final CategoryService categoryService;
+    private final SessionService sessionService;
+    private final PollResultService pollResultService;
+    private final ParticipationLinkService participationLinkService;
+    private final ConsistencyQuestionService consistencyQuestionService;
     private int anonymousUsername = 0;
 
     /**
@@ -27,10 +38,17 @@ class PollServiceImpl implements PollService {
      */
     @Autowired
     public PollServiceImpl(final PollRepository pollRepository, final CategoryService categoryService,
-                           final CategoryRepository categoryRepository) {
+                           final CategoryRepository categoryRepository , final SessionService sessionService
+                                       , final PollResultService pollResultService
+                                       , final ParticipationLinkService participationLinkService
+                                       , final ConsistencyQuestionService consistencyQuestionService) {
         this.pollRepository = pollRepository;
         this.categoryService = categoryService;
         this.categoryRepository = categoryRepository;
+        this.sessionService = sessionService;
+        this.pollResultService = pollResultService;
+        this.participationLinkService = participationLinkService;
+        this.consistencyQuestionService = consistencyQuestionService;
     }
 
     /**
@@ -159,8 +177,12 @@ class PollServiceImpl implements PollService {
      * @return returns a confirmation String
      */
     @Override
-    public String deletePoll(final String pollID) {
-        pollRepository.deleteById(Long.valueOf(pollID));
+    public String deletePoll(final Long pollID) {
+        pollRepository.deleteById(pollID);
+        sessionService.deleteAllSessions(pollID);
+        participationLinkService.deleteAllLinks(pollID);
+        pollResultService.deleteAllPollResults(pollID);
+        consistencyQuestionService.deleteAllConsistencyQuestions(pollID);
         return "Poll erfolgreich gelöscht";
     }
     @Override public List<Poll> getLastEditedPolls() {

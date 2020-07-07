@@ -23,4 +23,6 @@ public interface PollResultRepository extends JpaRepository<PollResult, Long> {
      */
     PollResult findPollResultByPollIdAndPollTaker(final Long pollId, final String pollTaker);
 
+    void deleteAllByPollId(final Long pollId);
+
 }

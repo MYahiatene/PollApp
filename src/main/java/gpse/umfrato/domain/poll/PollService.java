@@ -69,7 +69,7 @@ public interface PollService {
      * @param pollId the id of the poll which will be deleted
      * @return returns a confirmation String
      */
-    String deletePoll(final String pollId);
+    String deletePoll(final Long pollId);
 
     /**
      * Reformat the date from Calendar to a better readable String.

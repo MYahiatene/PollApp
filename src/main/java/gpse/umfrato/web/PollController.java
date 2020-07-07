@@ -249,7 +249,7 @@ public class PollController {
     @PreAuthorize("hasAnyAuthority('Admin','Creator')")
     @PutMapping("/editpollname")
     public void editPollName(final @RequestBody PollCmd pollCmd) {
-        pollService.editPollName(Long.parseLong(pollCmd.getPollId()), pollCmd.getPollName());
+        pollService.editPollName(pollCmd.getPollId(), pollCmd.getPollName());
     }
 
     /**

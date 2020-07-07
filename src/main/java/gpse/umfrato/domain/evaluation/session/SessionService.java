@@ -10,6 +10,8 @@ public interface SessionService {
 
     void deleteSession(final long sessionId);
 
+    void deleteAllSessions(final long pollId);
+
     List<Session> getAllSessions(final long pollId);
 
     Session getSession(final long sessionId);

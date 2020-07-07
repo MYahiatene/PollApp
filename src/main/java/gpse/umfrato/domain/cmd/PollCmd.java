@@ -20,7 +20,7 @@ public class PollCmd {
 
     /* default */ static final Logger LOGGER = Logger.getLogger("PollCmd");
 
-    private String pollId;
+    private Long pollId;
 
     private String pollCreator;
 

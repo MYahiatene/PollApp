@@ -127,4 +127,8 @@ public class PollResultServiceImpl implements PollResultService {
         }
     }
 
+    @Override public void deleteAllPollResults(long pollId) {
+        pollResultRepository.deleteAllByPollId(pollId);
+    }
+
 }
