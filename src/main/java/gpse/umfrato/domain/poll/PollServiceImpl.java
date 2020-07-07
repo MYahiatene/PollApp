@@ -7,16 +7,13 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
-import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.time.temporal.IsoFields;
-import java.time.temporal.TemporalAdjuster;
 import java.time.temporal.TemporalAdjusters;
-import java.time.temporal.WeekFields;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -234,11 +231,12 @@ class PollServiceImpl implements PollService {
     public void calculateNextDate(final Poll poll) {
         LOGGER.info("Start calculateNextDate");
         // TODO: ähnliche if schleifen zu Methoden extrahieren für bessere übersichtlichkeit
-        // TODO: bei Monaten Anzahl an Tagne berücksichtigen
+        // TODO: bei Monaten Anzahl an Tagen berücksichtigen
         // TODO: beim ersten mal startet es erst in 2 Wochen/Monaten etc. -> noch im selben monat starten?
         // TODO: week_of_day ist was anderes als wir es verstehen
         // TODO: zwischen dem Zyklus einsteigen (dafür prev < .get(i + 1) statt prev == .get(i))
-        for (int repetitions = 0; repetitions < 5; repetitions++) {
+        LOGGER.info("neu");
+        while(true) {
             final int repeat = poll.getRepeat();
             final List<Integer> day = poll.getDay();
             final List<Integer> week = poll.getWeek();
@@ -303,23 +301,29 @@ class PollServiceImpl implements PollService {
                     LOGGER.info(parseDate(next));
                 } else {
                     LOGGER.info("day, week and month given");
-                    LOGGER.info("day of the week: " + prev.getDayOfWeek());
+                    LOGGER.info("day of the week: " + prev.getDayOfWeek().getValue());
                     LOGGER.info("week of the month: " + getWeekOfMonth(prev));
                     // days in weeks per months
                     boolean first = true;
                     // more than one week and more than one day per week given
                     for (int i = 0; i < week.size() - 1; i++) {
+                        LOGGER.info("hier");
                         for (int j = 0; j < day.size() - 1; j++) {
-                            // Original                        =      kein + 1                                   =     kein (  + 1) % week.size()
-                            if (prev.getDayOfWeek().getValue() < day.get(j + 1) && first && getWeekOfMonth(prev) < week.get((i + 1) % week.size())) {
+                            LOGGER.info("hier rein");
+                            // Original                        =      kein + 1                                    =     kein (  + 1) % week.size()
+                            LOGGER.info("fuck: " + getWeekOfMonthWithDay(prev, day.get(0)));
+                            LOGGER.info("fuck you: " + week.get((i  +1)));
+                            if (prev.getDayOfWeek().getValue() < day.get(j + 1) && first && getWeekOfMonthWithDay(prev, day.get(0)) <= week.get((i  +1) % week.size())) {
+                                LOGGER.info("next day in week");
                                 next = next.with(TemporalAdjusters.next(DayOfWeek.of(day.get(j + 1))));
                                 poll.setNextSeries(next);
                                 first = false;
                             }
                         }
-                        if (first && getWeekOfMonth(prev) == week.get(i)) {
+                        if (first && getWeekOfMonthWithDay(prev, day.get(0)) == week.get(i)) {
                         /* next = next.with(TemporalAdjusters.next(DayOfWeek.of(day.get(0))));
                         next = next.set(Calendar.WEEK_OF_MONTH, week.get(i+1)); */
+                            LOGGER.info("last day in week");
                             next = next.with(TemporalAdjusters.dayOfWeekInMonth(week.get(i + 1), DayOfWeek.of(day.get(0))));
                             poll.setNextSeries(next);
                             first = false;
@@ -327,8 +331,9 @@ class PollServiceImpl implements PollService {
                     }
                     // more than one day per week given
                     for (int j = 0; j < day.size() - 1; j++) {
-                        // Original                        =      kein + 1
-                        if (prev.getDayOfWeek().getValue() < day.get(j + 1) && first && getWeekOfMonth(prev) == week.get(0)) {
+                        // Original                        =      kein + 1                                          prev.getDayOfWeek().getValue()
+                        if (prev.getDayOfWeek().getValue() < day.get(j + 1) && first && getWeekOfMonthWithDay(prev, day.get(0)) == week.get(0)) {
+                            LOGGER.info("only days, adds day");
                             next = next.with(TemporalAdjusters.next(DayOfWeek.of(day.get(j + 1))));
                             poll.setNextSeries(next);
                             first = false;
@@ -336,9 +341,8 @@ class PollServiceImpl implements PollService {
                     }
                     // last day of cycle reached, calculates the first day of the new one
                     if (first) {
+                        LOGGER.info("next month");
                         next = next.plusMonths(repeat);
-                    /* next = next.set(Calendar.WEEK_OF_MONTH, week.get(0));
-                    next = next.with(TemporalAdjusters.next(DayOfWeek.of(day.get(0)))); */
                         next = next.with(TemporalAdjusters.dayOfWeekInMonth(week.get(0), DayOfWeek.of(day.get(0))));
                         poll.setNextSeries(next);
                     }
@@ -348,6 +352,7 @@ class PollServiceImpl implements PollService {
             } else if (level == 3) {
                 // days per year given
                 LOGGER.info("day of the year" + prev.getDayOfYear());
+                LOGGER.info("week of the year" + prev.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR));
                 if (week.size() == 0 && month.size() == 0) {
                     boolean first = true;
                     for (int i = 0; i < day.size() - 1; i++) {
@@ -368,18 +373,19 @@ class PollServiceImpl implements PollService {
                     // days of calendar weeks per year
                     boolean first = true;
                     // more than one day and more than one week given
+                    // TODO: hier
                     for (int i = 0; i < week.size() - 1; i++) {
                         for (int j = 0; j < day.size() - 1; j++) {
-                            if (prev.getDayOfWeek().getValue() == day.get(j) && prev.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR) == week.get(i)) {
+                            if (first && prev.getDayOfWeek().getValue() < day.get(j + 1) && prev.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR) == week.get(i)) {
                                 next = next.with(TemporalAdjusters.next(DayOfWeek.of(day.get(j + 1))));
                                 poll.setNextSeries(next);
                                 first = false;
                             }
                         }
                         // next week of the cycle
-                        if (first && prev.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR) == week.get(i)) {
-                            next = next.with(IsoFields.WEEK_OF_WEEK_BASED_YEAR, week.get(i + 1));
+                        if (first && prev.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR) < week.get(i + 1)) {
                             next = next.with(TemporalAdjusters.next(DayOfWeek.of(day.get(0))));
+                            next = next.with(IsoFields.WEEK_OF_WEEK_BASED_YEAR, week.get(i + 1));
                             poll.setNextSeries(next);
                             first = false;
                         }
@@ -403,7 +409,7 @@ class PollServiceImpl implements PollService {
                     LOGGER.info(parseDate(next));
                 } else if (week.size() == 0) {
                     final int prevMonth = prev.getMonthValue();
-                    // TODO: month +, prevMonth, weil month bei 0 startet
+                    // month +, prevMonth, weil month bei 0 startet
                     // days per month given
                     boolean first = true;
                     // more than one day and more than one month given
@@ -549,6 +555,11 @@ class PollServiceImpl implements PollService {
 
     private int getWeekOfMonth(ZonedDateTime date) {
         ZonedDateTime firstOfMonth = date.withDayOfMonth(1);
+        return 1 + date.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR) - firstOfMonth.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR);
+    }
+
+    private int getWeekOfMonthWithDay(ZonedDateTime date, int day) {
+        ZonedDateTime firstOfMonth = date.with(TemporalAdjusters.dayOfWeekInMonth(1, DayOfWeek.of(day)));
         return 1 + date.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR) - firstOfMonth.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR);
     }
 }

@@ -19,9 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import java.net.MalformedURLException;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
-import java.util.logging.Logger;
 
 /**
  * The Poll controller used to process poll specific requests.
