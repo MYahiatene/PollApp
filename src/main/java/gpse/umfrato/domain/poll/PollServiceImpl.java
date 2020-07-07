@@ -9,6 +9,7 @@ import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
+import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
@@ -537,6 +538,13 @@ class PollServiceImpl implements PollService {
             }
             poll.setActivatedDate(next);
         }
+    }
+
+    ZonedDateTime deltaNew(ZonedDateTime originalStart, ZonedDateTime originalEnd, ZonedDateTime nowStart){
+        Duration delta = Duration.between(originalStart.toLocalDate(), originalEnd.toLocalDate());
+        ZonedDateTime nowEnd = nowStart.plus(delta);
+        System.out.println("Now Start: "+ nowStart + " Now End: "+ nowEnd);
+        return nowEnd;
     }
 
     private int getWeekOfMonth(ZonedDateTime date) {
