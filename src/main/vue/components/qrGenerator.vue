@@ -1,5 +1,5 @@
 <template>
-    <v-card>
+    <v-card class="pa-2">
         <v-card-title>QR-Code zu {{ qrTitle }} konfigurieren</v-card-title>
         <v-row>
             <v-col>
@@ -33,7 +33,7 @@
                 <v-card-subtitle>
                     Zum Kopieren oder Speichern einfach mit der rechten Maustaste in den QR-Code clicken
                 </v-card-subtitle>
-                <v-card class="ma-8">
+                <v-card class="ma-8 pa-2" flat :style="'width: ' + qrSize + 'px;'">
                     <qrcode-vue
                         :value="qrLink"
                         :size="qrSize"
