@@ -15,9 +15,10 @@ import gpse.umfrato.domain.question.QuestionService;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang3.time.DurationFormatUtils;
 
 import java.text.*;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.IsoFields;
 import java.util.ArrayList;
@@ -572,6 +573,28 @@ public class DiagramData {
                 if (step < 60) {
                     patternString += ":ss";
                 }
+
+                //Jans Zeugs
+                String deltaString = "T+";
+                Instant startTime = Instant.ofEpochSecond(start);
+                Instant endTime = Instant.ofEpochSecond(end);
+                Duration delta = Duration.between(startTime, endTime);
+                String tPlus = "";
+                if (step < 60 * 60 * 24 * 30) {
+                    tPlus = deltaString + String.format("%ddd", delta.toDays());
+                }
+                if (step < 60 * 60 * 24) {
+                    tPlus = deltaString + String.format("%dHH", delta.toHours());
+                }
+                if (step < 60 * 60) {
+                    tPlus = deltaString + String.format("%dmm", delta.toMinutes());
+                }
+                if (step < 60) {
+                    tPlus = deltaString + String.format("%dss", delta.toSeconds());
+                }
+
+                System.out.println(tPlus);
+
                 // System.out.println(patternString);
                 final DateTimeFormatter finalDf = DateTimeFormatter.ofPattern(patternString, Locale.GERMANY);
 
