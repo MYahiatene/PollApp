@@ -64,20 +64,120 @@
                                         <!--Radio Button since only one answer possible-->
                                         <!--Only to debug, otherwise numberOfPossibleAnswer === 1-->
                                         <div v-if="question.numberOfPossibleAnswers === 1">
-                                            <v-card-text>
-                                                <v-radio-group v-model="valueList[index]">
-                                                    <v-radio
-                                                        v-for="answer in question.answerPossibilities"
-                                                        :key="answer.text"
-                                                        :label="`${answer}`"
+                                            <div v-if="dropdown">
+                                                <v-card-text>
+                                                    <v-overflow-btn
+                                                        class="my-2"
+                                                        :items="question.answerPossibilities"
+                                                        :value="answer"
+                                                        :color="fontColor"
+                                                        label="Auswahl"
+                                                        @change="saveAnswerRadioButton(question, answer)"
+                                                    ></v-overflow-btn>
+                                                </v-card-text>
+                                            </div>
+                                            <div v-else>
+                                                <v-card-text>
+                                                    <v-radio-group v-model="valueList[index]">
+                                                        <v-radio
+                                                            v-for="answer in question.answerPossibilities"
+                                                            :key="answer.text"
+                                                            :label="`${answer}`"
+                                                            :color="fontColor"
+                                                            :value="answer"
+                                                            @change="saveAnswerRadioButton(question, answer)"
+                                                        ></v-radio>
+                                                    </v-radio-group>
+                                                    <div v-if="question.userAnswers">
+                                                        <v-text-field
+                                                            class="mx-4"
+                                                            auto-grow
+                                                            prepend-icon="mdi-plus"
+                                                            clearable
+                                                            @click:prepend="saveOwnAnswer(question)"
+                                                            @input="saveAnswerPossibility($event, question)"
+                                                        ></v-text-field>
+                                                    </div>
+                                                </v-card-text>
+                                            </div>
+                                        </div>
+                                        <div v-else>
+                                            <!--Checkboxes, so that multiple answers are technically allowed,
+                                        not able to save them yet-->
+                                            <div v-if="dropdown">
+                                                <v-card-text>
+                                                    <v-select
+                                                        class="my-2"
+                                                        :color="fontColor"
+                                                        :item-color="fontColor"
+                                                        :items="question.answerPossibilities"
+                                                        v-model="valueList[index]"
+                                                        label="Auswahl"
+                                                        multiple
+                                                        clearable
+                                                        :counter="question.numberOfPossibleAnswers"
+                                                        :error="errorCheckbox(index, question)"
+                                                        :error-messages="errorMessageCheckbox"
+                                                        @change="
+                                                            saveAnswerCheckbox(
+                                                                $event,
+                                                                question,
+                                                                valueList[index][valueList[index].length - 1],
+                                                                index
+                                                            )
+                                                        "
+                                                    >
+                                                        <template v-slot:selection="{ item, index }">
+                                                            <v-chip v-if="index < dropDownAnswersDisplayedInSelect">
+                                                                <span>{{ item }}</span>
+                                                            </v-chip>
+                                                            <span
+                                                                v-if="index === dropDownAnswersDisplayedInSelect"
+                                                                class="grey--text caption"
+                                                            >
+                                                                (und
+                                                                {{
+                                                                    valueList[index].length -
+                                                                    dropDownAnswersDisplayedInSelect
+                                                                }}
+                                                                weitere)
+                                                            </span>
+                                                        </template>
+                                                        <!--                                                        <template v-slot:selection="{ item, index }">-->
+                                                        <!--                                                            <v-chip v-if="index < 3">-->
+                                                        <!--                                                                <span>{{ item }}</span>-->
+                                                        <!--                                                            </v-chip>-->
+                                                        <!--                                                            <span v-if="index === 3" class="grey&#45;&#45;text caption">-->
+                                                        <!--                                                                (und weitere)-->
+                                                        <!--                                                            </span>-->
+                                                        <!--                                                        </template>-->
+                                                    </v-select>
+                                                </v-card-text>
+                                            </div>
+
+                                            <div v-else>
+                                                <v-list
+                                                    v-for="answer in question.answerPossibilities"
+                                                    :key="answer.text"
+                                                >
+                                                    <!--:error="disableCheckbox(index, question, answer)"
+                                                        error-messages="This is wrong!"-->
+                                                    <v-checkbox
+                                                        class="my-n2 mx-3"
+                                                        dense
+                                                        :label="answer"
                                                         :color="fontColor"
                                                         :value="answer"
-                                                        @change="saveAnswerRadioButton(question, answer)"
-                                                    ></v-radio>
-                                                </v-radio-group>
+                                                        :error="errorCheckbox(index, question)"
+                                                        :error-messages="errorMessageCheckbox"
+                                                        v-model="valueList[index]"
+                                                        @change="saveAnswerCheckbox($event, question, answer, index)"
+                                                    ></v-checkbox>
+                                                </v-list>
                                                 <div v-if="question.userAnswers">
                                                     <v-text-field
                                                         class="mx-4"
+                                                        :color="fontColor"
                                                         auto-grow
                                                         prepend-icon="mdi-plus"
                                                         clearable
@@ -85,35 +185,6 @@
                                                         @input="saveAnswerPossibility($event, question)"
                                                     ></v-text-field>
                                                 </div>
-                                            </v-card-text>
-                                        </div>
-                                        <div v-else>
-                                            <!--Checkboxes, so that multiple answers are technically allowed,
-                                        not able to save them yet-->
-                                            <v-list v-for="answer in question.answerPossibilities" :key="answer.text">
-                                                <!--:error="disableCheckbox(index, question, answer)"
-                                                    error-messages="This is wrong!"-->
-                                                <v-checkbox
-                                                    class="my-n2 mx-3"
-                                                    dense
-                                                    :label="answer"
-                                                    :color="fontColor"
-                                                    :value="answer"
-                                                    :error="errorCheckbox(index, question)"
-                                                    :error-messages="errorMessageCheckbox"
-                                                    v-model="valueList[index]"
-                                                    @change="saveAnswerCheckbox($event, question, answer, index)"
-                                                ></v-checkbox>
-                                            </v-list>
-                                            <div v-if="question.userAnswers">
-                                                <v-text-field
-                                                    class="mx-4"
-                                                    auto-grow
-                                                    prepend-icon="mdi-plus"
-                                                    clearable
-                                                    @click:prepend="saveOwnAnswer(question)"
-                                                    @input="saveAnswerPossibility($event, question)"
-                                                ></v-text-field>
                                             </div>
                                         </div>
                                     </div>
@@ -325,6 +396,8 @@ export default {
             valueList: [],
             participated: false,
             errorMessageCheckbox: '',
+            dropdown: true,
+            dropDownAnswersDisplayedInSelect: 3,
         }
     },
     /**
@@ -415,6 +488,7 @@ export default {
             }
             return c
         },
+
         /**
          * Gives back an array of rules (max, min characters) for the text field answer, based on choosen attributes.
          */
