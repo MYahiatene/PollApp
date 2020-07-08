@@ -3,10 +3,18 @@
         <div>
             <v-card>
                 <v-card-title>Teilnehmer zur Umfrage einladen</v-card-title>
-                <v-col>
+                <v-col cols="6">
                     CSV Datei mit E-Mail Adressen hochladen:
-                    <input id="file" ref="file" type="file" @change="handleFileUpload()" />
-                    <v-btn color="primary" dark class="mb-2" @click="submitFile()">CSV hochladen</v-btn>
+                    <v-row>
+                        <v-file-input
+                            v-model="file"
+                            class="ml-4 mr-3"
+                            prepend-icon="mdi-file"
+                            show-size
+                            accept=".csv"
+                        />
+                        <v-btn color="primary" dark class="mb-2" @click="submitFile()">CSV hochladen</v-btn>
+                    </v-row>
                 </v-col>
                 <v-col sm="6">
                     <v-card-actions>
@@ -23,11 +31,16 @@
                     </v-card-actions>
                     <v-card>
                         <v-list>
-                            <v-subheader>E-MAIL ADRESSEN</v-subheader>
+                            <v-subheader>
+                                E-MAIL ADRESSEN
+                                <v-spacer />
+                                <v-btn color="accent" @click="items = []">Alle entfernen</v-btn>
+                            </v-subheader>
+
                             <ul>
                                 <li v-for="(item, index) in items" :key="item.id">
-                                    {{ item }}
                                     <v-btn icon color="grey" @click="deleteEmail(index)">X</v-btn>
+                                    {{ item }}
                                 </li>
                             </ul>
                         </v-list>
@@ -61,7 +74,7 @@
                                     :auto-grow="autoGrow"
                                     :clearable="clearable"
                                     :counter="counter ? counter : false"
-                                    filled="true"
+                                    :filled="true"
                                     :flat="flat"
                                     :hint="hint"
                                     :label="label"
@@ -156,19 +169,20 @@ export default {
                 })
         },
         submitFile() {
-            const papa = require('papaparse')
-
-            papa.parse(this.file, {
-                complete: (results) => {
-                    for (let i = 0; i < results.data.length; i++) {
-                        for (let j = 0; j < results.data[i].length; j++) {
-                            if (results.data[i][j].includes('@')) {
-                                this.items.push(results.data[i][j])
+            if (this.file) {
+                const papa = require('papaparse')
+                papa.parse(this.file, {
+                    complete: (results) => {
+                        for (let i = 0; i < results.data.length; i++) {
+                            for (let j = 0; j < results.data[i].length; j++) {
+                                if (results.data[i][j].includes('@')) {
+                                    this.items.push(results.data[i][j])
+                                }
                             }
                         }
-                    }
-                },
-            })
+                    },
+                })
+            }
         },
         sendEmail() {
             console.log('Email Sending test')
@@ -187,9 +201,6 @@ export default {
                 })
                 .catch((error) => console.log(error))
             this.$router.push('/polls')
-        },
-        handleFileUpload() {
-            this.file = this.$refs.file.files[0]
         },
         addEmail() {
             const input = document.getElementById('itemForm')

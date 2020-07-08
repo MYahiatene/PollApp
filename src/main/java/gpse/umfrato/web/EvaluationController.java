@@ -3,8 +3,8 @@ package gpse.umfrato.web;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gpse.umfrato.domain.cmd.SessionCmd;
 import gpse.umfrato.domain.consistencyquestion.ConsistencyQuestionService;
-import gpse.umfrato.domain.evaluation.Session.Session;
-import gpse.umfrato.domain.evaluation.Session.SessionService;
+import gpse.umfrato.domain.evaluation.session.Session;
+import gpse.umfrato.domain.evaluation.session.SessionService;
 import gpse.umfrato.domain.evaluation.Statistics;
 import gpse.umfrato.domain.answer.AnswerService;
 import gpse.umfrato.domain.category.CategoryService;
@@ -18,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import javax.persistence.Tuple;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -32,8 +31,6 @@ public class EvaluationController {
     @Autowired
     ObjectMapper objectMapper;
 
-    private final AnswerService answerService;
-    private final UserService userService;
     private final QuestionService questionService;
     private final PollService pollService;
     private final PollResultService pollResultService;
@@ -47,14 +44,11 @@ public class EvaluationController {
     }
 
     @Autowired
-    public EvaluationController(final AnswerService answerService, final UserService userService,
-                                final QuestionService questionService, final PollService pollService,
+    public EvaluationController(final QuestionService questionService, final PollService pollService,
                                 final PollResultService pollResultService, final CategoryService categoryService,
                                 final ParticipationLinkService participationLinkService,
                                 final ConsistencyQuestionService consistencyQuestionService,
                                 final SessionService sessionService) {
-        this.answerService = answerService;
-        this.userService = userService;
         this.questionService = questionService;
         this.pollService = pollService;
         this.pollResultService = pollResultService;
@@ -78,14 +72,14 @@ public class EvaluationController {
         if (input.isEmpty()) {
             return "?";
         }
-        final Statistics calculation = new Statistics(answerService, userService, questionService, pollService, pollResultService, categoryService, consistencyQuestionService, input.get(0));
+        final Statistics calculation = new Statistics(questionService, pollService, pollResultService, categoryService, consistencyQuestionService, sessionService, input.get(0));
         calculation.loadFilter(input);
         return calculation.generateDiagram();
     }
 
     @GetMapping("/getParticipants/{pollId:\\d+}")
     public String getParticipants(final @PathVariable Long pollId) {
-        if (pollService.getPoll(pollId).getPollStatus() != 1) {
+        if (pollService.getPoll(pollId).getPollStatus() != 2) {
             return "-";
         }
         if (pollService.getPoll(pollId).getAnonymityStatus().equals("1")) {
@@ -97,7 +91,7 @@ public class EvaluationController {
 
     @GetMapping("/getParticipantNames/{pollId:\\d+}")
     public List<String> getParticipantNames(final @PathVariable Long pollId) {
-        if (pollService.getPoll(pollId).getPollStatus() == 1 && pollService.getPoll(pollId).getAnonymityStatus().equals("2")) {
+        if (pollService.getPoll(pollId).getPollStatus() == 2 && pollService.getPoll(pollId).getAnonymityStatus().equals("2")) {
             final List<String> participantList = new ArrayList<>();
             pollResultService.getPollResults(pollId).forEach(pollResult -> participantList.add(pollResult.getPollTaker()));
             return participantList;
@@ -129,8 +123,8 @@ public class EvaluationController {
 
     @GetMapping("/getSessions/{pollId:\\d+}")
     public List<Session> getSessions(final @PathVariable Long pollId) {
-        List<Session> sessions = sessionService.getAllSessions(pollId);
-        for (Session s: sessions) {
+        final List<Session> sessions = sessionService.getAllSessions(pollId);
+        for (final Session s: sessions) {
             s.setFilterList(Collections.emptyList());
             s.setDiagramFormat(Collections.emptyList());
         }

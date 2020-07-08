@@ -1,14 +1,12 @@
 package gpse.umfrato.domain.pollresult;
 
 import gpse.umfrato.domain.answer.Answer;
-import gpse.umfrato.domain.poll.Poll;
 import gpse.umfrato.web.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.ListIterator;
-import java.util.function.Supplier;
 import java.util.logging.Logger;
 
 @Service
@@ -79,7 +77,7 @@ public class PollResultServiceImpl implements PollResultService {
         // LOGGER.info(pollResultRepository.findPollResultByPollIdAndPollTaker(pollId, pollTaker).toString());
         try {
             return pollResultRepository.findPollResultByPollIdAndPollTaker(pollId, pollTaker);
-        } catch(NullPointerException e) {
+        } catch (NullPointerException e) {
             return null;
         }
     }
@@ -94,11 +92,14 @@ public class PollResultServiceImpl implements PollResultService {
     public void addParticipatedToPollResult(final String pollTaker, final Long pollId) {
         LOGGER.info("I'm in PollResultServiceImpl!");
         try {
-            PollResult pollResult = pollResultRepository.findPollResultByPollIdAndPollTaker(pollId, pollTaker);
+            final PollResult pollResult = pollResultRepository.findPollResultByPollIdAndPollTaker(pollId, pollTaker);
             pollResult.setParticipatedPoll(true);
             LOGGER.info("participated" + pollResult.getParticipatedPoll().toString());
             pollResultRepository.save(pollResult);
-        } catch(BadRequestException e) {
+
+            final PollResult pollResult1 = pollResultRepository.findPollResultByPollIdAndPollTaker(pollId, pollTaker);
+            LOGGER.info("participatedReally?" + pollResult1.getParticipatedPoll().toString());
+        } catch (BadRequestException e) {
             LOGGER.info("Bad Request!");
         }
     }
@@ -111,13 +112,23 @@ public class PollResultServiceImpl implements PollResultService {
      */
     @Override
     public Boolean getParticipated(final String pollTaker, final Long pollId) {
+        LOGGER.info(pollTaker);
+        LOGGER.info(String.valueOf(pollId));
         try {
-            PollResult pollResult = pollResultRepository.findPollResultByPollIdAndPollTaker(pollId, pollTaker);
+            final PollResult pollResult = pollResultRepository.findPollResultByPollIdAndPollTaker(pollId, pollTaker);
+            LOGGER.info(pollResult.toString());
             return pollResult.getParticipatedPoll();
         } catch (BadRequestException e) {
             LOGGER.info("Bad Request!");
             return false;
+        } catch (NullPointerException e) {
+            LOGGER.info("NullPointerException");
+            return false;
         }
+    }
+
+    @Override public void deleteAllPollResults(long pollId) {
+        pollResultRepository.deleteAllByPollId(pollId);
     }
 
 }

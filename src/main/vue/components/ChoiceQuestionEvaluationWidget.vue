@@ -104,9 +104,9 @@
                 <v-row>
                     <v-col cols="12" lg="12">
                         <div v-if="showTable">
-                            <v-data-table :headers="header" :items="items" hide-default-footer dense>
-                            </v-data-table></div
-                    ></v-col>
+                            <v-data-table :headers="header" :items="items" hide-default-footer dense> </v-data-table>
+                        </div>
+                    </v-col>
                 </v-row>
             </v-container>
         </div>

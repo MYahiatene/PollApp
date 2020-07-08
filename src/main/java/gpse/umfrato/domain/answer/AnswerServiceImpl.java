@@ -10,12 +10,11 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Logger;
+import java.util.Locale;
 
 @Service
 public class AnswerServiceImpl implements AnswerService {
 
-    private static final Logger LOGGER = Logger.getLogger("AnswerServiceImpl");
     private final AnswerRepository answerRepository;
     private final PollResultRepository pollResultRepository;
 
@@ -60,7 +59,7 @@ public class AnswerServiceImpl implements AnswerService {
         if (!answerDa) {
             pollResult.getAnswerList().add(answer);
         }
-        final DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        final DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.GERMAN);
         final Date dateobj = new Date();
         pollResult.setLastEditAt(df.format(dateobj));
         // todo: check line below

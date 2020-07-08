@@ -1,6 +1,5 @@
 package gpse.umfrato.domain.category;
 
-import gpse.umfrato.domain.poll.Poll;
 import gpse.umfrato.domain.poll.PollRepository;
 import gpse.umfrato.domain.question.QuestionRepository;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -9,14 +9,16 @@ public interface ParticipationLinkService {
 
     URL createParticipationLink() throws MalformedURLException;
 
-    void saveParticipationLink(Long pollId, String emailAdress, String generatedLink);
+    void saveParticipationLink(final Long pollId, final String emailAdress, final String generatedLink);
 
-    Long getPollIdFromParticipationLink(String participationLink);
+    Long getPollIdFromParticipationLink(final String participationLink);
 
-    String getUserFromParticipationLink(String participationLink);
+    String getUserFromParticipationLink(final String participationLink);
 
     List<ParticipationLink> getAllParticipationLinks();
 
-    List<ParticipationLink> getAllParticipationLinks(Long pollId);
+    List<ParticipationLink> getAllParticipationLinks(final Long pollId);
+
+    void deleteAllLinks(final Long pollId);
 
 }

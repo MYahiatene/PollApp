@@ -1,9 +1,7 @@
 package gpse.umfrato.domain.cmd;
 
-import gpse.umfrato.domain.evaluation.filter.FilterData;
 import lombok.Data;
 
-import java.util.Date;
 import java.util.List;
 
 @Data

@@ -1,7 +1,6 @@
 package gpse.umfrato.domain.poll;
 
 import java.time.ZonedDateTime;
-import java.util.Calendar;
 import java.util.List;
 
 public interface PollService {
@@ -44,19 +43,25 @@ public interface PollService {
     String createAnonymousUsername();
 
     /**
-     * This method activates the poll.
-     * @param pollId the id of the poll which will be activated
+     * This method lets the poll-status progress.
+     * @param pollId the id of the poll which will be increased
      * @return returns the poll activation status
      */
-    Integer activatePoll(final Long pollId);
+    Integer increasePollStatus(final Long pollId);
 
     /**
-     * This method deactivates the poll.
-     * @param pollId the id of the poll which will be deactivated
-     * @return returns the poll deactivation status
+     * This method tries to decrease the poll-status.
+     * if the given poll has the status 1 it will be returned to 0,
+     * otherwise the method will do nothing.
+     * @param pollId the id of the poll which will be decreased
+     * @return returns the poll activation status
      */
-    Integer deactivatePoll(final Long pollId);
+    Integer decreasePollStatus(final Long pollId);
 
+    /**
+     * This method returns recently edited polls.
+     * @return returns the 5 most recently edited polls
+     */
     List<Poll> getLastEditedPolls();
 
     /**
@@ -71,7 +76,7 @@ public interface PollService {
      * @param pollId the id of the poll which will be deleted
      * @return returns a confirmation String
      */
-    String deletePoll(final String pollId);
+    String deletePoll(final Long pollId);
 
     /**
      * Reformat the date from Calendar to a better readable String.

@@ -30,20 +30,32 @@
             </v-row>
             <v-row></v-row>
             <v-row no-gutters>
-                <v-text-field
-                    label="Maximale Antwortanzahl"
-                    :hint="'Maximale Anzahl gleichzeitig auswählbarer Antworten'"
-                    type="number"
-                    v-model="numberOfPossibleAnswers"
-                    min="1"
-                    :max="getQuestion.answerPossibilities.length - 1"
-                    step="1"
-                    value="1"
-                    :rules="answerCountRules"
-                ></v-text-field> </v-row
+                <v-col>
+                    <v-switch
+                        v-model="multipleChoice"
+                        @change="updateNumOfPosAns()"
+                        label="Mehrere Antworten erlauben."
+                    >
+                    </v-switch>
+                </v-col>
+                <v-col>
+                    <v-text-field
+                        v-if="multipleChoice"
+                        v-model="numberOfPossibleAnswers"
+                        label="Maximale Antwortanzahl"
+                        :hint="'Maximale Anzahl gleichzeitig auswählbarer Antworten'"
+                        type="number"
+                        min="1"
+                        :max="getQuestion.answerPossibilities.length"
+                        step="1"
+                        :value="getQuestion.answerPossibilities.length"
+                        :rules="answerCountRules"
+                        required
+                    ></v-text-field>
+                </v-col> </v-row
         ></v-form>
         <v-row no-gutters>
-            <v-switch label="Teilnehmer darf eigene Antworten hinzufügen" v-model="userAnswersPossible"></v-switch>
+            <v-switch v-model="userAnswersPossible" label="Teilnehmer darf eigene Antworten hinzufügen"></v-switch>
         </v-row>
     </v-container>
 </template>
@@ -59,12 +71,25 @@ export default {
             choiceType: ['Standardauswahl', 'Drop-Down', 'Sortieren'],
             obj: {},
             answerCountRules: [
-                (v) =>
-                    (parseFloat(v) >= 1 && parseFloat(v) <= this.getQuestion.answerPossibilities.length) ||
-                    'Die maximale Anwortzahl kann sich nur zwischen 1 und ' +
-                        this.getQuestion.answerPossibilities.length +
-                        ' Antworten befinden',
+                (v) => {
+                    if (parseFloat(v) >= 1 && parseFloat(v) <= this.getQuestion.answerPossibilities.length) {
+                        this.setSaveButtonStatus(true)
+                    } else {
+                        this.setSaveButtonStatus(false)
+                        return (
+                            'Die maximale Anwortzahl kann sich nur zwischen 1 und ' +
+                            this.getQuestion.answerPossibilities.length +
+                            ' Antworten befinden'
+                        )
+                    }
+                },
             ],
+            multipleChoice: false,
+        }
+    },
+    mounted() {
+        if (this.numberOfPossibleAnswers > 1) {
+            this.multipleChoice = true
         }
     },
     computed: {
@@ -90,7 +115,6 @@ export default {
                 return this.getQuestion.answerPossibilities
             },
             set() {
-                console.log(this.obj)
                 this.setAnswerPossibility(this.obj)
             },
         },
@@ -105,6 +129,7 @@ export default {
     },
     methods: {
         ...mapMutations({
+            setSaveButtonStatus: 'questionOverview/setSaveButtonStatus',
             setNrOfPossibleAnswers: 'pollOverview/setNrOfPossibleAnswers',
             updateAnswer: 'pollOverview/updateAnswer',
             removeAnswer: 'pollOverview/removeAnswer',
@@ -122,6 +147,14 @@ export default {
                 t: text,
             }
             this.updateAnswer(payload)
+        },
+
+        updateNumOfPosAns() {
+            if (!this.multipleChoice) {
+                this.numberOfPossibleAnswers = 1
+            } else {
+                this.numberOfPossibleAnswers = this.getQuestion.answerPossibilities.length
+            }
         },
     },
 }

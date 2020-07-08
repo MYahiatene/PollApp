@@ -31,8 +31,7 @@ private final boolean requireAbsoluteMatch;
     final List<PollResult> filteredList = new ArrayList<>();
     double lowerBorder = 0.0;
     double upperBorder = 1.0;
-    if(workWithIntervall)
-    {
+    if (workWithIntervall) {
         lowerBorder = Double.parseDouble(targetAnswerPossibilities.get(0));
         upperBorder = Double.parseDouble(targetAnswerPossibilities.get(1));
     }
@@ -47,7 +46,7 @@ private final boolean requireAbsoluteMatch;
                             double value;
                             try {
                                 value = Double.parseDouble(ga);
-                            }catch (NumberFormatException e) {
+                            } catch (NumberFormatException e) {
                                 match = false;
                                 break;
                             }

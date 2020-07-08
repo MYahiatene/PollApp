@@ -124,10 +124,18 @@ export default {
                             title: pollData[i].pollName,
                             id: pollData[i].pollId,
                             subtitle: pollData[i].computedSubtitle,
+                            iconAction: 'mdi-play',
+                            actionLink: '/polls',
+                        })
+                    } else if (pollData[i].pollStatus === 2) {
+                        data.push({
+                            title: pollData[i].pollName,
+                            id: pollData[i].pollId,
+                            subtitle: pollData[i].computedSubtitle,
                             iconAction: 'mdi-magnify',
                             actionLink: '/eval/' + pollData[i].pollId,
                         })
-                    } else if (pollData[i].pollStatus === 2) {
+                    } else if (pollData[i].pollStatus === 3) {
                         data.push({
                             title: pollData[i].pollName,
                             id: pollData[i].pollId,

@@ -22,17 +22,23 @@ public class PollCmd {
 
     /* default */ static final Logger LOGGER = Logger.getLogger("PollCmd");
 
-    private String pollId;
+    private Long pollId;
 
     private String pollCreator;
 
-    private String pollCreatedAt;
+    private String creationDate;
 
     private String lastEditAt;
 
-    private String activatedAt;
+    private String lastEditFrom;
 
-    private String deactivatedAt;
+    private String activatedDate;
+
+    private String deactivatedDate;
+
+    private String participationLink;
+
+    private List<CategoryCmd> categoryList;
 
     private String anonymityStatus;
 
@@ -47,6 +53,8 @@ public class PollCmd {
     private Integer repeat;
 
     private String repeatUntil;
+
+    private Integer stoppingReason;
 
     private List<Integer> day;
 
@@ -64,18 +72,16 @@ public class PollCmd {
 
     private boolean deactivated;
 
-    private Integer stoppingReason;
-
     private Integer level;
 
     private Integer timeZoneOffset;
 
     public Poll getCmdPoll() {
-        // parses the activationDAte and deactivationDate from a String to a Calendar
+        // parses the activationDAte and deactivationDate from a String to a ZonedDateTime
         final DateTimeFormatter df = DateTimeFormatter.ofPattern("dd.MM.yyyy&HH:mm");
-        final LocalDateTime localActivation = LocalDateTime.parse(activatedAt,df);
-        final LocalDateTime localDeactivation = LocalDateTime.parse(deactivatedAt,df);
-        final LocalDateTime localCreation = LocalDateTime.parse(pollCreatedAt,df);
+        final LocalDateTime localActivation = LocalDateTime.parse(activatedDate,df);
+        final LocalDateTime localDeactivation = LocalDateTime.parse(deactivatedDate,df);
+        final LocalDateTime localCreation = LocalDateTime.parse(creationDate,df);
         ZoneId timeZone = ZoneId.ofOffset("UTC", ZoneOffset.ofHoursMinutes(timeZoneOffset / 60,timeZoneOffset % 60));
         final ZonedDateTime activation = localActivation.atZone(timeZone);
         final ZonedDateTime deactivation = localDeactivation.atZone(timeZone);
@@ -86,8 +92,6 @@ public class PollCmd {
         poll.setLastEditAt(ZonedDateTime.now());
         return poll;
     }
-
-
 }
 
 

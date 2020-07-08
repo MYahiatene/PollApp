@@ -14,4 +14,6 @@ public interface ConsistencyQuestionService {
     List<ConsistencyQuestion> getAllConsistencyQuestions(final long question1Id, final long question2Id);
 
     void editConsistencyQuestion(final long consistencyQuestionId, final ConsistencyQuestionCmd consistencyQuestionCmd);
+
+    void deleteAllConsistencyQuestions(final long pollId);
 }

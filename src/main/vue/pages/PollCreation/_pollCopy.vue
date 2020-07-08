@@ -331,8 +331,13 @@
                         <!--Pick a file for upload and logo is shown for verification-->
                         <v-col cols="12" md="4">
                             Logo hochladen
-                            <input type="file" @change="showImage" />
-                            <img :src="logo" alt="Image" width="350" />
+                            <v-img v-if="logo" :src="logo" alt="Logo" width="350" height="250" contain />
+                            <v-file-input
+                                show-size
+                                accept=".jpg, .png, .jpeg"
+                                prepend-icon="mdi-file-image"
+                                @change="showImage"
+                            />
                         </v-col>
                     </v-row>
                 </v-container>
@@ -539,8 +544,9 @@ export default {
         },
         dayValid(dayString) {
             const list = this.stringToList(dayString)
-            const monthContext = this.monthValid(this.month) === true && this.month.length > 0
-            const weekContext = this.weekValid(this.week) === true && this.week.length > 0
+            const monthContext =
+                (this.monthValid(this.month) === true && this.month.length > 0) || this.selectedLevel === 2
+            const weekContext = (this.weekValid(this.week) === true && this.week.length > 0) || this.selectedLevel === 1
             console.log('monthContext:', monthContext)
             console.log('weekContext:', weekContext)
             if (list.length > 0) {
@@ -562,7 +568,8 @@ export default {
         },
         weekValid(weekString) {
             const list = this.stringToList(weekString)
-            const monthContext = this.monthValid(this.month) === true && this.month.length > 0
+            const monthContext =
+                (this.monthValid(this.month) === true && this.month.length > 0) || this.selectedLevel === 2
             console.log('monthContextForWeek:', monthContext)
             if (list.length > 0 || weekString.length === 0) {
                 for (const elem of list) {
@@ -754,15 +761,18 @@ export default {
         },
         /**
          * Reads the given file and saves image as this.logo.
-         * @param e Change-Event
+         * @param image Image to load
          * */
-        showImage(e) {
-            const image = e.target.files[0]
-            const reader = new FileReader()
-            reader.readAsDataURL(image)
-            reader.onload = (e) => {
-                console.log(e)
-                this.logo = e.target.result
+        showImage(image) {
+            if (image) {
+                const reader = new FileReader()
+                reader.readAsDataURL(image)
+                reader.onload = (e) => {
+                    console.log(e)
+                    this.logo = e.target.result
+                }
+            } else {
+                this.logo = null
             }
         },
         /**
