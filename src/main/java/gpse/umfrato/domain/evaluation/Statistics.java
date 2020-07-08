@@ -50,6 +50,8 @@ public class Statistics {
      * @param pollResultService a pollResultServiceImpl
      * @param categoryService a categoryServiceImpl
      * @param consistencyQuestionService a consistencyQuestionServiceImpl
+     * @param sessionService a sessionServiceImpl
+     * @param timeZone the timeZone of the client
      * @param data filter one containing the pollId and a selection of questionIds if the questionIds is a List of only
      *             one (-1) the questionList will get filled with all questions contained in the poll
      */
@@ -296,20 +298,23 @@ public class Statistics {
         for (int i = 0; i <= a.length(); i++) {
             int lastValue = i;
             for (int j = 0; j <= b.length(); j++) {
-                if (i == 0)
+                if (i == 0) {
                     costs[j] = j;
+                }
                 else {
                     if (j > 0) {
                         int newValue = costs[j - 1];
-                        if (a.charAt(i - 1) != b.charAt(j - 1))
-                            newValue = Math.min(Math.min(newValue, lastValue),costs[j]) + 1;
+                        if (a.charAt(i - 1) != b.charAt(j - 1)) {
+                            newValue = Math.min(Math.min(newValue, lastValue), costs[j]) + 1;
+                        }
                         costs[j - 1] = lastValue;
                         lastValue = newValue;
                     }
                 }
             }
-            if (i > 0)
+            if (i > 0) {
                 costs[b.length()] = lastValue;
+            }
         }
         return costs[b.length()];
     }

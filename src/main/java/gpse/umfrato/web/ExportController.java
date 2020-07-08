@@ -110,17 +110,17 @@ public class ExportController {
     }
 
     @PostMapping("/importPoll")
-    public Long fromJSONToPoll(final @RequestBody String file, final @RequestHeader int TimeZoneOffset) throws MalformedURLException {
+    public Long fromJSONToPoll(final @RequestBody String file, final @RequestHeader int timeZoneOffset) throws MalformedURLException {
         final PollCmd pollCmd = exportService.fromJSONToPoll(file);
         Instant actDate = Instant.ofEpochSecond(Long.parseLong(pollCmd.getActivatedDate().substring(0, 10))); //Instant.parse(pollCmd.getActivatedDate());
-        ZonedDateTime actTime = ZonedDateTime.ofInstant(actDate, ZoneId.ofOffset("UTC", ZoneOffset.ofHoursMinutes(TimeZoneOffset / 60,TimeZoneOffset % 60)));
+        ZonedDateTime actTime = ZonedDateTime.ofInstant(actDate, ZoneId.ofOffset("UTC", ZoneOffset.ofHoursMinutes(timeZoneOffset / 60,timeZoneOffset % 60)));
         pollCmd.setActivatedDate(actTime.toString());
         Instant deactDate = Instant.ofEpochSecond(Long.parseLong(pollCmd.getDeactivatedDate().substring(0, 10)));
-        ZonedDateTime deactTime = ZonedDateTime.ofInstant(deactDate, ZoneId.ofOffset("UTC", ZoneOffset.ofHoursMinutes(TimeZoneOffset / 60,TimeZoneOffset % 60)));
+        ZonedDateTime deactTime = ZonedDateTime.ofInstant(deactDate, ZoneId.ofOffset("UTC", ZoneOffset.ofHoursMinutes(timeZoneOffset / 60,timeZoneOffset % 60)));
         pollCmd.setDeactivatedDate(deactTime.toString());
 
         Instant creationDate = Instant.ofEpochSecond(Long.parseLong(pollCmd.getCreationDate().substring(0, 10)));
-        ZonedDateTime creationTime = ZonedDateTime.ofInstant(creationDate, ZoneId.ofOffset("UTC", ZoneOffset.ofHoursMinutes(TimeZoneOffset / 60,TimeZoneOffset % 60)));
+        ZonedDateTime creationTime = ZonedDateTime.ofInstant(creationDate, ZoneId.ofOffset("UTC", ZoneOffset.ofHoursMinutes(timeZoneOffset / 60,timeZoneOffset % 60)));
 
         final Poll poll = new Poll(pollCmd.getPollCreator(), pollCmd.getAnonymityStatus(), pollCmd.getPollName(), creationTime, actTime, deactTime, pollCmd.getPollStatus(),
             pollCmd.getBackgroundColor(), pollCmd.getFontColor(), pollCmd.getLogo(), pollCmd.isVisibility(),
@@ -144,7 +144,7 @@ public class ExportController {
         List<Category> outputList = new ArrayList<>();
         for(CategoryCmd cmd : input) {
             Category cat = categoryService.createCategory(cmd.getCategoryName(), pollId);
-            System.out.println(cat.getCategoryId());
+            /*System.out.println(cat.getCategoryId());*/
             Long indexCounter = 0L;
             for(QuestionCmd q : cmd.getQuestionList()) {
                 q.setCategoryId(cat.getCategoryId());
@@ -200,11 +200,12 @@ public class ExportController {
     }
 
     @PostMapping("/PollResult/{pollId:\\d+}")
-    public Integer toJSONResult(final @PathVariable Long pollId, final @RequestParam Long sessionId, final @RequestParam String format, final @RequestParam String separator, final @RequestBody List<FilterCmd> filterList) throws JsonProcessingException, FileNotFoundException, UnsupportedDataTypeException {
+    public Integer toJSONResult(final @PathVariable Long pollId, final @RequestParam Long sessionId, final @RequestParam String format, final @RequestParam String separator, final @RequestBody List<FilterCmd> filterList , final @RequestHeader int timeZoneOffset) throws JsonProcessingException, FileNotFoundException, UnsupportedDataTypeException {
+        ZoneId timeZone = ZoneId.ofOffset("UTC", ZoneOffset.ofHoursMinutes(timeZoneOffset / 60 , timeZoneOffset % 60));
         final FilterCmd cmd = new FilterCmd();
         cmd.setBasePollId(pollId);
         cmd.setBaseQuestionIds(Collections.singletonList(-1L));
-        final Statistics statistics = new Statistics(questionService, pollService, pollResultService, categoryService, consistencyQuestionService, sessionService, cmd);
+        final Statistics statistics = new Statistics(questionService, pollService, pollResultService, categoryService, consistencyQuestionService, sessionService, timeZone, cmd);
         if (sessionId < 0) {
             if (sessionId > -2) {
                 statistics.loadFilter(filterList);

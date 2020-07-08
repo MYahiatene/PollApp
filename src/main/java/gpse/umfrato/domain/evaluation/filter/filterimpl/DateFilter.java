@@ -46,15 +46,9 @@ public DateFilter(final String startDate, final String endDate, final Boolean in
 public List<PollResult> filter(final List<PollResult> input) {
 
     if (valid) {
-        DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm", Locale.GERMAN);
         final List<PollResult> filteredList = new ArrayList<>();
         for (final PollResult pr: input) {
-            ZonedDateTime date;
-            try {
-                date = ZonedDateTime.parse(pr.getLastEditAt(), df);
-            } catch (DateTimeParseException pe) {
-                continue;
-            }
+            ZonedDateTime date = pr.getLastEditAt();
             if (((startEmpty || date.compareTo(start) >= 0) && (endEmpty || date.compareTo(end) <= 0)) != inverted) {
                 filteredList.add(pr);
             }

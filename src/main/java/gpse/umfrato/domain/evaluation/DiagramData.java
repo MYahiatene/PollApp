@@ -611,9 +611,9 @@ public class DiagramData {
         final List<ZonedDateTime> datesList = new ArrayList<>();
         final DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss",Locale.GERMANY).withZone(timeZone); //'2020-07-08 19:55:21'
         for (final PollResult pr: results) {
-            System.out.println("PollResult pr: "+pr);
+            /*System.out.println("PollResult pr: "+pr);*/
             if(showParticipantsOverTime) {
-                datesList.add(ZonedDateTime.parse(pr.getLastEditAt(),df.withZone(ZoneId.of("Europe/Berlin"))));
+                datesList.add(pr.getLastEditAt());
             }
         }
         if (datesList.isEmpty()) {
@@ -662,17 +662,17 @@ public class DiagramData {
                     if (step < 60) {
                         tPlus = deltaString + String.format("%ds", delta.toSeconds());
                     }
-                    System.out.println("APLUS: "+tPlus);
+                    /*System.out.println("APLUS: "+tPlus);*/
                     answerPossibilities.add(tPlus);
                 }
                 // System.out.println(answerPossibilities);
                 participantsOverTime = new ChoiceData(0, "Teilnahmen über Zeit", answerPossibilities);
-                System.out.println(datesList.toString());
+                /*System.out.println(datesList.toString());*/
                 for (final ZonedDateTime d: datesList) {
                     final long slot = (d.toEpochSecond() - start) / step;
-                    System.out.println("Slot: "+slot);
+                    /*System.out.println("Slot: "+slot);
                     System.out.println("Start: "+start);
-                    System.out.println("Step: "+step);
+                    System.out.println("Step: "+step);*/
                     participantsOverTime.addAnswer((double) slot);
                 }
                 participantsOverTime.statistics();
@@ -691,9 +691,9 @@ public class DiagramData {
                 if (step < 60) {
                     patternString += ":ss";
                 }
-                final DateTimeFormatter otherDf = DateTimeFormatter.ofPattern(patternString, Locale.GERMAN).withZone(timeZone);
+                final DateTimeFormatter finalDf = DateTimeFormatter.ofPattern(patternString, Locale.GERMAN).withZone(timeZone);
                 for (ZonedDateTime date = min; date.compareTo(max) <= 0; date = date.plusSeconds(step)) {
-                    answerPossibilities.add(otherDf.format(date));
+                    answerPossibilities.add(finalDf.format(date));
                 }
             }
             participantsOverTime = new ChoiceData(0, "Teilnahmen über Zeit", answerPossibilities);
@@ -710,6 +710,7 @@ public class DiagramData {
      * @param results the raw data to get processed and prepared for display
      */
     private void loadData(final List<PollResult> results) {
+        final DateTimeFormatter df = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm", Locale.GERMAN).withZone(timeZone);
         generateQuestionData();
         for (final PollResult pr: results) {
             for (final Answer a: pr.getAnswerList()) {
@@ -726,8 +727,7 @@ public class DiagramData {
                                 if (!a.getGivenAnswerList().isEmpty()) {
                                     final TextData td = (TextData) qd;
                                     td.addAnswer(pr.getPollResultId(),
-                                            a.getGivenAnswerList().get(a.getGivenAnswerList().size() - 1),
-                                            pr.getLastEditAt(), pr.getPollTaker());
+                                            a.getGivenAnswerList().get(a.getGivenAnswerList().size() - 1), df.format(pr.getLastEditAt()), pr.getPollTaker());
                                 }
                                 break;
                             case SORT_QUESTION:

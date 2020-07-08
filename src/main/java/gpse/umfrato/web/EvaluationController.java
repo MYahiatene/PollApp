@@ -68,12 +68,12 @@ public class EvaluationController {
      */
     @PreAuthorize("hasAnyAuthority('Admin','Creator')")
     @PostMapping("/generateDiagram")
-    public String populateDiagram(final @RequestBody List<FilterCmd> input, final @RequestHeader int TimeZoneOffset) {
-        ZoneId timeZone = ZoneId.ofOffset("UTC", ZoneOffset.ofHoursMinutes(TimeZoneOffset / 60 , TimeZoneOffset % 60));
+    public String populateDiagram(final @RequestBody List<FilterCmd> input, final @RequestHeader int timeZoneOffset) {
         LOGGER.info(input.toString());
         if (input.isEmpty()) {
             return "?";
         }
+        ZoneId timeZone = ZoneId.ofOffset("UTC", ZoneOffset.ofHoursMinutes(timeZoneOffset / 60 , timeZoneOffset % 60));
         final Statistics calculation = new Statistics(questionService, pollService, pollResultService, categoryService, consistencyQuestionService, sessionService, timeZone, input.get(0));
         calculation.loadFilter(input);
         return calculation.generateDiagram();
