@@ -40,6 +40,8 @@ public class QuestionCmd {
 
     private boolean hasConsistencyRelationship;
 
+    private boolean dropDown;
+
     private String questionMessage;
 
     private List<String> answerPossibilities;

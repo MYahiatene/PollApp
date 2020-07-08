@@ -19,6 +19,7 @@ export const state = () => ({
         textMinBool: false,
         textMaximum: 1000,
         textMaxBool: false,
+        dropDown: false,
         choiceType: '',
         questionId: null,
     },
@@ -86,6 +87,9 @@ export const mutations = {
     },
     setQuestion(state, question) {
         state.question = question
+    },
+    setDropDown(state, value) {
+        state.question.dropDown = value
     },
 }
 export const getters = {

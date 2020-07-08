@@ -75,6 +75,7 @@
                         </v-card-actions>
                     </v-card>
                 </v-dialog>
+                <v-btn color="accent" class="ma-4 float-right" v-on="on" @click="logOut()">Abmelden</v-btn>
                 <v-dialog v-model="dialog2" persistent max-width="600px">
                     <v-card>
                         <v-card-title>
@@ -146,6 +147,9 @@ export default {
         this.loadUserData()
     },
     methods: {
+        logOut() {
+            // TODO: Abmeldefunktion implementieren
+        },
         async createToken() {
             await this.$store.dispatch('administration/setToken')
             this.token = this.authenticate

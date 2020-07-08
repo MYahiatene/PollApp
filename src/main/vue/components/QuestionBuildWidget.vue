@@ -160,6 +160,7 @@ export default {
                         belowMessage: this.getQuestion.belowMessage,
                         aboveMessage: this.getQuestion.aboveMessage,
                         hideValues: this.getQuestion.hideValues,
+                        dropDown: this.getQuestion.dropDown,
                     })
                     .then((response) => {
                         this.categoryData[0].questionList.push(response.data)
@@ -184,6 +185,7 @@ export default {
                     belowMessage: this.getQuestion.belowMessage,
                     aboveMessage: this.getQuestion.aboveMessage,
                     hideValues: this.getQuestion.hideValues,
+                    dropDown: this.getQuestion.dropDown,
                 })
             }
             this.setBuildIndex(0)

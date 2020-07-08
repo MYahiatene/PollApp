@@ -47,6 +47,8 @@ public class Question {
 
     private boolean hasConsistencyRelationship = false;
 
+    private boolean dropDown;
+
     /**
      * This attribute represents an unique id from the object question.
      */
@@ -101,12 +103,13 @@ public class Question {
      * @param userAnswers             the answers from user
      */
     public Question(final String question, final List<String> answerPossibilities,
-                    final Integer numberOfPossibleAnswers, final Boolean userAnswers) {
+                    final Integer numberOfPossibleAnswers, final Boolean userAnswers, final Boolean dropDown) {
         this.questionMessage = question;
         this.answerPossibilities = answerPossibilities;
         this.numberOfPossibleAnswers = numberOfPossibleAnswers;
         this.userAnswers = userAnswers;
         this.questionType = "ChoiceQuestion";
+        this.dropDown = dropDown;
     }
 
     /**
