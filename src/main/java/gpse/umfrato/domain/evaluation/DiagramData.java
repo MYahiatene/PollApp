@@ -43,6 +43,8 @@ public class DiagramData {
     @JsonIgnore
     private final List<Long> questionIds;
     @JsonIgnore
+    private final ZoneId timeZone;
+    @JsonIgnore
     private boolean showParticipantsOverTime = true;
     @JsonIgnore
     private boolean participantsOverRelativeTime = false;
@@ -530,15 +532,21 @@ public class DiagramData {
     }
 
     public DiagramData(final Poll poll, final List<PollResult> results, final boolean showParticipantsOverTime,
-                       final boolean participantsOverRelativeTime, final List<Long> questionIds,
+                       final boolean participantsOverRelativeTime, final List<Long> questionIds, final ZoneId timeZone,
                        final CategoryService categoryService, final QuestionService questionService) {
         this.categoryService = categoryService;
         this.questionService = questionService;
         this.poll = poll;
         this.questionIds = questionIds;
+        this.timeZone = timeZone;
         this.showParticipantsOverTime = showParticipantsOverTime;
         this.participantsOverRelativeTime = participantsOverRelativeTime;
         loadData(results);
+    }
+
+    List<QuestionData> getQuestionList()
+    {
+        return this.questionList;
     }
 
     /**
@@ -601,7 +609,7 @@ public class DiagramData {
      */
     private void generateParticipantsOverTime(final List<PollResult> results, final ZonedDateTime pollStartTime) {
         final List<ZonedDateTime> datesList = new ArrayList<>();
-        DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss",Locale.GERMANY); //'2020-07-08 19:55:21'
+        final DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss",Locale.GERMANY).withZone(timeZone); //'2020-07-08 19:55:21'
         for (final PollResult pr: results) {
             System.out.println("PollResult pr: "+pr);
             if(showParticipantsOverTime) {
@@ -683,7 +691,7 @@ public class DiagramData {
                 if (step < 60) {
                     patternString += ":ss";
                 }
-                final DateTimeFormatter otherDf = DateTimeFormatter.ofPattern(patternString, Locale.GERMAN);
+                final DateTimeFormatter otherDf = DateTimeFormatter.ofPattern(patternString, Locale.GERMAN).withZone(timeZone);
                 for (ZonedDateTime date = min; date.compareTo(max) <= 0; date = date.plusSeconds(step)) {
                     answerPossibilities.add(otherDf.format(date));
                 }
@@ -764,5 +772,26 @@ public class DiagramData {
         }
         json.append(']');
         return json.toString();
+    }
+
+    public void combine(DiagramData other) {
+        for(QuestionData qd:other.getQuestionList())
+        {
+            switch (qd.questionType()) {
+                case SORT_QUESTION:{
+                    break;
+                }
+                case TEXT_QUESTION:
+                {
+                    break;
+                }
+                case CHOICE_QUESTION:
+                case RANGE_QUESTION:
+                case SLIDER_QUESTION:
+                {
+                   break;
+                }
+            }
+        }
     }
 }

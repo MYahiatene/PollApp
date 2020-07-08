@@ -15,6 +15,7 @@ import gpse.umfrato.domain.question.Question;
 import gpse.umfrato.domain.question.QuestionService;
 
 import javax.persistence.EntityNotFoundException;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -38,6 +39,7 @@ public class Statistics {
     private final boolean showParticipantsOverTime;
     private final boolean participantsOverRelativeTime;
     private final Integer numberOfPastPollsToEvaluate = 1;
+    private final ZoneId timeZone;
     private List<Filter> filters = new ArrayList<>();
 
     /**
@@ -51,13 +53,14 @@ public class Statistics {
      * @param data filter one containing the pollId and a selection of questionIds if the questionIds is a List of only
      *             one (-1) the questionList will get filled with all questions contained in the poll
      */
-    public Statistics(final QuestionService questionService, final PollService pollService, final PollResultService pollResultService, final CategoryService categoryService, final ConsistencyQuestionService consistencyQuestionService, final SessionService sessionService, final FilterCmd data) {
+    public Statistics(final QuestionService questionService, final PollService pollService, final PollResultService pollResultService, final CategoryService categoryService, final ConsistencyQuestionService consistencyQuestionService, final SessionService sessionService,final ZoneId timeZone, final FilterCmd data) {
         this.questionService = questionService;
         this.pollService = pollService;
         this.pollResultService = pollResultService;
         this.categoryService = categoryService;
         this.consistencyQuestionService = consistencyQuestionService;
         this.sessionService = sessionService;
+        this.timeZone = timeZone;
         pollId = data.getBasePollId();
         if (data.getTimeDiagram() == null) {
             showParticipantsOverTime = false;
@@ -173,7 +176,7 @@ public class Statistics {
             final int participantCountFiltered = prs.size();
             if(prs.size() > 0)
             {
-                final DiagramData dd = new DiagramData(poll, prs, showParticipantsOverTime, participantsOverRelativeTime, questionIds, categoryService, questionService);
+                final DiagramData dd = new DiagramData(poll, prs, showParticipantsOverTime, participantsOverRelativeTime, questionIds, timeZone, categoryService, questionService);
                 diagramDataList.add(0, dd);
             }
             Poll nextPoll;
@@ -209,41 +212,35 @@ public class Statistics {
     private List<Long> translateQuestionIds(final Poll original, final List<Long> originalQuestionIds, final Poll pollToTranslateTo)
     {
         List<Long> translatedIds = new ArrayList<>();
-        int categoryIndex = 0;
-        for(Category oc:original.getCategoryList())
-        {
-            int questionIndex = 0;
-            for(Question oq:oc.getQuestionList())
-            {
-                if(oq.getQuestionId().equals(originalQuestionIds.get(0)))
-                {
-                    Question translatedQuestion = pollToTranslateTo.getCategoryList().get(categoryIndex).getQuestionList().get(questionIndex);
-                    double questionConfidence = questionSimilarity(oq, translatedQuestion);
-                    if(questionConfidence > 0.8) // TODO: ist 0.8 ein guter Wert?
-                    {
-                        translatedIds.add(translatedQuestion.getQuestionId());
-                    }
-                    else
-                    {
-                        Question bestMatch = translatedQuestion;
-                        double bestConfidence = questionConfidence;
-                        for(Category tc:pollToTranslateTo.getCategoryList())
-                        {
-                            for(Question tq:tc.getQuestionList()) {
-                               double newQuestionConfidence = questionSimilarity(oq, tq);
-                               if(newQuestionConfidence > bestConfidence)
-                               {
-                                   bestConfidence = newQuestionConfidence;
-                                   bestMatch = tq;
-                               }
+        for(Long qid:originalQuestionIds) {
+            int categoryIndex = 0;
+            for (Category oc: original.getCategoryList()) {
+                int questionIndex = 0;
+                for (Question oq: oc.getQuestionList()) {
+                    if (oq.getQuestionId().equals(qid)) {
+                        Question translatedQuestion = pollToTranslateTo.getCategoryList().get(categoryIndex).getQuestionList().get(questionIndex);
+                        double questionConfidence = questionSimilarity(oq, translatedQuestion);
+                        if (questionConfidence > 0.8) {  // TODO: ist 0.8 ein guter Wert?
+                            translatedIds.add(translatedQuestion.getQuestionId());
+                        } else {
+                            Question bestMatch = translatedQuestion;
+                            double bestConfidence = questionConfidence;
+                            for (Category tc: pollToTranslateTo.getCategoryList()) {
+                                for (Question tq: tc.getQuestionList()) {
+                                    double newQuestionConfidence = questionSimilarity(oq, tq);
+                                    if (newQuestionConfidence > bestConfidence) {
+                                        bestConfidence = newQuestionConfidence;
+                                        bestMatch = tq;
+                                    }
+                                }
                             }
+                            translatedIds.add(bestMatch.getQuestionId());
                         }
-                        translatedIds.add(bestMatch.getQuestionId());
                     }
+                    questionIndex++;
                 }
-                questionIndex++;
+                categoryIndex++;
             }
-            categoryIndex++;
         }
         return translatedIds;
     }
@@ -280,22 +277,41 @@ public class Statistics {
      * @return a similarity value between 0 (not equal at all) and 1 (completely identical)
      */
     private double stringSimilarity(final String a, final String b) {
-        if (a.equals(b)) {
+        String longer = a, shorter = b;
+        if (a.length() < b.length()) {
+            longer = b; shorter = a;
+        }
+        int longerLength = longer.length();
+        if (longerLength == 0) {
             return 1.0;
-        } else if (a.isEmpty() || b.isEmpty()) {
-            return 0.0;
-        } else {
-            double m = b.length();
-            double p = 0.0;
-            char[] aChars = a.toCharArray();
-            char[] oChars = b.toCharArray();
-            for (int i = 0; i < a.length(); ++i) {
-                if (aChars[i] == oChars[i]) {
-                    p++;
+        }
+        return (longerLength - editDistance(longer, shorter)) / (double) longerLength;
+    }
+
+    private static int editDistance(String a, String b) {
+        a = a.toLowerCase();
+        b = b.toLowerCase();
+
+        int[] costs = new int[b.length() + 1];
+        for (int i = 0; i <= a.length(); i++) {
+            int lastValue = i;
+            for (int j = 0; j <= b.length(); j++) {
+                if (i == 0)
+                    costs[j] = j;
+                else {
+                    if (j > 0) {
+                        int newValue = costs[j - 1];
+                        if (a.charAt(i - 1) != b.charAt(j - 1))
+                            newValue = Math.min(Math.min(newValue, lastValue),costs[j]) + 1;
+                        costs[j - 1] = lastValue;
+                        lastValue = newValue;
+                    }
                 }
             }
-            return p / m;
+            if (i > 0)
+                costs[b.length()] = lastValue;
         }
+        return costs[b.length()];
     }
 
     /**
@@ -305,7 +321,7 @@ public class Statistics {
      */
     private DiagramData combineDiagramData(final List<DiagramData> diagramDataList) {
         while (diagramDataList.size() > 1) {
-            diagramDataList.remove(1); // TODO
+            diagramDataList.get(0).combine(diagramDataList.get(1));
         }
         return diagramDataList.get(0);
     }

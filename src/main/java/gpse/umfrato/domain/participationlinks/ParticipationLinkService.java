@@ -21,4 +21,5 @@ public interface ParticipationLinkService {
 
     void deleteAllLinks(final Long pollId);
 
+    void updateLinks(final Long oldPollId, final Long newPollId);
 }

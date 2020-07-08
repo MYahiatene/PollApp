@@ -24,7 +24,7 @@ import java.util.logging.Logger;
 public class UserController {
     private static final Logger LOGGER = Logger.getLogger("UserController");
     private static final String HTTP_POST = "HTTP POST was called";
-    /* default */ final UserRepository userRepository;
+    final UserRepository userRepository;
     private final UserService userService;
 
     /**

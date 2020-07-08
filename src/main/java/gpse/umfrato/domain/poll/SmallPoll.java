@@ -6,6 +6,8 @@ import gpse.umfrato.domain.participationlinks.ParticipationLinkService;
 import gpse.umfrato.domain.pollresult.PollResultService;
 import lombok.Data;
 
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
@@ -53,9 +55,9 @@ public class SmallPoll {
 
     private Integer series;
 
-    public SmallPoll(Poll original, PollResultService pollResultService, ParticipationLinkService participationLinkService)
+    public SmallPoll(Poll original, PollResultService pollResultService, ParticipationLinkService participationLinkService, final ZoneId timeZone)
     {
-        final DateTimeFormatter df = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm", Locale.GERMAN);
+        final DateTimeFormatter df = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm", Locale.GERMAN).withZone(timeZone);
         this.pollId = original.getPollId();
         this.pollName = original.getPollName();
         this.pollCreator = original.getPollCreator();

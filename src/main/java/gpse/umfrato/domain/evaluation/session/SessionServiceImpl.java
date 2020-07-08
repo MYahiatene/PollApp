@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -80,6 +81,6 @@ public class SessionServiceImpl implements SessionService {
         session.setDiagramFormat(sessionCmd.getDiagramFormat());
         session.setDiagramOptions(sessionCmd.getDiagramOptions());
         session.setLastUsername(sessionCmd.getLastUsername());
-        session.setLastEdited(new Date());
+        session.setLastEdited(ZonedDateTime.now());
     }
 }

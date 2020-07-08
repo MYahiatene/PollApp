@@ -3,15 +3,10 @@ package gpse.umfrato.domain.cmd;
 import gpse.umfrato.domain.poll.Poll;
 import lombok.Data;
 
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.logging.Logger;
 
 /**
@@ -20,7 +15,7 @@ import java.util.logging.Logger;
 @Data
 public class PollCmd {
 
-    /* default */ static final Logger LOGGER = Logger.getLogger("PollCmd");
+    static final Logger LOGGER = Logger.getLogger("PollCmd");
 
     private Long pollId;
 
@@ -74,21 +69,19 @@ public class PollCmd {
 
     private Integer level;
 
-    private Integer timeZoneOffset;
-
     private Long seriesCounter;
 
     private ZonedDateTime nextSeries;
 
     private Long prevInSeries = -1L;
 
-    public Poll getCmdPoll() {
+    public Poll getCmdPoll(ZoneOffset userOffset) {
         // parses the activationDAte and deactivationDate from a String to a ZonedDateTime
         System.out.println(this);
         final DateTimeFormatter df = DateTimeFormatter.ofPattern("dd.MM.yyyy&HH:mm");
         LocalDateTime localActivation = null;
         final LocalDateTime localCreation = LocalDateTime.parse(creationDate,df);
-        ZoneId timeZone = ZoneId.ofOffset("UTC", ZoneOffset.ofHoursMinutes(timeZoneOffset / 60,timeZoneOffset % 60));
+        ZoneId timeZone = ZoneId.ofOffset("UTC", userOffset);
         ZonedDateTime activation = null;
         ZonedDateTime deactivation = null;
         if(activatedDate != null) {

@@ -17,6 +17,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.MalformedURLException;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -67,14 +69,14 @@ public class PollController {
      */
     @PostMapping(value = "/createpoll", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasAnyAuthority('Admin', 'Creator')")
-    public Long createPoll(final @RequestBody PollCmd pollCmd) {
+    public Long createPoll(final @RequestBody PollCmd pollCmd, final @RequestHeader int TimeZoneOffset) {
         try {
             // create SeriesPoll
             Poll poll = null;
             if(pollCmd.getRepeat() != null) {
-                poll = pollService.createSeriesPoll(pollCmd.getCmdPoll());
+                poll = pollService.createSeriesPoll(pollCmd.getCmdPoll(ZoneOffset.ofHoursMinutes(TimeZoneOffset / 60,TimeZoneOffset % 60)));
             } else {
-                poll = pollService.createPoll(pollCmd.getCmdPoll());
+                poll = pollService.createPoll(pollCmd.getCmdPoll(ZoneOffset.ofHoursMinutes(TimeZoneOffset / 60,TimeZoneOffset % 60)));
             }
             if (poll.getAnonymityStatus().equals(ONE)) {
                 final String link = participationLinkService.createParticipationLink().toString();
@@ -96,10 +98,11 @@ public class PollController {
      * @return a list with information about every poll.
      */
     @GetMapping("/poll")
-    public List<SmallPoll> getSmallPolls() {
+    public List<SmallPoll> getSmallPolls(final @RequestHeader int TimeZoneOffset) {
+        ZoneId timeZone = ZoneId.ofOffset("UTC", ZoneOffset.ofHoursMinutes(TimeZoneOffset / 60 , TimeZoneOffset % 60));
         final List<SmallPoll> polls = new ArrayList<>();
         for (final Poll p: pollService.getAllPolls()) {
-            polls.add(new SmallPoll(p, pollResultService, participationLinkService));
+            polls.add(new SmallPoll(p, pollResultService, participationLinkService, timeZone));
         }
         return polls;
     }
@@ -111,9 +114,9 @@ public class PollController {
      */
     @PostMapping(value = "/createcopypoll", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasAuthority('Admin')")
-    public Long createCopyPoll(final @RequestBody PollCmd pollCmd) {
+    public Long createCopyPoll(final @RequestBody PollCmd pollCmd, final @RequestHeader int TimeZoneOffset) {
         try {
-            final Poll poll = pollService.createCopyPoll(pollCmd.getCmdPoll());
+            final Poll poll = pollService.createCopyPoll(pollCmd.getCmdPoll(ZoneOffset.ofHoursMinutes(TimeZoneOffset / 60,TimeZoneOffset % 60)));
             if (poll.getAnonymityStatus().equals(ONE)) {
                 final String link = participationLinkService.createParticipationLink().toString();
                 participationLinkService.saveParticipationLink(poll.getPollId(), ALL_USERS, link);
@@ -190,10 +193,11 @@ public class PollController {
     }
 
     @GetMapping("relevantpolls")
-    public List<SmallPoll> getNewestPolls() {
+    public List<SmallPoll> getNewestPolls(final @RequestHeader int TimeZoneOffset) {
+        ZoneId timeZone = ZoneId.ofOffset("UTC", ZoneOffset.ofHoursMinutes(TimeZoneOffset / 60 , TimeZoneOffset % 60));
         final List<SmallPoll> relevantPolls = new ArrayList<>();
         for (final Poll p: pollService.getLastEditedPolls()) {
-            relevantPolls.add(new SmallPoll(p, pollResultService, participationLinkService));
+            relevantPolls.add(new SmallPoll(p, pollResultService, participationLinkService, timeZone));
         }
         return relevantPolls;
     }

@@ -72,7 +72,7 @@
                                     :footer-props="footerProps"
                                 >
                                     <template v-slot:item.actions="{ item }">
-                                        <v-chip color="vCardColor">
+                                        <v-chip color="#00000000">
                                             <v-tooltip bottom>
                                                 <template v-slot:activator="{ on, attrs }">
                                                     <v-btn icon color="primary" v-bind="attrs" v-on="on">
@@ -136,7 +136,7 @@
                                                 <span> Umfrage exportieren </span>
                                             </v-tooltip>
                                         </v-chip>
-                                        <v-chip color="vCardColor">
+                                        <v-chip color="#00000000">
                                             <v-tooltip bottom>
                                                 <template v-slot:activator="{ on, attrs }">
                                                     <v-btn icon color="primary" v-bind="attrs" v-on="on">

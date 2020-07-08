@@ -18,7 +18,7 @@ import java.util.List;
 public class MailController {
 
 
-    /* default */ static final int DEFAULT_PORT = 8080;
+    static final int DEFAULT_PORT = 8080;
 
     private JavaMailSender mailSender;
     private ParticipationLinkService participationLinkService;

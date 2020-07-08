@@ -5,6 +5,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,7 +22,7 @@ public class PollResult {
 
     private String pollTaker;
 
-    private String lastEditAt;
+    private ZonedDateTime lastEditAt;
 
     private Boolean participatedPoll;
 

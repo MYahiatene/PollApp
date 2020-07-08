@@ -63,12 +63,12 @@ public class AnswerController {
     //todo: url anpassen
     @GetMapping("/poll/getAnswer")
     public List<Answer> getAnswerFromOneQuestion(final @RequestBody AnswerCmd answerCmd) {
-        return answerService.getAnswerFromOneQuestion(Long.valueOf(answerCmd.getQuestionId()));
+        return answerService.getAnswerFromOneQuestion(answerCmd.getQuestionId());
     }
 
     //todo: fix this function in controller and service impl
     @GetMapping("/poll/getAnswerFromUser")
     public List<String> getAnswersFromPollByUser(final @RequestBody AnswerCmd answerCmd) {
-        return answerService.getAllAnswersFromPollByUser(Long.valueOf(answerCmd.getPollId()), answerCmd.getUsername());
+        return answerService.getAllAnswersFromPollByUser(answerCmd.getPollId(), answerCmd.getUsername());
     }
 }

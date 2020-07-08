@@ -32,7 +32,7 @@ public class QuestionServiceImpl implements QuestionService {
 
     /*default*/ final CategoryRepository categoryRepository;
 
-    /* default */ final CategoryService categoryService;
+    final CategoryService categoryService;
 
     /**
      * Initializes the poll repository.

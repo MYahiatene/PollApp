@@ -84,7 +84,7 @@ public class Poll {
     private String pollName;
 
     /**
-     * This attribute represents the status of the poll if it is activated or deactivated.
+     * This attribute represents the status of the poll if it is editable, ready activated or deactivated.
      */
     private int pollStatus;
 

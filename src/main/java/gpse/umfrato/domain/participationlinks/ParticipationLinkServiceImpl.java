@@ -11,9 +11,9 @@ import java.util.UUID;
 @Service
 public class ParticipationLinkServiceImpl implements ParticipationLinkService {
 
-    /* default */ static final int DEFAULT_PORT = 8080;
+    static final int DEFAULT_PORT = 8080;
 
-    /* default */ final ParticipationLinkRepository participationLinkRepository;
+    final ParticipationLinkRepository participationLinkRepository;
 
     public ParticipationLinkServiceImpl(final ParticipationLinkRepository participationLinkRepository) {
         this.participationLinkRepository = participationLinkRepository;
@@ -75,6 +75,15 @@ public class ParticipationLinkServiceImpl implements ParticipationLinkService {
     @Override
     public void deleteAllLinks(final Long pollId) {
         participationLinkRepository.deleteAllByPollId(pollId);
+    }
+
+    @Override public void updateLinks(Long oldPollId, Long newPollId) {
+        List<ParticipationLink> links = participationLinkRepository.findParticipationLinksByPollId(oldPollId);
+        for(ParticipationLink pl:links)
+        {
+            pl.setPollId(newPollId);
+        }
+        participationLinkRepository.saveAll(links);
     }
 
 }

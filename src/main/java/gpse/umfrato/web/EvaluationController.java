@@ -18,6 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -66,13 +68,13 @@ public class EvaluationController {
      */
     @PreAuthorize("hasAnyAuthority('Admin','Creator')")
     @PostMapping("/generateDiagram")
-    public String populateDiagram(final @RequestBody List<FilterCmd> input) {
+    public String populateDiagram(final @RequestBody List<FilterCmd> input, final @RequestHeader int TimeZoneOffset) {
+        ZoneId timeZone = ZoneId.ofOffset("UTC", ZoneOffset.ofHoursMinutes(TimeZoneOffset / 60 , TimeZoneOffset % 60));
         LOGGER.info(input.toString());
-
         if (input.isEmpty()) {
             return "?";
         }
-        final Statistics calculation = new Statistics(questionService, pollService, pollResultService, categoryService, consistencyQuestionService, sessionService, input.get(0));
+        final Statistics calculation = new Statistics(questionService, pollService, pollResultService, categoryService, consistencyQuestionService, sessionService, timeZone, input.get(0));
         calculation.loadFilter(input);
         return calculation.generateDiagram();
     }

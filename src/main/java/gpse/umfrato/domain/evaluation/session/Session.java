@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -32,7 +33,7 @@ public class Session {
     @ElementCollection
     private List<String> diagramOptions;
 
-    private Date lastEdited;
+    private ZonedDateTime lastEdited;
 
     private String lastUsername;
 }

@@ -25,10 +25,12 @@ export const mutations = {
             state.token = token
             state.authenticated = true
             localStorage.setItem('user-token', token)
+            const today = new Date()
             const tokenString = localStorage.getItem('user-token')
             this.$axios.defaults.baseURL = 'http://127.0.0.1:8088/api'
             this.$axios.defaults.headers.common = {
                 Authorization: 'Bearer ' + tokenString,
+                TimeZoneOffset: -today.getTimezoneOffset(),
             }
             this.$axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded'
         } else {

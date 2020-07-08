@@ -110,17 +110,17 @@ public class ExportController {
     }
 
     @PostMapping("/importPoll")
-    public Long fromJSONToPoll(final @RequestBody String file) throws MalformedURLException {
+    public Long fromJSONToPoll(final @RequestBody String file, final @RequestHeader int TimeZoneOffset) throws MalformedURLException {
         final PollCmd pollCmd = exportService.fromJSONToPoll(file);
         Instant actDate = Instant.ofEpochSecond(Long.parseLong(pollCmd.getActivatedDate().substring(0, 10))); //Instant.parse(pollCmd.getActivatedDate());
-        ZonedDateTime actTime = pollCmd.getTimeZoneOffset() == null ? ZonedDateTime.ofInstant(actDate, ZoneId.of("Europe/Berlin")) : ZonedDateTime.ofInstant(actDate, ZoneId.ofOffset("UTC", ZoneOffset.ofHoursMinutes(pollCmd.getTimeZoneOffset() / 60,pollCmd.getTimeZoneOffset() % 60)));
+        ZonedDateTime actTime = ZonedDateTime.ofInstant(actDate, ZoneId.ofOffset("UTC", ZoneOffset.ofHoursMinutes(TimeZoneOffset / 60,TimeZoneOffset % 60)));
         pollCmd.setActivatedDate(actTime.toString());
         Instant deactDate = Instant.ofEpochSecond(Long.parseLong(pollCmd.getDeactivatedDate().substring(0, 10)));
-        ZonedDateTime deactTime = pollCmd.getTimeZoneOffset() == null ? ZonedDateTime.ofInstant(deactDate, ZoneId.of("Europe/Berlin")) : ZonedDateTime.ofInstant(deactDate, ZoneId.ofOffset("UTC", ZoneOffset.ofHoursMinutes(pollCmd.getTimeZoneOffset() / 60,pollCmd.getTimeZoneOffset() % 60)));
+        ZonedDateTime deactTime = ZonedDateTime.ofInstant(deactDate, ZoneId.ofOffset("UTC", ZoneOffset.ofHoursMinutes(TimeZoneOffset / 60,TimeZoneOffset % 60)));
         pollCmd.setDeactivatedDate(deactTime.toString());
 
         Instant creationDate = Instant.ofEpochSecond(Long.parseLong(pollCmd.getCreationDate().substring(0, 10)));
-        ZonedDateTime creationTime = pollCmd.getTimeZoneOffset() == null ? ZonedDateTime.ofInstant(creationDate, ZoneId.of("Europe/Berlin")) : ZonedDateTime.ofInstant(creationDate, ZoneId.ofOffset("UTC", ZoneOffset.ofHoursMinutes(pollCmd.getTimeZoneOffset() / 60,pollCmd.getTimeZoneOffset() % 60)));
+        ZonedDateTime creationTime = ZonedDateTime.ofInstant(creationDate, ZoneId.ofOffset("UTC", ZoneOffset.ofHoursMinutes(TimeZoneOffset / 60,TimeZoneOffset % 60)));
 
         final Poll poll = new Poll(pollCmd.getPollCreator(), pollCmd.getAnonymityStatus(), pollCmd.getPollName(), creationTime, actTime, deactTime, pollCmd.getPollStatus(),
             pollCmd.getBackgroundColor(), pollCmd.getFontColor(), pollCmd.getLogo(), pollCmd.isVisibility(),

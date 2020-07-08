@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 import javax.persistence.EntityNotFoundException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -63,9 +65,7 @@ public class AnswerServiceImpl implements AnswerService {
             if (!answerDa) {
                 pollResult.getAnswerList().add(answer);
             }
-            final DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.GERMAN);
-            final Date dateobj = new Date();
-            pollResult.setLastEditAt(df.format(dateobj));
+            pollResult.setLastEditAt(ZonedDateTime.now());
             // todo: check line below
             answerRepository.save(answer);
             pollResultRepository.save(pollResult);
