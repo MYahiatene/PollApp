@@ -51,6 +51,8 @@ public class SmallPoll {
 
     private String computedSubtitle;
 
+    private Integer series;
+
     public SmallPoll(Poll original, PollResultService pollResultService, ParticipationLinkService participationLinkService)
     {
         final DateTimeFormatter df = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm", Locale.GERMAN);
@@ -67,6 +69,7 @@ public class SmallPoll {
         this.participationLinks = participationLinkService.getAllParticipationLinks(pollId);
         this.categoryCount = original.getCategoryList().size();
         this.questionCount = 0;
+        this.series = Math.toIntExact(original.getSeriesCounter());
         for (final Category c: original.getCategoryList()) {
             this.questionCount += c.getQuestionList().size();
         }

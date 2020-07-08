@@ -72,7 +72,7 @@
                                     :footer-props="footerProps"
                                 >
                                     <template v-slot:item.actions="{ item }">
-                                        <v-chip>
+                                        <v-chip color="vCardColor">
                                             <v-tooltip bottom>
                                                 <template v-slot:activator="{ on, attrs }">
                                                     <v-btn icon color="primary" v-bind="attrs" v-on="on">
@@ -135,6 +135,8 @@
                                                 </template>
                                                 <span> Umfrage exportieren </span>
                                             </v-tooltip>
+                                        </v-chip>
+                                        <v-chip color="vCardColor">
                                             <v-tooltip bottom>
                                                 <template v-slot:activator="{ on, attrs }">
                                                     <v-btn icon color="primary" v-bind="attrs" v-on="on">
@@ -179,7 +181,23 @@
                                                         </v-icon>
                                                     </v-btn>
                                                 </template>
-                                                <span> QR-Code generieren</span>
+                                                <span> Links generieren</span>
+                                            </v-tooltip>
+                                            <v-tooltip bottom>
+                                                <template v-slot:activator="{ on, attrs }">
+                                                    <v-btn
+                                                        icon
+                                                        color="primary"
+                                                        :disabled="!item.series"
+                                                        v-bind="attrs"
+                                                        v-on="on"
+                                                    >
+                                                        <v-icon @click="abortSeries(item)">
+                                                            mdi-cancel
+                                                        </v-icon>
+                                                    </v-btn>
+                                                </template>
+                                                <span> Serienumfrage abbrechen </span>
                                             </v-tooltip>
                                             <v-tooltip bottom>
                                                 <template v-slot:activator="{ on, attrs }">
@@ -417,6 +435,14 @@ export default {
             this.setQrTitle(item.pollName)
             this.setQrLink(links)
             this.qrDialog = true
+        },
+        abortSeries(item) {
+            const index = this.items.indexOf(item)
+            const del = confirm('Sind sie sich sicher, dass sie diese Serienumfrage abbrechen möchten?')
+            if (del) {
+                this.splicePolls(index)
+                this.$axios.put('/abortPoll/' + item.pollId)
+            }
         },
         deletePoll(item) {
             const index = this.items.indexOf(item)

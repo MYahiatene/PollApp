@@ -34,12 +34,14 @@
                     Zum Kopieren oder Speichern einfach mit der rechten Maustaste in den QR-Code clicken
                 </v-card-subtitle>
                 <v-card class="ma-8 pa-2" flat :style="'width: ' + qrSize + 'px;'">
+                    <!--renderAs svg, wenn noch Zeit ist (export funktioniert damit nicht)-->
                     <qrcode-vue
                         :value="qrLink"
                         :size="qrSize"
                         :level="qrLevels[qrLevelTexts.indexOf(qrSelectedLevel)]"
                         :foreground="qrForeground"
                         :background="qrBackground"
+                        renderAs="Canvas"
                     />
                 </v-card>
             </v-col>

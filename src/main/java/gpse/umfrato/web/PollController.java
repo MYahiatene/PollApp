@@ -86,6 +86,10 @@ public class PollController {
         }
     }
 
+    @PostMapping("/abortPoll/{pollId:\\d+}")
+    public void abortPoll(final @PathVariable Long pollId) {
+        // TODO: Serienumfrage deaktivieren
+    }
     /**
      * This method returns a list with information about every poll.
      *
