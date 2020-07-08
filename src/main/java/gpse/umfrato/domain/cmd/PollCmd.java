@@ -84,6 +84,7 @@ public class PollCmd {
 
     public Poll getCmdPoll() {
         // parses the activationDAte and deactivationDate from a String to a ZonedDateTime
+        System.out.println(this);
         final DateTimeFormatter df = DateTimeFormatter.ofPattern("dd.MM.yyyy&HH:mm");
         LocalDateTime localActivation = null;
         final LocalDateTime localCreation = LocalDateTime.parse(creationDate,df);
