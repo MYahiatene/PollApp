@@ -626,8 +626,8 @@ export default {
                 repeat: Number(this.rhythm),
                 repeatUntil:
                     this.deactivationReasons.indexOf(this.selectedDeactivation) === 0
-                        ? this.finishingDate
-                        : this.finishingString,
+                        ? this.finishingString
+                        : this.finishingNumber,
                 stoppingReason: this.deactivationReasons.indexOf(this.selectedDeactivation),
                 day: this.stringToList(this.day),
                 week: this.stringToList(this.week),
@@ -709,12 +709,18 @@ export default {
             console.log('parseDate')
             if (!date) return null
             const [day, month, year] = date.split('.')
+            console.log(`${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`)
             return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
         },
         unparseDate(date) {
             console.log('unparseDate')
-            if (!date) return new Date().toISOString.substr(0, 10)
+            if (!date) {
+                console.log(new Date().toISOString.substr(0, 10))
+                return new Date().toISOString.substr(0, 10)
+            }
             const [year, month, day] = date.split('-')
+            console.log('ELSE')
+            console.log(`${day.padStart(2, '0')}.${month.padStart(2, '0')}.${year}`)
             return `${day.padStart(2, '0')}.${month.padStart(2, '0')}.${year}`
         },
         getActivationDate(date) {

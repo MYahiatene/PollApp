@@ -2,6 +2,7 @@ package gpse.umfrato.domain.poll;
 
 import gpse.umfrato.domain.category.CategoryRepository;
 import gpse.umfrato.domain.category.CategoryService;
+import gpse.umfrato.domain.pollresult.PollResultRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +28,7 @@ class PollServiceImpl implements PollService {
     /* default */ final CategoryRepository categoryRepository;
     private final PollRepository pollRepository;
     private final CategoryService categoryService;
+    private final PollResultRepository pollResultRepository;
     private int anonymousUsername = 0;
 
     /**
@@ -36,12 +38,11 @@ class PollServiceImpl implements PollService {
      * @param categoryService    the object category service
      * @param categoryRepository the repository where the categories are saved
      */
-    @Autowired
-    public PollServiceImpl(final PollRepository pollRepository, final CategoryService categoryService,
-                           final CategoryRepository categoryRepository) {
+    @Autowired public PollServiceImpl(final PollRepository pollRepository, final CategoryService categoryService, final CategoryRepository categoryRepository, final PollResultRepository pollResultRepository) {
         this.pollRepository = pollRepository;
         this.categoryService = categoryService;
         this.categoryRepository = categoryRepository;
+        this.pollResultRepository = pollResultRepository;
     }
 
     /**
@@ -550,5 +551,33 @@ class PollServiceImpl implements PollService {
     private int getWeekOfMonth(ZonedDateTime date) {
         ZonedDateTime firstOfMonth = date.withDayOfMonth(1);
         return 1 + date.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR) - firstOfMonth.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR);
+    }
+
+        private void stoppingReason(String repeatUntil, int stoppingReason, Poll poll){
+            switch(stoppingReason){
+                case 0: /*Datum*/{
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
+                    ZonedDateTime endTime = ZonedDateTime.parse(repeatUntil + " 23:59:59", formatter);
+                    System.out.println("EndTime: "+endTime);
+                    if(ZonedDateTime.now().compareTo(endTime) > 0)
+                        stopUmfrage(poll);
+                    break;
+                }
+                case 1: /*Wiederholungen*/{
+                    if(poll.getRepeat() > Integer.parseInt(repeatUntil))
+                        stopUmfrage(poll);
+                    break;
+                }
+                case 2: /*Teilnehmer*/{
+                    if(pollResultRepository.findPollResultsByPollId(poll.getPollId()).size() > Integer.parseInt(repeatUntil))
+                        stopUmfrage(poll);
+                    break;
+                }
+                default: break;
+            }
+        }
+
+    void stopUmfrage(Poll poll) {
+        poll.setActivated(false);
     }
 }
