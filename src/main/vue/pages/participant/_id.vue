@@ -477,7 +477,7 @@ export default {
          * @returns {boolean}
          */
         hasNoNext() {
-            return this.categoryIndex === this.categoryLength || !this.getChangeOfCategories
+            return this.categoryIndex === this.categoryLength
         },
         /**
          * Returns true if there is no previous category in the poll or if the ChangeOfCategories is not allowed in
