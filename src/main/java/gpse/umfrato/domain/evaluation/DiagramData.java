@@ -633,7 +633,7 @@ public class DiagramData {
                 // System.out.println(patternString);
                 //final DateTimeFormatter finalDf = DateTimeFormatter.ofPattern(tPlus, Locale.GERMANY);
 
-                for (ZonedDateTime date = min; date.compareTo(max) < 0;date = date.plusSeconds(step)) {
+                for (ZonedDateTime date = min; date.compareTo(max) <= 0;date = date.plusSeconds(step)) {
                     String deltaString = "T+";
                     //Instant endT = Instant.ofEpochSecond(end);
                     //System.out.println("EndT: "+endT);
