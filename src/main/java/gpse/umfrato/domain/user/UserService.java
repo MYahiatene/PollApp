@@ -57,6 +57,7 @@ public interface UserService extends UserDetailsService {
     /**
      * This method changes a password.
      *
+     * @param username
      * @param password
      */
     void changePassword(final String username, final String password);

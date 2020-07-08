@@ -55,14 +55,16 @@ public class SessionServiceImpl implements SessionService {
     @Override
     public Session editSession(final SessionCmd sessionCmd) {
         final Session session = sessionRepository.getOne(sessionCmd.getSessionId());
-        cmdToSession(sessionCmd, filterService.updateFilterList(sessionCmd.getFilterList(), session.getFilterList()), session);
+        cmdToSession(sessionCmd, filterService.updateFilterList(sessionCmd.getFilterList(), session.getFilterList()),
+            session);
         sessionRepository.save(session);
         return session;
     }
 
     @Override public List<FilterCmd> getFilters(final Long sessionId) {
         try {
-            final List<FilterData> filterList = sessionRepository.findById(sessionId).orElseThrow(EntityNotFoundException :: new).getFilterList();
+            final List<FilterData> filterList = sessionRepository.findById(sessionId).
+                orElseThrow(EntityNotFoundException :: new).getFilterList();
             final List<FilterCmd> filters = new ArrayList<>();
             for (final FilterData fd:filterList) {
                 filters.add(filterService.filterToCmd(fd));

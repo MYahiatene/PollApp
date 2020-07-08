@@ -28,6 +28,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Logger;
 
 @RequestMapping("/api/export/")
 @RestController
@@ -35,6 +36,9 @@ import java.util.List;
 public class ExportController {
     private static final String FILE_PATH = "src/main/java/gpse/umfrato/domain/export/files/";
     private static final Integer MAX_FILE_NUMBER = 50;
+    private static final String ONE = "1";
+    private static final String ALL_USERS = "allUsers";
+    private static final Logger LOGGER = Logger.getLogger("ExportController");
     private final PollService pollService;
     private final PollResultService pollResultService;
     private final ExportService exportService;
@@ -44,12 +48,16 @@ public class ExportController {
     private final ConsistencyQuestionService consistencyQuestionService;
     private final ParticipationLinkService participationLinkService;
     private final PollRepository pollRepository;
-    private static final String ONE = "1";
-    private static final String ALL_USERS = "allUsers";
     private Integer fileNumber = 0;
 
     @Autowired
-    public ExportController(final PollService pollService, final PollResultService pollResultService, final ExportService exportService, final QuestionService questionService, final CategoryService categoryService, final ConsistencyQuestionService consistencyQuestionService, final SessionService sessionService, final ParticipationLinkService participationLinkService, final PollRepository pollRepository) {
+    public ExportController(final PollService pollService, final PollResultService pollResultService,
+                            final ExportService exportService, final QuestionService questionService,
+                            final CategoryService categoryService,
+                            final ConsistencyQuestionService consistencyQuestionService,
+                            final SessionService sessionService,
+                            final ParticipationLinkService participationLinkService,
+                            final PollRepository pollRepository) {
         this.pollService = pollService;
         this.pollResultService = pollResultService;
         this.exportService = exportService;
@@ -96,17 +104,19 @@ public class ExportController {
     public Long fromJSONToPoll(final @RequestBody String file) throws MalformedURLException {
         final PollCmd pollCmd = exportService.fromJSONToPoll(file);
         Calendar actCalendar = Calendar.getInstance();
-        System.out.println("ActDate: "+pollCmd.getActivatedDate());
+        LOGGER.info("ActDate: " + pollCmd.getActivatedDate());
         Date actDate = new Date(Long.parseLong(pollCmd.getActivatedDate()));
         actCalendar.setTime(actDate);
         pollCmd.setActivatedDate(actCalendar.toString());
         Calendar deactCalendar = Calendar.getInstance();
-        System.out.println("DeactDate: "+pollCmd.getDeactivatedDate());
+        LOGGER.info("DeactDate: " + pollCmd.getDeactivatedDate());
         Date deactDate = new Date(Long.parseLong(pollCmd.getDeactivatedDate()));
         actCalendar.setTime(deactDate);
         pollCmd.setDeactivatedDate(deactCalendar.toString());
-        final Poll poll = new Poll(pollCmd.getPollCreator(), pollCmd.getAnonymityStatus(), pollCmd.getPollName(), pollCmd.getCreationDate(), actCalendar,
-            deactCalendar, pollCmd.getPollStatus(), pollCmd.getBackgroundColor(), pollCmd.getFontColor(), pollCmd.getLogo(), pollCmd.isVisibility(), pollCmd.isCategoryChange(), pollCmd.isActivated(),
+        final Poll poll = new Poll(pollCmd.getPollCreator(), pollCmd.getAnonymityStatus(), pollCmd.getPollName(),
+            pollCmd.getCreationDate(), actCalendar,
+            deactCalendar, pollCmd.getPollStatus(), pollCmd.getBackgroundColor(), pollCmd.getFontColor(),
+            pollCmd.getLogo(), pollCmd.isVisibility(), pollCmd.isCategoryChange(), pollCmd.isActivated(),
             pollCmd.isDeactivated());
         /*if (poll.getAnonymityStatus().equals(ONE)) {
             final String link = participationLinkService.createParticipationLink().toString();
@@ -117,7 +127,9 @@ public class ExportController {
     }
 
     @PostMapping("/Poll/{pollId:\\d+}")
-    public Integer toCSVManual(final @PathVariable Long pollId, final @RequestParam String format, final @RequestParam String separator) throws UnsupportedDataTypeException, FileNotFoundException, JsonProcessingException {
+    public Integer toCSVManual(final @PathVariable Long pollId, final @RequestParam String format,
+                               final @RequestParam String separator) throws UnsupportedDataTypeException,
+        FileNotFoundException, JsonProcessingException {
         final Poll poll = pollService.getPoll(pollId);
         if (format.equals("csv")) {
             final String csv = exportService.toCSVManual(poll, separator);
@@ -131,11 +143,15 @@ public class ExportController {
     }
 
     @PostMapping("/PollResult/{pollId:\\d+}")
-    public Integer toJSONResult(final @PathVariable Long pollId, final @RequestParam Long sessionId, final @RequestParam String format, final @RequestParam String separator, final @RequestBody List<FilterCmd> filterList) throws JsonProcessingException, FileNotFoundException, UnsupportedDataTypeException {
+    public Integer toJSONResult(final @PathVariable Long pollId, final @RequestParam Long sessionId,
+                                final @RequestParam String format, final @RequestParam String separator,
+                                final @RequestBody List<FilterCmd> filterList) throws JsonProcessingException,
+        FileNotFoundException, UnsupportedDataTypeException {
         final FilterCmd cmd = new FilterCmd();
         cmd.setBasePollId(pollId);
         cmd.setBaseQuestionIds(Collections.singletonList(-1L));
-        final Statistics statistics = new Statistics(questionService, pollService, pollResultService, categoryService, consistencyQuestionService, sessionService, cmd);
+        final Statistics statistics = new Statistics(questionService, pollService, pollResultService, categoryService,
+            consistencyQuestionService, sessionService, cmd);
         if (sessionId < 0) {
             if (sessionId > -2) {
                 statistics.loadFilter(filterList);

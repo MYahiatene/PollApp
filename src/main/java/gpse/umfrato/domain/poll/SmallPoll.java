@@ -51,7 +51,8 @@ public class SmallPoll {
 
     private String computedSubtitle;
 
-    public SmallPoll(final Poll original, final PollResultService pollResultService, final ParticipationLinkService participationLinkService) {
+    public SmallPoll(final Poll original, final PollResultService pollResultService,
+                     final ParticipationLinkService participationLinkService) {
         final SimpleDateFormat df = new SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.GERMAN);
         this.pollId = original.getPollId();
         this.pollName = original.getPollName();
@@ -100,17 +101,21 @@ public class SmallPoll {
             }
             sb.append(" Zuletzt bearbeitet von ").append(lastEditFrom).append(" am ").append(lastEditAt);
         } else if (pollStatus == 2) {
-            sb.append("Umfrage aktiv seit ").append(activatedDate).append(". Bisherige Teilnehmer: ").append(participantCount);
+            sb.append("Umfrage aktiv seit ").append(activatedDate).append(". Bisherige Teilnehmer: ").
+                append(participantCount);
             if (!anonymityStatus.equals("1")) {
-                sb.append(" / ").append(expectedParticipantCount).append(" (").append(participantCount.doubleValue() / expectedParticipantCount.doubleValue() * 100.0).append("%)");
+                sb.append(" / ").append(expectedParticipantCount).append(" (").append(participantCount.doubleValue() /
+                    expectedParticipantCount.doubleValue() * 100.0).append("%)");
             }
             if (original.isDeactivated()) {
                 sb.append(" Wird zum ").append(deactivatedDate).append(" deaktiviert.");
             }
         } else if (pollStatus == 1 + 2) {
-            sb.append("Umfrage deaktiviert seit ").append(deactivatedDate).append(". Teilnehmer: ").append(participantCount);
+            sb.append("Umfrage deaktiviert seit ").append(deactivatedDate).append(". Teilnehmer: ").
+                append(participantCount);
             if (!anonymityStatus.equals("1")) {
-                sb.append(" / ").append(expectedParticipantCount).append(" (").append(participantCount.doubleValue() / expectedParticipantCount.doubleValue() * 100.0).append("%)");
+                sb.append(" / ").append(expectedParticipantCount).append(" (").append(participantCount.doubleValue() /
+                    expectedParticipantCount.doubleValue() * 100.0).append("%)");
             }
         }
         this.computedSubtitle = sb.toString();

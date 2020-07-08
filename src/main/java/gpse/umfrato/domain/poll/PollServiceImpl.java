@@ -2,12 +2,9 @@ package gpse.umfrato.domain.poll;
 
 import gpse.umfrato.domain.category.CategoryRepository;
 import gpse.umfrato.domain.category.CategoryService;
-import gpse.umfrato.domain.consistencyquestion.ConsistencyQuestion;
 import gpse.umfrato.domain.consistencyquestion.ConsistencyQuestionService;
 import gpse.umfrato.domain.evaluation.session.SessionService;
-import gpse.umfrato.domain.participationlinks.ParticipationLink;
 import gpse.umfrato.domain.participationlinks.ParticipationLinkService;
-import gpse.umfrato.domain.pollresult.PollResult;
 import gpse.umfrato.domain.pollresult.PollResultService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,10 +35,10 @@ class PollServiceImpl implements PollService {
      */
     @Autowired
     public PollServiceImpl(final PollRepository pollRepository, final CategoryService categoryService,
-                           final CategoryRepository categoryRepository , final SessionService sessionService
-                                       , final PollResultService pollResultService
-                                       , final ParticipationLinkService participationLinkService
-                                       , final ConsistencyQuestionService consistencyQuestionService) {
+                           final CategoryRepository categoryRepository , final SessionService sessionService,
+                           final PollResultService pollResultService,
+                           final ParticipationLinkService participationLinkService,
+                           final ConsistencyQuestionService consistencyQuestionService) {
         this.pollRepository = pollRepository;
         this.categoryService = categoryService;
         this.categoryRepository = categoryRepository;

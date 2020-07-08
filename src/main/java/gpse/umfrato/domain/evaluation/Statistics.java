@@ -48,8 +48,12 @@ public class Statistics {
      * @param consistencyQuestionService a consistencyQuestionServiceImpl
      * @param data filter one containing the pollId and a selection of questionIds if the questionIds is a List of only
      *             one (-1) the questionList will get filled with all questions contained in the poll
+     * @param sessionService
      */
-    public Statistics(final QuestionService questionService, final PollService pollService, final PollResultService pollResultService, final CategoryService categoryService, final ConsistencyQuestionService consistencyQuestionService, final SessionService sessionService, final FilterCmd data) {
+    public Statistics(final QuestionService questionService, final PollService pollService,
+                      final PollResultService pollResultService, final CategoryService categoryService,
+                      final ConsistencyQuestionService consistencyQuestionService, final SessionService sessionService,
+                      final FilterCmd data) {
         this.questionService = questionService;
         this.pollService = pollService;
         this.pollResultService = pollResultService;
@@ -89,23 +93,24 @@ public class Statistics {
             Filter filter = null;
             switch (cmd.getFilterType()) {
                 case "questionAnswer":
-                    filter = new QuestionFilter(pollId, cmd.getTargetQuestionId(), cmd.getTargetAnswerPossibilities(), cmd.getInvertFilter(),cmd.getIsSlider(),  false);
+                    filter = new QuestionFilter(pollId, cmd.getTargetQuestionId(), cmd.getTargetAnswerPossibilities(),
+                        cmd.getInvertFilter(), cmd.getIsSlider(),  false);
                     break;
                 case "consistency":
-                    filter = new ConsistencyFilter(consistencyQuestionService.getAllConsistencyQuestions(pollId), cmd.getMinSuccesses());
+                    filter = new ConsistencyFilter(consistencyQuestionService.getAllConsistencyQuestions(pollId),
+                        cmd.getMinSuccesses());
                     break;
                 case "date":
                     filter = new DateFilter(cmd.getStartDate(), cmd.getEndDate(), cmd.getInvertFilter());
                     break;
                 case "user":
-                    if(pollService.getPoll(pollId).getAnonymityStatus().equals("2"))
-                    {
+                    if (pollService.getPoll(pollId).getAnonymityStatus().equals("2")) {
                         filter = new UserFilter(cmd.getUserNames(), cmd.getInvertFilter());
                     }
                     break;
                 case "or":
                     final List<Filter> orFilter = new ArrayList<>();
-                    for(int i = 0; i < filters.size();i++) {
+                    for (int i = 0; i < filters.size(); i++) {
                         if (filters.get(i).getFilterType().equals("date")) {
                             orFilter.add(filters.get(i));
                             filters.remove(i);
@@ -163,12 +168,14 @@ public class Statistics {
         final int participantCountFiltered = prs.size();
         LOGGER.info(prs.toString());
         final Poll poll = pollService.getPoll(pollId);
-        final String response = NAME_STRING + poll.getPollName() + PARTICIPANTS_STRING + participantCountFiltered + "/" + participantCountUnfiltered + "\",\"questionList\": ";
+        final String response = NAME_STRING + poll.getPollName() + PARTICIPANTS_STRING + participantCountFiltered
+            + "/" + participantCountUnfiltered + "\",\"questionList\": ";
         if (prs.isEmpty()) {
             LOGGER.warning("Leere Umfrage");
             return response + "[]}";
         }
-        final DiagramData dd = new DiagramData(poll, prs, showParticipantsOverTime, participantsOverRelativeTime, questionIds, categoryService, questionService);
+        final DiagramData dd = new DiagramData(poll, prs, showParticipantsOverTime, participantsOverRelativeTime,
+            questionIds, categoryService, questionService);
         return response + dd.toJSON() + "}";
     }
 }

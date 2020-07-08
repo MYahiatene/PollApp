@@ -36,11 +36,13 @@ public class ConsistencyQuestionServiceImpl implements ConsistencyQuestionServic
 
     @Override
     public List<ConsistencyQuestion> getAllConsistencyQuestions(final long question1Id, final long question2Id) {
-        return consistencyQuestionRepository.findConsistencyQuestionsByQuestion1IdOrQuestion2Id(question1Id, question2Id);
+        return consistencyQuestionRepository.findConsistencyQuestionsByQuestion1IdOrQuestion2Id(question1Id,
+            question2Id);
     }
 
     @Override
-    public void editConsistencyQuestion(final long consistencyQuestionId, final ConsistencyQuestionCmd consistencyQuestionCmd) {
+    public void editConsistencyQuestion(final long consistencyQuestionId,
+                                        final ConsistencyQuestionCmd consistencyQuestionCmd) {
         ConsistencyQuestion cq;
         cq = consistencyQuestionRepository.findById(consistencyQuestionId).orElseThrow(EntityNotFoundException::new);
         cqCmdToCq(consistencyQuestionCmd, cq);

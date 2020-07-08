@@ -18,16 +18,17 @@ public class DateFilter implements Filter {
     private boolean valid = true;
 
 public DateFilter(final String startDate, final String endDate, final Boolean inverted) {
+    String dateFormat = "yyyy-MM-dd HH:mm";
     if (!(startEmpty = startDate.isEmpty())) {
         try {
-            start = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.GERMAN).parse(startDate);
+            start = new SimpleDateFormat(dateFormat, Locale.GERMAN).parse(startDate);
         } catch (ParseException pe) {
             valid = false;
         }
     }
-    if(!(endEmpty = endDate.isEmpty())) {
+    if (!(endEmpty = endDate.isEmpty())) {
         try {
-            end = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.GERMAN).parse(endDate);
+            end = new SimpleDateFormat(dateFormat, Locale.GERMAN).parse(endDate);
         } catch (ParseException pe) {
             valid = false;
         }

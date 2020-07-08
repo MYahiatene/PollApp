@@ -492,14 +492,11 @@ export default {
         errorCheckbox(i, question) {
             if (this.valueList[i]) {
                 if (Object.keys(this.valueList[i]).length > question.numberOfPossibleAnswers) {
-                    console.log('false')
                     return true
                 } else {
-                    console.log('true')
                     return false
                 }
             }
-            console.log('true')
             return false
         },
         /**
@@ -685,12 +682,10 @@ export default {
          * @param answer The answer object, so it can get the answer possibilities.
          */
         saveAnswerCheckbox(e, question, answer, index) {
-            console.log(question.numberOfPossibleAnswers)
             if (this.valueList[index]) {
                 if (Object.keys(this.valueList[index]).length > question.numberOfPossibleAnswers) {
                     this.errorMessageCheckbox = 'Maximal ' + question.numberOfPossibleAnswers + ' Antworten!'
                     for (let j = 0; j < Object.keys(this.valueList[index]).length; j++) {
-                        // this.valueList[i].length;
                         if (this.valueList[index][j] === answer) {
                             console.log('richitge antwort gefunden')
                             this.valueList[index].splice(question.numberOfPossibleAnswers, 1)
