@@ -76,6 +76,12 @@ public class PollCmd {
 
     private Integer timeZoneOffset;
 
+    private Long seriesCounter;
+
+    private ZonedDateTime nextSeries;
+
+    private Long prevInSeries = -1L;
+
     public Poll getCmdPoll() {
         // parses the activationDAte and deactivationDate from a String to a ZonedDateTime
         final DateTimeFormatter df = DateTimeFormatter.ofPattern("dd.MM.yyyy&HH:mm");

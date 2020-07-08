@@ -1,9 +1,12 @@
 package gpse.umfrato.web;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import gpse.umfrato.domain.category.Category;
 import gpse.umfrato.domain.category.CategoryService;
+import gpse.umfrato.domain.cmd.CategoryCmd;
 import gpse.umfrato.domain.cmd.FilterCmd;
 import gpse.umfrato.domain.cmd.PollCmd;
+import gpse.umfrato.domain.cmd.QuestionCmd;
 import gpse.umfrato.domain.consistencyquestion.ConsistencyQuestionService;
 import gpse.umfrato.domain.evaluation.session.SessionService;
 import gpse.umfrato.domain.evaluation.Statistics;
@@ -14,12 +17,14 @@ import gpse.umfrato.domain.poll.PollRepository;
 import gpse.umfrato.domain.poll.PollService;
 import gpse.umfrato.domain.pollresult.PollResult;
 import gpse.umfrato.domain.pollresult.PollResultService;
+import gpse.umfrato.domain.question.Question;
 import gpse.umfrato.domain.question.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.web.bind.annotation.*;
 
 import javax.activation.UnsupportedDataTypeException;
+import javax.persistence.EntityNotFoundException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
@@ -28,10 +33,8 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 @RequestMapping("/api/export/")
 @RestController
@@ -51,6 +54,16 @@ public class ExportController {
     private static final String ONE = "1";
     private static final String ALL_USERS = "allUsers";
     private Integer fileNumber = 0;
+
+    private static final double ZERO = 0.0;
+
+
+    private static final String TEXT_QUESTION = "TextQuestion";
+    private static final String RANGE_QUESTION = "RangeQuestion";
+    private static final String SLIDER_QUESTION = "SliderQuestion";
+    private static final String CHOICE_QUESTION = "ChoiceQuestion";
+    private static final String SORT_QUESTION = "SortQuestion";
+
 
     @Autowired
     public ExportController(final PollService pollService, final PollResultService pollResultService, final ExportService exportService, final QuestionService questionService, final CategoryService categoryService, final ConsistencyQuestionService consistencyQuestionService, final SessionService sessionService, final ParticipationLinkService participationLinkService, final PollRepository pollRepository) {
@@ -99,31 +112,53 @@ public class ExportController {
     @PostMapping("/importPoll")
     public Long fromJSONToPoll(final @RequestBody String file) throws MalformedURLException {
         final PollCmd pollCmd = exportService.fromJSONToPoll(file);
-        Instant actDate = Instant.parse(pollCmd.getActivatedDate());
-        ZonedDateTime actTime = ZonedDateTime.ofInstant(actDate, ZoneId.ofOffset("UTC", ZoneOffset.ofHoursMinutes(pollCmd.getTimeZoneOffset() / 60,pollCmd.getTimeZoneOffset() % 60)));
+        Instant actDate = Instant.ofEpochSecond(Long.parseLong(pollCmd.getActivatedDate().substring(0, 10))); //Instant.parse(pollCmd.getActivatedDate());
+        ZonedDateTime actTime = pollCmd.getTimeZoneOffset() == null ? ZonedDateTime.ofInstant(actDate, ZoneId.of("Europe/Berlin")) : ZonedDateTime.ofInstant(actDate, ZoneId.ofOffset("UTC", ZoneOffset.ofHoursMinutes(pollCmd.getTimeZoneOffset() / 60,pollCmd.getTimeZoneOffset() % 60)));
         pollCmd.setActivatedDate(actTime.toString());
-        Instant deactDate = Instant.parse(pollCmd.getDeactivatedDate());
-        ZonedDateTime deactTime = ZonedDateTime.ofInstant(deactDate, ZoneId.ofOffset("UTC", ZoneOffset.ofHoursMinutes(pollCmd.getTimeZoneOffset() / 60,pollCmd.getTimeZoneOffset() % 60)));
+        Instant deactDate = Instant.ofEpochSecond(Long.parseLong(pollCmd.getDeactivatedDate().substring(0, 10)));
+        ZonedDateTime deactTime = pollCmd.getTimeZoneOffset() == null ? ZonedDateTime.ofInstant(deactDate, ZoneId.of("Europe/Berlin")) : ZonedDateTime.ofInstant(deactDate, ZoneId.ofOffset("UTC", ZoneOffset.ofHoursMinutes(pollCmd.getTimeZoneOffset() / 60,pollCmd.getTimeZoneOffset() % 60)));
         pollCmd.setDeactivatedDate(deactTime.toString());
 
-        Instant creationDate = Instant.parse(pollCmd.getCreationDate());
-        ZonedDateTime creationTime = ZonedDateTime.ofInstant(creationDate, ZoneId.ofOffset("UTC", ZoneOffset.ofHoursMinutes(pollCmd.getTimeZoneOffset() / 60,pollCmd.getTimeZoneOffset() % 60)));
+        Instant creationDate = Instant.ofEpochSecond(Long.parseLong(pollCmd.getCreationDate().substring(0, 10)));
+        ZonedDateTime creationTime = pollCmd.getTimeZoneOffset() == null ? ZonedDateTime.ofInstant(creationDate, ZoneId.of("Europe/Berlin")) : ZonedDateTime.ofInstant(creationDate, ZoneId.ofOffset("UTC", ZoneOffset.ofHoursMinutes(pollCmd.getTimeZoneOffset() / 60,pollCmd.getTimeZoneOffset() % 60)));
 
-        final Poll poll = new Poll(pollCmd.getPollCreator(), pollCmd.getAnonymityStatus(), pollCmd.getPollName(), creationTime,
-        actTime, deactTime, pollCmd.getPollStatus(),
+        final Poll poll = new Poll(pollCmd.getPollCreator(), pollCmd.getAnonymityStatus(), pollCmd.getPollName(), creationTime, actTime, deactTime, pollCmd.getPollStatus(),
             pollCmd.getBackgroundColor(), pollCmd.getFontColor(), pollCmd.getLogo(), pollCmd.isVisibility(),
             pollCmd.isCategoryChange(), pollCmd.isActivated(), pollCmd.isDeactivated(), pollCmd.getRepeat(),
         pollCmd.getRepeatUntil(), pollCmd.getDay(), pollCmd.getWeek(), pollCmd.getMonth(),
         pollCmd.getStoppingReason(), pollCmd.getLevel(), 0L);
-
+        poll.setPollId(null);
+        Long pollId = pollRepository.save(poll).getPollId();
+        poll.setLastEditAt(ZonedDateTime.now());
+        poll.setCategoryList(cmdToCategory(pollCmd.getCategoryList(), pollId));
+        poll.setSeriesCounter(pollCmd.getSeriesCounter());
 
     /*if (poll.getAnonymityStatus().equals(ONE)) {
         final String link = participationLinkService.createParticipationLink().toString();
         participationLinkService.saveParticipationLink(poll.getPollId(), ALL_USERS, link);
     }*/
-        pollRepository.save(poll);
-        return poll.getPollId();
+        return pollId;
     }
+
+    private List<Category> cmdToCategory(List<CategoryCmd> input, Long pollId){
+        List<Category> outputList = new ArrayList<>();
+        for(CategoryCmd cmd : input) {
+            Category cat = categoryService.createCategory(cmd.getCategoryName(), pollId);
+            System.out.println(cat.getCategoryId());
+            Long indexCounter = 0L;
+            for(QuestionCmd q : cmd.getQuestionList()) {
+                q.setCategoryId(cat.getCategoryId());
+                q.setPollId(pollId);
+                questionService.changeCategory(questionService.addQuestion(q).getQuestionId(), cat.getCategoryId() ,indexCounter);
+                indexCounter++;
+            }
+            outputList.add(cat);
+
+        }
+        return outputList;
+    }
+
+
     //ZoneId timeZone = ZoneId.ofOffset("UTC", ZoneOffset.ofHoursMinutes(timeZoneOffset / 60,timeZoneOffset % 60));
 
     /*@PostMapping("/importPoll")

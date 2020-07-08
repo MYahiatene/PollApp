@@ -3,6 +3,7 @@ package gpse.umfrato.domain.export;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import gpse.umfrato.domain.answer.Answer;
 import gpse.umfrato.domain.category.Category;
 import gpse.umfrato.domain.cmd.PollCmd;
@@ -117,8 +118,9 @@ public class ExportServiceImpl implements ExportService {
 
     @Override
     public String toJSON(final Poll result) throws JsonProcessingException {
-        final ObjectMapper objectMapper = new ObjectMapper()
-            .findAndRegisterModules();
+        final ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+            objectMapper.findAndRegisterModules();
             return objectMapper.writeValueAsString(result);
     }
 
@@ -126,6 +128,7 @@ public class ExportServiceImpl implements ExportService {
     public PollCmd fromJSONToPoll(final String json) {
         try {
             final ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.registerModule(new JavaTimeModule());
             return objectMapper.readValue(json, PollCmd.class);
         } catch (IOException e) {
             e.printStackTrace();
@@ -134,15 +137,17 @@ public class ExportServiceImpl implements ExportService {
     }
 
     public String toJSONSingularPR(final PollResult result) throws JsonProcessingException {
-        final ObjectMapper objectMapper = new ObjectMapper()
-            .findAndRegisterModules();
+        final ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+            objectMapper.findAndRegisterModules();
             return objectMapper.writeValueAsString(result);
     }
 
     @Override
     public String toJSON(final List<PollResult> result) throws JsonProcessingException {
-        final ObjectMapper objectMapper = new ObjectMapper()
-            .findAndRegisterModules();
+        final ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+            objectMapper.findAndRegisterModules();
             return objectMapper.writeValueAsString(result);
     }
 
@@ -150,6 +155,7 @@ public class ExportServiceImpl implements ExportService {
     public List<PollResult> fromJSONToResult(final String json) {
         try {
             final ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.registerModule(new JavaTimeModule());
             return objectMapper.readValue(json, new TypeReference<List<PollResult>>() {
             });
         } catch (IOException e) {
