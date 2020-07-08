@@ -641,19 +641,22 @@ class PollServiceImpl implements PollService {
                 case 0: /*Datum*/{
                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
                     ZonedDateTime endTime = ZonedDateTime.parse(repeatUntil + " 23:59:59", formatter);
-                    System.out.println("EndTime: "+endTime);
-                    if(ZonedDateTime.now().compareTo(endTime) > 0)
+                    // System.out.println("EndTime: "+endTime);
+                    if(ZonedDateTime.now().compareTo(endTime) > 0) {
                         stopUmfrage(poll);
+                    }
                     break;
                 }
                 case 1: /*Wiederholungen*/{
-                    if(poll.getRepeat() > Integer.parseInt(repeatUntil))
+                    if(poll.getRepeat() > Integer.parseInt(repeatUntil)) {
                         stopUmfrage(poll);
+                    }
                     break;
                 }
                 case 2: /*Teilnehmer*/{
-                    if(pollResultRepository.findPollResultsByPollId(poll.getPollId()).size() > Integer.parseInt(repeatUntil))
+                    if(pollResultRepository.findPollResultsByPollId(poll.getPollId()).size() > Integer.parseInt(repeatUntil)) {
                         stopUmfrage(poll);
+                    }
                     break;
                 }
                 default: break;
