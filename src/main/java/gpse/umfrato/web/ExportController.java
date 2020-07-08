@@ -24,6 +24,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.net.MalformedURLException;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -95,6 +99,36 @@ public class ExportController {
     @PostMapping("/importPoll")
     public Long fromJSONToPoll(final @RequestBody String file) throws MalformedURLException {
         final PollCmd pollCmd = exportService.fromJSONToPoll(file);
+        Instant actDate = Instant.parse(pollCmd.getActivatedDate());
+        ZonedDateTime actTime = ZonedDateTime.ofInstant(actDate, ZoneId.ofOffset("UTC", ZoneOffset.ofHoursMinutes(pollCmd.getTimeZoneOffset() / 60,pollCmd.getTimeZoneOffset() % 60)));
+        pollCmd.setActivatedDate(actTime.toString());
+        Instant deactDate = Instant.parse(pollCmd.getDeactivatedDate());
+        ZonedDateTime deactTime = ZonedDateTime.ofInstant(deactDate, ZoneId.ofOffset("UTC", ZoneOffset.ofHoursMinutes(pollCmd.getTimeZoneOffset() / 60,pollCmd.getTimeZoneOffset() % 60)));
+        pollCmd.setDeactivatedDate(deactTime.toString());
+
+        Instant creationDate = Instant.parse(pollCmd.getCreationDate());
+        ZonedDateTime creationTime = ZonedDateTime.ofInstant(creationDate, ZoneId.ofOffset("UTC", ZoneOffset.ofHoursMinutes(pollCmd.getTimeZoneOffset() / 60,pollCmd.getTimeZoneOffset() % 60)));
+
+        final Poll poll = new Poll(pollCmd.getPollCreator(), pollCmd.getAnonymityStatus(), pollCmd.getPollName(), creationTime,
+        actTime, deactTime, pollCmd.getPollStatus(),
+            pollCmd.getBackgroundColor(), pollCmd.getFontColor(), pollCmd.getLogo(), pollCmd.isVisibility(),
+            pollCmd.isCategoryChange(), pollCmd.isActivated(), pollCmd.isDeactivated(), pollCmd.getRepeat(),
+        pollCmd.getRepeatUntil(), pollCmd.getDay(), pollCmd.getWeek(), pollCmd.getMonth(),
+        pollCmd.getStoppingReason(), pollCmd.getLevel(), 0L);
+
+
+    /*if (poll.getAnonymityStatus().equals(ONE)) {
+        final String link = participationLinkService.createParticipationLink().toString();
+        participationLinkService.saveParticipationLink(poll.getPollId(), ALL_USERS, link);
+    }*/
+        pollRepository.save(poll);
+        return poll.getPollId();
+    }
+    //ZoneId timeZone = ZoneId.ofOffset("UTC", ZoneOffset.ofHoursMinutes(timeZoneOffset / 60,timeZoneOffset % 60));
+
+    /*@PostMapping("/importPoll")
+    public Long fromJSONToPoll(final @RequestBody String file) throws MalformedURLException {
+        final PollCmd pollCmd = exportService.fromJSONToPoll(file);
         Calendar actCalendar = Calendar.getInstance();
         System.out.println("ActDate: "+pollCmd.getActivatedDate());
         Date actDate = new Date(Long.parseLong(pollCmd.getActivatedDate()));
@@ -108,13 +142,13 @@ public class ExportController {
         final Poll poll = new Poll(pollCmd.getPollCreator(), pollCmd.getAnonymityStatus(), pollCmd.getPollName(), pollCmd.getCreationDate(), actCalendar,
             deactCalendar, pollCmd.getPollStatus(), pollCmd.getBackgroundColor(), pollCmd.getFontColor(), pollCmd.getLogo(), pollCmd.isVisibility(), pollCmd.isCategoryChange(), pollCmd.isActivated(),
             pollCmd.isDeactivated());
-        /*if (poll.getAnonymityStatus().equals(ONE)) {
-            final String link = participationLinkService.createParticipationLink().toString();
-            participationLinkService.saveParticipationLink(poll.getPollId(), ALL_USERS, link);
-        }*/
+        //if (poll.getAnonymityStatus().equals(ONE)) {
+        //    final String link = participationLinkService.createParticipationLink().toString();
+        //    participationLinkService.saveParticipationLink(poll.getPollId(), ALL_USERS, link);
+        //}
         pollRepository.save(poll);
         return poll.getPollId();
-    }
+    }*/
 
     @PostMapping("/Poll/{pollId:\\d+}")
     public Integer toCSVManual(final @PathVariable Long pollId, final @RequestParam String format, final @RequestParam String separator) throws UnsupportedDataTypeException, FileNotFoundException, JsonProcessingException {

@@ -5,7 +5,7 @@ import gpse.umfrato.domain.category.CategoryService;
 import gpse.umfrato.domain.pollresult.PollResultRepository;
 import gpse.umfrato.domain.consistencyquestion.ConsistencyQuestion;
 import gpse.umfrato.domain.consistencyquestion.ConsistencyQuestionService;
-import gpse.umfrato.domain.evaluation.Session.SessionService;
+import gpse.umfrato.domain.evaluation.session.SessionService;
 import gpse.umfrato.domain.participationlinks.ParticipationLink;
 import gpse.umfrato.domain.participationlinks.ParticipationLinkService;
 import gpse.umfrato.domain.pollresult.PollResult;
