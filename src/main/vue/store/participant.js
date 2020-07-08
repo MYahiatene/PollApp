@@ -174,7 +174,6 @@ export const actions = {
             username: answerObj.username,
         })
         state.answer = answer
-        console.log('state:', state.answer)
     },
     /**
      * Defines mapAction saveAnswer which saves  an answerObj (AnswerCmd) for a specific question from a specific poll

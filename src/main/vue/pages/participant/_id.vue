@@ -64,7 +64,7 @@
                                         <!--Radio Button since only one answer possible-->
                                         <!--Only to debug, otherwise numberOfPossibleAnswer === 1-->
                                         <div v-if="question.numberOfPossibleAnswers === 1">
-                                            <div v-if="dropdown">
+                                            <div v-if="question.dropDown">
                                                 <v-card-text>
                                                     <v-overflow-btn
                                                         class="my-2"
@@ -105,7 +105,7 @@
                                         <div v-else>
                                             <!--Checkboxes, so that multiple answers are technically allowed,
                                         not able to save them yet-->
-                                            <div v-if="dropdown">
+                                            <div v-if="question.dropDown">
                                                 <v-card-text>
                                                     <v-select
                                                         class="my-2"

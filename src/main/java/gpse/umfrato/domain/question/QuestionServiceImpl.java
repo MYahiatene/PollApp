@@ -95,7 +95,7 @@ public class QuestionServiceImpl implements QuestionService {
                 break;
             case CHOICE_QUESTION:
                 question = new Question(questionCmd.getQuestionMessage(), questionCmd.getAnswerPossibilities(),
-                    questionCmd.getNumberOfPossibleAnswers(), questionCmd.isUserAnswers());
+                    questionCmd.getNumberOfPossibleAnswers(), questionCmd.isUserAnswers(), questionCmd.isDropDown());
                 break;
             case SORT_QUESTION:
                 question = new Question(questionCmd.getQuestionMessage(), questionCmd.getAnswerPossibilities());
@@ -111,7 +111,7 @@ public class QuestionServiceImpl implements QuestionService {
         return question;
     }
     /**
-     * This method creates a question for a poll.
+     * This method adds a question to a category.
      *
      * @return the question which is created
      */
@@ -212,6 +212,7 @@ public class QuestionServiceImpl implements QuestionService {
                 question.setQuestionMessage(questionCmd.getQuestionMessage());
                 question.setQuestionType(questionCmd.getQuestionType());
                 question.setUserAnswers(questionCmd.isUserAnswers());
+                question.setDropDown(questionCmd.isDropDown());
                 break;
             default:
                 return null;
@@ -266,7 +267,7 @@ public class QuestionServiceImpl implements QuestionService {
     public Question addChoiceQuestion(final Question question, final Long pollId) {
         Question newQuestion = null;
         newQuestion = new Question(question.getQuestionMessage(), new ArrayList<>(),
-            question.getNumberOfPossibleAnswers(), question.isUserAnswers());
+            question.getNumberOfPossibleAnswers(), question.isUserAnswers(), question.isDropDown());
         final ListIterator<String> it = question.getAnswerPossibilities().listIterator();
         while (it.hasNext()) {
             final String answer = it.next();

@@ -55,6 +55,9 @@
                 </v-col> </v-row
         ></v-form>
         <v-row no-gutters>
+            <v-switch v-model="dropDownPossible" label="Als DropDown Frage zeigen"></v-switch>
+        </v-row>
+        <v-row no-gutters>
             <v-switch v-model="userAnswersPossible" label="Teilnehmer darf eigene Antworten hinzufügen"></v-switch>
         </v-row>
     </v-container>
@@ -110,6 +113,14 @@ export default {
                 this.setUserAnswers(value)
             },
         },
+        dropDownPossible: {
+            get() {
+                return this.getQuestion.dropDown
+            },
+            set(value) {
+                this.setDropDown(value)
+            },
+        },
         answerPossibilities: {
             get() {
                 return this.getQuestion.answerPossibilities
@@ -135,6 +146,7 @@ export default {
             removeAnswer: 'pollOverview/removeAnswer',
             setChoiceType: 'questionOverview/setChoiceType',
             setUserAnswers: 'questionOverview/setUserAnswers',
+            setDropDown: 'questionOverview/setDropDown',
             addAnswer: 'questionOverview/addAnswer',
             setNumberOfPossibleAnswers: 'questionOverview/setNumberOfPossibleAnswers',
         }),
