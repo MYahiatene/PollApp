@@ -138,7 +138,6 @@ public class QuestionServiceImpl implements QuestionService {
                 .orElseThrow(EntityNotFoundException::new).getQuestionList().remove(questionRepository
                 .getOne(questionId));
             questionRepository.deleteById(questionId);
-
         } catch (EntityNotFoundException e) {
             e.printStackTrace();
         }
@@ -152,7 +151,6 @@ public class QuestionServiceImpl implements QuestionService {
      */
     @Override
     public Question getQuestion(final Long questionId) {
-
         return questionRepository.findById(questionId).orElseThrow(EntityNotFoundException::new);
     }
 
