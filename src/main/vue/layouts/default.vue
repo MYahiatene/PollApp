@@ -12,10 +12,16 @@
             </nuxt-link>
 
             <v-spacer></v-spacer>
-            <!--            Buttons defined in items-->
-            <div v-for="(item, i) in items" :key="i" router exact>
-                <v-btn class="ma-3" :to="item.to" color="primary" :disabled="isAuthenticated !== true">
-                    {{ item.title }}
+            <!--            Umfrage Button-->
+            <div v-if="isAuthenticated">
+                <v-btn class="ma-3" :to="'/polls'" color="primary" :disabled="isEditor === false">
+                    Umfragen
+                </v-btn>
+            </div>
+            <!--            Administration Button-->
+            <div v-if="isAuthenticated">
+                <v-btn class="ma-3" :to="'/Administration'" color="primary" :disabled="isAdmin === false">
+                    Administration
                 </v-btn>
             </div>
             <!--            Login Button-->
@@ -77,6 +83,8 @@ export default {
             }
         },
         ...mapGetters({
+            isEditor: 'account/getIsEditor',
+            isAdmin: 'account/getIsAdmin',
             isAuthenticated: 'login/isAuthenticated',
             getUsername: 'login/getUsername',
         }),

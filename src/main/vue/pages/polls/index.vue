@@ -33,7 +33,14 @@
                                 <v-spacer />
                                 <v-tooltip bottom>
                                     <template v-slot:activator="{ on, attrs }">
-                                        <v-btn large color="primary" to="./PollCreation/0" v-bind="attrs" v-on="on">
+                                        <v-btn
+                                            large
+                                            color="primary"
+                                            to="./PollCreation/0"
+                                            v-bind="attrs"
+                                            :disabled="isCreator === false"
+                                            v-on="on"
+                                        >
                                             <v-icon>mdi-plus</v-icon>
                                         </v-btn>
                                     </template>
@@ -281,6 +288,7 @@ export default {
     },
     computed: {
         ...mapGetters({
+            isCreator: 'account/getIsCreator',
             items: 'navigation/getPolls',
             isAuthenticated: 'login/isAuthenticated',
             getError: 'navigation/getError',

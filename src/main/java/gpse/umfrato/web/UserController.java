@@ -123,6 +123,14 @@ public class UserController {
     public void checkToken() {
 
     }
+    /**
+     * Checks if the users token has the authority "Editor".
+     */
+    @PreAuthorize("hasAuthority('Editor')")
+    @GetMapping("/checkEditorToken")
+    public void checkEditorToken() {
+
+    }
 
     /**
      * Checks if the users token has the authority "Creator".
