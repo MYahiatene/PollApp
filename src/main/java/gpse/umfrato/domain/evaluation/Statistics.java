@@ -1,7 +1,6 @@
 package gpse.umfrato.domain.evaluation;
 
 import gpse.umfrato.domain.consistencyquestion.ConsistencyQuestionService;
-import gpse.umfrato.domain.answer.AnswerService;
 import gpse.umfrato.domain.category.Category;
 import gpse.umfrato.domain.category.CategoryService;
 import gpse.umfrato.domain.cmd.FilterCmd;
@@ -129,7 +128,7 @@ public class Statistics {
     /**
      * loads the filterList from a session.
      * @param sessionId of the session to
-     * @return whether there have been loaded any filters or not
+     * @return whether or not there have been loaded any filters
      */
     public boolean loadSessionFilters(final Long sessionId) {
         filters = new ArrayList<>();
@@ -172,8 +171,11 @@ public class Statistics {
                 prs = f.filter(prs);
             }
             final int participantCountFiltered = prs.size();
-            final DiagramData dd = new DiagramData(poll, prs, showParticipantsOverTime, participantsOverRelativeTime, questionIds, categoryService, questionService);
-            diagramDataList.add(0, dd);
+            if(prs.size() > 0)
+            {
+                final DiagramData dd = new DiagramData(poll, prs, showParticipantsOverTime, participantsOverRelativeTime, questionIds, categoryService, questionService);
+                diagramDataList.add(0, dd);
+            }
             Poll nextPoll;
             try {
                 nextPoll = pollService.getPoll(poll.getPrevInSeries());
@@ -216,7 +218,7 @@ public class Statistics {
                 if(oq.getQuestionId().equals(originalQuestionIds.get(0)))
                 {
                     Question translatedQuestion = pollToTranslateTo.getCategoryList().get(categoryIndex).getQuestionList().get(questionIndex);
-                    double questionConfidence = similarity(oq, translatedQuestion);
+                    double questionConfidence = questionSimilarity(oq, translatedQuestion);
                     if(questionConfidence > 0.8) // TODO: ist 0.8 ein guter Wert?
                     {
                         translatedIds.add(translatedQuestion.getQuestionId());
@@ -228,7 +230,7 @@ public class Statistics {
                         for(Category tc:pollToTranslateTo.getCategoryList())
                         {
                             for(Question tq:tc.getQuestionList()) {
-                               double newQuestionConfidence = similarity(oq, tq);
+                               double newQuestionConfidence = questionSimilarity(oq, tq);
                                if(newQuestionConfidence > bestConfidence)
                                {
                                    bestConfidence = newQuestionConfidence;
@@ -252,16 +254,16 @@ public class Statistics {
      * @param b question b
      * @return a similarity value between 0 (not equal at all) and 1 (completely identical)
      */
-    private double similarity(final Question a, final Question b)
+    private double questionSimilarity(final Question a, final Question b)
     {
         if(a.getQuestionType().equals(b.getQuestionType())) {
-            double confidence = stringEquality(a.getQuestionMessage(), b.getQuestionMessage());
+            double confidence = stringSimilarity(a.getQuestionMessage(), b.getQuestionMessage());
             double answerConfidence = 0.0;
             for (String as:a.getAnswerPossibilities())
             {
                 for (String bs:b.getAnswerPossibilities())
                 {
-                    answerConfidence += stringEquality(as,bs);
+                    answerConfidence += stringSimilarity(as,bs);
                 }
             }
             confidence += answerConfidence / (Math.max(a.getAnswerPossibilities().size(), b.getAnswerPossibilities().size()));
@@ -277,7 +279,7 @@ public class Statistics {
      * @param b string b
      * @return a similarity value between 0 (not equal at all) and 1 (completely identical)
      */
-    private double stringEquality(final String a, final String b) {
+    private double stringSimilarity(final String a, final String b) {
         if (a.equals(b)) {
             return 1.0;
         } else if (a.isEmpty() || b.isEmpty()) {

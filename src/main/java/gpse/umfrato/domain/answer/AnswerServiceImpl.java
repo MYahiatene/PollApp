@@ -1,5 +1,6 @@
 package gpse.umfrato.domain.answer;
 
+import gpse.umfrato.domain.poll.PollRepository;
 import gpse.umfrato.domain.pollresult.PollResult;
 import gpse.umfrato.domain.pollresult.PollResultRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import java.util.Locale;
 public class AnswerServiceImpl implements AnswerService {
 
     private final AnswerRepository answerRepository;
+    private final PollRepository pollRepository;
     private final PollResultRepository pollResultRepository;
 
     /**
@@ -25,9 +27,10 @@ public class AnswerServiceImpl implements AnswerService {
      * @param answerRepository     the answer repository with answers
      */
     @Autowired
-    public AnswerServiceImpl(final AnswerRepository answerRepository,
+    public AnswerServiceImpl(final AnswerRepository answerRepository, PollRepository pollRepository,
                                         final PollResultRepository pollResultRepository) {
         this.answerRepository = answerRepository;
+        this.pollRepository = pollRepository;
         this.pollResultRepository = pollResultRepository;
     }
 
@@ -41,31 +44,34 @@ public class AnswerServiceImpl implements AnswerService {
     @Override
     public Answer giveAnswer(final String username, final Long pollId, final Long questionId,
                                        final List<String> answerList) {
-        final Answer answer = new Answer(answerList, questionId);
-        PollResult pollResult = pollResultRepository.findPollResultByPollIdAndPollTaker(pollId, username);
-        if (pollResult == null) {
-            pollResult = new PollResult(pollId, username);
-        }
-        int idx = 0;
-        boolean answerDa = false;
-        for (final Answer a:pollResult.getAnswerList()) {
-            if (a.getQuestionId().equals(answer.getQuestionId())) {
-                pollResult.getAnswerList().set(idx, answer);
-                answerDa = true;
-                break;
+        if(pollRepository.getOne(pollId).getPollStatus() == 2) {
+            final Answer answer = new Answer(answerList, questionId);
+            PollResult pollResult = pollResultRepository.findPollResultByPollIdAndPollTaker(pollId, username);
+            if (pollResult == null) {
+                pollResult = new PollResult(pollId, username);
             }
-            idx++;
+            int idx = 0;
+            boolean answerDa = false;
+            for (final Answer a: pollResult.getAnswerList()) {
+                if (a.getQuestionId().equals(answer.getQuestionId())) {
+                    pollResult.getAnswerList().set(idx, answer);
+                    answerDa = true;
+                    break;
+                }
+                idx++;
+            }
+            if (!answerDa) {
+                pollResult.getAnswerList().add(answer);
+            }
+            final DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.GERMAN);
+            final Date dateobj = new Date();
+            pollResult.setLastEditAt(df.format(dateobj));
+            // todo: check line below
+            answerRepository.save(answer);
+            pollResultRepository.save(pollResult);
+            return answer;
         }
-        if (!answerDa) {
-            pollResult.getAnswerList().add(answer);
-        }
-        final DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.GERMAN);
-        final Date dateobj = new Date();
-        pollResult.setLastEditAt(df.format(dateobj));
-        // todo: check line below
-        answerRepository.save(answer);
-        pollResultRepository.save(pollResult);
-        return answer;
+        return null;
     }
 
     /**
