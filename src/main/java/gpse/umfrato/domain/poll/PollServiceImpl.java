@@ -335,7 +335,7 @@ class PollServiceImpl implements PollService {
             } else {
                 LOGGER.info("day, week and month given");
                 LOGGER.info("day of the week: " + prev.getDayOfWeek().getValue());
-                LOGGER.info("week of the month: " + getWeekOfMonth(prev));
+                LOGGER.info("week of the month: " + getWeekOfMonthWithDay(prev,1));
                 // days in weeks per months
                 boolean first = true;
                 // more than one week and more than one day per week given
@@ -493,7 +493,7 @@ class PollServiceImpl implements PollService {
             } else {
                 final int prevMonth = prev.getMonthValue();
                 LOGGER.info("day of week: " + prev.getDayOfWeek().getValue());
-                LOGGER.info("week of month: " + getWeekOfMonth(prev));
+                LOGGER.info("week of month: " + getWeekOfMonthWithDay(prev,1));
                 LOGGER.info("month: " + prevMonth);
                 // days per weeks per months per years
                 boolean first = true;
@@ -628,13 +628,7 @@ class PollServiceImpl implements PollService {
 
     ZonedDateTime deltaNew(ZonedDateTime originalStart, ZonedDateTime originalEnd, ZonedDateTime nowStart) {
         Duration delta = Duration.between(originalStart.toLocalDate(), originalEnd.toLocalDate());
-        ZonedDateTime nowEnd = nowStart.plus(delta);
-        return nowEnd;
-    }
-
-    private int getWeekOfMonth(ZonedDateTime date) {
-        ZonedDateTime firstOfMonth = date.withDayOfMonth(1);
-        return 1 + date.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR) - firstOfMonth.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR);
+        return nowStart.plus(delta);
     }
 
     private int getWeekOfMonthWithDay(ZonedDateTime date, int day) {

@@ -618,7 +618,7 @@ export default {
                 pollCreator: this.getUsername,
                 anonymityStatus: this.selectedAnonymityType,
                 pollName: this.title,
-                pollCreatedAt: this.created,
+                creationDate: this.created,
                 activatedAt: this.activated,
                 deactivatedAt: this.deactivated,
                 pollStatus: 0,
