@@ -601,10 +601,11 @@ public class DiagramData {
      */
     private void generateParticipantsOverTime(final List<PollResult> results, final ZonedDateTime pollStartTime) {
         final List<ZonedDateTime> datesList = new ArrayList<>();
-        DateTimeFormatter df = DateTimeFormatter.ofPattern("yy-MM-dd HH:mm:ss",Locale.GERMANY);
+        DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss",Locale.GERMANY); //'2020-07-08 19:55:21'
         for (final PollResult pr: results) {
+            System.out.println("PollResult pr: "+pr);
             if(showParticipantsOverTime) {
-                datesList.add(ZonedDateTime.parse(pr.getLastEditAt(),df));
+                datesList.add(ZonedDateTime.parse(pr.getLastEditAt(),df.withZone(ZoneId.of("Europe/Berlin"))));
             }
         }
         if (datesList.isEmpty()) {
@@ -629,35 +630,41 @@ public class DiagramData {
             final List<String> answerPossibilities = new ArrayList<>();
             if(participantsOverRelativeTime)
             {
-                String deltaString = "T+";
-                Instant endTime = Instant.ofEpochSecond(end);
-                Duration delta = Duration.between(pollStartTime, endTime);
-                String tPlus = "";
-                if (step < 60 * 60 * 24 * 30) {
-                    tPlus = deltaString + String.format("%dd", delta.toDays());
-                }
-                if (step < 60 * 60 * 24) {
-                    tPlus = deltaString + String.format("%dh", delta.toHours());
-                }
-                if (step < 60 * 60) {
-                    tPlus = deltaString + String.format("%dm", delta.toMinutes());
-                }
-                if (step < 60) {
-                    tPlus = deltaString + String.format("%ds", delta.toSeconds());
-                }
-
-                // System.out.println(tPlus);
-
                 // System.out.println(patternString);
-                final DateTimeFormatter finalDf = DateTimeFormatter.ofPattern(tPlus, Locale.GERMANY);
+                //final DateTimeFormatter finalDf = DateTimeFormatter.ofPattern(tPlus, Locale.GERMANY);
 
                 for (ZonedDateTime date = min; date.compareTo(max) < 0;date = date.plusSeconds(step)) {
-                    answerPossibilities.add(finalDf.format(date));
+                    String deltaString = "T+";
+                    //Instant endT = Instant.ofEpochSecond(end);
+                    //System.out.println("EndT: "+endT);
+                    //ZonedDateTime endTime = endT.atZone(ZoneId.of("Europe/Berlin")); //ZonedDateTime.parse(String.valueOf(end), df.withZone(ZoneId.of("Europe/Berlin")));
+                    //System.out.println("endtime : "+endTime);
+                    //Instant endTime = Instant.ofEpochSecond(end);
+                    Duration delta = Duration.between(pollStartTime, date);
+                    String tPlus = "";
+                    if (step < 60 * 60 * 24 * 30) {
+                        tPlus = deltaString + String.format("%dd", delta.toDays());
+                    }
+                    if (step < 60 * 60 * 24) {
+                        tPlus = deltaString + String.format("%dh", delta.toHours());
+                    }
+                    if (step < 60 * 60) {
+                        tPlus = deltaString + String.format("%dm", delta.toMinutes());
+                    }
+                    if (step < 60) {
+                        tPlus = deltaString + String.format("%ds", delta.toSeconds());
+                    }
+                    System.out.println("APLUS: "+tPlus);
+                    answerPossibilities.add(tPlus);
                 }
                 // System.out.println(answerPossibilities);
                 participantsOverTime = new ChoiceData(0, "Teilnahmen über Zeit", answerPossibilities);
+                System.out.println(datesList.toString());
                 for (final ZonedDateTime d: datesList) {
                     final long slot = (d.toEpochSecond() - start) / step;
+                    System.out.println("Slot: "+slot);
+                    System.out.println("Start: "+start);
+                    System.out.println("Step: "+step);
                     participantsOverTime.addAnswer((double) slot);
                 }
                 participantsOverTime.statistics();
