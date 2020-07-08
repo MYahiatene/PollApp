@@ -75,17 +75,17 @@
                         <!--                    we check in diagramType which one the user wants-->
                         <div v-if="diagramType === 'bar'">
                             <BarChartView
+                                :key="diagramKey"
                                 :chartdata="chartdataSet"
                                 :options="barChartOptions"
-                                :key="diagramKey"
                             ></BarChartView>
                         </div>
                         <!--                     the height is set to 60% of the screen-->
                         <div v-else-if="diagramType === 'pie'" style="height: 60vh;">
                             <PieChartView
+                                :key="diagramKey"
                                 :chartdata="chartdataSet"
                                 :options="pieChartOptions"
-                                :key="diagramKey"
                             ></PieChartView>
                         </div>
                     </v-col>
@@ -104,7 +104,8 @@
                 <v-row>
                     <v-col cols="12" lg="12">
                         <div v-if="showTable">
-                            <v-data-table :headers="header" :items="items" hide-default-footer dense> </v-data-table>
+                            <v-data-table :headers="header" :items="items" :footer-props="footerProps" dense>
+                            </v-data-table>
                         </div>
                     </v-col>
                 </v-row>
@@ -119,6 +120,7 @@ import BarChartView from './BarChartView'
 import PieChartView from './PieChartView'
 import visualEvaluationSettings from './visualEvaluationSettings'
 export default {
+    name: 'ChoiceQuestionEvaluationWidget',
     components: { BarChartView, PieChartView, visualEvaluationSettings },
     // these props are past in by the parent component
     props: {
@@ -138,13 +140,16 @@ export default {
             type: Object,
         },
     },
-    name: 'ChoiceQuestionEvaluationWidget',
     data: () => ({
         // key that forces the diagram to update
         // (value is set on the color of the diagram and update whenever updateVisuals is called)
         diagramKey: 0,
         // these options are needed to display a visual diagram, they are passed as props into that component
-
+        footerProps: {
+            itemsPerPageText: 'Zeilen pro Seite',
+            itemsPerPageOptions: [10, 20, 50, -1],
+            itemsPerPageAllText: 'Alle',
+        },
         // bar charts dont have a legend
         barChartOptions: {
             legend: {
