@@ -239,6 +239,7 @@
                                             <v-radio
                                                 v-for="answer in question.answerPossibilities"
                                                 class="mx-4"
+                                                :color="fontColor"
                                                 :key="answer.text"
                                                 :label="`${answer}`"
                                                 :value="answer"
@@ -875,6 +876,7 @@ export default {
             // other slider...
             this.valueList[index] = this.valueList[index] - question.stepSize || question.startValue
             console.log(this.valueList[index])
+            this.$forceUpdate()
         },
         /**
          * Moves the slider one step to the right, if possible.
@@ -882,6 +884,7 @@ export default {
          */
         addValue(question, index) {
             this.valueList[index] = this.valueList[index] + question.stepSize || question.endValue
+            this.$forceUpdate()
         },
 
         /**
