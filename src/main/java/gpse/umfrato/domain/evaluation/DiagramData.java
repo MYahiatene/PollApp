@@ -630,21 +630,20 @@ public class DiagramData {
             if(participantsOverRelativeTime)
             {
                 String deltaString = "T+";
-                Instant startTime = Instant.ofEpochSecond(start);
                 Instant endTime = Instant.ofEpochSecond(end);
-                Duration delta = Duration.between(startTime, endTime);
+                Duration delta = Duration.between(pollStartTime, endTime);
                 String tPlus = "";
                 if (step < 60 * 60 * 24 * 30) {
-                    tPlus = deltaString + String.format("%ddd", delta.toDays());
+                    tPlus = deltaString + String.format("%dd", delta.toDays());
                 }
                 if (step < 60 * 60 * 24) {
-                    tPlus = deltaString + String.format("%dHH", delta.toHours());
+                    tPlus = deltaString + String.format("%dh", delta.toHours());
                 }
                 if (step < 60 * 60) {
-                    tPlus = deltaString + String.format("%dmm", delta.toMinutes());
+                    tPlus = deltaString + String.format("%dm", delta.toMinutes());
                 }
                 if (step < 60) {
-                    tPlus = deltaString + String.format("%dss", delta.toSeconds());
+                    tPlus = deltaString + String.format("%ds", delta.toSeconds());
                 }
 
                 // System.out.println(tPlus);

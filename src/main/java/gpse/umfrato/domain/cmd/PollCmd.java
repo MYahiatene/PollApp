@@ -85,12 +85,21 @@ public class PollCmd {
     public Poll getCmdPoll() {
         // parses the activationDAte and deactivationDate from a String to a ZonedDateTime
         final DateTimeFormatter df = DateTimeFormatter.ofPattern("dd.MM.yyyy&HH:mm");
-        final LocalDateTime localActivation = LocalDateTime.parse(activatedDate,df);
-        final LocalDateTime localDeactivation = LocalDateTime.parse(deactivatedDate,df);
+        LocalDateTime localActivation = null;
         final LocalDateTime localCreation = LocalDateTime.parse(creationDate,df);
         ZoneId timeZone = ZoneId.ofOffset("UTC", ZoneOffset.ofHoursMinutes(timeZoneOffset / 60,timeZoneOffset % 60));
-        final ZonedDateTime activation = localActivation.atZone(timeZone);
-        final ZonedDateTime deactivation = localDeactivation.atZone(timeZone);
+        ZonedDateTime activation = null;
+        ZonedDateTime deactivation = null;
+        if(activatedDate != null) {
+            localActivation = LocalDateTime.parse(activatedDate, df);
+            activation = localActivation.atZone(timeZone);
+        }
+        LocalDateTime localDeactivation = null;
+        if(deactivatedDate != null) {
+            localDeactivation = LocalDateTime.parse(deactivatedDate, df);
+            deactivation = localDeactivation.atZone(timeZone);
+        }
+
         final ZonedDateTime creation = localCreation.atZone(timeZone);
         Poll poll = new Poll(pollCreator, anonymityStatus, pollName, creation, activation,
             deactivation, pollStatus, backgroundColor, fontColor, logo, visibility, categoryChange, activated,
