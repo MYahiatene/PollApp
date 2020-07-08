@@ -55,8 +55,8 @@ public class SmallPoll {
 
     private Integer series;
 
-    public SmallPoll(Poll original, PollResultService pollResultService, ParticipationLinkService participationLinkService, final ZoneId timeZone)
-    {
+    public SmallPoll(Poll original, PollResultService pollResultService,
+                     ParticipationLinkService participationLinkService, final ZoneId timeZone) {
         final DateTimeFormatter df = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm", Locale.GERMAN).withZone(timeZone);
         this.pollId = original.getPollId();
         this.pollName = original.getPollName();
@@ -106,17 +106,21 @@ public class SmallPoll {
             }
             sb.append(" Zuletzt bearbeitet von ").append(lastEditFrom).append(" am ").append(lastEditAt);
         } else if (pollStatus == 2) {
-            sb.append("Umfrage aktiv seit ").append(activatedDate).append(". Bisherige Teilnehmer: ").append(participantCount);
+            sb.append("Umfrage aktiv seit ").append(activatedDate).append(". Bisherige Teilnehmer: ").
+                append(participantCount);
             if (!anonymityStatus.equals("1")) {
-                sb.append(" / ").append(expectedParticipantCount).append(" (").append(participantCount.doubleValue() / expectedParticipantCount.doubleValue() * 100.0).append("%)");
+                sb.append(" / ").append(expectedParticipantCount).append(" (").append(participantCount.doubleValue() /
+                    expectedParticipantCount.doubleValue() * 100.0).append("%)");
             }
             if (original.isDeactivated()) {
                 sb.append(" Wird zum ").append(deactivatedDate).append(" deaktiviert.");
             }
         } else if (pollStatus == 1 + 2) {
-            sb.append("Umfrage deaktiviert seit ").append(deactivatedDate).append(". Teilnehmer: ").append(participantCount);
+            sb.append("Umfrage deaktiviert seit ").append(deactivatedDate).append(". Teilnehmer: ").
+                append(participantCount);
             if (!anonymityStatus.equals("1")) {
-                sb.append(" / ").append(expectedParticipantCount).append(" (").append(participantCount.doubleValue() / expectedParticipantCount.doubleValue() * 100.0).append("%)");
+                sb.append(" / ").append(expectedParticipantCount).append(" (").append(participantCount.doubleValue() /
+                    expectedParticipantCount.doubleValue() * 100.0).append("%)");
             }
         }
         this.computedSubtitle = sb.toString();

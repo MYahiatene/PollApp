@@ -6,9 +6,7 @@ import gpse.umfrato.domain.pollresult.PollResultRepository;
 import gpse.umfrato.domain.consistencyquestion.ConsistencyQuestion;
 import gpse.umfrato.domain.consistencyquestion.ConsistencyQuestionService;
 import gpse.umfrato.domain.evaluation.session.SessionService;
-import gpse.umfrato.domain.participationlinks.ParticipationLink;
 import gpse.umfrato.domain.participationlinks.ParticipationLinkService;
-import gpse.umfrato.domain.pollresult.PollResult;
 import gpse.umfrato.domain.pollresult.PollResultService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -51,7 +49,8 @@ class PollServiceImpl implements PollService {
                            final CategoryRepository categoryRepository , final SessionService sessionService
                                        , final PollResultService pollResultService
                                        , final ParticipationLinkService participationLinkService
-                                       , final ConsistencyQuestionService consistencyQuestionService, final PollResultRepository pollResultRepository) {
+                                       , final ConsistencyQuestionService consistencyQuestionService,
+                           final PollResultRepository pollResultRepository) {
         this.pollRepository = pollRepository;
         this.categoryService = categoryService;
         this.categoryRepository = categoryRepository;
@@ -193,7 +192,6 @@ class PollServiceImpl implements PollService {
 
     /**
      * This method deletes a poll.
-     *
      * @param pollID the id of the poll which will be deleted
      * @return returns a confirmation String
      */
@@ -217,10 +215,10 @@ class PollServiceImpl implements PollService {
      * @param date Calendar with date and time information
      * @return date as a String
      */
-    @Override public String parseDate(final ZonedDateTime date) {
+    @Override
+    public String parseDate(final ZonedDateTime date) {
         final DateTimeFormatter df = DateTimeFormatter.ofPattern("dd.MM.yyyy&HH:mm", Locale.GERMAN);
-        final String res = df.format(date);
-        return res;
+        return df.format(date);
     }
 
     /**

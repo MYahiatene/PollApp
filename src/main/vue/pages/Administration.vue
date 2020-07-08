@@ -1,5 +1,5 @@
 <template>
-    <AuthGate v-if="isAuthenticated !== true"></AuthGate>
+    <AuthGate v-if="isAdmin === false"></AuthGate>
     <v-container v-else>
         <v-card class="mx-auto" max-width="1000">
             <v-card-title>
@@ -138,6 +138,7 @@ export default {
         ...mapGetters({
             authenticate: 'administration/getToken',
             isAuthenticated: 'login/isAuthenticated',
+            isAdmin: 'account/getIsAdmin',
         }),
         formTitle() {
             return this.editedIndex === -1 ? 'Neuer Nutzer' : 'Nutzer bearbeiten'
@@ -194,6 +195,8 @@ export default {
             this.dialog = true
         },
         deleteUser(item) {
+            console.log(this.isAuthenticated)
+            console.log(this.authenticate)
             const index = this.users.indexOf(item)
 
             const instance = this.$axios.create({

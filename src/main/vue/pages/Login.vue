@@ -27,7 +27,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
 export default {
     name: 'Login',
     data() {
@@ -46,12 +46,35 @@ export default {
     },
     methods: {
         ...mapActions({ requestToken: 'login/requestToken' }),
+        ...mapMutations({ setRole: 'account/setRole' }),
+        setRoleInStore() {
+            let role = ''
+            this.$axios.get('/checkToken').then((response) => {
+                if (response.status === 200) {
+                    role = 'Admin'
+                    this.setRole(role)
+                }
+            })
+            this.$axios.get('/checkCreatorToken').then((response) => {
+                if (response.status === 200) {
+                    role = 'Creator'
+                    this.setRole(role)
+                }
+            })
+            this.$axios.get('/checkEditorToken').then((response) => {
+                if (response.status === 200) {
+                    role = 'Editor'
+                    this.setRole(role)
+                }
+            })
+        },
         async requestToken() {
             await this.$store.dispatch('login/requestToken', this.auth).catch((reason) => {
                 console.log(reason)
             })
             if (this.authenticated) {
                 await this.$router.push('/')
+                await this.setRoleInStore()
             }
         },
     },

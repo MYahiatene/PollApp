@@ -147,7 +147,6 @@ export default {
     mounted() {
         this.openLower = this.getQuestion.belowMessage
         this.openUpper = this.getQuestion.aboveMessage
-        // this.setSaveButtonStatus(true) ToDo: Figure out why this doesn't work
     },
     methods: {
         ...mapMutations({

@@ -61,7 +61,7 @@ public class PollResultController {
     }
 
     /**
-     * This method returns whether a PollTaker has already answered and sent the survey (true) or not (false)
+     * This method returns whether a PollTaker has already answered and sent the survey (true) or not (false).
      * @param pollResultCmd PollTaker and PollId
      * @return participated Boolean
      */
@@ -69,7 +69,8 @@ public class PollResultController {
     public Boolean participated(final @RequestBody PollResultCmd pollResultCmd) {
         LOGGER.info(pollResultCmd.getPollTaker());
         LOGGER.info(pollResultCmd.getPollId().toString());
-        final Boolean participated = pollResultService.getParticipated(pollResultCmd.getPollTaker(), pollResultCmd.getPollId());
+        final Boolean participated = pollResultService.getParticipated(pollResultCmd.getPollTaker(),
+            pollResultCmd.getPollId());
         return participated;
     }
 }

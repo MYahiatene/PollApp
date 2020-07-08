@@ -6,14 +6,12 @@ import gpse.umfrato.domain.consistencyquestion.ConsistencyQuestionService;
 import gpse.umfrato.domain.evaluation.session.Session;
 import gpse.umfrato.domain.evaluation.session.SessionService;
 import gpse.umfrato.domain.evaluation.Statistics;
-import gpse.umfrato.domain.answer.AnswerService;
 import gpse.umfrato.domain.category.CategoryService;
 import gpse.umfrato.domain.cmd.FilterCmd;
 import gpse.umfrato.domain.participationlinks.ParticipationLinkService;
 import gpse.umfrato.domain.poll.PollService;
 import gpse.umfrato.domain.pollresult.PollResultService;
 import gpse.umfrato.domain.question.QuestionService;
-import gpse.umfrato.domain.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -74,7 +72,8 @@ public class EvaluationController {
             return "?";
         }
         ZoneId timeZone = ZoneId.ofOffset("UTC", ZoneOffset.ofHoursMinutes(timeZoneOffset / 60 , timeZoneOffset % 60));
-        final Statistics calculation = new Statistics(questionService, pollService, pollResultService, categoryService, consistencyQuestionService, sessionService, timeZone, input.get(0));
+        final Statistics calculation = new Statistics(questionService, pollService, pollResultService, categoryService,
+                consistencyQuestionService, sessionService, timeZone, input.get(0));
         calculation.loadFilter(input);
         return calculation.generateDiagram();
     }
@@ -87,15 +86,18 @@ public class EvaluationController {
         if (pollService.getPoll(pollId).getAnonymityStatus().equals("1")) {
             return String.valueOf(pollResultService.getPollResults(pollId).size());
         } else {
-            return pollResultService.getPollResults(pollId).size() + " / " + participationLinkService.getAllParticipationLinks(pollId).size();
+            return pollResultService.getPollResults(pollId).size() + " / " +
+                participationLinkService.getAllParticipationLinks(pollId).size();
         }
     }
 
     @GetMapping("/getParticipantNames/{pollId:\\d+}")
     public List<String> getParticipantNames(final @PathVariable Long pollId) {
-        if (pollService.getPoll(pollId).getPollStatus() == 2 && pollService.getPoll(pollId).getAnonymityStatus().equals("2")) {
+        if (pollService.getPoll(pollId).getPollStatus() == 2 && pollService.getPoll(pollId).getAnonymityStatus().
+            equals("2")) {
             final List<String> participantList = new ArrayList<>();
-            pollResultService.getPollResults(pollId).forEach(pollResult -> participantList.add(pollResult.getPollTaker()));
+            pollResultService.getPollResults(pollId).forEach(pollResult -> participantList.add(pollResult.
+                getPollTaker()));
             return participantList;
         } else {
             return Collections.singletonList("-");

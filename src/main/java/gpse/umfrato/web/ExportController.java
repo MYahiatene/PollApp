@@ -35,6 +35,7 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.logging.Logger;
 
 @RequestMapping("/api/export/")
 @RestController
@@ -42,6 +43,9 @@ import java.util.*;
 public class ExportController {
     private static final String FILE_PATH = "src/main/java/gpse/umfrato/domain/export/files/";
     private static final Integer MAX_FILE_NUMBER = 50;
+    private static final String ONE = "1";
+    private static final String ALL_USERS = "allUsers";
+    private static final Logger LOGGER = Logger.getLogger("ExportController");
     private final PollService pollService;
     private final PollResultService pollResultService;
     private final ExportService exportService;
@@ -51,8 +55,6 @@ public class ExportController {
     private final ConsistencyQuestionService consistencyQuestionService;
     private final ParticipationLinkService participationLinkService;
     private final PollRepository pollRepository;
-    private static final String ONE = "1";
-    private static final String ALL_USERS = "allUsers";
     private Integer fileNumber = 0;
 
     private static final double ZERO = 0.0;
@@ -66,7 +68,13 @@ public class ExportController {
 
 
     @Autowired
-    public ExportController(final PollService pollService, final PollResultService pollResultService, final ExportService exportService, final QuestionService questionService, final CategoryService categoryService, final ConsistencyQuestionService consistencyQuestionService, final SessionService sessionService, final ParticipationLinkService participationLinkService, final PollRepository pollRepository) {
+    public ExportController(final PollService pollService, final PollResultService pollResultService,
+                            final ExportService exportService, final QuestionService questionService,
+                            final CategoryService categoryService,
+                            final ConsistencyQuestionService consistencyQuestionService,
+                            final SessionService sessionService,
+                            final ParticipationLinkService participationLinkService,
+                            final PollRepository pollRepository) {
         this.pollService = pollService;
         this.pollResultService = pollResultService;
         this.exportService = exportService;
@@ -186,7 +194,9 @@ public class ExportController {
     }*/
 
     @PostMapping("/Poll/{pollId:\\d+}")
-    public Integer toCSVManual(final @PathVariable Long pollId, final @RequestParam String format, final @RequestParam String separator) throws UnsupportedDataTypeException, FileNotFoundException, JsonProcessingException {
+    public Integer toCSVManual(final @PathVariable Long pollId, final @RequestParam String format,
+                               final @RequestParam String separator) throws UnsupportedDataTypeException,
+        FileNotFoundException, JsonProcessingException {
         final Poll poll = pollService.getPoll(pollId);
         if (format.equals("csv")) {
             final String csv = exportService.toCSVManual(poll, separator);
@@ -200,12 +210,16 @@ public class ExportController {
     }
 
     @PostMapping("/PollResult/{pollId:\\d+}")
-    public Integer toJSONResult(final @PathVariable Long pollId, final @RequestParam Long sessionId, final @RequestParam String format, final @RequestParam String separator, final @RequestBody List<FilterCmd> filterList , final @RequestHeader int timeZoneOffset) throws JsonProcessingException, FileNotFoundException, UnsupportedDataTypeException {
+    public Integer toJSONResult(final @PathVariable Long pollId, final @RequestParam Long sessionId,
+                                final @RequestParam String format, final @RequestParam String separator,
+                                final @RequestBody List<FilterCmd> filterList , final @RequestHeader int timeZoneOffset)
+            throws JsonProcessingException, FileNotFoundException, UnsupportedDataTypeException {
         ZoneId timeZone = ZoneId.ofOffset("UTC", ZoneOffset.ofHoursMinutes(timeZoneOffset / 60 , timeZoneOffset % 60));
         final FilterCmd cmd = new FilterCmd();
         cmd.setBasePollId(pollId);
         cmd.setBaseQuestionIds(Collections.singletonList(-1L));
-        final Statistics statistics = new Statistics(questionService, pollService, pollResultService, categoryService, consistencyQuestionService, sessionService, timeZone, cmd);
+        final Statistics statistics = new Statistics(questionService, pollService, pollResultService, categoryService,
+                consistencyQuestionService, sessionService, timeZone, cmd);
         if (sessionId < 0) {
             if (sessionId > -2) {
                 statistics.loadFilter(filterList);
