@@ -25,24 +25,29 @@ public class ExportServiceImpl implements ExportService {
         /*Name, PollID, Creator, Anonymität, Kategorie 1, Kategorie 1, Kategorie 2*/
         /*TestPoll, 1, Tbettmann, 1, Frage 1, Frage 2, Frage 1 aus Kat. 2*/
         final StringBuilder output = new StringBuilder();
-        output.append("Name").append(separator).append("PollID").append(separator).append("PollCreator").append(separator).append("Anonymitätsstatus");
+        output.append("Name").append(separator).append("PollID").append(separator).append("PollCreator").
+            append(separator).append("Anonymitätsstatus");
         final int amountOfArgumentsBeforeCategories = 4;
         for (final Category category : poll.getCategoryList()) {
             output.append(separator).append(category.getCategoryName()).append(separator).append("Antwortmöglichkeiten");
         }
         output.append('\n');
-        output.append(poll.getPollName()).append(separator).append(poll.getPollId()).append(separator).append(poll.getPollCreator()).append(separator).append(poll.getAnonymityStatus());
+        output.append(poll.getPollName()).append(separator).append(poll.getPollId()).append(separator).
+            append(poll.getPollCreator()).append(separator).append(poll.getAnonymityStatus());
         for (final Category category : poll.getCategoryList()) {
             for (final Question question : category.getQuestionList()) {
-                output.append(separator).append(escapeSpecialCharacters(question.getQuestionMessage())).append(separator);
+                output.append(separator).append(escapeSpecialCharacters(question.getQuestionMessage())).
+                    append(separator);
                 for (final String possibility : question.getAnswerPossibilities()) {
                     output.append(' ').append(possibility);
                 }
                 if (question.getQuestionType().equals("RangeQuestion")) {
-                    output.append(question.getStartValue()).append("..").append(question.getEndValue()).append(" in Inkrementen von ").append(question.getStepSize());
+                    output.append(question.getStartValue()).append("..").append(question.getEndValue()).
+                        append(" in Inkrementen von ").append(question.getStepSize());
                 }
                 if (question.getQuestionType().equals("SliderQuestion")) {
-                    output.append(question.getStartValue()).append("..").append(question.getEndValue()).append(" in Inkrementen von ").append(question.getStepSize());
+                    output.append(question.getStartValue()).append("..").append(question.getEndValue()).
+                        append(" in Inkrementen von ").append(question.getStepSize());
                 }
                 output.append('\n');
                 /*Needs to be -1 because of output + escapeSpecial... that comma can't go away*/
@@ -54,7 +59,8 @@ public class ExportServiceImpl implements ExportService {
     }
 
     /*So how does it work?: */
-    /*Function iterates over the list of pollResults first filling the first row of Elements with the Questions and then filling the rest with the actual PollResults.*/
+    /*Function iterates over the list of pollResults first filling the first row of Elements with the Questions and
+    then filling the rest with the actual PollResults.*/
 
     @Override
     public String toCSVManual(final List<PollResult> results, final Poll poll, final String separator) {
@@ -69,7 +75,8 @@ public class ExportServiceImpl implements ExportService {
         builder.append(columnNamesList).append('\n');
         for (final PollResult singularResult : results) {
             final ListIterator<Answer> answerIterator = singularResult.getAnswerList().listIterator();
-            builder.append(singularResult.getPollTaker()).append(separator).append(singularResult.getLastEditAt()).append(separator);
+            builder.append(singularResult.getPollTaker()).append(separator).append(singularResult.getLastEditAt()).
+                append(separator);
             while (answerIterator.hasNext()) {
                 final Answer singularAnswer = answerIterator.next();
                 /*Iterate over list to make every Answer one column in the csv table*/
@@ -90,7 +97,8 @@ public class ExportServiceImpl implements ExportService {
             final Category singularCategory = categoryIterator.next(); //Page
             for (final Question singularQuestion : singularCategory.getQuestionList()) {
                 final String singularQuestionMessage = singularQuestion.getQuestionMessage();
-                columnNamesList.append(separator).append(singularQuestionMessage); /*I think it works that way, should give out "PollID, Frage1, Frage2, Frage3, ... regardless of category"*/
+                columnNamesList.append(separator).append(singularQuestionMessage); /*I think it works that way,
+                should give out "PollID, Frage1, Frage2, Frage3, ... regardless of category"*/
             }
         }
         return columnNamesList.toString();
@@ -100,7 +108,7 @@ public class ExportServiceImpl implements ExportService {
     private String answerToCSV(final Answer input) {
         final ListIterator<String> answerIterator = input.getGivenAnswerList().listIterator();
         final StringBuilder output = new StringBuilder();
-        while(answerIterator.hasNext()) {
+        while (answerIterator.hasNext()) {
             final String answerForSingularQuestion = answerIterator.next();
             output.append(escapeSpecialCharacters(answerForSingularQuestion)).append(' ');
         }

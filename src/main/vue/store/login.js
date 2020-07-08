@@ -30,7 +30,7 @@ export const mutations = {
             this.$axios.defaults.baseURL = 'http://127.0.0.1:8088/api'
             this.$axios.defaults.headers.common = {
                 Authorization: 'Bearer ' + tokenString,
-                timeZoneOffset: -today.gettimeZoneOffset(),
+                timeZoneOffset: -today.getTimezoneOffset(),
             }
             this.$axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded'
         } else {

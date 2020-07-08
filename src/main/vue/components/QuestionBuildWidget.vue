@@ -98,10 +98,6 @@ export default {
         }),
         questionMessageBool: {
             get() {
-                console.log(this.questionType)
-                console.log(this.questionMessageModel.length)
-                console.log(this.getQuestion.answerPossibilities.length)
-                console.log(this.getSaveButtonStatus)
                 if (this.questionType === 'TextQuestion' || this.questionType === 'RangeQuestion') {
                     return !(this.questionType.length && this.questionMessageModel.length && this.getSaveButtonStatus)
                 } else {

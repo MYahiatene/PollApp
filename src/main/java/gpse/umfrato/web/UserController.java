@@ -49,7 +49,8 @@ public class UserController {
     @PostMapping("/createUser")
     public String createUser(final @RequestBody UserCmd userCmd) {
         try {
-            userService.createUser(userCmd.getUsername(), userCmd.getPassword(), userCmd.getFirstName(), userCmd.getLastName(), userCmd.getRole(), userCmd.getEmail());
+            userService.createUser(userCmd.getUsername(), userCmd.getPassword(), userCmd.getFirstName(),
+                userCmd.getLastName(), userCmd.getRole(), userCmd.getEmail());
 
         } catch (BadRequestException e) {
             LOGGER.info("Could not create user");
@@ -68,7 +69,8 @@ public class UserController {
     public String editUser(final @RequestBody EditUserCmd editUserCmd) {
         LOGGER.info("UserCmd" + editUserCmd);
         try {
-            userService.editUser(editUserCmd.getUsername(), editUserCmd.getFirstName(), editUserCmd.getLastName(), editUserCmd.getRole(), editUserCmd.getEmail());
+            userService.editUser(editUserCmd.getUsername(), editUserCmd.getFirstName(), editUserCmd.getLastName(),
+                editUserCmd.getRole(), editUserCmd.getEmail());
         } catch (BadRequestException e) {
             LOGGER.info("Could not edit user");
         }
@@ -119,6 +121,14 @@ public class UserController {
     @PreAuthorize("hasAuthority('Admin')")
     @GetMapping("/checkToken")
     public void checkToken() {
+
+    }
+    /**
+     * Checks if the users token has the authority "Editor".
+     */
+    @PreAuthorize("hasAuthority('Editor')")
+    @GetMapping("/checkEditorToken")
+    public void checkEditorToken() {
 
     }
 

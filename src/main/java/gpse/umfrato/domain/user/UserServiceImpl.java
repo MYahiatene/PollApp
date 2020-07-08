@@ -44,17 +44,15 @@ class UserServiceImpl implements UserService {
         final List<Long> participated = new ArrayList<>();
         // for a completely fresh user to be generated the password value sent from the frontend must be null
         if (password == null) {
-            char[] safePwd = randomPasswordGenerator.generatePwd();
+            final char[] safePwd = randomPasswordGenerator.generatePwd();
             final String encryptedSafePwd = PasswordEncoderFactories.createDelegatingPasswordEncoder().encode(new String(safePwd));
             user = new User(username, encryptedSafePwd, firstName, lastName, role, email, participated);
 
             final String pwd = new String(safePwd);
             final String mailSubject = "Login Daten für Umfrato";
-            final String mailMessage = "Sehr geehrte/r Frau/Herr " + lastName + ",\n\n" +
-                "anbei finden Sie Ihre neuen Login Daten. \n\n" +
-                "Username: " + username + "\n" +
-                "Password: " + pwd + "\n\n" +
-                "Mit freundlichen Grüßen\nIhr Umfrato Team";
+            final String mailMessage = "Sehr geehrte/r Frau/Herr " + lastName + ",\n\n"
+                + "anbei finden Sie Ihre neuen Login Daten. \n\n" + "Username: " + username + "\n" + "Password: "
+                + pwd + "\n\n" + "Mit freundlichen Grüßen\nIhr Umfrato Team";
 
             mailService.sendMail(mailSubject, mailMessage, email);
 
@@ -104,7 +102,7 @@ class UserServiceImpl implements UserService {
     }
 
     /**
-     * This method adds a pollId to the partcicipated List of a user
+     * This method adds a pollId to the partcicipated List of a user.
      *
      * @param username the username of the user
      * @param pollId pollId of the poll, the user just clicked Absenden on
@@ -145,7 +143,7 @@ class UserServiceImpl implements UserService {
     public void changePassword(final String username, final String password) {
         final User user = userRepository.getOne(username);
         LOGGER.info("username, password" + username + password);
-        String cryptPassword = PasswordEncoderFactories.createDelegatingPasswordEncoder().encode(password);
+        final String cryptPassword = PasswordEncoderFactories.createDelegatingPasswordEncoder().encode(password);
         user.setPassword(cryptPassword);
         LOGGER.info(cryptPassword);
         userRepository.save(user);

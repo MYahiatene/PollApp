@@ -172,6 +172,7 @@ export default {
     created() {
         this.loadPoll()
         this.loadCategories()
+        this.setBuildIndex(0)
     },
     computed: {
         ...mapGetters({

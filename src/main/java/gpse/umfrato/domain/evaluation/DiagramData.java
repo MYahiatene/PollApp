@@ -465,7 +465,9 @@ public class DiagramData {
         List<JSObject> doWordStuff(final List<TextAnswer> input) { //Antworten Darstellen
             final List<JSObject> outputList = new ArrayList<>();
             for (final TextAnswer ta: input) {
-                outputList.add(new JSObject(ta.text.split("[ .,;:?\\-_=()/&%$§!#'+*~|<>]+").length, ta.text, calcTendency(getWordList(input), ta.text), getWordFrequency(input, ta), ta.edited, ta.creator)); // Antwortlänge, Antwort, Antworttendenz
+                outputList.add(new JSObject(ta.text.split("[ .,;:?\\-_=()/&%$§!#'+*~|<>]+").length,
+                    ta.text, calcTendency(getWordList(input), ta.text),
+                    getWordFrequency(input, ta), ta.edited, ta.creator)); // Antwortlänge, Antwort, Antworttendenz
             }
             return outputList;
         }
@@ -496,7 +498,8 @@ public class DiagramData {
             final List<JSObject> duplicateList = new ArrayList<>();
             for (final String answer: answers) { //Wir brauchen nur die Strings
                 for (final String word: answer.split("[ .,;:?\\-_=()/&%$§!#'+*~|<>]+")) {
-                    duplicateList.add(new JSObject(0, word, 0, Collections.frequency(getWordList(input), word.toLowerCase()), "", ""));
+                    duplicateList.add(new JSObject(0, word, 0, Collections.frequency(getWordList(input),
+                        word.toLowerCase()), "", ""));
                 }
             }
             return removeDuplicates(duplicateList);
@@ -520,7 +523,8 @@ public class DiagramData {
             public String edited;
             public String creator;
 
-            JSObject(final int value, final String text, final int tendency, int frequency, final String edited, final String creator) {
+            JSObject(final int value, final String text, final int tendency, int frequency, final String edited,
+                     final String creator) {
                 this.value = value;
                 this.text = text;
                 this.tendency = tendency;
@@ -544,8 +548,7 @@ public class DiagramData {
         loadData(results);
     }
 
-    List<QuestionData> getQuestionList()
-    {
+    List<QuestionData> getQuestionList() {
         return this.questionList;
     }
 
@@ -560,7 +563,8 @@ public class DiagramData {
                     continue;
                 }
                 QuestionData qd = null;
-                final DecimalFormat format = new DecimalFormat("#.######", DecimalFormatSymbols.getInstance(Locale.GERMAN));
+                final DecimalFormat format = new DecimalFormat("#.######",
+                    DecimalFormatSymbols.getInstance(Locale.GERMAN));
                 switch (q.getQuestionType()) {
                     case "ChoiceQuestion":
                         qd = new ChoiceData(q.getQuestionId(), q.getQuestionMessage(), q.getAnswerPossibilities());

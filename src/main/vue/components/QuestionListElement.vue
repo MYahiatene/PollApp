@@ -112,11 +112,7 @@ export default {
             this.buildIndex = 2
         },
         deleteQuestion(question) {
-            const index = this.category.questionList.forEach((element) => {
-                if (element.questionId === question.questionId) {
-                    return this.category.questionList.indexOf(element)
-                }
-            })
+            const index = this.category.questionList.indexOf(question)
             confirm('Sind sie sich sicher, dass sie diese Frage löschen möchten?') &&
                 this.category.questionList.splice(index, 1) &&
                 this.$axios.put('/removequestion', {

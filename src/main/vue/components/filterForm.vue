@@ -47,6 +47,40 @@
                             </v-container>
                         </v-expansion-panel-content>
                     </v-expansion-panel>
+                    <v-expansion-panel v-if="userNames.length != 0">
+                        <v-expansion-panel-header>
+                            Teilnehmerauswahl
+                        </v-expansion-panel-header>
+                        <v-expansion-panel-content>
+                            Hier können Sie die Teilnehmer auswählen, die {{ userInverted ? 'NICHT' : '' }} in der
+                            Analyse betrachtet werden sollen.
+
+                            <v-container fluid>
+                                <v-switch v-model="userInverted" label="Invertieren"> </v-switch>
+                                <v-select
+                                    v-model="selectedUsers"
+                                    :items="userNames"
+                                    multiple
+                                    clearable
+                                    :no-data-text="'Keine Teilnehmer anzuzeigen'"
+                                >
+                                    <template v-slot:selection="{ item, index }">
+                                        <v-chip
+                                            v-if="index < userNamesDisplayedInSelect"
+                                            close
+                                            @click:close="selectedUsers.splice(index, 1)"
+                                        >
+                                            <span>{{ item }}</span>
+                                        </v-chip>
+                                        <span v-if="index === userNamesDisplayedInSelect" class="grey--text caption">
+                                            (und
+                                            {{ selectedUsers.length - userNamesDisplayedInSelect }} weitere)
+                                        </span>
+                                    </template>
+                                </v-select>
+                            </v-container>
+                        </v-expansion-panel-content>
+                    </v-expansion-panel>
 
                     <v-expansion-panel>
                         <v-expansion-panel-header>
@@ -251,6 +285,7 @@ export default {
             chosenPoll: '',
             selectedQuestions: [],
             questionTitlesDisplayedInSelect: 3,
+            userNamesDisplayedInSelect: 5,
 
             dialog: false,
 
@@ -272,6 +307,10 @@ export default {
             showTimeDiagram: false,
             relativeTimeDiagram: false,
             consistencyOn: false,
+
+            userNames: ['Ben', 'Miko', 'Thorsten', 'Benno', 'Mikola', 'Thorstenna'],
+            selectedUsers: [],
+            userInverted: false,
         }
     },
     computed: {
@@ -337,6 +376,10 @@ export default {
         for (let i = 0; i < this.questionTitles.length; i++) {
             this.selectedQuestions.push(this.questionTitles[i])
         }
+        this.selectedUsers = []
+        for (let i = 0; i < this.userNames.length; i++) {
+            this.selectedUsers.push(this.userNames[i])
+        }
         this.updateNumberOfConsistencyQuestions()
         this.saveToStore()
     },
@@ -359,6 +402,15 @@ export default {
             filterData.push({
                 filterType: 'consistency',
                 minSuccesses: this.minConsistencyValue, // von 0 (aus) bis zur Länge der Konsistenzfragen
+            })
+            const u = []
+            for (let i = 0; i < this.selectedUsers.length; i++) {
+                u.push(this.selectedUsers[i])
+            }
+            filterData.push({
+                filterType: 'user',
+                invertFilter: this.userInverted,
+                userNames: u,
             })
             for (let i = 0; i < this.qafilterList.length; i++) {
                 if (this.qafilterList[i].active) {
@@ -515,6 +567,15 @@ export default {
                         this.minConsistencyValue = this.filters[i].minSuccesses
                         this.updateConsistencyOn()
                     }
+                    if (this.filters[i].filterType === 'user') {
+                        console.log('user filter')
+                        this.userInverted = this.filters[i].invertFilter
+                        this.selectedUsers = []
+                        for (let j = 0; j < this.filters[i].userNames.length; j++) {
+                            this.selectedUsers.push(this.filters[i].userNames[j])
+                        }
+                    }
+
                     if (this.filters[i].filterType === 'date') {
                         console.log('date filter')
                         const id = this.dateFilterList.length
@@ -582,6 +643,11 @@ export default {
             for (let i = 0; i < this.questionTitles.length; i++) {
                 this.selectedQuestions.push(this.questionTitles[i])
             }
+            this.selectedUsers = []
+            for (let i = 0; i < this.userNames.length; i++) {
+                this.selectedUsers.push(this.userNames[i])
+            }
+            this.userInverted = false
             this.minConsistencyValue = 0
             this.updateConsistencyOn()
             this.qafilterList = []

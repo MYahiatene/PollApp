@@ -40,6 +40,15 @@ it passes the attributes:
 
         <v-row v-show="showDiagram" no-gutters>
             <v-switch v-model="setMultipleColors" label="Verschiedene Farben pro Antwort"> </v-switch>
+            <v-btn class="ma-2" v-if="setMultipleColors" @click="loadDefaultColors">
+                Bunt
+            </v-btn>
+            <v-btn class="ma-2" v-if="setMultipleColors" @click="loadGrayColors">
+                Grau
+            </v-btn>
+            <v-btn class="ma-2" v-if="setMultipleColors" @click="loadRandomColors">
+                Zufall
+            </v-btn>
         </v-row>
 
         <!--        This allows us to assemble an array of colors using draggable chips and a color picker -->
@@ -186,6 +195,9 @@ export default {
             this.diagramColors.indexOf(this.initialBackgroundColor)
         ]
         this.setChosenDiagramColor = String(this.getFormat(this.questionId).backgroundColor)
+        // for (let i = 0; i < this.colorList.length; i++) {
+        //     this.colorList[i] = this.initialBackgroundColors[i % this.initialBackgroundColors.length]
+        // }
         this.colorList = [...this.initialBackgroundColors]
         this.setMultipleColors = Boolean(this.initialMultipleColors)
     },
@@ -198,8 +210,8 @@ export default {
 
             chosenDiagramColorAsWord: '',
 
-            diagramColorsInWords: ['Grau', 'Petrol', 'Grün', 'Violet', 'Türkis'],
-            diagramColors: ['#aaaaaa', '#114955', '#8ec136', '#551044', '#26A599'],
+            diagramColorsInWords: ['Grau', 'Petrol', 'Grün', 'Violet', 'Türkis', 'Blau'],
+            diagramColors: ['#aaaaaa', '#114955', '#8ec136', '#551044', '#26A599', '#092140'],
 
             setChosenDiagramColor: '',
 
@@ -216,6 +228,10 @@ export default {
             diagramType: '',
             showTable: false,
             showDiagram: false,
+            defaultColors: ['#114955', '#8ec136', '#551044', '#092140', '#26A599'],
+            grayColors: ['#111111', '#222222', '#333333', '#444444', '#555555'],
+            randomLength: 5,
+            colorChars: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'],
         }
     },
     methods: {
@@ -225,11 +241,15 @@ export default {
         }),
 
         async saveDiagramFormat() {
+            const c = []
+            for (let i = 0; i < this.colorList.length; i++) {
+                c.push(this.colorList[i])
+            }
             const format = {
                 questionId: this.questionId,
                 showDiagram: this.showDiagram,
                 diagramType: this.diagramType,
-                backgroundColors: this.colorList,
+                backgroundColors: c,
                 backgroundColor: this.setChosenDiagramColor,
                 multipleColors: this.setMultipleColors,
                 showTable: this.showTable,
@@ -302,6 +322,45 @@ export default {
         updateCurrentChip(index) {
             this.currentChipIndex = index
             this.loadChipColorInPicker()
+        },
+
+        loadDefaultColors() {
+            if (this.changeDefault && this.colorList.length < 5) {
+                this.colorList = ['', '', '', '', '']
+            }
+            for (let i = 0; i < this.colorList.length; i++) {
+                this.colorList[i] = this.defaultColors[i % this.defaultColors.length]
+            }
+            this.$forceUpdate()
+        },
+        loadGrayColors() {
+            if (this.changeDefault && this.colorList.length < 5) {
+                this.colorList = ['', '', '', '', '']
+            }
+            for (let i = 0; i < this.colorList.length; i++) {
+                this.colorList[i] = this.grayColors[i % this.grayColors.length]
+            }
+            this.$forceUpdate()
+        },
+
+        loadRandomColors() {
+            if (this.changeDefault && this.colorList.length < 5) {
+                this.colorList = []
+                for (let i = 0; i < this.randomLength; i++) {
+                    this.colorList.push('')
+                }
+            }
+            for (let i = 0; i < this.colorList.length; i++) {
+                let colorString = '#'
+                for (let i = 0; i < 6; i++) {
+                    const n = Math.round(Math.random() * 15)
+                    colorString += this.colorChars[n]
+                }
+                this.colorList[i] = colorString
+            }
+            console.log('random')
+            console.log(this.colorList)
+            this.$forceUpdate()
         },
     },
 

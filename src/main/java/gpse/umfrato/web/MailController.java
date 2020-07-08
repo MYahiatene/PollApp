@@ -24,7 +24,8 @@ public class MailController {
     private ParticipationLinkService participationLinkService;
 
     @Autowired
-    public MailController(final JavaMailSender javaMailSender, final ParticipationLinkService participationLinkService) {
+    public MailController(final JavaMailSender javaMailSender,
+                          final ParticipationLinkService participationLinkService) {
         this.mailSender = javaMailSender;
         this.participationLinkService = participationLinkService;
     }
@@ -52,7 +53,8 @@ public class MailController {
 
                 } else { // 1 = anonym, es ist jedes mal der selbe Link
 
-                    final List<ParticipationLink> participationLinks = participationLinkService.getAllParticipationLinks(mailCmd.getPollId());
+                    final List<ParticipationLink> participationLinks = participationLinkService.
+                        getAllParticipationLinks(mailCmd.getPollId());
                     invitationLink = participationLinks.get(0).getGeneratedParticipationLink();
                     participationLinkService.saveParticipationLink(mailCmd.getPollId(), mail, invitationLink);
 
@@ -86,7 +88,8 @@ public class MailController {
     public String sendRemindEmail(final @RequestBody MailCmd mailCmd) {
         try {
 
-            final List<ParticipationLink> participationList = participationLinkService.getAllParticipationLinks(mailCmd.getPollId());
+            final List<ParticipationLink> participationList = participationLinkService.
+                getAllParticipationLinks(mailCmd.getPollId());
             final SimpleMailMessage message = new SimpleMailMessage();
 
             for (final ParticipationLink participationLink : participationList) {

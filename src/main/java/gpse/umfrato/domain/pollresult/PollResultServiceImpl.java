@@ -100,7 +100,7 @@ public class PollResultServiceImpl implements PollResultService {
             final PollResult pollResult1 = pollResultRepository.findPollResultByPollIdAndPollTaker(pollId, pollTaker);
             LOGGER.info("participatedReally?" + pollResult1.getParticipatedPoll().toString());
         } catch (BadRequestException e) {
-            LOGGER.info("Bad Request!");
+            LOGGER.info("Bad Request! ");
         }
     }
 
@@ -127,7 +127,7 @@ public class PollResultServiceImpl implements PollResultService {
         }
     }
 
-    @Override public void deleteAllPollResults(long pollId) {
+    @Override public void deleteAllPollResults(final long pollId) {
         pollResultRepository.deleteAllByPollId(pollId);
     }
 

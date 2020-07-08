@@ -27,7 +27,7 @@ public DateFilter(final String startDate, final String endDate, final Boolean in
             valid = false;
         }
     }
-    if(!(endEmpty = endDate.isEmpty())) {
+    if (!(endEmpty = endDate.isEmpty())) {
         try {
             end = ZonedDateTime.parse(startDate, df);
         } catch (DateTimeParseException pe) {

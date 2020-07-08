@@ -1,6 +1,5 @@
 package gpse.umfrato.web;
 
-import gpse.umfrato.domain.mail.MailService;
 import gpse.umfrato.domain.participationlinks.ParticipationLink;
 import gpse.umfrato.domain.participationlinks.ParticipationLinkService;
 import org.springframework.beans.factory.annotation.Autowired;
