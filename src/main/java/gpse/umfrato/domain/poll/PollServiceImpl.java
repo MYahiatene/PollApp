@@ -229,10 +229,10 @@ class PollServiceImpl implements PollService {
     @Override public Poll checkActivationAndDeactivation(final Poll poll) {
         final ZonedDateTime now = ZonedDateTime.now();
         // now.set(Calendar.MONTH, now.get(Calendar.MONTH)+1);
-        if (poll.isActivated() && poll.getPollStatus() == 1 && poll.getActivatedDate().before(now)) {
+        if (poll.isActivated() && poll.getPollStatus() == 1 && poll.getActivatedDate().isBefore(now)) {
             increasePollStatus(poll.getPollId());
         }
-        if (poll.isDeactivated() && poll.getPollStatus() == 2 && poll.getDeactivatedDate().before(now)) {
+        if (poll.isDeactivated() && poll.getPollStatus() == 2 && poll.getDeactivatedDate().isBefore(now)) {
             increasePollStatus(poll.getPollId());
         }
         return pollRepository.findById(poll.getPollId()).orElseThrow(EntityNotFoundException :: new);

@@ -53,7 +53,7 @@ public class SmallPoll {
 
     public SmallPoll(Poll original, PollResultService pollResultService, ParticipationLinkService participationLinkService)
     {
-        final SimpleDateFormat df = new SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.GERMAN);
+        final DateTimeFormatter df = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm", Locale.GERMAN);
         this.pollId = original.getPollId();
         this.pollName = original.getPollName();
         this.pollCreator = original.getPollCreator();

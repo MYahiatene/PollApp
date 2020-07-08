@@ -599,7 +599,7 @@ public class DiagramData {
      * gathers all lastEditedAt dates and prepares them to be displayed in a diagram.
      * @param results the pollResults from which the dates come
      */
-    private void generateParticipantsOverTime(final List<PollResult> results, final long pollStartTime) {
+    private void generateParticipantsOverTime(final List<PollResult> results, final ZonedDateTime pollStartTime) {
         final List<ZonedDateTime> datesList = new ArrayList<>();
         DateTimeFormatter df = DateTimeFormatter.ofPattern("yy-MM-dd HH:mm:ss",Locale.GERMANY);
         for (final PollResult pr: results) {
@@ -610,17 +610,17 @@ public class DiagramData {
         if (datesList.isEmpty()) {
             showParticipantsOverTime = false;
         } else {
-            Date min = datesList.get(0);
-            Date max = datesList.get(0);
-            for (final Date d: datesList) {
-                if (d.after(max)) {
+            ZonedDateTime min = datesList.get(0);
+            ZonedDateTime max = datesList.get(0);
+            for (final ZonedDateTime d: datesList) {
+                if (d.isAfter(max)) {
                     max = d;
-                } else if (d.before(min)) {
+                } else if (d.isBefore(min)) {
                     min = d;
                 }
             }
-            final long start = min.getTime() / 1000;
-            final long end = max.getTime() / 1000;
+            final long start = min.toEpochSecond();
+            final long end = max.toEpochSecond();
             final long diff = end - start;
             long step = diff / 9;
             if (step < 1L) {
@@ -629,8 +629,6 @@ public class DiagramData {
             final List<String> answerPossibilities = new ArrayList<>();
             if(participantsOverRelativeTime)
             {
-                ZonedDateTime min = datesList.get(0);
-                ZonedDateTime max = datesList.get(0);
                 String deltaString = "T+";
                 Instant startTime = Instant.ofEpochSecond(start);
                 Instant endTime = Instant.ofEpochSecond(end);
@@ -652,9 +650,9 @@ public class DiagramData {
                 // System.out.println(tPlus);
 
                 // System.out.println(patternString);
-                final DateTimeFormatter finalDf = DateTimeFormatter.ofPattern(patternString, Locale.GERMANY);
+                final DateTimeFormatter finalDf = DateTimeFormatter.ofPattern(tPlus, Locale.GERMANY);
 
-                for (ZonedDateTime date = min; date.compareTo(max) < 0; date.plusSeconds(step)) {
+                for (ZonedDateTime date = min; date.compareTo(max) < 0;date = date.plusSeconds(step)) {
                     answerPossibilities.add(finalDf.format(date));
                 }
                 // System.out.println(answerPossibilities);
@@ -679,14 +677,14 @@ public class DiagramData {
                 if (step < 60) {
                     patternString += ":ss";
                 }
-                final DateFormat df = new SimpleDateFormat(patternString, Locale.GERMAN);
-                for (long date = min.getTime(); date <= max.getTime(); date += step * 1000) {
-                    answerPossibilities.add(df.format(new Date(date)));
+                final DateTimeFormatter otherDf = DateTimeFormatter.ofPattern(patternString, Locale.GERMAN);
+                for (ZonedDateTime date = min; date.compareTo(max) <= 0; date = date.plusSeconds(step)) {
+                    answerPossibilities.add(otherDf.format(date));
                 }
             }
             participantsOverTime = new ChoiceData(0, "Teilnahmen über Zeit", answerPossibilities);
-            for (final Date d: datesList) {
-                final long slot = (d.getTime() / 1000 - start) / step;
+            for (final ZonedDateTime d: datesList) {
+                final long slot = (d.toEpochSecond() - start) / step;
                 participantsOverTime.addAnswer((double) slot);
             }
             participantsOverTime.statistics();
@@ -732,7 +730,7 @@ public class DiagramData {
             }
         }
         if (showParticipantsOverTime) {
-            generateParticipantsOverTime(results,poll.getActivatedDate().getTime().getTime());
+            generateParticipantsOverTime(results,poll.getActivatedDate());
         }
         for (final QuestionData qd: questionList) {
             qd.statistics();

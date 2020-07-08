@@ -38,7 +38,7 @@ public class Statistics {
     private final List<Long> questionIds = new ArrayList<>();
     private final boolean showParticipantsOverTime;
     private final boolean participantsOverRelativeTime;
-    private final Integer numberOfPastPollsToEvaluate;
+    private final Integer numberOfPastPollsToEvaluate = 1;
     private List<Filter> filters = new ArrayList<>();
 
     /**
@@ -158,7 +158,9 @@ public class Statistics {
             LOGGER.warning("Ungültige Umfrage");
             return "{\"name\":\"Ungültige Umfrage\"}";
         }
-        String response = "";
+        int avgParticipantCountFiltered = 0;
+        int avgParticipantCountUnfiltered = 0;
+        String response;
         List<DiagramData> diagramDataList = new ArrayList<>();
         int prev = 0;
         Poll poll = pollService.getPoll(pollId);
@@ -180,9 +182,13 @@ public class Statistics {
             }
             questionIds = translateQuestionIds(poll, questionIds, nextPoll);
             poll = nextPoll;
+            avgParticipantCountFiltered += participantCountFiltered;
+            avgParticipantCountUnfiltered += participantCountUnfiltered;
             prev++;
         }
-        response = NAME_STRING + pollService.getPoll(this.pollId).getPollName() + PARTICIPANTS_STRING + participantCountFiltered + "/" + participantCountUnfiltered + "\",\"questionList\": ";
+        avgParticipantCountUnfiltered /= prev + 1;
+        avgParticipantCountFiltered /= prev + 1;
+        response = NAME_STRING + pollService.getPoll(this.pollId).getPollName() + PARTICIPANTS_STRING + avgParticipantCountFiltered + "/" + avgParticipantCountUnfiltered + "\",\"questionList\": ";
         if (diagramDataList.isEmpty()) {
             return response + "[]}";
         }
