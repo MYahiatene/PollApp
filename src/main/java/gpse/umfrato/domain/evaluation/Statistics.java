@@ -1,7 +1,6 @@
 package gpse.umfrato.domain.evaluation;
 
 import gpse.umfrato.domain.consistencyquestion.ConsistencyQuestionService;
-import gpse.umfrato.domain.answer.Answer;
 import gpse.umfrato.domain.answer.AnswerService;
 import gpse.umfrato.domain.category.Category;
 import gpse.umfrato.domain.category.CategoryService;
@@ -16,8 +15,8 @@ import gpse.umfrato.domain.question.Question;
 import gpse.umfrato.domain.question.QuestionService;
 import gpse.umfrato.domain.user.UserService;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicReferenceArray;
 import java.util.logging.Logger;
 
 /**
@@ -41,6 +40,7 @@ public class Statistics {
     private final Long pollId;
     private final List<Long> questionIds = new ArrayList<>();
     private final boolean showParticipantsOverTime;
+    private final Integer numberOfPastPollsToEvaluate;
 
     /**
      * Initializes the Statistic.
@@ -124,20 +124,148 @@ public class Statistics {
             LOGGER.warning("Ungültige Umfrage");
             return "{\"name\":\"Ungültige Umfrage\"}";
         }
-        List<PollResult> prs = pollResultService.getPollResults(pollId);
-        final int participantCountUnfiltered = prs.size();
-        for (final Filter f: filters) {
-            prs = f.filter(prs);
+        String response = "";
+        List<DiagramData> diagramDataList = new ArrayList<>();
+        int prev = 0;
+        Poll poll = pollService.getPoll(pollId);
+        List<Long> questionIds = this.questionIds;
+        while(prev <= numberOfPastPollsToEvaluate) {
+            List<PollResult> prs = pollResultService.getPollResults(pollId);
+            final int participantCountUnfiltered = prs.size();
+            for (final Filter f: filters) {
+                prs = f.filter(prs);
+            }
+            final int participantCountFiltered = prs.size();
+            final DiagramData dd = new DiagramData(poll, prs, showParticipantsOverTime, questionIds, categoryService, questionService);
+            diagramDataList.add(0, dd);
+            Poll nextPoll;
+            try {
+                nextPoll = pollService.getPoll(poll.getPrevInSeries());
+            } catch (EntityNotFoundException e) {
+                break;
+            }
+            questionIds = translateQuestionIds(poll, questionIds, nextPoll);
+            poll = nextPoll;
+            prev++;
+
         }
-        final int participantCountFiltered = prs.size();
-        LOGGER.info(prs.toString());
-        final Poll p = pollService.getPoll(pollId);
-        final String response = NAME_STRING + p.getPollName() + PARTICIPANTS_STRING + participantCountFiltered + "/" + participantCountUnfiltered + "\",\"questionList\": ";
-        if (prs.isEmpty()) {
-            LOGGER.warning("Leere Umfrage");
+        response = NAME_STRING + pollService.getPoll(this.pollId).getPollName() + PARTICIPANTS_STRING + participantCountFiltered + "/" + participantCountUnfiltered + "\",\"questionList\": ";
+        if (diagramDataList.isEmpty()) {
             return response + "[]}";
         }
-        final DiagramData dd = new DiagramData(p, prs, showParticipantsOverTime, questionIds, categoryService, questionService);
+        DiagramData dd = combineDiagramData(diagramDataList);
         return response + dd.toJSON() + "}";
+    }
+
+    /**
+     * This method matches the questionIds of the original Poll to the questionIds of an other Poll by rating the equality of each question.
+     * This is necessary to allow the User to correct mistakes in the question and to allow the participant to add answer-possibilities
+     * @param original the original poll
+     * @param originalQuestionIds the original questionIds that will be translated
+     * @param pollToTranslateTo the other poll to translate the question-ids to
+     * @return a list of question-ids matching the originals but translated to the context of pollToTranslateTo
+     */
+    private List<Long> translateQuestionIds(final Poll original, final List<Long> originalQuestionIds, final Poll pollToTranslateTo)
+    {
+        List<Long> translatedIds = new ArrayList<>();
+        int categoryIndex = 0;
+        for(Category oc:original.getCategoryList())
+        {
+            int questionIndex = 0;
+            for(Question oq:oc.getQuestionList())
+            {
+                if(oq.getQuestionId().equals(originalQuestionIds.get(0)))
+                {
+                    Question translatedQuestion = pollToTranslateTo.getCategoryList().get(categoryIndex).getQuestionList().get(questionIndex);
+                    double questionConfidence = similarity(oq, translatedQuestion);
+                    if(questionConfidence > 0.8) // TODO: ist 0.8 ein guter Wert?
+                    {
+                        translatedIds.add(translatedQuestion.getQuestionId());
+                    }
+                    else
+                    {
+                        Question bestMatch = translatedQuestion;
+                        double bestConfidence = questionConfidence;
+                        for(Category tc:pollToTranslateTo.getCategoryList())
+                        {
+                            for(Question tq:tc.getQuestionList()) {
+                               double newQuestionConfidence = similarity(oq, tq);
+                               if(newQuestionConfidence > bestConfidence)
+                               {
+                                   bestConfidence = newQuestionConfidence;
+                                   bestMatch = tq;
+                               }
+                            }
+                        }
+                        translatedIds.add(bestMatch.getQuestionId());
+                    }
+                }
+                questionIndex++;
+            }
+            categoryIndex++;
+        }
+        return translatedIds;
+    }
+
+    /**
+     * This method rates the similarity of question a and question b by comparing the question-message and the answer-possibilities
+     * @param a question a
+     * @param b question b
+     * @return a similarity value between 0 (not equal at all) and 1 (completely identical)
+     */
+    private double similarity(final Question a, final Question b)
+    {
+        if(a.getQuestionType().equals(b.getQuestionType())) {
+            double confidence = stringEquality(a.getQuestionMessage(), b.getQuestionMessage());
+            double answerConfidence = 0.0;
+            for (String as:a.getAnswerPossibilities())
+            {
+                for (String bs:b.getAnswerPossibilities())
+                {
+                    answerConfidence += stringEquality(as,bs);
+                }
+            }
+            confidence += answerConfidence / (Math.max(a.getAnswerPossibilities().size(), b.getAnswerPossibilities().size()));
+            confidence += a.getNumberOfPossibleAnswers() == b.getNumberOfPossibleAnswers() ? 1.0 : 0.0;
+            return confidence / 3;
+        }
+        return 0.0;
+    }
+
+    /**
+     * This method rates the equality of two strings a and b between 0 and 1
+     * @param a string a
+     * @param b string b
+     * @return a similarity value between 0 (not equal at all) and 1 (completely identical)
+     */
+    private double stringEquality(final String a, final String b) {
+        if (a.equals(b)) {
+            return 1.0;
+        } else if (a.isEmpty() || b.isEmpty()) {
+            return 0.0;
+        } else {
+            double m = b.length();
+            double p = 0.0;
+            char[] aChars = a.toCharArray();
+            char[] oChars = b.toCharArray();
+            for (int i = 0; i < a.length(); ++i) {
+                if (aChars[i] == oChars[i]) {
+                    p++;
+                }
+            }
+            return p / m;
+        }
+    }
+
+    /**
+     * This method combines a list of DiagramData's to one DiagramData to display serialPolls in a single Evaluation
+     * @param diagramDataList a list of DiagramData's
+     * @return a combination of all DiagramData's
+     */
+    private DiagramData combineDiagramData(final List<DiagramData> diagramDataList) {
+        while (diagramDataList.size() > 1) {
+            diagramDataList.remove(1); // TODO
+        }
+        return diagramDataList.get(0);
     }
 }

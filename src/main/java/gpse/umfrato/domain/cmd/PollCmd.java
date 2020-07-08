@@ -48,6 +48,8 @@ public class PollCmd {
 
     private String repeatUntil;
 
+    private Integer stoppingReason;
+
     private List<Integer> day;
 
     private List<Integer> week;
@@ -63,8 +65,6 @@ public class PollCmd {
     private boolean activated;
 
     private boolean deactivated;
-
-    private Integer stoppingReason;
 
     private Integer level;
 

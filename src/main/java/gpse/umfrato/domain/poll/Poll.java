@@ -78,7 +78,6 @@ public class Poll {
     @Lob
     private String logo;
 
-
     /**
      * This attribute represents the name of the poll.
      */
@@ -138,6 +137,7 @@ public class Poll {
 
     private ZonedDateTime nextSeries;
 
+    private Long prevInSeries = -1L;
 
     /**
      * This constructor receives a poll name and saves in the poll object.

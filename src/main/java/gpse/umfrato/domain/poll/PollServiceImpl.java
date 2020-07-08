@@ -21,7 +21,7 @@ import java.util.logging.Logger;
 class PollServiceImpl implements PollService {
 
     private static final Logger LOGGER = Logger.getLogger("PollServiceImpl");
-    /* default */ final CategoryRepository categoryRepository;
+    private final CategoryRepository categoryRepository;
     private final PollRepository pollRepository;
     private final CategoryService categoryService;
     private int anonymousUsername = 0;
@@ -89,7 +89,8 @@ class PollServiceImpl implements PollService {
      * @param pollId the id of the requested poll
      * @return the requested poll
      */
-    @Override public Poll getPoll(final Long pollId) {
+    @Override
+    public Poll getPoll(final Long pollId) throws EntityNotFoundException {
         final Poll poll = pollRepository.findById(pollId).orElseThrow(EntityNotFoundException :: new);
         return checkActivationAndDeactivation(poll);
     }
@@ -192,7 +193,8 @@ class PollServiceImpl implements PollService {
         return pollRepository.findById(poll.getPollId()).orElseThrow(EntityNotFoundException :: new);
     }
 
-    @SuppressWarnings("checkstyle:AvoidNestedBlocks") @Override public String createSeriesPollName(final Poll poll) {
+    @Override
+    public String createSeriesPollName(final Poll poll) {
         // TODO: Wochentage richtig setzen
         String name = poll.getPollName();
         if (name.contains(":nr:")) {
@@ -579,7 +581,6 @@ class PollServiceImpl implements PollService {
     ZonedDateTime deltaNew(ZonedDateTime originalStart, ZonedDateTime originalEnd, ZonedDateTime nowStart) {
         Duration delta = Duration.between(originalStart.toLocalDate(), originalEnd.toLocalDate());
         ZonedDateTime nowEnd = nowStart.plus(delta);
-        // System.out.println("Now Start: " + nowStart + " Now End: " + nowEnd);
         return nowEnd;
     }
 

@@ -615,12 +615,6 @@ public class DiagramData {
         }
     }
 
-    int getWeekOfMonth(ZonedDateTime date)
-    {
-        ZonedDateTime firstOfMonth = date.withDayOfMonth(1);
-        return 1 + date.getDayOfWeek().get(IsoFields.WEEK_OF_WEEK_BASED_YEAR) - firstOfMonth.getDayOfWeek().get(IsoFields.WEEK_OF_WEEK_BASED_YEAR);
-    }
-
     public String toJSON() {
         final StringBuilder json = new StringBuilder();
         json.append('[');
