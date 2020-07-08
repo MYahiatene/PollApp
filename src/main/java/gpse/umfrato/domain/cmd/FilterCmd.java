@@ -18,6 +18,8 @@ public class FilterCmd {
 
     private Boolean timeDiagram;
 
+    private Boolean timeDiagramRelative;
+
     //QuestionFilter
     private Long targetQuestionId;
 

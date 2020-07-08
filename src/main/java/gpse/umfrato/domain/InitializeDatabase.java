@@ -1,14 +1,9 @@
 package gpse.umfrato.domain;
 
 import gpse.umfrato.domain.answer.AnswerService;
-import gpse.umfrato.domain.mail.CsvReader;
-import gpse.umfrato.domain.mail.MailService;
-import gpse.umfrato.domain.category.Category;
 import gpse.umfrato.domain.participationlinks.ParticipationLinkService;
 import gpse.umfrato.domain.category.CategoryService;
-import gpse.umfrato.domain.poll.Poll;
 import gpse.umfrato.domain.poll.PollService;
-import gpse.umfrato.domain.question.Question;
 import gpse.umfrato.domain.question.QuestionService;
 import gpse.umfrato.domain.user.UserService;
 import org.springframework.beans.factory.InitializingBean;
@@ -18,8 +13,6 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.net.MalformedURLException;
-import java.util.List;
-import java.util.Arrays;
 
 @Service
 public class InitializeDatabase implements InitializingBean {

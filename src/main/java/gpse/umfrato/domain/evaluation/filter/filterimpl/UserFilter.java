@@ -1,7 +1,6 @@
 package gpse.umfrato.domain.evaluation.filter.filterimpl;
 
 import gpse.umfrato.domain.evaluation.filter.Filter;
-import gpse.umfrato.domain.poll.Poll;
 import gpse.umfrato.domain.pollresult.PollResult;
 import lombok.AllArgsConstructor;
 
@@ -20,10 +19,8 @@ public class UserFilter implements Filter {
 
     @Override public List<PollResult> filter(final List<PollResult> input) {
         final List<PollResult> filteredList = new ArrayList<>();
-        for(final PollResult pr:input)
-        {
-            if(userList.contains(pr.getPollTaker()) != inverted)
-            {
+        for (final PollResult pr:input) {
+            if (userList.contains(pr.getPollTaker()) != inverted) {
                 filteredList.add(pr);
             }
         }

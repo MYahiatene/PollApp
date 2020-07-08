@@ -1,8 +1,7 @@
-package gpse.umfrato.domain.evaluation.Session;
+package gpse.umfrato.domain.evaluation.session;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import gpse.umfrato.domain.evaluation.filter.FilterData;
-import gpse.umfrato.domain.user.User;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -24,7 +23,7 @@ public class Session {
 
     private String sessionTitle;
 
-    @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.EAGER, orphanRemoval = true)
     private List<FilterData> filterList;
 
     @ElementCollection

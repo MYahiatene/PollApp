@@ -63,6 +63,12 @@ export const getters = {
     getPollName(state) {
         return state.DiagramData.name
     },
+    getPollId(state) {
+        return state.pollId
+    },
+    getFilterList(state) {
+        return state.FilterList
+    },
     getParticipants(state) {
         return state.DiagramData.particpantCount
     },
@@ -71,6 +77,14 @@ export const getters = {
     },
     getPolls(state) {
         return state.Polls
+    },
+    getCurrentPoll(state) {
+        for (let i = 0; i < state.Polls.length; i++) {
+            if (state.Polls[i].pollId === state.pollId) {
+                return state.Polls[i]
+            }
+        }
+        return {}
     },
     getSessions(state) {
         return state.Sessions
@@ -92,11 +106,8 @@ export const getters = {
     },
     getDiagramFormat(state) {
         return (id) => {
-            // console.log('suche nach ' + id)
             for (let i = 0; i < state.DiagramFormat.length; i++) {
                 if (state.DiagramFormat[i].questionId === id) {
-                    // console.log('custom ' + i)
-                    // console.log(state.DiagramFormat[i])
                     return JSON.parse(JSON.stringify(state.DiagramFormat[i]))
                 }
             }
@@ -107,12 +118,9 @@ export const getters = {
                     for (let q = colors.length; q < state.DiagramData.questionList[i].answerPossibilities.length; q++) {
                         defaultFormat.backgroundColors.push(String(colors[q % colors.length]))
                     }
-                    // console.log('default')
-                    // console.log(defaultFormat)
                     return defaultFormat
                 }
             }
-            // console.log('super-gau')
             return JSON.parse(JSON.stringify(state.defaultDiagramFormat))
         }
     },
@@ -138,8 +146,6 @@ export const mutations = {
         state.currentSession = sessionId
     },
     setDiagramFormatsFromServer(state, formatList) {
-        // console.log('reset')
-        // console.log(formatList)
         state.DiagramFormat = []
         state.defaultDiagramFormat = stringToFormat(formatList[0])
         if (formatList.length > 1) {
@@ -147,20 +153,15 @@ export const mutations = {
         }
     },
     setDiagramFormats(state, { useOnAll, format }) {
-        // console.log('setDiagramFormats()')
-        // console.log(format)
         if (useOnAll) {
             state.DiagramFormat = []
         }
         state.defaultDiagramFormat = format
     },
     setDiagramFormat(state, format) {
-        // console.log('setDiagramFormat()')
-        // console.log(format)
         for (let i = 0; i < state.DiagramFormat.length; i++) {
             if (state.DiagramFormat[i].questionId === format.questionId) {
                 Vue.set(state.DiagramFormat, i, format)
-                // console.log('saved custom')
                 return
             }
         }
@@ -198,11 +199,11 @@ export const mutations = {
         state.DiagramOptions.push(option)
     },
     setPollID(state, id) {
-        state.pollId = id
+        state.pollId = Number(id)
         state.FilterList = [
             {
                 filterType: 'dataFilter',
-                basePollId: id,
+                basePollId: Number(id),
                 baseQuestionIds: [],
             },
         ]
@@ -221,7 +222,7 @@ export const actions = {
             {
                 filterType: 'DataFilter',
                 basePollId: pollID,
-                baseQuestionIds: [],
+                baseQuestionIds: [-1],
             },
         ])
         commit('setDiagramData', data)
@@ -329,91 +330,89 @@ export const actions = {
                 console.log(reason)
             })
     },
-    async exportAnswers({ state, commit }, pollId) {
+    async exportPoll({ state, commit }, { pollId, formatString, customSeparator }) {
         /** Export von einem Poll */
-
         console.log('export start!')
-
-        console.log('/api/export/toJSONPoll/{pollId:' + pollId + '}')
-
-        const response = await this.$axios.post('/export/toJSONPoll/' + pollId)
-
+        console.log('/api/export/Poll/{pollId:' + pollId + '}')
+        let response
+        await this.$axios
+            .post('/export/Poll/' + pollId, null, {
+                params: {
+                    format: formatString,
+                    separator: customSeparator,
+                },
+            })
+            .catch((error) => {
+                console.log(error)
+            })
+            .then((r) => {
+                response = r
+            })
         console.log('response: ', response)
+        return response.data
     },
 
-    async exportResults({ state, commit }, pollId) {
+    async exportResults({ state, commit }, { pollId, sessionID, formatString, customSeparator }) {
         console.log('export start!')
-
-        console.log('/api/export/toJSONPollResult/{pollId:' + pollId + '}')
-
-        const response = await this.$axios.post('/export/toJSONPollResult/' + pollId)
-
-        console.log('response: ', response)
+        console.log('/api/export/PollResult/{pollId:' + pollId + '}')
+        let response
+        await this.$axios
+            .post('/export/PollResult/' + pollId, state.FilterList, {
+                params: {
+                    sessionId: sessionID,
+                    format: formatString,
+                    separator: customSeparator,
+                },
+            })
+            .catch((error) => {
+                console.log(error)
+            })
+            .then((r) => {
+                response = r
+            })
+        console.log('r: ', response)
+        return response.data
     },
 
-    async exportCSV({ state, commit }, pollId) {
-        console.log('export start!')
-
-        console.log('/api/export/toCSVPoll/{pollId:' + pollId + '}')
-
-        const response = await this.$axios.post('/export/toCSVPoll/' + pollId)
-
-        console.log('response: ', response)
-    },
-
-    async awaitPollText({ state, commit }, fileName) {
+    async awaitFile({ state, commit }, { fileName, fileNumber, fileFormat }) {
         console.log('trying to find file ')
-
-        console.log('api/export/filename:{' + fileName + '}')
-
+        console.log('api/export/filename:{' + fileNumber + '}')
         const FileDownload = require('js-file-download')
-
-        const response = await this.$axios.get('/export/getFile/' + fileName).then((response) => {
-            FileDownload(JSON.stringify(response.data), fileName + '.txt')
-        })
-
+        const response = await this.$axios
+            .get('/export/getFile/' + fileNumber)
+            .then((response) => {
+                let finalData
+                if (fileFormat === 'csv') {
+                    finalData = response.data
+                        .replace(/\\n/g, '\n')
+                        .replace(/\\'/g, "'")
+                        .replace(/\\"/g, '"')
+                        .replace(/\\&/g, '&')
+                        .replace(/\\r/g, '\r')
+                        .replace(/\\t/g, '\t')
+                        .replace(/\\b/g, '\b')
+                        .replace(/\\f/g, '\f')
+                } else if (fileFormat === 'json') {
+                    finalData = JSON.stringify(response.data)
+                }
+                FileDownload(finalData, fileName + '.' + fileFormat)
+            })
+            .catch((error) => {
+                console.log(error)
+                return false
+            })
         console.log('response: ', response)
-
-        return response
-    },
-
-    async awaitPollResultText({ state, commit }, fileName) {
-        console.log('trying to find file ')
-        console.log('api/export/filename:{' + fileName + '}')
-        const FileDownload = require('js-file-download')
-        const response = await this.$axios.get('/export/getResult/' + fileName).then((response) => {
-            FileDownload(JSON.stringify(response.data), 'Results' + fileName + '.txt')
-        })
-        console.log('response: ', response)
-        return response
-    },
-
-    async awaitPollResultCsv({ state, commit }, fileName) {
-        console.log('trying to find file ')
-        console.log('api/export/filename:{' + fileName + '}')
-        const FileDownload = require('js-file-download')
-        const response = await this.$axios.get('/export/getCSV/' + fileName).then((response) => {
-            FileDownload(
-                response.data
-                    .replace(/\\n/g, '\n')
-                    .replace(/\\'/g, "'")
-                    .replace(/\\"/g, '"')
-                    .replace(/\\&/g, '&')
-                    .replace(/\\r/g, '\r')
-                    .replace(/\\t/g, '\t')
-                    .replace(/\\b/g, '\b')
-                    .replace(/\\f/g, '\f'),
-                'CSV' + fileName + '.csv'
-            )
-        })
-        console.log('response: ', response)
-        return response
+        return true
     },
 
     async importPoll({ state, commit }, file) {
-        console.log('Loaded file: ', file)
-        const response = await this.$axios.post('/export/importPoll/' + file)
-        console.log('response: ', response)
-        return response
+        console.log('Loaded file: ', JSON.parse(file)) // .replace(/#/g, encodeURIComponent('#')))
+        const data = JSON.parse(file)
+        const response = await this.$axios.$post('/export/importPoll/', data).catch((error) => {
+            console.log(error)
+            return false
+        })
+        console.log('Response: ', response)
+        return true
     },
 }

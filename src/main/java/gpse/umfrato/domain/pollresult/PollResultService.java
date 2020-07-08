@@ -50,4 +50,6 @@ public interface PollResultService {
      * @return participated Boolean
      */
     Boolean getParticipated(final String pollTaker, final Long pollId);
+
+    void deleteAllPollResults(final long pollId);
 }

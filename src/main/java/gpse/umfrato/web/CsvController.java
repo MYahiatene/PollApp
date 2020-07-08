@@ -22,7 +22,7 @@ public class CsvController {
         this.csvReader = csvReader;
     }
 
-    @PostMapping(value = "/sendCsv")
+    @PostMapping("/sendCsv")
     //@PreAuthorize("hasAuthority('Admin')")
     public String getEmailsFromCsv(final @RequestBody MailCmd mailCmd) {
         try {

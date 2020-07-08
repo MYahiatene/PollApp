@@ -1,330 +1,164 @@
 package gpse.umfrato.web;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import gpse.umfrato.domain.answer.Answer;
-import gpse.umfrato.domain.category.Category;
+import gpse.umfrato.domain.category.CategoryService;
 import gpse.umfrato.domain.cmd.FilterCmd;
+import gpse.umfrato.domain.cmd.PollCmd;
+import gpse.umfrato.domain.consistencyquestion.ConsistencyQuestionService;
+import gpse.umfrato.domain.evaluation.session.SessionService;
 import gpse.umfrato.domain.evaluation.Statistics;
 import gpse.umfrato.domain.export.ExportService;
+import gpse.umfrato.domain.participationlinks.ParticipationLinkService;
 import gpse.umfrato.domain.poll.Poll;
+import gpse.umfrato.domain.poll.PollRepository;
 import gpse.umfrato.domain.poll.PollService;
 import gpse.umfrato.domain.pollresult.PollResult;
 import gpse.umfrato.domain.pollresult.PollResultService;
-import gpse.umfrato.domain.question.Question;
+import gpse.umfrato.domain.question.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.configurationprocessor.json.JSONArray;
-import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.web.bind.annotation.*;
 
+import javax.activation.UnsupportedDataTypeException;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.MalformedURLException;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
-import java.util.ListIterator;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-@RequestMapping(value = "/api/export/")
+@RequestMapping("/api/export/")
 @RestController
 @CrossOrigin
 public class ExportController {
-    static final Logger LOGGER = Logger.getLogger("ExportController");
+    private static final String FILE_PATH = "src/main/java/gpse/umfrato/domain/export/files/";
+    private static final Integer MAX_FILE_NUMBER = 50;
     private final PollService pollService;
     private final PollResultService pollResultService;
     private final ExportService exportService;
+    private final QuestionService questionService;
+    private final CategoryService categoryService;
+    private final SessionService sessionService;
+    private final ConsistencyQuestionService consistencyQuestionService;
+    private final ParticipationLinkService participationLinkService;
+    private final PollRepository pollRepository;
+    private static final String ONE = "1";
+    private static final String ALL_USERS = "allUsers";
+    private Integer fileNumber = 0;
 
     @Autowired
-    public ExportController(PollService pollService, PollResultService pollResultService, ExportService exportService) {
+    public ExportController(final PollService pollService, final PollResultService pollResultService, final ExportService exportService, final QuestionService questionService, final CategoryService categoryService, final ConsistencyQuestionService consistencyQuestionService, final SessionService sessionService, final ParticipationLinkService participationLinkService, final PollRepository pollRepository) {
         this.pollService = pollService;
         this.pollResultService = pollResultService;
         this.exportService = exportService;
+        this.questionService = questionService;
+        this.categoryService = categoryService;
+        this.consistencyQuestionService = consistencyQuestionService;
+        this.sessionService = sessionService;
+        this.participationLinkService = participationLinkService;
+        this.pollRepository = pollRepository;
     }
 
-    /**New Idea: Convert to JSON first and then to CSV, it sure ain't pretty but if it works it's fine*/
-
-
-    /**Name, PollID, Creator, Anonymität, Kategorie 1, Kategorie 1, Kategorie 2*//*
-     *//**TestPoll, 1, Tbettmann, 1, Frage 1, Frage 2, Frage 1 aus Kat. 2*//*
-        String output = "";
-        output += "Name,PollID,PollCreator,Anonymitätsstatus";
-        int amountOfArgumentsBeforeCategories = 4;
-        for(Category category : poll.getCategoryList())
-            output += ',' + category.getCategoryName() + ',' + "Antwortmöglichkeiten";
-        output += '\n';
-        output += poll.getPollName() + ',' + poll.getPollId() + ',' + poll.getPollCreator() + ',' + poll.getAnonymityStatus();
-        for(Category category : poll.getCategoryList()) {
-            for (Question question : category.getQuestionList()) {
-                output += ',' + escapeSpecialCharacters(question.getQuestionMessage()) + ',';
-                LOGGER.info(question.getQuestionType());
-                for(String possibility : question.getAnswerPossibilities())
-                    output +=' ' + possibility;
-                if(question.getQuestionType() == "RangeQuestion")
-                    output += question.getStartValue() + ".." + question.getEndValue() + " in Inkrementen von " + question.getStepSize();
-                if(question.getQuestionType() == "SliderQuestion")
-                    output += question.getStartValue() + ".." + question.getEndValue() + " in Inkrementen von " + question.getStepSize();
-                output += '\n';
-                for(int i = 0; i<amountOfArgumentsBeforeCategories-1; i++) */
-
-    /**
-     * Needs to be -1 because of output + escapeSpecial... that comma can't go away
-     *//*
-                    output += ',';
-            }
-        }
-        output += '\n';
-        return output;*/
-    @RequestMapping(value = "/getFile/{pollId:\\d+}", method = RequestMethod.GET)
-    // This should be a string, I don't know
+    @RequestMapping(value = "/getFile/{fileNumber:\\d+}", method = RequestMethod.GET)
     @ResponseBody
-    public FileSystemResource getFile(@PathVariable Long pollId) {
-        return new FileSystemResource(new File("src/main/java/gpse/umfrato/domain/export/files/" + pollId.toString() + ".txt"));
+    public FileSystemResource getFile(final @PathVariable Integer fileNumber) {
+        return new FileSystemResource(new File(FILE_PATH + fileNumber.toString() + ".txt"));
     }
 
-    @RequestMapping(value = "/getResult/{pollId:\\d+}", method = RequestMethod.GET)
-    // This should be a string, I don't know
-    @ResponseBody
-    public FileSystemResource getResult(@PathVariable Long pollId) {
-        return new FileSystemResource(new File("src/main/java/gpse/umfrato/domain/export/files/Results" + pollId.toString() + ".txt"));
-    }
-
-    @RequestMapping(value = "/getCSV/{pollId:\\d+}", method = RequestMethod.GET)
-    // This should be a string, I don't know
-    @ResponseBody
-    public FileSystemResource getCSV(@PathVariable Long pollId) {
-        return new FileSystemResource(new File("src/main/java/gpse/umfrato/domain/export/files/CSV" + pollId.toString() + ".txt"));
-    }
-
-    public void writeToFile(String s, String pollId) throws FileNotFoundException {
-        File file = new File("src/main/java/gpse/umfrato/domain/export/files/" + pollId + ".txt");
-        PrintWriter out = new PrintWriter(file);
-        out.println(s);
-        out.close();
+    public Integer writeToFile(final String string) throws FileNotFoundException {
+        final int usedFileNumber = fileNumber;
+        final File file = new File(FILE_PATH + fileNumber + ".txt");
+        fileNumber = ++fileNumber % MAX_FILE_NUMBER;
+        final PrintWriter out = new PrintWriter(file);
+        out.println(string);
         out.flush();
+        out.close();
+        return usedFileNumber;
     }
 
-    public void writeToFileCSV(String s, String pollId) throws FileNotFoundException {
-        File file = new File("src/main/java/gpse/umfrato/domain/export/files/" + pollId + ".txt");
-        PrintWriter out = new PrintWriter(file);
-        for (String index : s.split("\n")) {
+    public Integer writeToFileCSV(final String string) throws FileNotFoundException {
+        final int usedFileNumber = fileNumber;
+        final File file = new File(FILE_PATH + fileNumber.toString() + ".txt");
+        fileNumber = ++fileNumber % MAX_FILE_NUMBER;
+        final PrintWriter out = new PrintWriter(file);
+        for (final String index : string.split("\n")) {
             out.append(index);
             out.append('\n');
         }
-        out.close();
         out.flush();
+        out.close();
+        return usedFileNumber;
     }
 
-    @PostMapping("/toCSVPoll/{pollId:\\d+}")
-    public String toCSVManual(final @PathVariable Long pollId) throws Exception {
-        Poll poll = pollService.getPoll(pollId);
-        writeToFileCSV(exportService.toCSVManual(poll), "CSV" + pollId.toString()); /**Needs to be different because of newline chars*/
-        return exportService.toCSVManual(poll);
-    }
-
-    @PostMapping("/toJSONPoll/{pollId:\\d+}")
-    public String toJSON(final @PathVariable Long pollId) throws Exception {
-        Poll result = pollService.getPoll(pollId);
-        writeToFile(exportService.toJSON(result), pollId.toString());
-        return exportService.toJSON(result);
-/*        LOGGER.info(result.toString());
-        ObjectMapper objectMapper = new ObjectMapper()
-            .findAndRegisterModules();
-        try {
-            return objectMapper.writeValueAsString(result);
-        } catch (JsonProcessingException e) {
-            throw new Exception("Serialisierung fehlgeschlagen");
+    @PostMapping("/importPoll")
+    public Long fromJSONToPoll(final @RequestBody String file) throws MalformedURLException {
+        final PollCmd pollCmd = exportService.fromJSONToPoll(file);
+        Calendar actCalendar = Calendar.getInstance();
+        System.out.println("ActDate: "+pollCmd.getActivatedDate());
+        Date actDate = new Date(Long.parseLong(pollCmd.getActivatedDate()));
+        actCalendar.setTime(actDate);
+        pollCmd.setActivatedDate(actCalendar.toString());
+        Calendar deactCalendar = Calendar.getInstance();
+        System.out.println("DeactDate: "+pollCmd.getDeactivatedDate());
+        Date deactDate = new Date(Long.parseLong(pollCmd.getDeactivatedDate()));
+        actCalendar.setTime(deactDate);
+        pollCmd.setDeactivatedDate(deactCalendar.toString());
+        final Poll poll = new Poll(pollCmd.getPollCreator(), pollCmd.getAnonymityStatus(), pollCmd.getPollName(), pollCmd.getCreationDate(), actCalendar,
+            deactCalendar, pollCmd.getPollStatus(), pollCmd.getBackgroundColor(), pollCmd.getFontColor(), pollCmd.getLogo(), pollCmd.isVisibility(), pollCmd.isCategoryChange(), pollCmd.isActivated(),
+            pollCmd.isDeactivated());
+        /*if (poll.getAnonymityStatus().equals(ONE)) {
+            final String link = participationLinkService.createParticipationLink().toString();
+            participationLinkService.saveParticipationLink(poll.getPollId(), ALL_USERS, link);
         }*/
+        pollRepository.save(poll);
+        return poll.getPollId();
     }
 
-    @PostMapping("/importPoll/{file:[\\s\\S]+}")
-    public Poll fromJSONToPoll(final @PathVariable String file) throws Exception {
-        return exportService.fromJSONToPoll(file);
-/*        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            Poll poll = objectMapper.readValue(json, Poll.class);
-            System.out.println(poll.getPollId());
-            System.out.println(poll.getPollName());
-            return poll;
-        } catch (IOException e) {
-            e.printStackTrace();
+    @PostMapping("/Poll/{pollId:\\d+}")
+    public Integer toCSVManual(final @PathVariable Long pollId, final @RequestParam String format, final @RequestParam String separator) throws UnsupportedDataTypeException, FileNotFoundException, JsonProcessingException {
+        final Poll poll = pollService.getPoll(pollId);
+        if (format.equals("csv")) {
+            final String csv = exportService.toCSVManual(poll, separator);
+            return writeToFileCSV(csv);
+        } else if (format.equals("json")) {
+            final String json = exportService.toJSON(poll);
+            return writeToFile(json);
+        } else {
+            throw new UnsupportedDataTypeException(format + "is not a supported export format");
         }
-        return null;*/
     }
 
-    @PostMapping("/toJSONPollResult/{pollId:\\d+}")
-    public String toJSONResult(final @PathVariable Long pollId) throws Exception {
-        List<PollResult> results = pollResultService.getPollResults(pollId);
-        writeToFile(exportService.toJSON(results), "Results" + pollId.toString());
-        return exportService.toJSON(results);
-/*        ObjectMapper objectMapper = new ObjectMapper()
-            .findAndRegisterModules();
-        try {
-            return objectMapper.writeValueAsString(result);
-        } catch (JsonProcessingException e) {
-            throw new Exception("Serialisierung fehlgeschlagen");
-        }*/
-    }
-
-    @PostMapping("/importPollResult")
-    public List<PollResult> fromJSONToResult(final @RequestBody String json) throws Exception {
-        return exportService.fromJSONToResult(json);
-/*        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            PollResult pResult = objectMapper.readValue(json, PollResult.class);
-            return pResult;
-        } catch (IOException e) {
-            e.printStackTrace();
+    @PostMapping("/PollResult/{pollId:\\d+}")
+    public Integer toJSONResult(final @PathVariable Long pollId, final @RequestParam Long sessionId, final @RequestParam String format, final @RequestParam String separator, final @RequestBody List<FilterCmd> filterList) throws JsonProcessingException, FileNotFoundException, UnsupportedDataTypeException {
+        final FilterCmd cmd = new FilterCmd();
+        cmd.setBasePollId(pollId);
+        cmd.setBaseQuestionIds(Collections.singletonList(-1L));
+        final Statistics statistics = new Statistics(questionService, pollService, pollResultService, categoryService, consistencyQuestionService, sessionService, cmd);
+        if (sessionId < 0) {
+            if (sessionId > -2) {
+                statistics.loadFilter(filterList);
+            }
+        } else {
+            statistics.loadSessionFilters(sessionId);
         }
-        return null;*/
+        final List<PollResult> results = statistics.filteredResults();
+        if (format.equals("csv")) {
+            final String csv = exportService.toCSVManual(results, pollService.getPoll(pollId), separator);
+            return writeToFileCSV(csv);
+        } else if (format.equals("json")) {
+            final String json = exportService.toJSON(results);
+            return writeToFile(json);
+        } else {
+            throw new UnsupportedDataTypeException(format + "is not a supported export format");
+        }
     }
 
-    @PostMapping("/toJSONWithPollResult")
-    public String createExportJSON(Poll poll, List<PollResult> result) {
+    /*@PostMapping("/toJSONWithPollResult")
+    public String createExportJSON(Poll poll, List<PollResult> result){
         return exportService.createExportJSON(poll, result);
-/*        JSONObject combined = new JSONObject();
-        try {
-            JSONObject pollJSON = new JSONObject();
-            pollJSON.getJSONObject(toJSON(poll));
-            combined.put("Poll", pollJSON);
-            JSONObject resultJSON;
-            for(PollResult resultIndex : result) {
-                resultJSON = new JSONObject();
-                resultJSON.getJSONObject(toJSON(resultIndex));
-                combined.put("Results", resultJSON);
-            }
-            return combined.toString();
-        } catch(Exception e){}
-        return null;*/
-    }
-
-    private String formatCSVField(String data) {
-        return String.format("\"{0}\"",
-            data.replace("\"", "\"\"\"")
-                .replace("\n", "")
-                .replace("\r", "")
-        );
-    }
-
-    public String addHeaders(Long pollId) {
-        Poll pollToConvert = pollService.getPoll(pollId);
-        List<Category> categories = pollToConvert.getCategoryList();
-        ListIterator<Category> categoryIterator = categories.listIterator();
-
-        String columnNamesList = pollToConvert.getPollName(); /**Table headers*/
-        /**Structure: PollID, PollName, AnonymityStatus, PollCreator*/
-        columnNamesList += pollToConvert.getPollId() + ',' + pollToConvert.getPollName() + ',' + pollToConvert.getAnonymityStatus() + ',' + pollToConvert.getPollCreator() + ',';
-        while (categoryIterator.hasNext()) {
-            Category singularCategory = categoryIterator.next(); //Page
-            ListIterator<Question> questionIterator = singularCategory.getQuestionList().listIterator();
-            while (questionIterator.hasNext()) {
-                Question singularQuestion = questionIterator.next();
-                String singularQuestionMessage = singularQuestion.getQuestionMessage();
-                /**TODO: Maybe Object to String will work, I don't know*/
-                columnNamesList += "," + singularQuestionMessage; /**I think it works that way, should give out "PollID, Frage1, Frage2, Frage3, ... regardless of category"*/
-            }
-        }
-        return columnNamesList;
-    }
-
-    /**So how does it work?: */
-    /**Function iterates over the list of pollResults first filling the first row of Elements with the Questions and then filling the rest with the actual PollResults.*/
-    /**
-     * TODO: Implement way to know what kind of question this was
-     */
-
-    @PostMapping("/answers/{pollId:\\d+}")
-    public String convertPollWithResultsToCSV(final @PathVariable Long pollId) {
-        String columnNamesList = addHeaders(pollId);
-        /**This is what does the work I guess*/
-
-        PrintWriter pw = null;
-        try {
-            pw = new PrintWriter(new File("PollData.csv"));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        StringBuilder builder = new StringBuilder();
-
-        /**IMPORTANT: Structure: PollID; PollTaker; PollResultID; LastEditAt; List of Answers*/
-        // No need give the headers Like: id, Name on builder.append
-        builder.append(columnNamesList + "\n");
-        List<PollResult> results = pollResultService.getPollResults(pollId); /**TODO: WICHTIG KEINE LISTE VON POLLRESULTS*/
-        ListIterator<PollResult> resultIterator = results.listIterator();
-        while (resultIterator.hasNext()) {
-            PollResult singularResult = resultIterator.next();
-            ListIterator<Answer> answerIterator = singularResult.getAnswerList().listIterator();
-            builder.append(singularResult.getPollId() + ',' + singularResult.getPollTaker() + ',' + singularResult.getPollResultId() + ',' + singularResult.getLastEditAt());
-            while (answerIterator.hasNext()) {
-                Answer singularAnswer = answerIterator.next();
-                /**Iterate over list to make every Answer one column in the csv table*/
-                builder.append(answerToCSV(singularAnswer) + ',');
-            }
-            builder.append('\n');
-        }
-        pw.write(builder.toString());
-        pw.close();
-        LOGGER.info("done!");
-
-        return builder.toString();
-    }
-
-    public String convertReadableQuestionsToCSV(final @PathVariable Long pollId) {
-        Poll pollToConvert = pollService.getPoll(pollId);
-        List<Category> categories = pollToConvert.getCategoryList();
-        ListIterator<Category> categoryIterator = categories.listIterator();
-
-        String columnNamesList = pollToConvert.getPollName(); /**Table headers*/
-        while (categoryIterator.hasNext()) {
-            Category singularCategory = categoryIterator.next(); //Page
-            ListIterator<Question> questionIterator = singularCategory.getQuestionList().listIterator();
-            while (questionIterator.hasNext()) {
-                Question singularQuestion = questionIterator.next();
-                String singularQuestionMessage = singularQuestion.getQuestionMessage();
-                columnNamesList += '\n' + singularQuestionMessage; /**I think it works that way, should give out "PollID, Frage1, Frage2, Frage3, ... regardless of category"*/
-            }
-        }
-
-        /**This is what does the work I guess*/
-
-        PrintWriter pw = null;
-        try {
-            pw = new PrintWriter(new File("PollData.csv"));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        StringBuilder builder = new StringBuilder();
-
-
-        // No need give the headers Like: id, Name on builder.append
-        builder.append(columnNamesList + "\n");
-        pw.write(builder.toString());
-        pw.close();
-        LOGGER.info("done!");
-
-        return builder.toString();
-    }
-
-    public String answerToCSV(Answer input) {
-        ListIterator<String> answerIterator = input.getGivenAnswerList().listIterator();
-        String output = "";
-        while (answerIterator.hasNext()) {
-            String answerForSingularQuestion = answerIterator.next();
-            output += answerForSingularQuestion + ",";
-        }
-        output += '\n';
-        return output;
-    }
-
-    public static String escapeSpecialCharacters(String data) {
-        String escapedData = data.replaceAll("\\R", " ");
-        if (data.contains(",") || data.contains("\"") || data.contains("'")) {
-            data = data.replace("\"", "\"\"");
-            escapedData = "\"" + data + "\"";
-        }
-        return escapedData;
-    }
+    }*/
 
 }
+

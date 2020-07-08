@@ -1,5 +1,6 @@
 export const state = () => ({
     buildIndex: 0,
+    saveButtonStatus: true,
     question: {
         categoryId: null,
         questionMessage: '',
@@ -23,6 +24,9 @@ export const state = () => ({
     },
 })
 export const mutations = {
+    setSaveButtonStatus(state, value) {
+        state.saveButtonStatus = value
+    },
     setQuestionMes(state, questionMessage) {
         state.question.questionMessage = questionMessage
     },
@@ -93,6 +97,9 @@ export const getters = {
     },
     getBuildIndex(state) {
         return state.buildIndex
+    },
+    getSaveButtonStatus(state) {
+        return state.saveButtonStatus
     },
 }
 export const actions = {

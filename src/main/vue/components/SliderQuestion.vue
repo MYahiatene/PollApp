@@ -29,15 +29,9 @@
             ></v-text-field>
         </v-row>
         <v-row no-gutters>
-            <v-switch v-model="openLower" label="Offene untere Grenze" @change="clearLower()"></v-switch>
-        </v-row>
-        <v-row v-if="openLower" no-gutters>
             <v-text-field label="Minimumbeschriftung" v-model="lowerText" hint="bspw. 'weniger als X'"></v-text-field>
         </v-row>
         <v-row no-gutters>
-            <v-switch v-model="openUpper" label="Offene obere Grenze" @change="clearUpper()"></v-switch>
-        </v-row>
-        <v-row v-if="openUpper" no-gutters>
             <v-text-field label="Maximumbeschriftung" v-model="upperText" hint="bspw. 'mehr als X'"></v-text-field>
         </v-row>
         <v-row no-gutters>
@@ -62,42 +56,34 @@ export default {
             openUpper: false,
             valid: false,
             // rules that assert that the endValue entered in the textField must be higher than the starValue
-            endValueRules: [(v) => parseFloat(v) > this.startValue || 'Die Zahl muss größer als der Endwert sein!'],
+            endValueRules: [
+                (v) => {
+                    if (parseFloat(v) > this.startValue) {
+                        this.setSaveButtonStatus(true)
+                    } else {
+                        this.setSaveButtonStatus(false)
+                        return 'Die Zahl muss größer als der Endwert sein!'
+                    }
+                },
+            ],
             // rules that assert that the stepsize entered in the textField must be lower than the difference between starValue and endValue
             stepSizeRules: [
-                (v) =>
-                    parseFloat(v) < this.endValue - this.startValue ||
-                    'Die Schrittweite muss kleiner als die Reichweite sein!',
-                (v) =>
-                    (this.endValue - this.startValue) % parseFloat(v, 10) === 0 ||
-                    'Die Reichweite muss durch die Schrittweite teilbar sein',
+                (v) => {
+                    if (
+                        parseFloat(v) < this.endValue - this.startValue &&
+                        (this.endValue - this.startValue) % parseFloat(v) === 0
+                    ) {
+                        this.setSaveButtonStatus(true)
+                    } else if (parseFloat(v) > this.endValue - this.startValue) {
+                        this.setSaveButtonStatus(false)
+                        return 'Die Schrittweite muss kleiner als die Reichweite sein!'
+                    } else {
+                        this.setSaveButtonStatus(false)
+                        return 'Die Reichweite muss durch die Schrittweite teilbar sein'
+                    }
+                },
             ],
         }
-    },
-    mounted() {
-        this.openLower = this.getQuestion.belowMessage
-        this.openUpper = this.getQuestion.aboveMessage
-    },
-    methods: {
-        ...mapMutations({
-            setStart: 'questionOverview/setStartValue',
-            setFinish: 'questionOverview/setEndValue',
-            setStep: 'questionOverview/setStepSize',
-            setLower: 'questionOverview/setBelowMessage',
-            setUpper: 'questionOverview/setAboveMessage',
-            setHideValues: 'questionOverview/setHideValues',
-            // setNA: 'pollOverview/setIntervalNoAnswer',
-        }),
-        clearLower() {
-            if (!this.openLower) {
-                this.setLower(null)
-            }
-        },
-        clearUpper() {
-            if (!this.openUpper) {
-                this.setUpper(null)
-            }
-        },
     },
     computed: {
         ...mapGetters({ getQuestion: 'questionOverview/getQuestion' }),
@@ -157,6 +143,33 @@ export default {
                     this.setNA(value)
                 },
             }, */
+    },
+    mounted() {
+        this.openLower = this.getQuestion.belowMessage
+        this.openUpper = this.getQuestion.aboveMessage
+        // this.setSaveButtonStatus(true) ToDo: Figure out why this doesn't work
+    },
+    methods: {
+        ...mapMutations({
+            setSaveButtonStatus: 'questionOverview/setSaveButtonStatus',
+            setStart: 'questionOverview/setStartValue',
+            setFinish: 'questionOverview/setEndValue',
+            setStep: 'questionOverview/setStepSize',
+            setLower: 'questionOverview/setBelowMessage',
+            setUpper: 'questionOverview/setAboveMessage',
+            setHideValues: 'questionOverview/setHideValues',
+            // setNA: 'pollOverview/setIntervalNoAnswer',
+        }),
+        clearLower() {
+            if (!this.openLower) {
+                this.setLower(null)
+            }
+        },
+        clearUpper() {
+            if (!this.openUpper) {
+                this.setUpper(null)
+            }
+        },
     },
 }
 </script>

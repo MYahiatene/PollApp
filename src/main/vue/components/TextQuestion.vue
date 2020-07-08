@@ -64,17 +64,36 @@ export default {
             valid: false,
             // rules that assert that the input in the textField must be positive (there can't be a negative number of chars on an answer
             minRules: [
-                (v) => v >= 0 || 'Die Zahl muss positiv sein!',
-                (v) => v <= this.maximum || 'Die Zahl muss kleiner als das Maximum sein!',
+                (v) => {
+                    if (v <= this.maximum && v > 0) {
+                        this.setSaveButtonStatus(true)
+                    } else if (v < 1) {
+                        this.setSaveButtonStatus(false)
+                        return 'Die Zahl muss größer als 0 sein!'
+                    } else {
+                        this.setSaveButtonStatus(false)
+                        return 'Die Zahl muss kleiner als das Maximum sein!'
+                    }
+                },
             ],
             maxRules: [
-                (v) => v >= 0 || 'Die Zahl muss positiv sein!',
-                (v) => v >= this.minimum || 'Die Zahl muss größer als das Minimum sein!',
+                (v) => {
+                    if (v >= this.minimum && v > 0) {
+                        this.setSaveButtonStatus(true)
+                    } else if (v < 1) {
+                        this.setSaveButtonStatus(false)
+                        return 'Die Zahl muss größer als 0 sein!'
+                    } else {
+                        this.setSaveButtonStatus(false)
+                        return 'Die Zahl muss größer als das Minimum sein!'
+                    }
+                },
             ],
         }
     },
     methods: {
         ...mapMutations({
+            setSaveButtonStatus: 'questionOverview/setSaveButtonStatus',
             multiline: 'questionOverview/setTextMultiline',
             setMin: 'questionOverview/setTextMin',
             setMax: 'questionOverview/setTextMax',

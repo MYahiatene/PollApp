@@ -3,133 +3,110 @@ package gpse.umfrato.domain.export;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import gpse.umfrato.domain.answer.Answer;
 import gpse.umfrato.domain.category.Category;
+import gpse.umfrato.domain.cmd.PollCmd;
 import gpse.umfrato.domain.poll.Poll;
 import gpse.umfrato.domain.pollresult.PollResult;
 import gpse.umfrato.domain.question.Question;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
-
 import java.io.IOException;
 import java.util.List;
+import java.util.ListIterator;
 
 @Service
 public class ExportServiceImpl implements ExportService {
 
     @Override
-    public String toCSVManual(Poll poll) {
-        /**Name, PollID, Creator, Anonymität, Kategorie 1, Kategorie 1, Kategorie 2*/
-        /**TestPoll, 1, Tbettmann, 1, Frage 1, Frage 2, Frage 1 aus Kat. 2*/
-        String output = "";
-        output += "Name,PollID,PollCreator,Anonymitätsstatus";
-        int amountOfArgumentsBeforeCategories = 4;
-        for (Category category : poll.getCategoryList()) {
-            output += ',' + category.getCategoryName() + ',' + "Antwortmöglichkeiten";
+    public String toCSVManual(final Poll poll, final String separator) {
+        /*Name, PollID, Creator, Anonymität, Kategorie 1, Kategorie 1, Kategorie 2*/
+        /*TestPoll, 1, Tbettmann, 1, Frage 1, Frage 2, Frage 1 aus Kat. 2*/
+        final StringBuilder output = new StringBuilder();
+        output.append("Name").append(separator).append("PollID").append(separator).append("PollCreator").append(separator).append("Anonymitätsstatus");
+        final int amountOfArgumentsBeforeCategories = 4;
+        for (final Category category : poll.getCategoryList()) {
+            output.append(separator).append(category.getCategoryName()).append(separator).append("Antwortmöglichkeiten");
         }
-        output += '\n';
-        output += poll.getPollName() + ',' + poll.getPollId() + ',' + poll.getPollCreator() + ',' + poll.getAnonymityStatus();
-        for (Category category : poll.getCategoryList()) {
-            for (Question question : category.getQuestionList()) {
-                output += ',' + escapeSpecialCharacters(question.getQuestionMessage()) + ',';
-                for (String possibility : question.getAnswerPossibilities()) {
-                    output += ' ' + possibility;
+        output.append('\n');
+        output.append(poll.getPollName()).append(separator).append(poll.getPollId()).append(separator).append(poll.getPollCreator()).append(separator).append(poll.getAnonymityStatus());
+        for (final Category category : poll.getCategoryList()) {
+            for (final Question question : category.getQuestionList()) {
+                output.append(separator).append(escapeSpecialCharacters(question.getQuestionMessage())).append(separator);
+                for (final String possibility : question.getAnswerPossibilities()) {
+                    output.append(' ').append(possibility);
                 }
                 if (question.getQuestionType().equals("RangeQuestion")) {
-                    output += question.getStartValue() + ".." + question.getEndValue() + " in Inkrementen von " + question.getStepSize();
+                    output.append(question.getStartValue()).append("..").append(question.getEndValue()).append(" in Inkrementen von ").append(question.getStepSize());
                 }
                 if (question.getQuestionType().equals("SliderQuestion")) {
-                    output += question.getStartValue() + ".." + question.getEndValue() + " in Inkrementen von " + question.getStepSize();
+                    output.append(question.getStartValue()).append("..").append(question.getEndValue()).append(" in Inkrementen von ").append(question.getStepSize());
                 }
-                output += '\n';
-                for (int i = 0; i < amountOfArgumentsBeforeCategories - 1; i++) /**Needs to be -1 because of output + escapeSpecial... that comma can't go away*/ {
-                    output += ',';
-                }
+                output.append('\n');
+                /*Needs to be -1 because of output + escapeSpecial... that comma can't go away*/
+                output.append(separator.repeat(amountOfArgumentsBeforeCategories - 1));
             }
         }
-        output += '\n';
-        return output;
+        output.append('\n');
+        return output.toString();
     }
+
+    /*So how does it work?: */
+    /*Function iterates over the list of pollResults first filling the first row of Elements with the Questions and then filling the rest with the actual PollResults.*/
 
     @Override
-    public String toJSON(Poll result) throws Exception {
-        ObjectMapper objectMapper = new ObjectMapper()
-            .findAndRegisterModules();
-        try {
-            return objectMapper.writeValueAsString(result);
-        } catch (JsonProcessingException e) {
-            return ("Serialisierung fehlgeschlagen");
-        }
-    }
+    public String toCSVManual(final List<PollResult> results, final Poll poll, final String separator) {
 
-    @Override
-    public Poll fromJSONToPoll(String json) {
-        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            Poll poll = objectMapper.readValue(json, Poll.class);
-            return poll;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
+        final String columnNamesList = "PollTaker" + separator +  "LastEdit" + addHeaders(poll, separator) + '\n';
+        /*This is what does the work I guess*/
 
-    public String toJSONSingularPR(PollResult result) throws Exception {
-        ObjectMapper objectMapper = new ObjectMapper()
-            .findAndRegisterModules();
-        try {
-            return objectMapper.writeValueAsString(result);
-        } catch (JsonProcessingException e) {
-            return "Serialisierung fehlgeschlagen";
-        }
-    }
+        final StringBuilder builder = new StringBuilder();
 
-    @Override
-    public String toJSON(List<PollResult> result) throws Exception {
-        ObjectMapper objectMapper = new ObjectMapper()
-            .findAndRegisterModules();
-        try {
-            return objectMapper.writeValueAsString(result);
-        } catch (JsonProcessingException e) {
-
-            return "Serialisierung fehlgeschlagen";
-        }
-    }
-
-    @Override
-    public List<PollResult> fromJSONToResult(String json) {
-        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            List<PollResult> pResult = objectMapper.readValue(json, new TypeReference<List<PollResult>>() {
-            });
-            return pResult;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    @Override
-    public String createExportJSON(Poll poll, List<PollResult> result) {
-        JSONObject combined = new JSONObject();
-        try {
-            JSONObject pollJSON = new JSONObject();
-            pollJSON.getJSONObject(toJSON(poll));
-            combined.put("Poll", pollJSON);
-            JSONObject resultJSON;
-            for (PollResult resultIndex : result) {
-                resultJSON = new JSONObject();
-                resultJSON.getJSONObject(toJSONSingularPR(resultIndex));
-                combined.put("Results", resultJSON);
+        /*IMPORTANT: Structure: PollID; PollTaker; PollResultID; LastEditAt; List of Answers*/
+        // No need give the headers Like: id, Name on builder.append
+        builder.append(columnNamesList).append('\n');
+        for (final PollResult singularResult : results) {
+            final ListIterator<Answer> answerIterator = singularResult.getAnswerList().listIterator();
+            builder.append(singularResult.getPollTaker()).append(separator).append(singularResult.getLastEditAt()).append(separator);
+            while (answerIterator.hasNext()) {
+                final Answer singularAnswer = answerIterator.next();
+                /*Iterate over list to make every Answer one column in the csv table*/
+                builder.append(answerToCSV(singularAnswer)).append(separator);
             }
-            return combined.toString();
-        } catch (Exception e) {
-            e.printStackTrace();
+            builder.append('\n');
         }
-        return null;
+        return builder.toString();
     }
 
-    public static String escapeSpecialCharacters(String data) {
+    private String addHeaders(final Poll pollToConvert, final String separator) {
+        final List<Category> categories = pollToConvert.getCategoryList();
+        final ListIterator<Category> categoryIterator = categories.listIterator();
+
+        final StringBuilder columnNamesList = new StringBuilder(); /*Table headers*/
+        /*Structure: PollID, PollName, AnonymityStatus, PollCreator*/
+        while (categoryIterator.hasNext()) {
+            final Category singularCategory = categoryIterator.next(); //Page
+            for (final Question singularQuestion : singularCategory.getQuestionList()) {
+                final String singularQuestionMessage = singularQuestion.getQuestionMessage();
+                columnNamesList.append(separator).append(singularQuestionMessage); /*I think it works that way, should give out "PollID, Frage1, Frage2, Frage3, ... regardless of category"*/
+            }
+        }
+        return columnNamesList.toString();
+    }
+
+
+    private String answerToCSV(final Answer input) {
+        final ListIterator<String> answerIterator = input.getGivenAnswerList().listIterator();
+        final StringBuilder output = new StringBuilder();
+        while(answerIterator.hasNext()) {
+            final String answerForSingularQuestion = answerIterator.next();
+            output.append(escapeSpecialCharacters(answerForSingularQuestion)).append(' ');
+        }
+        return output.toString();
+    }
+
+    private static String escapeSpecialCharacters(String data) {
         String escapedData = data.replaceAll("\\R", " ");
         if (data.contains(",") || data.contains("\"") || data.contains("'")) {
             data = data.replace("\"", "\"\"");
@@ -138,4 +115,66 @@ public class ExportServiceImpl implements ExportService {
         return escapedData;
     }
 
+    @Override
+    public String toJSON(final Poll result) throws JsonProcessingException {
+        final ObjectMapper objectMapper = new ObjectMapper()
+            .findAndRegisterModules();
+            return objectMapper.writeValueAsString(result);
+    }
+
+    @Override
+    public PollCmd fromJSONToPoll(final String json) {
+        try {
+            final ObjectMapper objectMapper = new ObjectMapper();
+            return objectMapper.readValue(json, PollCmd.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public String toJSONSingularPR(final PollResult result) throws JsonProcessingException {
+        final ObjectMapper objectMapper = new ObjectMapper()
+            .findAndRegisterModules();
+            return objectMapper.writeValueAsString(result);
+    }
+
+    @Override
+    public String toJSON(final List<PollResult> result) throws JsonProcessingException {
+        final ObjectMapper objectMapper = new ObjectMapper()
+            .findAndRegisterModules();
+            return objectMapper.writeValueAsString(result);
+    }
+
+    @Override
+    public List<PollResult> fromJSONToResult(final String json) {
+        try {
+            final ObjectMapper objectMapper = new ObjectMapper();
+            return objectMapper.readValue(json, new TypeReference<List<PollResult>>() {
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public String createExportJSON(final Poll poll, final List<PollResult> result) {
+        final JSONObject combined = new JSONObject();
+        try {
+            final JSONObject pollJSON = new JSONObject();
+            pollJSON.getJSONObject(toJSON(poll));
+            combined.put("Poll", pollJSON);
+            JSONObject resultJSON;
+            for (final PollResult resultIndex : result) {
+                resultJSON = new JSONObject();
+                resultJSON.getJSONObject(toJSONSingularPR(resultIndex));
+                combined.put("Results", resultJSON);
+            }
+            return combined.toString();
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 }

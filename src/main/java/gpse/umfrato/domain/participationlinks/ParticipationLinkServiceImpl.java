@@ -72,4 +72,9 @@ public class ParticipationLinkServiceImpl implements ParticipationLinkService {
         return participationLinkRepository.findParticipationLinksByPollId(pollId);
     }
 
+    @Override
+    public void deleteAllLinks(final Long pollId) {
+        participationLinkRepository.deleteAllByPollId(pollId);
+    }
+
 }

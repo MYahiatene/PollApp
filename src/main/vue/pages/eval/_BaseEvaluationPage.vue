@@ -88,14 +88,7 @@ that each display a basic evaluation of one specific question-->
                         </template>
                         <span>Globale Digrammfarben anpassen</span>
                     </v-tooltip>
-                    <v-tooltip bottom>
-                        <template v-slot:activator="{ on, attrs }">
-                            <v-btn icon color="primary" v-bind="attrs" v-on="on">
-                                <v-icon>mdi-cloud-download</v-icon>
-                            </v-btn>
-                        </template>
-                        <span>Exportieren</span>
-                    </v-tooltip>
+                    <export-widget-dialog :export-result="true"></export-widget-dialog>
                     <session-manager @close-event="widgetKey += 1"></session-manager>
                     <filter-form :initial-poll-index="getPollIndex" @close-event="widgetKey += 1"></filter-form>
 
@@ -241,15 +234,6 @@ that each display a basic evaluation of one specific question-->
                 <v-card-title>Der Server hat noch nicht geantwortet</v-card-title>
             </v-card>
         </v-container>
-        <v-container>
-            <v-btn class="pl-4" @click="exportAnswers()">Antworten exportieren </v-btn>
-            <v-btn class="pl-4" @click="exportResults()">Antworten exportieren </v-btn>
-            <v-btn class="pl-4" @click="exportCSV()">Antworten exportierenCSV </v-btn>
-            <v-col cols="12" md="4">
-                Datei hochladen
-                <input type="file" @change="uploadFile" />
-            </v-col>
-        </v-container>
     </v-container>
 </template>
 
@@ -262,10 +246,12 @@ import TextQuestionEvaluationWidget from '../../components/TextQuestionEvaluatio
 import FilterForm from '../../components/filterForm'
 import SessionManager from '../../components/SessionManager'
 import SortQuestionEvaluationWidget from '../../components/SortQuestionEvaluationWidget'
+import ExportWidgetDialog from '../../components/exportWidgetDialog'
 
 export default {
     name: 'BaseEvaluationPage',
     components: {
+        ExportWidgetDialog,
         SessionManager,
         FilterForm,
         AuthGate,
@@ -428,44 +414,6 @@ export default {
             updateData: 'evaluation/updateData',
             loadSessions: 'evaluation/loadSessions',
         }),
-
-        exportAnswers() {
-            this.$store.dispatch('evaluation/exportAnswers', 1) // This should be PollId
-            this.downloadClick(1)
-        },
-
-        exportResults() {
-            this.$store.dispatch('evaluation/exportResults', 1) // This should be PollId
-            this.downloadClickResult(1)
-        },
-
-        exportCSV() {
-            this.$store.dispatch('evaluation/exportCSV', 1) // This should be PollId
-            this.downloadClickCSV(1)
-        },
-
-        downloadClick(pollId) {
-            console.log(this.$store.dispatch('evaluation/awaitPollText', pollId))
-        },
-
-        downloadClickResult(pollId) {
-            console.log(this.$store.dispatch('evaluation/awaitPollResultText', pollId))
-        },
-
-        downloadClickCSV(pollId) {
-            console.log(this.$store.dispatch('evaluation/awaitPollResultCsv', pollId))
-        },
-
-        uploadFile(e) {
-            const file = e.target.files[0]
-            const reader = new FileReader()
-            reader.readAsText(file)
-            reader.onload = (e) => {
-                console.log('File: ', file)
-                console.log('FileE: ', e.target.result)
-                console.log(this.$store.dispatch('evaluation/importPoll', e.target.result))
-            }
-        },
 
         /*
 
