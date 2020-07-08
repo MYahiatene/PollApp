@@ -72,6 +72,7 @@
                                                         :value="answer"
                                                         :color="fontColor"
                                                         label="Auswahl"
+                                                        v-model="valueList[index]"
                                                         @change="saveAnswerRadioButton(question, answer)"
                                                     ></v-overflow-btn>
                                                 </v-card-text>
@@ -160,8 +161,6 @@
                                                     v-for="answer in question.answerPossibilities"
                                                     :key="answer.text"
                                                 >
-                                                    <!--:error="disableCheckbox(index, question, answer)"
-                                                        error-messages="This is wrong!"-->
                                                     <v-checkbox
                                                         class="my-n2 mx-3"
                                                         dense
@@ -397,7 +396,7 @@ export default {
             valueList: [],
             participated: false,
             errorMessageCheckbox: '',
-            dropdown: true,
+            dropdown: false,
             dropDownAnswersDisplayedInSelect: 3,
         }
     },
@@ -746,8 +745,6 @@ export default {
             this.answerObj.questionId = question.questionId
 
             this.saveAnswer() // alternative: Button after every TextField
-
-            // this.showAnswer() // TODO: Fails with 405???
         },
         /**
          * Get's the given answer of a checkbox question and calls saveAnswer() to persist it in the database. This
@@ -758,46 +755,53 @@ export default {
          */
         saveAnswerCheckbox(e, question, answer, index) {
             if (this.valueList[index]) {
+                // check if number of answers is bigger than allowed answers
                 if (Object.keys(this.valueList[index]).length > question.numberOfPossibleAnswers) {
                     this.errorMessageCheckbox = 'Maximal ' + question.numberOfPossibleAnswers + ' Antworten!'
                     for (let j = 0; j < Object.keys(this.valueList[index]).length; j++) {
                         if (this.valueList[index][j] === answer) {
-                            console.log('richitge antwort gefunden')
+                            // take last argument from list
                             this.valueList[index].splice(question.numberOfPossibleAnswers, 1)
                         }
                     }
                     return true
                 } else {
+                    // else: Answers are valid, so will be saved
                     this.errorMessageCheckbox = ''
-                }
-            }
-            this.showAnswerMultipleChoice()
-            const objectIndex = this.givenAnswers.indexOf('Object')
-            if (objectIndex !== -1) {
-                this.$store.commit('participant/takeOffAnswer', objectIndex)
-            }
-            let i
-            // checks if checkBox was checked, not unchecked
-            if (e === true) {
-                for (i = 0; i < question.answerPossibilities.length; i++) {
-                    if (answer === question.answerPossibilities[i]) {
-                        this.$store.commit('participant/setAnswer', i)
+                    this.showAnswerMultipleChoice()
+                    const objectIndex = this.givenAnswers.indexOf('Object')
+                    if (objectIndex !== -1) {
+                        this.$store.commit('participant/takeOffAnswer', objectIndex)
                     }
-                }
-            } else {
-                for (i = 0; i < question.answerPossibilities.length; i++) {
-                    if (answer === question.answerPossibilities[i]) {
-                        // funktioniert das mit Index oder mit Namen?(answer)
-                        const index = this.givenAnswers.indexOf(i)
-                        this.$store.commit('participant/takeOffAnswer', index)
+                    let i
+                    // checks if checkBox was checked, not unchecked
+                    if (e !== []) {
+                        for (i = 0; i < question.answerPossibilities.length; i++) {
+                            if (answer === question.answerPossibilities[i]) {
+                                this.$store.commit('participant/setAnswer', i)
+                            }
+                        }
+                    } else {
+                        for (i = 0; i < question.answerPossibilities.length; i++) {
+                            if (answer === question.answerPossibilities[i]) {
+                                this.$store.commit('participant/takeOffAnswer', i)
+                            }
+                        }
                     }
-                }
-            }
-            this.answerObj.answerList = this.getAnswer
-            this.answerObj.pollId = this.getPoll[1].data.pollId
-            this.answerObj.questionId = question.questionId
+                    this.answerObj.answerList = []
+                    for (let j = 0; j < e.length; j++) {
+                        for (let k = 0; k < question.answerPossibilities.length; k++) {
+                            if (e[j] === question.answerPossibilities[k]) {
+                                this.answerObj.answerList.push(k)
+                            }
+                        }
+                    }
+                    this.answerObj.pollId = this.getPoll[1].data.pollId
+                    this.answerObj.questionId = question.questionId
 
-            this.saveAnswer()
+                    this.saveAnswer()
+                }
+            }
         },
         /**
          * Get's the given answer of a free text question and calls saveAnswer() to persist it in the database. This
