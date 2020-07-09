@@ -352,7 +352,7 @@ export const actions = {
         return response.data
     },
 
-    async exportResults({ state, commit }, { pollId, sessionID, formatString, customSeparator }) {
+    async exportResults({ state, commit }, { pollId, sessionID, formatString, customSeparator, dereference }) {
         console.log('export start!')
         console.log('/api/export/PollResult/{pollId:' + pollId + '}')
         let response
@@ -362,6 +362,7 @@ export const actions = {
                     sessionId: sessionID,
                     format: formatString,
                     separator: customSeparator,
+                    dereferenceAnswerPossibilities: dereference,
                 },
             })
             .catch((error) => {

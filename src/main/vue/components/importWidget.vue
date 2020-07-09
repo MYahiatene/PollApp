@@ -48,8 +48,8 @@ export default {
                 console.log('FileE: ', e.target.result)
                 if (await this.$store.dispatch('evaluation/importPoll', e.target.result)) {
                     this.dialog = false
+                    this.$emit('done')
                 }
-                this.$emit('done')
             }
         },
     },

@@ -10,7 +10,8 @@ import java.util.List;
 public interface ExportService {
     String toCSVManual(Poll poll, final String separator);
 
-    String toCSVManual(final List<PollResult> results, final Poll poll, final String separator);
+    String toCSVManual(final List<PollResult> results, final Poll poll, final String separator,
+                       final boolean dereferenceAnswerPossibilities);
 
     String toJSON(Poll result) throws JsonProcessingException;
 

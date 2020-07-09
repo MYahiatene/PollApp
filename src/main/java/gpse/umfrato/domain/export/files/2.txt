@@ -1,4 +1,3 @@
-Name;PollID;PollCreator;Anonymitätsstatus
-Serienumfrage;33;tbettmann;1
+PollTaker;LastEdit;Kat1F1;Kat1F2;Kat3F1;Kat2F1;Kat3F2
 
-Standardkategorie;Antwortmöglichkeiten
+2;09/07/2020 - 09:24:13 CEST;1 ;fgse ;e2 ;0 ;1 ;

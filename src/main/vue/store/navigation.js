@@ -24,7 +24,7 @@ export const getters = {
 }
 export const mutations = {
     setPolls(state, data) {
-        state.Polls = data.data
+        state.Polls = [...data.data]
     },
     setQrTitle(state, title) {
         state.qrTitle = title
@@ -57,6 +57,7 @@ export const mutations = {
 }
 export const actions = {
     async initialize({ commit, state }) {
+        console.log('reload')
         let error = ''
         const data = await this.$axios.get('/poll').catch((reason) => {
             console.log(reason)

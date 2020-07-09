@@ -223,7 +223,7 @@ public class ExportController {
      * */
     @PostMapping("/PollResult/{pollId:\\d+}")
     public Integer toJSONResult(final @PathVariable Long pollId, final @RequestParam Long sessionId,
-                                final @RequestParam String format, final @RequestParam String separator,
+                                final @RequestParam String format, final @RequestParam String separator, final @RequestParam Boolean dereferenceAnswerPossibilities,
                                 final @RequestBody List<FilterCmd> filterList , final @RequestHeader int timeZoneOffset)
             throws JsonProcessingException, FileNotFoundException, UnsupportedDataTypeException {
         ZoneId timeZone = ZoneId.ofOffset("UTC", ZoneOffset.ofHoursMinutes(timeZoneOffset / 60 , timeZoneOffset % 60));
@@ -241,7 +241,7 @@ public class ExportController {
         }
         final List<PollResult> results = statistics.filteredResults();
         if (format.equals("csv")) {
-            final String csv = exportService.toCSVManual(results, pollService.getPoll(pollId), separator);
+            final String csv = exportService.toCSVManual(results, pollService.getPoll(pollId), separator, dereferenceAnswerPossibilities);
             return writeToFileCSV(csv);
         } else if (format.equals("json")) {
             final String json = exportService.toJSON(results);

@@ -99,7 +99,8 @@ public class ExportServiceImpl implements ExportService {
      * Die Funktion geht die Liste an PollResults durch und schreibt die Ergebnisse jeder Frage untereinander
      * */
     @Override
-    public String toCSVManual(final List<PollResult> results, final Poll poll, final String separator) {
+    public String toCSVManual(final List<PollResult> results, final Poll poll, final String separator,
+                              final boolean dereferenceAnswerPossibilities) {
 
         final String columnNamesList = "PollTaker" + separator +  "LastEdit" + addHeaders(poll, separator) + '\n';
         /*This is what does the work I guess*/
@@ -126,8 +127,8 @@ public class ExportServiceImpl implements ExportService {
                 final Answer singularAnswer = answerIterator.next();
                 /*Iterate over list to make every Answer one column in the csv table*/
                 // System.out.println(getQuestionFromQuestionList(singularAnswer.getQuestionId(), questionList).getQuestionType());
-                if(getQuestionFromQuestionList(singularAnswer.getQuestionId(), questionList).getQuestionType().equals(CHOICE_QUESTION)
-                    || getQuestionFromQuestionList(singularAnswer.getQuestionId(), questionList).getQuestionType().equals(SORT_QUESTION)) {
+                if(dereferenceAnswerPossibilities && (getQuestionFromQuestionList(singularAnswer.getQuestionId(), questionList).getQuestionType().equals(CHOICE_QUESTION)
+                    || getQuestionFromQuestionList(singularAnswer.getQuestionId(), questionList).getQuestionType().equals(SORT_QUESTION))) {
                     builder.append(answerToReadableCSV(singularAnswer, getQuestionFromQuestionList(singularAnswer.getQuestionId(), questionList))).append(separator);
                 }
                 else {

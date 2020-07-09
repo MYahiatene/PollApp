@@ -53,7 +53,7 @@
                                         width="800"
                                         overlay-opacity="0.75"
                                     >
-                                        <exportWidget :export-result="false" @done="exportWidgetDialog = false" />
+                                        <exportWidget :exportResult="false" @done="exportWidgetDialog = false" />
                                     </v-dialog>
                                 </template>
                                 <template>
@@ -61,7 +61,7 @@
                                         <qrGenerator />
                                     </v-dialog>
                                 </template>
-                                <import-widget @done="reloadPolls" />
+                                <import-widget @done="initialize" />
                             </v-toolbar>
                         </template>
                         <v-container>
@@ -459,10 +459,6 @@ export default {
                 this.splicePolls(index)
                 this.$axios.put('/deletepoll', { pollId: item.pollId })
             }
-        },
-        reloadPolls() {
-            // this.progressColorA = '#ff4dff'
-            this.initialize()
         },
         async initializeDatabase() {
             const today = new Date()
