@@ -284,10 +284,9 @@ public class ExportServiceImpl implements ExportService {
             final ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.registerModule(new JavaTimeModule());
             return objectMapper.readValue(json, PollCmd.class);
-        } catch (Exception e) {
-            System.out.println("Error parsing File, maybe it's file of unknown Structure.");
+        } catch (IOException e) {
+            return null;
         }
-        return null;
     }
 
     /**
