@@ -80,8 +80,9 @@ public class ExportServiceImpl implements ExportService {
 
     Question getQuestionFromQuestionList(long questionId, List<Question> questionList){
         for(Question q : questionList){
-            if(q.getQuestionId().equals(questionId))
+            if(q.getQuestionId().equals(questionId)) {
                 return q;
+            }
         }
         return null;
     }
@@ -101,9 +102,11 @@ public class ExportServiceImpl implements ExportService {
         final StringBuilder builder = new StringBuilder();
 
         List<Question> questionList = new ArrayList<>();
-        for(Category c : poll.getCategoryList())
-            for(Question q : c.getQuestionList())
+        for(Category c : poll.getCategoryList()) {
+            for (Question q: c.getQuestionList()) {
                 questionList.add(q);
+            }
+        }
 
         /*IMPORTANT: Structure: PollID; PollTaker; PollResultID; LastEditAt; List of Answers*/
         // No need give the headers Like: id, Name on builder.append
@@ -117,12 +120,14 @@ public class ExportServiceImpl implements ExportService {
             while (answerIterator.hasNext()) {
                 final Answer singularAnswer = answerIterator.next();
                 /*Iterate over list to make every Answer one column in the csv table*/
-                System.out.println(getQuestionFromQuestionList(singularAnswer.getQuestionId(), questionList).getQuestionType());
+                // System.out.println(getQuestionFromQuestionList(singularAnswer.getQuestionId(), questionList).getQuestionType());
                 if(getQuestionFromQuestionList(singularAnswer.getQuestionId(), questionList).getQuestionType() == CHOICE_QUESTION
-                    || getQuestionFromQuestionList(singularAnswer.getQuestionId(), questionList).getQuestionType() == SORT_QUESTION)
+                    || getQuestionFromQuestionList(singularAnswer.getQuestionId(), questionList).getQuestionType() == SORT_QUESTION) {
                     builder.append(answerToReadableCSV(singularAnswer, getQuestionFromQuestionList(singularAnswer.getQuestionId(), questionList))).append(separator);
-                else
+                }
+                else {
                     builder.append(answerToCSV(singularAnswer)).append(separator);
+                }
             }
             builder.append('\n');
         }
@@ -171,8 +176,8 @@ public class ExportServiceImpl implements ExportService {
         final StringBuilder output = new StringBuilder();
         while(answerIterator.hasNext()){
             String next = answerIterator.next();
-            System.out.println("Answer next: "+next);
-            System.out.println("QuestionMessages: "+q.getAnswerPossibilities());
+            // System.out.println("Answer next: "+next);
+            // System.out.println("QuestionMessages: "+q.getAnswerPossibilities());
             final String answerForSingularQuestion = q.getAnswerPossibilities().get(Integer.parseInt(next));
             output.append(escapeSpecialCharacters(answerForSingularQuestion)).append(' ');
         }
