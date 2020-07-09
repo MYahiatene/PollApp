@@ -79,6 +79,8 @@ public class PollCmd {
 
     private Boolean checkLeapYear = false;
 
+    private String seriesPollName;
+
     public Poll getCmdPoll(ZoneOffset userOffset) {
         // parses the activationDAte and deactivationDate from a String to a ZonedDateTime
         // System.out.println(this);

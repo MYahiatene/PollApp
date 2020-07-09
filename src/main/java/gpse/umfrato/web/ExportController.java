@@ -152,6 +152,8 @@ public class ExportController {
         poll.setPollId(null);
         Long pollId = pollRepository.save(poll).getPollId();
         poll.setLastEditAt(ZonedDateTime.now());
+        poll.setCheckLeapYear(pollCmd.getCheckLeapYear());
+        poll.setSeriesPollName(pollCmd.getSeriesPollName());
         if (poll.getAnonymityStatus().equals(ONE)) {
             final String link = participationLinkService.createParticipationLink().toString();
             participationLinkService.saveParticipationLink(poll.getPollId(), ALL_USERS, link);
