@@ -476,6 +476,8 @@ export default {
                 pollCreator: 'Jan',
                 anonymityStatus: '1',
                 pollName: 'Beispielumfrage',
+                activated: false,
+                deactivated: false,
                 creationDate: dd + '.' + mm + '.' + yyyy + '&' + time,
                 activatedDate: dd + '.' + mm + '.' + yyyy + '&' + time,
                 deactivatedDate: dd + '.' + mm + '.' + yyyy + '&' + time,
@@ -484,6 +486,8 @@ export default {
                 visibility: true,
                 backgroundColor: '#555555',
                 fontColor: '#fe7312',
+                level: -1,
+
                 logo:
                     'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAADICAIAAAAiOjnJAAAAAXNSR0IArs4c6QAAAARnQU1' +
                     'BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAA4dSURBVHhe7Z2/ixzHEsf93zhz5siZM2WOlL3sZc4UOVMgkAMjHF' +

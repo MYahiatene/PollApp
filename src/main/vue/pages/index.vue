@@ -10,7 +10,6 @@
                             <v-card-title class="headline">
                                 Willkommen bei Umfrato!
                             </v-card-title>
-                            <sortQuestionEvaluationWidget> </sortQuestionEvaluationWidget>
                             <v-card-text>
                                 <v-container>
                                     <v-row>
@@ -82,10 +81,8 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import SortQuestionEvaluationWidget from '../components/SortQuestionEvaluationWidget'
 export default {
     name: 'Index',
-    components: { SortQuestionEvaluationWidget },
     data() {
         return {
             polls: [],

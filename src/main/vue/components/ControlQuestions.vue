@@ -319,7 +319,7 @@
 <script>
 import { mapGetters } from 'vuex'
 export default {
-    name: 'QAFilter',
+    name: 'ControlQuestions',
     props: {
         pollIndex: {
             type: Number,
@@ -338,6 +338,14 @@ export default {
             type: Number,
         },
         initialAnswerIndices: {
+            default: () => [],
+            type: Array,
+        },
+        useEvaluationStore: {
+            type: Boolean,
+            default: true,
+        },
+        pollsProp: {
             default: () => [],
             type: Array,
         },
@@ -371,9 +379,16 @@ export default {
     },
     computed: {
         ...mapGetters({
-            polls: 'evaluation/getPolls',
+            pollsFromEval: 'evaluation/getPolls',
         }),
 
+        polls() {
+            if (this.useEvaluationStore) {
+                return this.pollsFromEval
+            } else {
+                return this.pollsProp
+            }
+        },
         pollName() {
             return this.polls[this.pollIndex].pollName
         },
