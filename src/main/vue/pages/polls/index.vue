@@ -76,13 +76,21 @@
                                     :custom-filter="filterOnlyCapsText"
                                     class="elevation-1"
                                     multi-sort
+                                    :expanded.sync="expanded"
+                                    show-expand
+                                    single-expand
                                     no-data-text="Es gibt noch keine Umfragen"
                                     no-results-text="Keine passenden Umfragen gefunden"
                                     loading-text="Lade Umfragen"
                                     :footer-props="footerProps"
                                 >
-                                    <template v-slot:item.actions="{ item }">
-                                        <v-chip color="#00000000">
+                                    <template v-slot:top>
+                                        <v-toolbar flat>
+                                            <v-toolbar-title>Alle Umfragen</v-toolbar-title>
+                                        </v-toolbar>
+                                    </template>
+                                    <template v-slot:expanded-item="{ headers, item }">
+                                        <td :colspan="headers.length">
                                             <v-tooltip bottom>
                                                 <template v-slot:activator="{ on, attrs }">
                                                     <v-btn icon color="primary" v-bind="attrs" v-on="on">
@@ -145,8 +153,6 @@
                                                 </template>
                                                 <span> Umfrage exportieren </span>
                                             </v-tooltip>
-                                        </v-chip>
-                                        <v-chip color="#00000000">
                                             <v-tooltip bottom>
                                                 <template v-slot:activator="{ on, attrs }">
                                                     <v-btn icon color="primary" v-bind="attrs" v-on="on">
@@ -225,7 +231,7 @@
                                                 </template>
                                                 <span> Umfrage löschen </span>
                                             </v-tooltip>
-                                        </v-chip>
+                                        </td>
                                     </template>
                                 </v-data-table>
                             </template>
@@ -269,6 +275,7 @@ export default {
             progressColorA: '#FF0000',
             progressColorB: '#FF0000',
             itemsList: [],
+            expanded: [],
             search: '',
             filter: {},
             sortDesc: false,
@@ -280,16 +287,8 @@ export default {
             qrDialog: false,
             qrLink: '',
             qrTitle: '',
-            contextActions: [
-                { title: 'Beantworten', link: '/' },
-                { title: 'Bearbeiten', link: '/polls/' },
-                { title: 'Einladen', link: '/invite/' },
-                { title: 'Erinnern', link: '/remind/' },
-                { title: 'Aktivieren', link: '/' },
-                { title: 'Löschen', link: '/' },
-            ],
             headers: [
-                { text: 'Mögliche Aktionen', value: 'actions', sortable: false },
+                { text: '', value: 'data-table-expand' },
                 { text: 'Umfrage', value: 'pollName' },
                 { text: 'Erstellt von', value: 'pollCreator' },
                 { text: 'Status', value: 'pollStatusString' },
@@ -324,6 +323,7 @@ export default {
         prepareItems() {
             const data = Object.assign([], this.items)
             for (let i = 0; i < data.length; i++) {
+                data[i].id = data[i].pollId
                 if (this.items[i].anonymityStatus === '1') {
                     data[i].anonymityString = 'Anonym'
                 } else if (this.items[i].anonymityStatus === '2') {
