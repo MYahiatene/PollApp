@@ -117,7 +117,7 @@ public class ExportController {
             pollCmd.getCreationDate(), actCalendar,
             deactCalendar, pollCmd.getPollStatus(), pollCmd.getBackgroundColor(), pollCmd.getFontColor(),
             pollCmd.getLogo(), pollCmd.isVisibility(), pollCmd.isCategoryChange(), pollCmd.isActivated(),
-            pollCmd.isDeactivated());
+            pollCmd.isDeactivated(), pollCmd.isOwnDesign());
         /*if (poll.getAnonymityStatus().equals(ONE)) {
             final String link = participationLinkService.createParticipationLink().toString();
             participationLinkService.saveParticipationLink(poll.getPollId(), ALL_USERS, link);

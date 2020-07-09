@@ -273,6 +273,7 @@ export default {
                 logo: this.logo,
                 activated: this.switch1,
                 deactivated: this.switch2,
+                ownDesign: this.switch3,
             }
             console.log('obj: ', obj)
             if (this.pollId !== '0') {

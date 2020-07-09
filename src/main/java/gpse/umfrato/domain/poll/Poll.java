@@ -63,6 +63,7 @@ public class Poll {
      */
     private String anonymityStatus; // Anonym = 1, andere KA
 
+    private Boolean ownDesign;
     /**
      * This attribute represents the chosen background color as hexa.
      */
@@ -140,7 +141,8 @@ public class Poll {
     public Poll(final String pollCreator, final String anonymityStatus, final String pollName, final String createdAt,
                 final Calendar activatedDate, final Calendar deactivatedDate, final int pollStatus,
                 final String backgroundColor, final String fontColor, final String logo, final boolean visibility,
-                final boolean categoryChange, final boolean activated, final boolean deactivated) {
+                final boolean categoryChange, final boolean activated, final boolean deactivated,
+                final boolean ownDesign) {
         this.pollName = pollName;
         this.pollCreator = pollCreator;
         this.anonymityStatus = anonymityStatus;
@@ -155,5 +157,6 @@ public class Poll {
         this.categoryChange = categoryChange;
         this.activated = activated;
         this.deactivated = deactivated;
+        this.ownDesign = ownDesign;
     }
 }

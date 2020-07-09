@@ -58,6 +58,8 @@ public class PollCmd {
 
     private boolean deactivated;
 
+    private boolean ownDesign;
+
     public Poll getCmdPoll() {
         // parses the activationDAte and deactivationDate from a String to a Calendar
         final Calendar activationDate = Calendar.getInstance();
@@ -73,7 +75,7 @@ public class PollCmd {
         }
         final Poll poll = new Poll(pollCreator, anonymityStatus, pollName, creationDate, activationDate,
             deactivationDate, pollStatus, backgroundColor, fontColor, logo, visibility, categoryChange, activated,
-            deactivated);
+            deactivated, ownDesign);
         return poll;
     }
 
