@@ -2,7 +2,18 @@
     <v-card dense class="ma-2 pa-2">
         <v-app-bar dense flat>
             <!--            the title includes the Question and its id-->
-            <v-toolbar-title> {{ questionTitle }} </v-toolbar-title>
+            <v-toolbar-title>
+                {{ questionTitle }} {{ seriesPoll ? '(Version: ' + currentIndex + ')' : '' }}</v-toolbar-title
+            >
+            <v-spacer></v-spacer>
+            <div v-if="seriesPoll">
+                <v-btn @click="loadLastWidget()">
+                    <v-icon>mdi-arrow-left</v-icon>
+                </v-btn>
+                <v-btn @click="loadNextWidget()">
+                    <v-icon>mdi-arrow-right</v-icon>
+                </v-btn>
+            </div>
             <v-spacer></v-spacer>
 
             <div v-if="!noAnswers">
@@ -116,9 +127,11 @@ export default {
     props: {
         questionID: {
             type: Number,
+            default: 0,
         },
         questionTitle: {
             type: String,
+            default: 'hi',
         },
     },
     components: { BarChartView },
@@ -203,6 +216,69 @@ export default {
                 ],
             },
         ],
+        index: 0,
+        currentIndex: 0,
+        seriesPoll: false,
+        numberOfWidgets: 1,
+        diagramDataTest: [
+            {
+                meanOrder: [
+                    [
+                        [
+                            {
+                                itemID: 0,
+                                meanPositionValue: 0,
+                                meanPosition: 0,
+                                itemName: 'a',
+                                variance: 2,
+                                standardDeviation: 2,
+                                show: false,
+                                wasAtPositionNumbers: [2, 0, 0],
+                            },
+                        ],
+                        [
+                            {
+                                itemID: 1,
+                                meanPositionValue: 2,
+                                meanPosition: 2,
+                                itemName: 'b',
+                                variance: 2,
+                                standardDeviation: 2,
+                                show: false,
+                                wasAtPositionNumbers: [0, 0, 2],
+                            },
+                        ],
+                    ],
+                    [
+                        [
+                            {
+                                itemID: 0,
+                                meanPositionValue: 0,
+                                meanPosition: 0,
+                                itemName: 'b',
+                                variance: 2,
+                                standardDeviation: 2,
+                                show: false,
+                                wasAtPositionNumbers: [2, 0, 0],
+                            },
+                        ],
+                        [
+                            {
+                                itemID: 1,
+                                meanPositionValue: 2,
+                                meanPosition: 2,
+                                itemName: 'a',
+                                variance: 2,
+                                standardDeviation: 2,
+                                show: false,
+                                wasAtPositionNumbers: [0, 0, 2],
+                            },
+                        ],
+                    ],
+                ],
+                answerPossibilities: ['a', 'b'],
+            },
+        ],
     }),
 
     computed: {
@@ -212,8 +288,7 @@ export default {
     },
 
     mounted() {
-        this.computeData()
-        this.createChartData()
+        this.computeData(0)
     },
 
     methods: {
@@ -243,27 +318,39 @@ export default {
             this.DiagramKey += 1
         },
 
-        computeData() {
+        computeData(index) {
+            this.meanOrder = []
+            this.answerPossibilites = []
+            if (this.diagramData[this.questionID].meanOrder.length > 1) {
+                this.seriesPoll = true
+                this.numberOfWidgets = this.diagramData[this.questionID].meanOrder.length
+            }
+            console.log('computeData')
+            console.log(index)
             console.log(this.diagramData[this.questionID].meanOrder)
 
-            if (this.diagramData[this.questionID].meanOrder.length === 0) {
+            if (this.diagramData[this.questionID].meanOrder[index].length === 0) {
                 this.noAnswers = true
             } else {
-                for (let i = 0; i < this.diagramData[this.questionID].meanOrder.length; i++) {
+                console.log(this.diagramData[this.questionID].meanOrder[index].length)
+                for (let i = 0; i < this.diagramData[this.questionID].meanOrder[index].length; i++) {
+                    console.log(this.diagramData[this.questionID].meanOrder[index][i])
                     this.meanOrder.push([])
-                    for (let j = 0; j < this.diagramData[this.questionID].meanOrder[i].length; j++) {
+                    for (let j = 0; j < this.diagramData[this.questionID].meanOrder[index][i].length; j++) {
                         console.log(i)
                         console.log(j)
-                        console.log(this.diagramData[this.questionID].meanOrder[i][j])
+                        console.log(this.diagramData[this.questionID].meanOrder[index][i][j])
                         this.meanOrder[i].push({
-                            itemID: this.diagramData[this.questionID].meanOrder[i][j].itemID,
-                            meanPositionValue: this.diagramData[this.questionID].meanOrder[i][j].meanPositionValue,
-                            meanPosition: this.diagramData[this.questionID].meanOrder[i][j].meanPosition,
-                            itemName: this.diagramData[this.questionID].meanOrder[i][j].itemName,
-                            variance: this.diagramData[this.questionID].meanOrder[i][j].variance,
-                            standardDeviation: this.diagramData[this.questionID].meanOrder[i][j].standardDeviation,
+                            itemID: this.diagramData[this.questionID].meanOrder[index][i][j].itemID,
+                            meanPositionValue: this.diagramData[this.questionID].meanOrder[index][i][j]
+                                .meanPositionValue,
+                            meanPosition: this.diagramData[this.questionID].meanOrder[index][i][j].meanPosition,
+                            itemName: this.diagramData[this.questionID].meanOrder[index][i][j].itemName,
+                            variance: this.diagramData[this.questionID].meanOrder[index][i][j].variance,
+                            standardDeviation: this.diagramData[this.questionID].meanOrder[index][i][j]
+                                .standardDeviation,
                             show: false,
-                            wasAtPositionNumbers: this.diagramData[this.questionID].meanOrder[i][j]
+                            wasAtPositionNumbers: this.diagramData[this.questionID].meanOrder[index][i][j]
                                 .wasAtPositionNumbers,
                         })
                     }
@@ -275,6 +362,26 @@ export default {
                 this.span =
                     -this.meanOrder[0][0].meanPositionValue +
                     this.meanOrder[this.meanOrder.length - 1][0].meanPositionValue
+                this.index = index
+
+                this.createChartData()
+            }
+        },
+
+        loadNextWidget() {
+            console.log('loadNext')
+            if (!(this.currentIndex === this.numberOfWidgets - 1)) {
+                console.log('true')
+                this.currentIndex++
+                this.computeData(this.currentIndex)
+            }
+        },
+
+        loadLastWidget() {
+            console.log('loadLast')
+            if (!(this.currentIndex === 0)) {
+                this.currentIndex--
+                this.computeData(this.currentIndex)
             }
         },
     },

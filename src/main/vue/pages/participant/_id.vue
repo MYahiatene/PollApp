@@ -530,7 +530,11 @@ export default {
          */
         fontColor() {
             console.log('fontColor()')
-            return this.getPoll[1].data.fontColor
+            if (this.getPoll[1].data.ownDesign) {
+                return this.getPoll[1].data.fontColor
+            } else {
+                return 'bla'
+            }
         },
         /**
          * Get's the given BackgroundColor from PollData.
@@ -538,7 +542,7 @@ export default {
          */
         backgroundColor() {
             console.log('backgroundColor()')
-            if (this.getPoll[1].data.backgroundColor === null) {
+            if (!this.getPoll[1].data.ownDesign) {
                 return this.$vuetify.theme.currentTheme.background
             }
             return this.getPoll[1].data.backgroundColor
@@ -549,7 +553,11 @@ export default {
          */
         fontColorText() {
             console.log('fontColorText()')
-            return 'color:' + this.getPoll[1].data.fontColor
+            if (this.getPoll[1].data.ownDesign) {
+                return 'color:' + this.getPoll[1].data.fontColor
+            } else {
+                return 'bla'
+            }
         },
         /**
          * Returns true if there is no next category in the poll or if the ChangeOfCategories is not allowed in the poll

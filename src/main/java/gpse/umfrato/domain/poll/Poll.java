@@ -62,6 +62,7 @@ public class Poll {
      */
     private String anonymityStatus; // Anonym = 1, andere KA
 
+    private Boolean ownDesign;
     /**
      * This attribute represents the chosen background color as hexa.
      */
@@ -160,7 +161,7 @@ public class Poll {
     public Poll(final String pollCreator, final String anonymityStatus, final String pollName, final ZonedDateTime createdAt,
                 final ZonedDateTime activatedDate, final ZonedDateTime deactivatedDate, final int pollStatus,
                 final String backgroundColor, final String fontColor, final String logo, final boolean visibility,
-                final boolean categoryChange, final boolean activated, final boolean deactivated, final Integer repeat,
+                final boolean categoryChange, final boolean activated, final boolean deactivated, final boolean ownDesign, final Integer repeat,
                 final String repeatUntil, final List<Integer> day, final List<Integer> week, final List<Integer> month,
                 final Integer stoppingReason, final Integer level, final Long seriesCounter) {
         this.pollName = pollName;
@@ -177,6 +178,7 @@ public class Poll {
         this.categoryChange = categoryChange;
         this.activated = activated;
         this.deactivated = deactivated;
+        this.ownDesign = ownDesign;
         this.repeat = repeat;
         this.repeatUntil = repeatUntil;
         this.day = day;
