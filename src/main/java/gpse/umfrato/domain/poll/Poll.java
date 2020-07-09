@@ -140,6 +140,8 @@ public class Poll {
 
     private Long prevInSeries = -1L;
 
+    private String seriesPollName;
+
     /**
      * This constructor receives a poll name and saves in the poll object.
      *

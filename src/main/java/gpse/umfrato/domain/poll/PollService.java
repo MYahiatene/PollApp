@@ -95,6 +95,6 @@ public interface PollService {
 
     String createSeriesPollName(final Poll poll);
 
-    void calculateNextDate(final Poll poll);
+    ZonedDateTime calculateNextDate(final Poll poll);
 
 }
