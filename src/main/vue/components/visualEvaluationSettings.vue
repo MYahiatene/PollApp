@@ -39,16 +39,66 @@ it passes the attributes:
         <!--        Here we can decide if we want multiple colors -->
 
         <v-row v-show="showDiagram" no-gutters>
-            <v-switch v-model="setMultipleColors" label="Verschiedene Farben pro Antwort"> </v-switch>
-            <v-btn class="ma-2" v-if="setMultipleColors" @click="loadDefaultColors">
-                Bunt
+            <v-switch v-model="setMultipleColors" label="Verschiedene Farben pro Antwort" class="mr-8"> </v-switch>
+            <v-btn class="ma-2" v-if="setMultipleColors" @click="loadColors(0)">
+                {{ colorSchemes[0].name }}
             </v-btn>
-            <v-btn class="ma-2" v-if="setMultipleColors" @click="loadGrayColors">
-                Grau
+            <v-btn class="ma-2" v-if="setMultipleColors" @click="loadColors(1)">
+                {{ colorSchemes[1].name }}
             </v-btn>
+
             <v-btn class="ma-2" v-if="setMultipleColors" @click="loadRandomColors">
                 Zufall
             </v-btn>
+
+            <v-checkbox v-model="setRandomLength" v-if="setMultipleColors && changeDefault"> </v-checkbox>
+            <v-text-field
+                v-if="setMultipleColors && changeDefault"
+                type="number"
+                min="1"
+                :max="upperLengthLimit"
+                label="Anzahl der generierten Farben"
+                v-model="randomLength"
+                :disabled="!setRandomLength"
+                @change="validateLengthInput"
+            >
+            </v-text-field>
+            <v-row justify="center" v-if="setMultipleColors">
+                <v-dialog v-model="colorDialog" width="600px">
+                    <template v-slot:activator="{ on, attrs }">
+                        <v-btn color="accent" v-bind="attrs" v-on="on">
+                            Mehr
+                        </v-btn>
+                    </template>
+                    <v-card>
+                        <v-card-title>
+                            Vorgefertigte Farbkombinationen:
+                        </v-card-title>
+                        <v-card-text>
+                            <v-list v-for="(colorScheme, index) in colorSchemes" :key="index" dense>
+                                <v-list-item>
+                                    <v-chip
+                                        v-for="(color, i) in colorScheme.colorArray"
+                                        :key="i"
+                                        :color="color"
+                                    ></v-chip>
+                                    <v-spacer></v-spacer>
+                                    {{ colorScheme.name }}
+                                    <v-spacer></v-spacer>
+
+                                    <v-icon @click="loadColors(index), (colorDialog = false)">
+                                        mdi-chevron-double-right
+                                    </v-icon>
+                                </v-list-item>
+                            </v-list>
+                        </v-card-text>
+                        <v-card-actions>
+                            <v-spacer></v-spacer>
+                            <v-btn color="info" text @click="colorDialog = false">Fertig</v-btn>
+                        </v-card-actions>
+                    </v-card>
+                </v-dialog>
+            </v-row>
         </v-row>
 
         <!--        This allows us to assemble an array of colors using draggable chips and a color picker -->
@@ -232,6 +282,28 @@ export default {
             grayColors: ['#111111', '#222222', '#333333', '#444444', '#555555'],
             randomLength: 5,
             colorChars: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'],
+            colorSchemes: [
+                {
+                    name: 'Umfrato',
+                    colorArray: ['#114955', '#8ec136', '#551044', '#092140', '#26A599'],
+                },
+                {
+                    name: 'Grau-Stufen',
+                    colorArray: ['#111111', '#222222', '#333333', '#444444', '#555555'],
+                },
+                {
+                    name: 'Durchscheinend',
+                    colorArray: ['#11495588', '#8ec13666', '#55104444', '#09214022'],
+                },
+                {
+                    name: 'Blau-Stufen',
+                    colorArray: ['#0A1647', '#1A76A1', '#260B87', '#3162CB', '#131D5E'],
+                },
+            ],
+            setRandomLength: false,
+            upperLengthLimit: 20,
+            colorDialog: false,
+            defaultColorListLength: 5, // load color will set a shorter list to length of 5
         }
     },
     methods: {
@@ -324,27 +396,27 @@ export default {
             this.loadChipColorInPicker()
         },
 
-        loadDefaultColors() {
-            if (this.changeDefault && this.colorList.length < 5) {
+        loadColors(index) {
+            console.log('load colors')
+            if (this.changeDefault && this.colorList.length < this.defaultColorListLength) {
                 this.colorList = ['', '', '', '', '']
             }
-            for (let i = 0; i < this.colorList.length; i++) {
-                this.colorList[i] = this.defaultColors[i % this.defaultColors.length]
-            }
-            this.$forceUpdate()
-        },
-        loadGrayColors() {
-            if (this.changeDefault && this.colorList.length < 5) {
-                this.colorList = ['', '', '', '', '']
+            if (this.setRandomLength) {
+                this.colorList = []
+                for (let i = 0; i < this.randomLength; i++) {
+                    this.colorList.push('')
+                }
             }
             for (let i = 0; i < this.colorList.length; i++) {
-                this.colorList[i] = this.grayColors[i % this.grayColors.length]
+                console.log('hu')
+                console.log(this.colorSchemes[index].colorArray[i % this.colorSchemes[index].colorArray.length])
+                this.colorList[i] = this.colorSchemes[index].colorArray[i % this.colorSchemes[index].colorArray.length]
             }
             this.$forceUpdate()
         },
 
         loadRandomColors() {
-            if (this.changeDefault && this.colorList.length < 5) {
+            if (this.changeDefault && this.setRandomLength) {
                 this.colorList = []
                 for (let i = 0; i < this.randomLength; i++) {
                     this.colorList.push('')
@@ -361,6 +433,15 @@ export default {
             console.log('random')
             console.log(this.colorList)
             this.$forceUpdate()
+        },
+
+        validateLengthInput() {
+            if (this.randomLength > this.upperLengthLimit) {
+                this.randomLength = this.upperLengthLimit
+            }
+            if (this.randomLength < 0 || !this.randomLength) {
+                this.randomLength = 1
+            }
         },
     },
 
