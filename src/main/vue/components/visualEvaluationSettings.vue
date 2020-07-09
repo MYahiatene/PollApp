@@ -299,6 +299,10 @@ export default {
                     name: 'Blau-Stufen',
                     colorArray: ['#0A1647', '#1A76A1', '#260B87', '#3162CB', '#131D5E'],
                 },
+                {
+                    name: 'Sommer',
+                    colorArray: ['#1D516A', '#A46262', '#32BE89', '#9F7A5A', '#5DA9BA', '#7E9345'],
+                },
             ],
             setRandomLength: false,
             upperLengthLimit: 20,
