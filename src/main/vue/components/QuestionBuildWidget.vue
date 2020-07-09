@@ -31,8 +31,8 @@
                         ></component>
                     </v-row>
                     <v-row>
-                        <v-col cols="9"></v-col>
-                        <v-col cols="2">
+                        <v-col cols="8"></v-col>
+                        <v-col>
                             <v-btn :disabled="questionMessageBool" @click="createQuestion">
                                 <v-icon color="primary" left>
                                     mdi-plus
