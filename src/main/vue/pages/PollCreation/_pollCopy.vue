@@ -639,6 +639,7 @@ export default {
                 day: this.stringToList(this.day),
                 week: this.stringToList(this.week),
                 month: this.stringToList(this.month),
+                ownDesign: this.switch3,
             }
             console.log('obj: ', obj)
             if (this.pollId !== '0') {
