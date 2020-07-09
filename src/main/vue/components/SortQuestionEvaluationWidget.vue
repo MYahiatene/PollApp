@@ -6,7 +6,7 @@
                 {{ questionTitle }} {{ seriesPoll ? '(Version: ' + currentIndex + ')' : '' }}</v-toolbar-title
             >
             <v-spacer></v-spacer>
-            <div v-if="seriesPoll && !noAnswers">
+            <div v-if="seriesPoll">
                 <v-btn @click="loadLastWidget()">
                     <v-icon>mdi-arrow-left</v-icon>
                 </v-btn>
@@ -255,7 +255,7 @@ export default {
                                 itemID: 0,
                                 meanPositionValue: 0,
                                 meanPosition: 0,
-                                itemName: 'a',
+                                itemName: 'b',
                                 variance: 2,
                                 standardDeviation: 2,
                                 show: false,
@@ -267,7 +267,7 @@ export default {
                                 itemID: 1,
                                 meanPositionValue: 2,
                                 meanPosition: 2,
-                                itemName: 'b',
+                                itemName: 'a',
                                 variance: 2,
                                 standardDeviation: 2,
                                 show: false,
@@ -321,43 +321,43 @@ export default {
         computeData(index) {
             this.meanOrder = []
             this.answerPossibilites = []
-            if (this.diagramData[this.questionID].length > 1) {
+            if (this.diagramData[this.questionID].meanOrder.length > 1) {
                 this.seriesPoll = true
-                this.numberOfWidgets = this.diagramData[this.questionID].length
+                this.numberOfWidgets = this.diagramData[this.questionID].meanOrder.length
             }
             console.log('computeData')
             console.log(index)
-            console.log(this.diagramData[this.questionID][index].meanOrder)
+            console.log(this.diagramData[this.questionID].meanOrder)
 
-            if (this.diagramData[this.questionID][index].meanOrder.length === 0) {
+            if (this.diagramData[this.questionID].meanOrder[index].length === 0) {
                 this.noAnswers = true
             } else {
-                console.log(this.diagramData[this.questionID][index].meanOrder.length)
-                for (let i = 0; i < this.diagramData[this.questionID][index].meanOrder.length; i++) {
-                    console.log(this.diagramData[this.questionID][index].meanOrder[i])
+                console.log(this.diagramData[this.questionID].meanOrder[index].length)
+                for (let i = 0; i < this.diagramData[this.questionID].meanOrder[index].length; i++) {
+                    console.log(this.diagramData[this.questionID].meanOrder[index][i])
                     this.meanOrder.push([])
-                    for (let j = 0; j < this.diagramData[this.questionID][index].meanOrder[i].length; j++) {
+                    for (let j = 0; j < this.diagramData[this.questionID].meanOrder[index][i].length; j++) {
                         console.log(i)
                         console.log(j)
-                        console.log(this.diagramData[this.questionID][index].meanOrder[i][j])
+                        console.log(this.diagramData[this.questionID].meanOrder[index][i][j])
                         this.meanOrder[i].push({
-                            itemID: this.diagramData[this.questionID][index].meanOrder[i][j].itemID,
-                            meanPositionValue: this.diagramData[this.questionID][index].meanOrder[i][j]
+                            itemID: this.diagramData[this.questionID].meanOrder[index][i][j].itemID,
+                            meanPositionValue: this.diagramData[this.questionID].meanOrder[index][i][j]
                                 .meanPositionValue,
-                            meanPosition: this.diagramData[this.questionID][index].meanOrder[i][j].meanPosition,
-                            itemName: this.diagramData[this.questionID][index].meanOrder[i][j].itemName,
-                            variance: this.diagramData[this.questionID][index].meanOrder[i][j].variance,
-                            standardDeviation: this.diagramData[this.questionID][index].meanOrder[i][j]
+                            meanPosition: this.diagramData[this.questionID].meanOrder[index][i][j].meanPosition,
+                            itemName: this.diagramData[this.questionID].meanOrder[index][i][j].itemName,
+                            variance: this.diagramData[this.questionID].meanOrder[index][i][j].variance,
+                            standardDeviation: this.diagramData[this.questionID].meanOrder[index][i][j]
                                 .standardDeviation,
                             show: false,
-                            wasAtPositionNumbers: this.diagramData[this.questionID][index].meanOrder[i][j]
+                            wasAtPositionNumbers: this.diagramData[this.questionID].meanOrder[index][i][j]
                                 .wasAtPositionNumbers,
                         })
                     }
                 }
 
                 console.log(this.meanOrder)
-                this.answerPossibilites = this.diagramData[this.questionID][index].answerPossibilities
+                this.answerPossibilites = this.diagramData[this.questionID].answerPossibilities
 
                 this.span =
                     -this.meanOrder[0][0].meanPositionValue +
