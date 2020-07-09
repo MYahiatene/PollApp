@@ -92,6 +92,10 @@ public class ExportController {
         return new FileSystemResource(new File(FILE_PATH + fileNumber.toString() + ".txt"));
     }
 
+    /**
+     * @param string Der String welcher am Ende in die Datei geschrieben wird
+     * Die Funktion schreibt einen Text in eine Datei und gibt die Dateinummer zurück
+     * */
     public Integer writeToFile(final String string) throws FileNotFoundException {
         final int usedFileNumber = fileNumber;
         final File file = new File(FILE_PATH + fileNumber + ".txt");
@@ -103,6 +107,10 @@ public class ExportController {
         return usedFileNumber;
     }
 
+    /**
+     * @param string Der String welcher am Ende in die Datei geschrieben wird
+     * Die Funktion schreibt eine CSV-Datei und gibt die Dateinummer zurück
+     * */
     public Integer writeToFileCSV(final String string) throws FileNotFoundException {
         final int usedFileNumber = fileNumber;
         final File file = new File(FILE_PATH + fileNumber.toString() + ".txt");
@@ -117,6 +125,12 @@ public class ExportController {
         return usedFileNumber;
     }
 
+    /**
+     * @param file Die JSON-Datei welche importiert werden soll
+     * @param timeZoneOffset Der Zeitzonenoffset für die benutzte Zeitzone
+     * Die Funktion parst zuerst die aktivierungs-, deaktivierungs- und creation-Zeiten (werden als Unix epoch-Timestamps übergeben)
+     * und erstellt dann eine neue Poll mit neuem ParticipationLink und speichert diese ab.
+     * */
     @PostMapping("/importPoll")
     public Long fromJSONToPoll(final @RequestBody String file, final @RequestHeader int timeZoneOffset) throws MalformedURLException {
         final PollCmd pollCmd = exportService.fromJSONToPoll(file);
@@ -130,7 +144,7 @@ public class ExportController {
         Instant creationDate = Instant.ofEpochSecond(Long.parseLong(pollCmd.getCreationDate().substring(0, 10)));
         ZonedDateTime creationTime = ZonedDateTime.ofInstant(creationDate, ZoneId.ofOffset("UTC", ZoneOffset.ofHoursMinutes(timeZoneOffset / 60,timeZoneOffset % 60)));
 
-        final Poll poll = new Poll(pollCmd.getPollCreator(), pollCmd.getAnonymityStatus(), pollCmd.getPollName(), creationTime, actTime, deactTime, pollCmd.getPollStatus(),
+        final Poll poll = new Poll(pollCmd.getPollCreator(), pollCmd.getAnonymityStatus(), pollCmd.getPollName(), creationTime, actTime, deactTime, 0,
             pollCmd.getBackgroundColor(), pollCmd.getFontColor(), pollCmd.getLogo(), pollCmd.isVisibility(),
             pollCmd.isCategoryChange(), pollCmd.isActivated(), pollCmd.isDeactivated(), pollCmd.getRepeat(),
         pollCmd.getRepeatUntil(), pollCmd.getDay(), pollCmd.getWeek(), pollCmd.getMonth(),
@@ -138,6 +152,11 @@ public class ExportController {
         poll.setPollId(null);
         Long pollId = pollRepository.save(poll).getPollId();
         poll.setLastEditAt(ZonedDateTime.now());
+        if (poll.getAnonymityStatus().equals(ONE)) {
+            final String link = participationLinkService.createParticipationLink().toString();
+            participationLinkService.saveParticipationLink(poll.getPollId(), ALL_USERS, link);
+            poll.setParticipationLink(link);
+        }
         poll.setCategoryList(cmdToCategory(pollCmd.getCategoryList(), pollId));
         poll.setSeriesCounter(pollCmd.getSeriesCounter());
 
@@ -148,6 +167,11 @@ public class ExportController {
         return pollId;
     }
 
+    /**
+     * @param input Kategorienliste aus dem zu importierenden Poll
+     * @param pollId pollId des neuen Polls
+     * Die Funktion macht eine Liste an CategoryCMDs zu einer Liste an Kategorien da es dafür keine Funktion gab
+     * */
     private List<Category> cmdToCategory(List<CategoryCmd> input, Long pollId){
         List<Category> outputList = new ArrayList<>();
         for(CategoryCmd cmd : input) {
@@ -166,33 +190,12 @@ public class ExportController {
         return outputList;
     }
 
-
-    //ZoneId timeZone = ZoneId.ofOffset("UTC", ZoneOffset.ofHoursMinutes(timeZoneOffset / 60,timeZoneOffset % 60));
-
-    /*@PostMapping("/importPoll")
-    public Long fromJSONToPoll(final @RequestBody String file) throws MalformedURLException {
-        final PollCmd pollCmd = exportService.fromJSONToPoll(file);
-        Calendar actCalendar = Calendar.getInstance();
-        System.out.println("ActDate: "+pollCmd.getActivatedDate());
-        Date actDate = new Date(Long.parseLong(pollCmd.getActivatedDate()));
-        actCalendar.setTime(actDate);
-        pollCmd.setActivatedDate(actCalendar.toString());
-        Calendar deactCalendar = Calendar.getInstance();
-        System.out.println("DeactDate: "+pollCmd.getDeactivatedDate());
-        Date deactDate = new Date(Long.parseLong(pollCmd.getDeactivatedDate()));
-        actCalendar.setTime(deactDate);
-        pollCmd.setDeactivatedDate(deactCalendar.toString());
-        final Poll poll = new Poll(pollCmd.getPollCreator(), pollCmd.getAnonymityStatus(), pollCmd.getPollName(), pollCmd.getCreationDate(), actCalendar,
-            deactCalendar, pollCmd.getPollStatus(), pollCmd.getBackgroundColor(), pollCmd.getFontColor(), pollCmd.getLogo(), pollCmd.isVisibility(), pollCmd.isCategoryChange(), pollCmd.isActivated(),
-            pollCmd.isDeactivated());
-        //if (poll.getAnonymityStatus().equals(ONE)) {
-        //    final String link = participationLinkService.createParticipationLink().toString();
-        //    participationLinkService.saveParticipationLink(poll.getPollId(), ALL_USERS, link);
-        //}
-        pollRepository.save(poll);
-        return poll.getPollId();
-    }*/
-
+    /**
+     * @param pollId Die PollId
+     * @param format Das gewünschte Format (JSON/CSV)
+     * @param separator Der gewünschte Separator
+     * Die Funktion macht aus einer Poll eine JSON bzw. CSV-Datei
+     * */
     @PostMapping("/Poll/{pollId:\\d+}")
     public Integer toCSVManual(final @PathVariable Long pollId, final @RequestParam String format,
                                final @RequestParam String separator) throws UnsupportedDataTypeException,
@@ -209,6 +212,15 @@ public class ExportController {
         }
     }
 
+    /**
+     * @param pollId Die PollId
+     * @param sessionId Die SessionID des Nutzers
+     * @param format Das gewünschte Format (JSON/CSV)
+     * @param separator Der gewünschte Separator
+     * @param filterList Eine Liste an gewünschten Filtern
+     * @param timeZoneOffset Der Zeitzonenoffset
+     * Die Funktion exportiert eine möglicherweise gefilterte Liste an PollResults als JSON bzw. CSV
+     * */
     @PostMapping("/PollResult/{pollId:\\d+}")
     public Integer toJSONResult(final @PathVariable Long pollId, final @RequestParam Long sessionId,
                                 final @RequestParam String format, final @RequestParam String separator,

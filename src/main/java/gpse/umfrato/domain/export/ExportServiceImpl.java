@@ -14,6 +14,9 @@ import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -27,16 +30,16 @@ public class ExportServiceImpl implements ExportService {
         final StringBuilder output = new StringBuilder();
         output.append("Name").append(separator).append("PollID").append(separator).append("PollCreator").
             append(separator).append("Anonymitätsstatus");
-        final int amountOfArgumentsBeforeCategories = 4;
-        for (final Category category : poll.getCategoryList()) {
-            output.append(separator).append(category.getCategoryName()).append(separator).append("Antwortmöglichkeiten");
-        }
         output.append('\n');
         output.append(poll.getPollName()).append(separator).append(poll.getPollId()).append(separator).
-            append(poll.getPollCreator()).append(separator).append(poll.getAnonymityStatus());
+            append(poll.getPollCreator()).append(separator).append(poll.getAnonymityStatus()).append('\n').append('\n');
+
+        //String catSeparatorIncrement = "";
         for (final Category category : poll.getCategoryList()) {
+            output.append(category.getCategoryName()).append(separator).append("Antwortmöglichkeiten").append('\n');
             for (final Question question : category.getQuestionList()) {
-                output.append(separator).append(escapeSpecialCharacters(question.getQuestionMessage())).
+                //output.append(catSeparatorIncrement);
+                output.append(escapeSpecialCharacters(question.getQuestionMessage())).
                     append(separator);
                 for (final String possibility : question.getAnswerPossibilities()) {
                     output.append(' ').append(possibility);
@@ -51,8 +54,10 @@ public class ExportServiceImpl implements ExportService {
                 }
                 output.append('\n');
                 /*Needs to be -1 because of output + escapeSpecial... that comma can't go away*/
-                output.append(separator.repeat(amountOfArgumentsBeforeCategories - 1));
+                //output.append(separator.repeat(amountOfArgumentsBeforeCategories - 1));
             }
+            output.append('\n');
+            //catSeparatorIncrement += separator + separator; //,,
         }
         output.append('\n');
         return output.toString();
@@ -75,7 +80,9 @@ public class ExportServiceImpl implements ExportService {
         builder.append(columnNamesList).append('\n');
         for (final PollResult singularResult : results) {
             final ListIterator<Answer> answerIterator = singularResult.getAnswerList().listIterator();
-            builder.append(singularResult.getPollTaker()).append(separator).append(singularResult.getLastEditAt()).
+            ZonedDateTime lastEdit = singularResult.getLastEditAt();
+            DateTimeFormatter lastEditFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy - HH:mm:ss z");
+            builder.append(singularResult.getPollTaker()).append(separator).append(lastEdit.format(lastEditFormatter)).
                 append(separator);
             while (answerIterator.hasNext()) {
                 final Answer singularAnswer = answerIterator.next();
@@ -92,6 +99,8 @@ public class ExportServiceImpl implements ExportService {
         final ListIterator<Category> categoryIterator = categories.listIterator();
 
         final StringBuilder columnNamesList = new StringBuilder(); /*Table headers*/
+
+        pollToConvert.getCategoryList().get(0).getQuestionList().get(0).getAnswerPossibilities().get(0);
         /*Structure: PollID, PollName, AnonymityStatus, PollCreator*/
         while (categoryIterator.hasNext()) {
             final Category singularCategory = categoryIterator.next(); //Page
