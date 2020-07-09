@@ -251,7 +251,7 @@
                                                 no-title
                                                 show-current="true"
                                                 locale="de"
-                                                :min="new Date().toISOString().substr(0, 10)"
+                                                :min="this.currentDate()"
                                                 max="2100-01-01"
                                                 @input="finishingString = unparseDate(finishingDate)"
                                             />
@@ -309,7 +309,7 @@
                                     no-title
                                     show-current="true"
                                     locale="de"
-                                    :min="new Date().toISOString().substr(0, 10)"
+                                    :min="this.currentDate()"
                                     max="2100-01-01"
                                     @input="closeMenuAndUpdateA"
                                 />
@@ -455,10 +455,10 @@ export default {
             panel1: false,
             panel2: false,
             panel3: false,
-            activateDate: this.formatDate(new Date().toISOString().substr(0, 10)),
-            deactivateDate: this.formatDate(new Date().toISOString().substr(0, 10)),
-            creationDate: this.formatDate(new Date().toISOString().substr(0, 10)),
-            date: new Date().toISOString().substr(0, 10),
+            activateDate: this.formatDate(this.currentDate()),
+            deactivateDate: this.formatDate(this.currentDate()),
+            creationDate: this.formatDate(this.currentDate()),
+            date: this.currentDate(),
             activatedTime: '',
             deactivatedTime: '',
             activated: null,
@@ -787,6 +787,18 @@ export default {
             await this.sendData()
             await this.$router.push('/polls/' + this.newPollId)
         },
+        currentDate() {
+            const date = new Date()
+            return (
+                date.getFullYear() +
+                '-' +
+                (date.getMonth() < 10 ? '0' : '') +
+                date.getMonth() +
+                '-' +
+                (date.getDay() < 10 ? '0' : '') +
+                date.getDay()
+            )
+        },
         formatDate(date) {
             console.log('formatDate')
             if (!date) return null
@@ -803,8 +815,8 @@ export default {
         unparseDate(date) {
             console.log('unparseDate')
             if (!date) {
-                console.log(new Date().toISOString.substr(0, 10))
-                return new Date().toISOString.substr(0, 10)
+                console.log(this.currentDate())
+                return this.currentDate()
             }
             const [year, month, day] = date.split('-')
             console.log('ELSE')
@@ -813,7 +825,7 @@ export default {
         },
         getActivationDate(date) {
             console.log('getActivationDate')
-            if (date === null) return new Date().toISOString.substr(0, 10)
+            if (date === null) return this.currentDate()
             const [day, month, year] = date.split('.')
             return `${year}-${month}-${day}`
         },
