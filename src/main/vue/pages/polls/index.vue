@@ -206,7 +206,7 @@
                                                     <v-btn
                                                         icon
                                                         color="primary"
-                                                        :disabled="!item.series"
+                                                        :disabled="!item.isSeries"
                                                         v-bind="attrs"
                                                         v-on="on"
                                                     >
@@ -233,6 +233,12 @@
                                                 </template>
                                                 <span> Umfrage löschen </span>
                                             </v-tooltip>
+                                            <v-icon>
+                                                mdi-vector-polyline
+                                            </v-icon>
+                                            <v-icon>
+                                                mdi-lock-pattern
+                                            </v-icon>
                                         </td>
                                     </template>
                                 </v-data-table>
@@ -483,15 +489,21 @@ export default {
                 deactivated: false,
                 creationDate: dd + '.' + mm + '.' + yyyy + '&' + time,
                 activatedDate: dd + '.' + mm + '.' + yyyy + '&' + time,
-                deactivatedDate: dd + '.' + mm + '.' + yyyy + '&' + time,
+                deactivatedDate: '11' + '.' + mm + '.' + yyyy + '&' + time,
                 pollStatus: 0,
                 categoryChange: true,
                 visibility: true,
                 backgroundColor: '#555555',
                 fontColor: '#fe7312',
-                level: -1,
+                level: 0,
+                repeat: 1,
+                day: [],
+                week: [],
+                month: [],
                 ownDesign: true,
                 checkLeapYear: false,
+                stoppingReason: 1,
+                repeatUntil: '10',
                 logo:
                     'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAADICAIAAAAiOjnJAAAAAXNSR0IArs4c6QAAAARnQU1' +
                     'BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAA4dSURBVHhe7Z2/ixzHEsf93zhz5siZM2WOlL3sZc4UOVMgkAMjHF' +
