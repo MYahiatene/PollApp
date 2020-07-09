@@ -7,7 +7,8 @@
                     Ihre Antworten wurden gespeichert!
                 </v-card-title>
                 <v-card-text>
-                    Sie können ihre Umfrage bis zum Deaktivierungsdatum noch verändern.
+                    Wenn Sie einen persönlichen Link erhalten haben können Sie Ihre Umfrage bis zum Deaktivierungsdatum
+                    noch verändern.
                 </v-card-text>
                 <v-card-actions>
                     <v-spacer />

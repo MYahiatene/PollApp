@@ -390,7 +390,7 @@ export default {
             },
             ownAnswers: [[]],
             rangeAnswers: [],
-            AnswerListsOfSortQuestions: [[1], [2], [3]],
+            AnswerListsOfSortQuestions: [],
             sqWasAnsweredList: [],
             lastInput: 'Letzte Eingabe',
             valueList: [],
@@ -413,6 +413,7 @@ export default {
 
     mounted() {
         this.createListOfAnswerPossibilitiesForSortQuestions()
+        console.log(this.AnswerListsOfSortQuestions)
     },
     computed: {
         /**
@@ -436,7 +437,6 @@ export default {
          * @returns c, the new QuestionList without rangeQuestions
          **/
         computedQuestionList() {
-            console.log('computedQuestionList()')
             const c = []
             for (let i = 0; i < this.getCategory.questionList.length; i++) {
                 if (this.getCategory.questionList[i].questionType === 'RangeQuestion') {
@@ -494,7 +494,6 @@ export default {
          * Gives back an array of rules (max, min characters) for the text field answer, based on choosen attributes.
          */
         textQuestionRules() {
-            console.log('textQuestionRules()')
             let min
             let max
             let index = 0
@@ -529,7 +528,6 @@ export default {
          * @returns {fontColor}
          */
         fontColor() {
-            console.log('fontColor()')
             if (this.getPoll[1].data.ownDesign) {
                 return this.getPoll[1].data.fontColor
             } else {
@@ -541,7 +539,6 @@ export default {
          * @returns {backgroundColor}
          */
         backgroundColor() {
-            console.log('backgroundColor()')
             if (!this.getPoll[1].data.ownDesign) {
                 return this.$vuetify.theme.currentTheme.background
             }
@@ -552,7 +549,6 @@ export default {
          * @returns {color: fontColor}
          */
         fontColorText() {
-            console.log('fontColorText()')
             if (this.getPoll[1].data.ownDesign) {
                 return 'color:' + this.getPoll[1].data.fontColor
             } else {
@@ -564,7 +560,8 @@ export default {
          * @returns {boolean}
          */
         hasNoNext() {
-            console.log('hasNoNext()')
+            console.log('categoryLength', this.categoryLength)
+            console.log('categoryIndex', this.categoryIndex)
             return this.categoryIndex === this.categoryLength
         },
         /**
@@ -573,13 +570,11 @@ export default {
          * @returns {boolean}
          */
         hasNoPrevious() {
-            console.log('hasNoPrevious()')
             return this.categoryIndex === 1 || !this.getChangeOfCategories
         },
     },
     methods: {
         errorCheckbox(i, question) {
-            console.log('errorCheckbox()')
             if (this.valueList[i]) {
                 if (Object.keys(this.valueList[i]).length > question.numberOfPossibleAnswers) {
                     return true
@@ -591,16 +586,32 @@ export default {
         },
         /**
          * This method creates valueList which for every question type, but sortQuestion is used as v-model to show
-         * already given answers by the user, or nothing at all, if there are no previous given answers.
+         * already given answers by the user, or nothing at all, if there are no previously given answers.
          */
         valuesForQuestions() {
-            console.log('valuesForQuestions()')
             this.valueList = []
+            console.log('poll', this.getPoll[1].data)
+            console.log('category', this.getCategory)
+            console.log('givenAnswers', this.givenAnswers)
+            let index = 0
+            for (let m = 0; m < this.getPoll[1].data.categoryList.length; m++) {
+                console.log('Ich gehe in die for-Schliefe')
+                console.log('catgory.length', this.getPoll[1].data.categoryList.length)
+                console.log('aktuelle Id', this.getCategory.categoryId)
+                console.log('zu vergleichende Id', this.getPoll[1].data.categoryList[m].categoryId)
+                if (this.getCategory.categoryId > this.getPoll[1].data.categoryList[m].categoryId) {
+                    console.log('Ich geh in das if statement!')
+                    index += this.getPoll[1].data.categoryList[m].questionList.length
+                } else {
+                    break
+                }
+            }
+            console.log('index', index)
             for (let i = 0; i < this.getCategory.questionList.length; i++) {
                 const type = this.getCategory.questionList[i].questionType
 
                 if (this.givenAnswers !== []) {
-                    if (this.givenAnswers[i] != null) {
+                    if (this.givenAnswers[i + index] != null) {
                         // for RadioButtons we need answer text and given back are the indizes
                         if (
                             (type === 'ChoiceQuestion' &&
@@ -608,34 +619,38 @@ export default {
                             type === 'RangeQuestion'
                         ) {
                             this.valueList.push(
-                                this.computedQuestionList[i].answerPossibilities[this.givenAnswers[i].givenAnswerList]
+                                this.computedQuestionList[i].answerPossibilities[
+                                    this.givenAnswers[i + index].givenAnswerList
+                                ]
                             )
                         } // for Checkboxes and RangeQuestions it works the same
                         else if (type === 'ChoiceQuestion') {
                             const array = []
-                            for (let j = 0; j < this.givenAnswers[i].length; j++) {
+                            for (let j = 0; j < this.givenAnswers[i + index].length; j++) {
                                 array.push(
                                     this.computedQuestionList[i].answerPossibilities[
-                                        this.givenAnswers[i].givenAnswerList
+                                        this.givenAnswers[i + index].givenAnswerList
                                     ]
                                 )
                             }
                             this.valueList.push(array)
                         } else if (type === 'SortQuestion') {
                             const array = []
-                            for (let j = 0; j < this.givenAnswers[i].givenAnswerList.length; j++) {
+                            for (let j = 0; j < this.givenAnswers[i + index].givenAnswerList.length; j++) {
                                 array.push(
                                     this.computedQuestionList[i].answerPossibilities[
-                                        this.givenAnswers[i].givenAnswerList[j]
+                                        this.givenAnswers[i + index].givenAnswerList[j]
                                     ]
                                 )
                             }
-                            this.AnswerListsOfSortQuestions[i] = array
-                            this.sqWasAnsweredList[i] = false
+                            for (let j = 0; j < array.length; j++) {
+                                this.AnswerListsOfSortQuestions[i][j] = array[j]
+                            }
+                            this.sqWasAnsweredList[i] = true
                             // won't be used for SortQuestions, but needs to be correct index
                             this.valueList.push(array)
                         } else {
-                            this.valueList.push(this.givenAnswers[i].givenAnswerList[0])
+                            this.valueList.push(this.givenAnswers[i + index].givenAnswerList[0])
                         }
                     } else {
                         switch (type) {
@@ -652,6 +667,8 @@ export default {
                                 this.valueList.push([])
                                 break
                             case 'SortQuestion':
+                                // won't be used for SortQuestions, but needs to be correct index
+                                this.valueList.push(this.AnswerListsOfSortQuestions[i])
                                 break
                         }
                     }
@@ -661,7 +678,7 @@ export default {
                             this.valueList.push('')
                             break
                         case 'SlideQuestion':
-                            this.valueList.push(0)
+                            this.valueList.push(this.getCategory.questionList[i].startValue)
                             break
                         case 'ChoiceQuestion':
                             this.valueList.push([])
@@ -670,10 +687,14 @@ export default {
                             this.valueList.push([])
                             break
                         case 'SortQuestion':
+                            // won't be used for SortQuestions, but needs to be correct index
+                            this.valueList.push(this.AnswerListsOfSortQuestions[i])
                             break
                     }
                 }
             }
+            console.log('AnswerSortQuestion', this.AnswerListsOfSortQuestions)
+            console.log('ValueList is created: ', this.valueList)
         },
         /**
          * Get the given answer of the text field from the array ownAnswers and send the answer with the
@@ -681,7 +702,6 @@ export default {
          * the entry in the array so that a new answer can be given.
          **/
         saveOwnAnswer(question) {
-            console.log('saveOwnAnswer()')
             // save the given answerPossibility from the array ownAnswer in the backend
             let x = 0
             for (let i = 0; i < this.ownAnswers.length; i++) {
@@ -708,7 +728,6 @@ export default {
          * Saves the given answer from the text field in an array with the associated QuestionId.
          **/
         saveAnswerPossibility(e, question) {
-            console.log('saveAnswerPossibility()')
             let x = 0
             for (let i = 0; i < this.ownAnswers.length; i++) {
                 if (this.ownAnswers[i].length === 2) {
@@ -729,24 +748,24 @@ export default {
          * the categoryLength and force updates the page to load the questions from th new category.
          */
         getNextCategory() {
-            console.log('getNextCategory()')
             this.$store.commit('participant/setCategory', 1)
             this.categoryIndex = this.getCategoryIndex
             this.categoryLength = this.getPoll[1].data.categoryList.length
             this.category = this.getCategory
             this.$forceUpdate()
+            this.valuesForQuestions()
         },
         /**
          * Calls setCategory in the store to get the previous category in the poll and loads the category etc. like
          * in getNextcategory().
          */
         getPreviousCategory() {
-            console.log('getPreviousCategory()')
             this.$store.commit('participant/setCategory', -1)
             this.categoryIndex = this.getCategoryIndex
             this.categoryLength = this.getPoll[1].data.categoryList.length
             this.category = this.getCategory
             this.$forceUpdate()
+            this.valuesForQuestions()
         },
         /**
          * Get's the given answer of a checkbox question and calls saveAnswer() to persist it in the database. This
@@ -756,7 +775,6 @@ export default {
          * @param answer The answer object, so it can get the answer possibilities.
          */
         saveAnswerRadioButton(question, answer) {
-            console.log('saveAnswerRadioButton()')
             this.answerObj.answerList = []
             for (let i = 0; i < question.answerPossibilities.length; i++) {
                 if (answer === question.answerPossibilities[i]) {
@@ -776,7 +794,6 @@ export default {
          * @param answer The answer object, so it can get the answer possibilities.
          */
         saveAnswerCheckbox(e, question, answer, index) {
-            console.log('saveAnswerCheckbox()')
             if (this.valueList[index]) {
                 // check if number of answers is bigger than allowed answers
                 if (Object.keys(this.valueList[index]).length > question.numberOfPossibleAnswers) {
@@ -833,7 +850,6 @@ export default {
          * @param question The question object, so it can get the QuestionID
          */
         saveAnswerField(e, question) {
-            console.log('saveAnswerField()')
             const answerList = []
             let answer = ''
             let stringcounter = 0
@@ -865,7 +881,6 @@ export default {
          * @param question The question object, so it can get the QuestionID
          */
         saveAnswerSliderQuestion(e, question, index) {
-            console.log('saveAnswerSliderQuestion()')
             this.answerObj.answerList = [e]
             this.answerObj.pollId = this.getPoll[1].data.pollId
             this.answerObj.questionId = question.questionId
@@ -880,7 +895,6 @@ export default {
          * @param question The question object, so it can get the QuestionID
          */
         saveAnswerSortQuestion(index, question) {
-            console.log('saveAnswerSortQuestion()')
             // new empty list, so the answers don't add up
             this.answerObj.answerList = []
             for (let i = 0; i < this.AnswerListsOfSortQuestions[index].length; i++) {
@@ -901,7 +915,6 @@ export default {
          * It's called by click on + Icon at a Range Question.
          */
         subValue(question, index) {
-            console.log('subValue()')
             console.log(this.valueList[index])
             // TODO: doesn't update, so value doesn't show on slider, but does change to "correct value, after click on
             // other slider...
@@ -914,7 +927,6 @@ export default {
          * It's called by click on + Icon at a Range Question.
          */
         addValue(question, index) {
-            console.log('addValue()')
             this.valueList[index] = this.valueList[index] + question.stepSize || question.endValue
             this.$forceUpdate()
         },
@@ -926,7 +938,6 @@ export default {
          *
          */
         createListOfAnswerPossibilitiesForSortQuestions() {
-            console.log('createListOfAnswerPossibilitiesForSortQuestions()')
             for (let i = 0; i < this.computedQuestionList.length; i++) {
                 this.AnswerListsOfSortQuestions.push([])
                 if (this.computedQuestionList[i].questionType === 'SortQuestion') {
@@ -945,7 +956,6 @@ export default {
          * @param questionIndex indes of the question whos anserlist should be restored to the original order
          */
         restoreAP(questionIndex, question) {
-            console.log('restoreAP()')
             for (let i = 0; i < this.computedQuestionList[questionIndex].answerPossibilities.length; i++) {
                 this.AnswerListsOfSortQuestions[questionIndex][i] = this.computedQuestionList[
                     questionIndex
@@ -961,7 +971,6 @@ export default {
          * Calls showPoll in store/participant.js and valuesForQuestion to get the given Answers
          */
         showPoll() {
-            console.log('showPoll()')
             this.$store.dispatch('participant/showPoll', this.id)
             this.poll = this.getPoll
         },
@@ -969,7 +978,6 @@ export default {
          * Calls participated in store/participant.js.
          */
         async showParticipated() {
-            console.log('showParticipated()')
             const userObj = {
                 pollTaker: this.getUsername,
                 pollId: this.getPoll[1].data.pollId,
@@ -985,7 +993,6 @@ export default {
          * Calls saveAnswers from the store with the answerobj (cmdAnswer with all given input)
          */
         saveAnswer() {
-            console.log('saveAnswer()')
             this.answerObj.username = this.getUsername
             this.$store.dispatch('participant/saveAnswer', this.answerObj)
         },
@@ -996,7 +1003,6 @@ export default {
          * and partialy anonym users, after they saved it.
          */
         async showAnswer() {
-            console.log('showAnswer()')
             this.answerObj.username = this.getUsername
             this.answerObj.pollId = this.getPoll[1].data.pollId
             await this.$axios
@@ -1011,7 +1017,6 @@ export default {
                 })
         },
         showAnswerMultipleChoice() {
-            console.log('showAnswerMultipleChoice()')
             this.answerObj.username = this.getUsername
             this.answerObj.pollId = this.getPoll[1].data.pollId
             this.$store.dispatch('participant/showAnswer', this.answerObj)
@@ -1022,7 +1027,6 @@ export default {
          * Is called when clicked on "Absenden".
          */
         saveParticipatedPoll() {
-            console.log('saveParticipatedPoll()')
             const userObj = {
                 pollTaker: this.getUsername,
                 pollId: this.getPoll[1].data.pollId,
