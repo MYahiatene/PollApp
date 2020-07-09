@@ -221,38 +221,9 @@ export default {
         seriesPoll: false,
         numberOfWidgets: 1,
         diagramData: [
-            [
-                // {
-                //     meanOrder: [
-                //         [
-                //             {
-                //                 itemID: 1,
-                //                 meanPositionValue: 1,
-                //                 meanPosition: 1,
-                //                 itemName: 'b',
-                //                 variance: 2,
-                //                 standardDeviation: 2,
-                //                 show: false,
-                //                 wasAtPositionNumbers: [0, 2, 0],
-                //             },
-                //         ],
-                //         [
-                //             {
-                //                 itemID: 0,
-                //                 meanPositionValue: 2,
-                //                 meanPosition: 2,
-                //                 itemName: 'a',
-                //                 variance: 2,
-                //                 standardDeviation: 2,
-                //                 show: false,
-                //                 wasAtPositionNumbers: [0, 0, 2],
-                //             },
-                //         ],
-                //     ],
-                //     answerPossibilities: ['a', 'b'],
-                // },
-                {
-                    meanOrder: [
+            {
+                meanOrder: [
+                    [
                         [
                             {
                                 itemID: 0,
@@ -278,9 +249,35 @@ export default {
                             },
                         ],
                     ],
-                    answerPossibilities: ['a', 'b'],
-                },
-            ],
+                    [
+                        [
+                            {
+                                itemID: 0,
+                                meanPositionValue: 0,
+                                meanPosition: 0,
+                                itemName: 'a',
+                                variance: 2,
+                                standardDeviation: 2,
+                                show: false,
+                                wasAtPositionNumbers: [2, 0, 0],
+                            },
+                        ],
+                        [
+                            {
+                                itemID: 1,
+                                meanPositionValue: 2,
+                                meanPosition: 2,
+                                itemName: 'b',
+                                variance: 2,
+                                standardDeviation: 2,
+                                show: false,
+                                wasAtPositionNumbers: [0, 0, 2],
+                            },
+                        ],
+                    ],
+                ],
+                answerPossibilities: ['a', 'b'],
+            },
         ],
     }),
 
