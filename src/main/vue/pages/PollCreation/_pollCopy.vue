@@ -172,7 +172,8 @@
                                 <v-expansion-panels v-model="panel2" flat>
                                     <v-expansion-panel>
                                         <v-expansion-panel-header>
-                                           Stellen Sie hier ein, wann die Umfrage wieder beendet werden soll. (Wie funktioniert das?)
+                                            Stellen Sie hier ein, wann die Umfrage wieder beendet werden soll. (Wie
+                                            funktioniert das?)
                                         </v-expansion-panel-header>
                                         <v-expansion-panel-content>
                                             <h4>Wie funktioniert die Dynamische Bereitstellung?</h4>
