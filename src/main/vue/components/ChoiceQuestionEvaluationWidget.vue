@@ -234,6 +234,8 @@ export default {
                     }
                 }
             }
+            console.log(this.questionTitle)
+            console.log('data')
             console.log(data)
             return data
         },
@@ -266,15 +268,21 @@ export default {
         // here we compute the data for the visual diagram, writing it into a format the components can process.
         // We either give one color or an array of colors
         chartdataSet() {
+            const c = []
+            for (let i = 0; i < this.chartData[0].length; i++) {
+                const d = []
+                for (let j = 0; j < this.chartData.length; j++) {
+                    d.push(this.chartData[j][i])
+                }
+                c.push({
+                    label: this.questionTitle,
+                    backgroundColor: this.multipleColors ? this.choppedBackgroundColors : this.backgroundColor,
+                    data: d,
+                })
+            }
             return {
                 labels: this.answerPossibilities,
-                datasets: [
-                    {
-                        label: this.questionTitle,
-                        backgroundColor: this.multipleColors ? this.choppedBackgroundColors : this.backgroundColor,
-                        data: this.chartData,
-                    },
-                ],
+                datasets: c,
             }
         },
         /*
