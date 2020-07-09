@@ -30,7 +30,7 @@
                                         <!--the visibility of the index of the current questions in relation to the total
                                     number of questions, given in the settings of the poll-->
                                         <div v-if="getVisibility">{{ (index+1) }}/{{ getNumberOfQuestions }}</div>
-                                        <div class="ps-4">{{ question.questionId }}{{ question.questionMessage }}</div>
+                                        <div class="ps-4">{{ question.questionMessage }}</div>
                                     </v-card-title>
                                     <div v-if="question.questionType === 'TextQuestion'">
                                         <v-card-text>
