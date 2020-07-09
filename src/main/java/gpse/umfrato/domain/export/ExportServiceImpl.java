@@ -121,8 +121,8 @@ public class ExportServiceImpl implements ExportService {
                 final Answer singularAnswer = answerIterator.next();
                 /*Iterate over list to make every Answer one column in the csv table*/
                 // System.out.println(getQuestionFromQuestionList(singularAnswer.getQuestionId(), questionList).getQuestionType());
-                if(getQuestionFromQuestionList(singularAnswer.getQuestionId(), questionList).getQuestionType() == CHOICE_QUESTION
-                    || getQuestionFromQuestionList(singularAnswer.getQuestionId(), questionList).getQuestionType() == SORT_QUESTION) {
+                if(getQuestionFromQuestionList(singularAnswer.getQuestionId(), questionList).getQuestionType().equals(CHOICE_QUESTION)
+                    || getQuestionFromQuestionList(singularAnswer.getQuestionId(), questionList).getQuestionType().equals(SORT_QUESTION)) {
                     builder.append(answerToReadableCSV(singularAnswer, getQuestionFromQuestionList(singularAnswer.getQuestionId(), questionList))).append(separator);
                 }
                 else {
