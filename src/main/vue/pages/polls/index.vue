@@ -395,7 +395,7 @@ export default {
             if (item.pollStatus === 0) {
                 this.$router.push('/polls/' + item.pollId)
             } else if (item.pollStatus === 1) {
-                if (confirm('Umfrage jetzt veröffentlichen?')) {
+                if (confirm('Umfrage noch einmal bearbeiten?')) {
                     this.reEditPoll(item.pollId)
                 }
             } else {

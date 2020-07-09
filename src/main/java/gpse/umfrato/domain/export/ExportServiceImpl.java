@@ -23,6 +23,12 @@ import java.util.ListIterator;
 @Service
 public class ExportServiceImpl implements ExportService {
 
+    private static final String TEXT_QUESTION = "TextQuestion";
+    private static final String RANGE_QUESTION = "RangeQuestion";
+    private static final String SLIDER_QUESTION = "SliderQuestion";
+    private static final String CHOICE_QUESTION = "ChoiceQuestion";
+    private static final String SORT_QUESTION = "SortQuestion";
+
     /**
      * @param poll Poll welcher zu einer CSV gemacht werden soll
      * @param separator Separator für die CSV-Datei
@@ -72,6 +78,14 @@ public class ExportServiceImpl implements ExportService {
     /*Function iterates over the list of pollResults first filling the first row of Elements with the Questions and
     then filling the rest with the actual PollResults.*/
 
+    Question getQuestionFromQuestionList(long questionId, List<Question> questionList){
+        for(Question q : questionList){
+            if(q.getQuestionId().equals(questionId))
+                return q;
+        }
+        return null;
+    }
+
     /**
      * @param poll Die Poll zu denen die PollResults gehören
      * @param results Die Liste an PollResults welche als CSV repräsentiert werden soll
@@ -86,6 +100,11 @@ public class ExportServiceImpl implements ExportService {
 
         final StringBuilder builder = new StringBuilder();
 
+        List<Question> questionList = new ArrayList<>();
+        for(Category c : poll.getCategoryList())
+            for(Question q : c.getQuestionList())
+                questionList.add(q);
+
         /*IMPORTANT: Structure: PollID; PollTaker; PollResultID; LastEditAt; List of Answers*/
         // No need give the headers Like: id, Name on builder.append
         builder.append(columnNamesList).append('\n');
@@ -98,7 +117,12 @@ public class ExportServiceImpl implements ExportService {
             while (answerIterator.hasNext()) {
                 final Answer singularAnswer = answerIterator.next();
                 /*Iterate over list to make every Answer one column in the csv table*/
-                builder.append(answerToCSV(singularAnswer)).append(separator);
+                System.out.println(getQuestionFromQuestionList(singularAnswer.getQuestionId(), questionList).getQuestionType());
+                if(getQuestionFromQuestionList(singularAnswer.getQuestionId(), questionList).getQuestionType() == CHOICE_QUESTION
+                    || getQuestionFromQuestionList(singularAnswer.getQuestionId(), questionList).getQuestionType() == SORT_QUESTION)
+                    builder.append(answerToReadableCSV(singularAnswer, getQuestionFromQuestionList(singularAnswer.getQuestionId(), questionList))).append(separator);
+                else
+                    builder.append(answerToCSV(singularAnswer)).append(separator);
             }
             builder.append('\n');
         }
@@ -137,6 +161,19 @@ public class ExportServiceImpl implements ExportService {
         final StringBuilder output = new StringBuilder();
         while (answerIterator.hasNext()) {
             final String answerForSingularQuestion = answerIterator.next();
+            output.append(escapeSpecialCharacters(answerForSingularQuestion)).append(' ');
+        }
+        return output.toString();
+    }
+
+    private String answerToReadableCSV(Answer answer, Question q){
+        final ListIterator<String> answerIterator = answer.getGivenAnswerList().listIterator();
+        final StringBuilder output = new StringBuilder();
+        while(answerIterator.hasNext()){
+            String next = answerIterator.next();
+            System.out.println("Answer next: "+next);
+            System.out.println("QuestionMessages: "+q.getAnswerPossibilities());
+            final String answerForSingularQuestion = q.getAnswerPossibilities().get(Integer.parseInt(next));
             output.append(escapeSpecialCharacters(answerForSingularQuestion)).append(' ');
         }
         return output.toString();
