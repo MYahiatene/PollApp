@@ -43,12 +43,13 @@ export default {
         uploadFile() {
             const reader = new FileReader()
             reader.readAsText(this.file)
-            reader.onload = (e) => {
+            reader.onload = async (e) => {
                 console.log('File: ', this.file)
                 console.log('FileE: ', e.target.result)
-                if (this.$store.dispatch('evaluation/importPoll', e.target.result)) {
+                if (await this.$store.dispatch('evaluation/importPoll', e.target.result)) {
                     this.dialog = false
                 }
+                this.$emit('done')
             }
         },
     },
