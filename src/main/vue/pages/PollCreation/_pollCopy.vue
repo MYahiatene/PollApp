@@ -518,7 +518,7 @@ export default {
         dayLabel() {
             switch (this.selectedLevel) {
                 case 1:
-                    return 'Tag in der Woche';
+                    return 'Tag in der Woche'
                 case 2:
                     if (this.week <= 0) {
                         return 'Tag im Monat'
@@ -541,7 +541,7 @@ export default {
         dayHint() {
             switch (this.selectedLevel) {
                 case 1:
-                    return 'Tage in der Woche';
+                    return 'Tage in der Woche'
                 case 2:
                     if (this.week <= 0) {
                         return 'Für Wochenbezug Woche festlegen'
@@ -563,11 +563,11 @@ export default {
         },
     },
     mounted() {
-        this.pollId = this.$route.params.pollCopy;
-        this.getCopyPoll();
-        this.getTitle();
-        this.getAnonType();
-        this.getActDate();
+        this.pollId = this.$route.params.pollCopy
+        this.getCopyPoll()
+        this.getTitle()
+        this.getAnonType()
+        this.getActDate()
         this.getDeactDate()
     },
     methods: {
@@ -575,11 +575,11 @@ export default {
             this.$refs.form.validate()
         },
         stringToList(text) {
-            const validChars = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']; // simpler than JS's ' ' == 0 etc.
-            const list = [];
+            const validChars = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'] // simpler than JS's ' ' == 0 etc.
+            const list = []
             if (text) {
-                const asArray = text.split('');
-                let elem = '';
+                const asArray = text.split('')
+                let elem = ''
                 for (let i = 0; i < asArray.length; i++) {
                     if (validChars.includes(asArray[i])) {
                         elem = elem + asArray[i]
@@ -598,8 +598,8 @@ export default {
             }
             list.sort((a, b) => {
                 return a - b
-            });
-            console.log(list);
+            })
+            console.log(list)
             return list
         },
         serialPollValid() {
@@ -612,7 +612,7 @@ export default {
                 ) {
                     switch (this.selectedDeactivation) {
                         case 'Datum':
-                            return this.finishingString.length > 0;
+                            return this.finishingString.length > 0
                         case 'Umfragenanzahl':
                         case 'Teilnehmerzahl':
                             return this.finishingNumber > 0
@@ -624,12 +624,12 @@ export default {
             return true
         },
         dayValid(dayString) {
-            const list = this.stringToList(dayString);
+            const list = this.stringToList(dayString)
             const monthContext =
-                (this.monthValid(this.month) === true && this.month.length > 0) || this.selectedLevel === 2;
-            const weekContext = (this.weekValid(this.week) === true && this.week.length > 0) || this.selectedLevel === 1;
-            console.log('monthContext:', monthContext);
-            console.log('weekContext:', weekContext);
+                (this.monthValid(this.month) === true && this.month.length > 0) || this.selectedLevel === 2
+            const weekContext = (this.weekValid(this.week) === true && this.week.length > 0) || this.selectedLevel === 1
+            console.log('monthContext:', monthContext)
+            console.log('weekContext:', weekContext)
             if (list.length > 0) {
                 for (const elem of list) {
                     if (weekContext && (elem < 1 || elem > 7)) {
@@ -648,10 +648,10 @@ export default {
             }
         },
         weekValid(weekString) {
-            const list = this.stringToList(weekString);
+            const list = this.stringToList(weekString)
             const monthContext =
-                (this.monthValid(this.month) === true && this.month.length > 0) || this.selectedLevel === 2;
-            console.log('monthContextForWeek:', monthContext);
+                (this.monthValid(this.month) === true && this.month.length > 0) || this.selectedLevel === 2
+            console.log('monthContextForWeek:', monthContext)
             if (list.length > 0 || weekString.length === 0) {
                 for (const elem of list) {
                     if (monthContext && (elem < 1 || elem > 5)) {
@@ -666,7 +666,7 @@ export default {
             }
         },
         monthValid(monthString) {
-            const list = this.stringToList(monthString);
+            const list = this.stringToList(monthString)
             if (list.length > 0 || monthString.length === 0) {
                 for (const elem of list) {
                     if (elem < 1 || elem > 12) {
@@ -684,9 +684,9 @@ export default {
          * categories.
          **/
         async sendData() {
-            this.activated = this.activateDate.concat('&', this.activatedTime);
-            this.deactivated = this.deactivateDate.concat('&', this.deactivatedTime);
-            const today = new Date();
+            this.activated = this.activateDate.concat('&', this.activatedTime)
+            this.deactivated = this.deactivateDate.concat('&', this.deactivatedTime)
+            const today = new Date()
             this.created = this.creationDate.concat(
                 '&',
                 (today.getHours() < 10 ? '0' : '') +
@@ -694,7 +694,7 @@ export default {
                     ':' +
                     (today.getMinutes() < 10 ? '0' : '') +
                     today.getMinutes()
-            );
+            )
             const obj = {
                 pollCreator: this.getUsername,
                 anonymityStatus: this.selectedAnonymityType,
@@ -721,15 +721,15 @@ export default {
                 week: this.stringToList(this.week),
                 month: this.stringToList(this.month),
                 ownDesign: this.switch3,
-            };
-            console.log('obj: ', obj);
+            }
+            console.log('obj: ', obj)
             if (this.pollId !== '0') {
                 await this.$axios
                     .post('/createcopypoll', obj)
                     .catch()
                     .then((result) => {
                         this.newPollId = result.data
-                    });
+                    })
                 await this.$axios.post('/copycategories/' + this.poll.pollId + '/' + this.newPollId).catch()
             } else {
                 await this.$axios
@@ -763,81 +763,81 @@ export default {
             this.title += ':wt:'
         },
         switchLevel(choice) {
-            console.log(choice);
+            console.log(choice)
             switch (choice) {
                 case 'Tage':
-                    this.selectedLevel = 0;
-                    break;
+                    this.selectedLevel = 0
+                    break
                 case 'Wochen':
-                    this.selectedLevel = 1;
-                    break;
+                    this.selectedLevel = 1
+                    break
                 case 'Monate':
-                    this.selectedLevel = 2;
-                    break;
+                    this.selectedLevel = 2
+                    break
                 case 'Jahre':
-                    this.selectedLevel = 3;
+                    this.selectedLevel = 3
                     break
             }
         },
         async goHome() {
-            await this.sendData();
+            await this.sendData()
             await this.$router.push('/polls')
         },
         async goToNewPoll() {
-            await this.sendData();
+            await this.sendData()
             await this.$router.push('/polls/' + this.newPollId)
         },
         formatDate(date) {
-            console.log('formatDate');
-            if (!date) return null;
-            const [year, month, day] = date.split('-');
+            console.log('formatDate')
+            if (!date) return null
+            const [year, month, day] = date.split('-')
             return `${day}.${month}.${year}`
         },
         parseDate(date) {
-            console.log('parseDate');
-            if (!date) return null;
-            const [day, month, year] = date.split('.');
-            console.log(`${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`);
+            console.log('parseDate')
+            if (!date) return null
+            const [day, month, year] = date.split('.')
+            console.log(`${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`)
             return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
         },
         unparseDate(date) {
-            console.log('unparseDate');
+            console.log('unparseDate')
             if (!date) {
-                console.log(new Date().toISOString.substr(0, 10));
+                console.log(new Date().toISOString.substr(0, 10))
                 return new Date().toISOString.substr(0, 10)
             }
-            const [year, month, day] = date.split('-');
-            console.log('ELSE');
-            console.log(`${day.padStart(2, '0')}.${month.padStart(2, '0')}.${year}`);
+            const [year, month, day] = date.split('-')
+            console.log('ELSE')
+            console.log(`${day.padStart(2, '0')}.${month.padStart(2, '0')}.${year}`)
             return `${day.padStart(2, '0')}.${month.padStart(2, '0')}.${year}`
         },
         getActivationDate(date) {
-            console.log('getActivationDate');
-            if (date === null) return new Date().toISOString.substr(0, 10);
-            const [day, month, year] = date.split('.');
+            console.log('getActivationDate')
+            if (date === null) return new Date().toISOString.substr(0, 10)
+            const [day, month, year] = date.split('.')
             return `${year}-${month}-${day}`
         },
         reformatActivateDate() {
-            console.log('reformatActivateDate');
+            console.log('reformatActivateDate')
             this.activateDate = this.formatDate(this.date)
         },
         reformatDeactivateDate() {
-            console.log('reformatDeActivateDate');
+            console.log('reformatDeActivateDate')
             this.deactivateDate = this.formatDate(this.date)
         },
         parseTime(date) {
-            console.log('parseTime');
-            if (!date) return null;
+            console.log('parseTime')
+            if (!date) return null
             return date.getHours() + ':' + date.getMinutes()
         },
         closeMenuAndUpdateA() {
-            console.log('closeMenuAndUpdateA');
-            this.menu = false;
+            console.log('closeMenuAndUpdateA')
+            this.menu = false
             this.reformatActivateDate()
         },
         closeMenuAndUpdateD() {
-            console.log('closeMenuAndUpdateD');
-            this.menu = false;
+            console.log('closeMenuAndUpdateD')
+            this.menu = false
             this.reformatDeactivateDate()
         },
         /**
@@ -846,10 +846,10 @@ export default {
          * */
         showImage(image) {
             if (image) {
-                const reader = new FileReader();
-                reader.readAsDataURL(image);
+                const reader = new FileReader()
+                reader.readAsDataURL(image)
                 reader.onload = (e) => {
-                    console.log(e);
+                    console.log(e)
                     this.logo = e.target.result
                 }
             } else {
@@ -872,42 +872,42 @@ export default {
         },
         async getCopyPoll() {
             if (this.pollId !== '0') {
-                await this.$store.dispatch('PollCreation/getCopyPoll', this.pollId);
-                this.poll = this.getPoll;
-                this.categoryList = this.poll.categoryList;
+                await this.$store.dispatch('PollCreation/getCopyPoll', this.pollId)
+                this.poll = this.getPoll
+                this.categoryList = this.poll.categoryList
                 console.log('poll', this.poll)
             }
         },
         async getTitle() {
             if (this.pollId !== '0') {
-                const response = await this.$store.dispatch('PollCreation/getPollName', this.pollId);
-                console.log(response);
-                this.title = response;
-                await this.$router.forceUpdate();
+                const response = await this.$store.dispatch('PollCreation/getPollName', this.pollId)
+                console.log(response)
+                this.title = response
+                await this.$router.forceUpdate()
                 return response
             }
             return 'Titel'
         },
         async getAnonType() {
             if (this.pollId !== '0') {
-                const response = await this.$store.dispatch('PollCreation/getAnonType', this.pollId);
-                console.log(response);
-                if (response === 'Anonym') this.selectedAnonymityType = 1;
-                if (response === 'Teilanonym') this.selectedAnonymityType = 2;
+                const response = await this.$store.dispatch('PollCreation/getAnonType', this.pollId)
+                console.log(response)
+                if (response === 'Anonym') this.selectedAnonymityType = 1
+                if (response === 'Teilanonym') this.selectedAnonymityType = 2
                 if (response === 'Nichtanonym') this.selectedAnonymityType = 3
             }
         },
         async getActDate() {
             if (this.pollId !== '0') {
-                const response = await this.$store.dispatch('PollCreation/getActDate', this.pollId);
-                console.log(response);
-                this.activateDate = response.substring(0, response.indexOf('&'));
-                console.log('activatedDate', this.activateDate);
-                this.activatedTime = response.substring(response.indexOf('&') + 1);
-                console.log('activatedDate', this.activatedTime);
+                const response = await this.$store.dispatch('PollCreation/getActDate', this.pollId)
+                console.log(response)
+                this.activateDate = response.substring(0, response.indexOf('&'))
+                console.log('activatedDate', this.activateDate)
+                this.activatedTime = response.substring(response.indexOf('&') + 1)
+                console.log('activatedDate', this.activatedTime)
                 return response
             } else {
-                const today = new Date();
+                const today = new Date()
                 this.activatedTime =
                     (today.getHours() < 10 ? '0' : '') +
                     today.getHours() +
@@ -918,15 +918,15 @@ export default {
         },
         async getDeactDate() {
             if (this.pollId !== '0') {
-                const response = await this.$store.dispatch('PollCreation/getDeactDate', this.pollId);
-                console.log(response);
-                this.deactivateDate = response.substring(0, response.indexOf('&'));
-                console.log('deactivatedDate', this.deactivateDate);
-                this.deactivatedTime = response.substring(response.indexOf('&') + 1);
-                console.log('deactivatedDate', this.deactivatedTime);
+                const response = await this.$store.dispatch('PollCreation/getDeactDate', this.pollId)
+                console.log(response)
+                this.deactivateDate = response.substring(0, response.indexOf('&'))
+                console.log('deactivatedDate', this.deactivateDate)
+                this.deactivatedTime = response.substring(response.indexOf('&') + 1)
+                console.log('deactivatedDate', this.deactivatedTime)
                 return response
             } else {
-                const today = new Date();
+                const today = new Date()
                 this.deactivatedTime =
                     (today.getHours() < 10 ? '0' : '') +
                     today.getHours() +
