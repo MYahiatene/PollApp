@@ -50,6 +50,29 @@ it passes the attributes:
                 Zufall
             </v-btn>
         </v-row>
+        <v-row>
+            <v-virtual-scroll :items="colorSchemes" :item-height="50" height="300">
+                <template v-slot="{ item }">
+                    <v-list-item>
+                        <v-list-item-avatar>
+                            <v-avatar :color="item.colorArray[0]" size="56" class="white--text"> </v-avatar>
+                        </v-list-item-avatar>
+
+                        <v-list-item-content>
+                            <v-list-item-title>{{ item.name }}</v-list-item-title>
+                        </v-list-item-content>
+
+                        <v-list-item-action>
+                            <v-btn depressed small>
+                                <v-icon right>
+                                    mdi-chevron-double-right
+                                </v-icon>
+                            </v-btn>
+                        </v-list-item-action>
+                    </v-list-item>
+                </template>
+            </v-virtual-scroll>
+        </v-row>
 
         <!--        This allows us to assemble an array of colors using draggable chips and a color picker -->
 
@@ -232,6 +255,16 @@ export default {
             grayColors: ['#111111', '#222222', '#333333', '#444444', '#555555'],
             randomLength: 5,
             colorChars: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'],
+            colorSchemes: [
+                {
+                    name: 'Umfrato',
+                    colorArray: ['#114955', '#8ec136', '#551044', '#092140', '#26A599'],
+                },
+                {
+                    name: 'Grau-Stufen',
+                    colorArray: ['#111111', '#222222', '#333333', '#444444', '#555555'],
+                },
+            ],
         }
     },
     methods: {
