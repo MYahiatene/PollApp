@@ -442,6 +442,11 @@ public class DiagramData {
             this.frequency = doWordFrequencyStuff(this.answers);
         }
 
+        /**
+         * @param stringList Input-String-Eingabeliste
+         * @param input Der String für den die Tendenz berechnet werden muss
+         * Diese Funktion berechnet den Tendenzindex für die Wörter im Input
+         * */
         int calcTendency(final List<String> stringList, final String input) {
             int tendency = 0;
             final String[] wordList = input.split("[ .,;:?\\-_=()/&%$§!#'+*~|<>]+");
@@ -455,6 +460,10 @@ public class DiagramData {
             return tendency;
         }
 
+        /**
+         * @param input Die Eingabeliste an TextAnswers welche zu einer Liste an Strings gemacht werden soll
+         * Diese Funktion macht eine Liste an TextAnswers zu einer Liste an Strings um für diese die Frequenz und Tendenz zu berechnen
+         * */
         List<String> getWordList(List<TextAnswer> input) {
             List<String> stringList = new ArrayList<>();
             for (TextAnswer ta: input) {
@@ -463,6 +472,10 @@ public class DiagramData {
             return stringList;
         }
 
+        /**
+         * @param input Die Eingabeliste an Antworten
+         * Diese Funktion generiert eine Liste an JSObjects um die Frequenz, die Antwortlänge und den ganzen andeden Kram in einer Klasse darzustellen
+         * */
         List<JSObject> doWordStuff(final List<TextAnswer> input) { //Antworten Darstellen
             final List<JSObject> outputList = new ArrayList<>();
             for (final TextAnswer ta: input) {
@@ -473,12 +486,21 @@ public class DiagramData {
             return outputList;
         }
 
+        /**
+         * @param input Die Eingabe-Antwortliste
+         * @param ta Die Textantwort für die die Wortfrequenz berechnet werden soll
+         * Diese Funktion berechnet die Frequenz eines einzelenen Wortes so wie die Funktion genutzt wird
+         * */
         int getWordFrequency(List<TextAnswer> input, TextAnswer ta) {
             List<String> wordList = getWordList(input);
             return Collections.frequency(wordList, ta.text);
 
         }
 
+        /**
+         * @param duplicates Duplikatenthaltende Liste
+         * Diese Funktion entfernt die Duplikate aus einer Liste an JSObjects
+         * */
         List<JSObject> removeDuplicates(final List<JSObject> duplicates) {
             List<String> keyList = new ArrayList<>();
             List<JSObject> noDuplicates = new ArrayList<>();
@@ -491,6 +513,10 @@ public class DiagramData {
             return noDuplicates;
         }
 
+        /**
+         * @param input Eingabe-Antwort-Liste
+         * Diese Funktion berechnet die Wortfrequenz und das ganze Zeug welches im TextQuestionEvaluationWidget unter Wortfrequenz dargestellt wird.
+         * */
         List<JSObject> doWordFrequencyStuff(final List<TextAnswer> input) { //Wortfrequenzen darstellen
             final List<String> answers = new ArrayList<>();
             for (final TextAnswer ta: input) {
