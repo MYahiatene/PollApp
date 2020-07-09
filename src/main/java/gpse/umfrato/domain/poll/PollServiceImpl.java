@@ -161,15 +161,21 @@ class PollServiceImpl implements PollService {
                 break;
             case 2:
                 LOGGER.info("increase to deactivation");
-                LOGGER.info(poll.toString());
+                LOGGER.info("poll: " + poll.toString());
                 poll.setPollStatus(3);
-                if (poll.getLevel() != -1) {
-                    LOGGER.info("create next series Poll");
-                    createNextSeriesPoll(poll);
-                    poll.setLevel(-1);
-                    pollRepository.save(poll);
-                }
                 poll.setDeactivatedDate(ZonedDateTime.now());
+                if (poll.getLevel() != -1) {
+                    LOGGER.info("poll level: " + poll.getLevel());
+                    if (!stoppingReason(poll)) {
+                        LOGGER.info("create next series Poll");
+                        createNextSeriesPoll(poll);
+                        poll.setLevel(-1);
+                        pollRepository.save(poll);
+                    } else {
+                        LOGGER.info("end series");
+                        poll.setLevel(-1);
+                    }
+                }
                 break;
             default:
                 break;
@@ -574,45 +580,29 @@ class PollServiceImpl implements PollService {
         return next;
     }
 
-    ZonedDateTime deltaNew(ZonedDateTime originalStart, ZonedDateTime originalEnd, ZonedDateTime nowStart) {
-        Duration delta = Duration.between(originalStart.toLocalDate(), originalEnd.toLocalDate());
-        return nowStart.plus(delta);
-    }
-
     private int getWeekOfMonthWithDay(ZonedDateTime date, int day) {
         ZonedDateTime firstOfMonth = date.with(TemporalAdjusters.dayOfWeekInMonth(1, DayOfWeek.of(day)));
         return 1 + date.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR) - firstOfMonth.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR);
     }
 
-    private void stoppingReason(String repeatUntil, int stoppingReason, Poll poll) {
-        switch (stoppingReason) {
-            case 0: /*Datum*/ {
+    private boolean stoppingReason(Poll poll) {
+        switch (poll.getStoppingReason()) {
+            case 0: /*Datum*/
+                LOGGER.info("1");
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
-                ZonedDateTime endTime = ZonedDateTime.parse(repeatUntil + " 23:59:59", formatter);
-                // System.out.println("EndTime: "+endTime);
-                if(ZonedDateTime.now().compareTo(endTime) > 0) {
-                    stopUmfrage(poll);
-                }
-                break;
-            }
-            case 1: /*Wiederholungen*/{
-                if(poll.getRepeat() > Integer.parseInt(repeatUntil)) {
-                    stopUmfrage(poll);
-                }
-                break;
-            }
-            case 2: /*Teilnehmer*/{
-                if(pollResultRepository.findPollResultsByPollId(poll.getPollId()).size() > Integer.parseInt(repeatUntil)) {
-                    stopUmfrage(poll);
-                }
-                break;
-            }
-            default: break;
+                ZonedDateTime endTime = ZonedDateTime.parse(poll.getRepeatUntil() + " 23:59:59", formatter);
+                return ZonedDateTime.now().compareTo(endTime) > 0;
+            case 1: /*Wiederholungen*/
+                LOGGER.info("2");
+                return poll.getRepeat() > Integer.parseInt(poll.getRepeatUntil());
+            case 2: /*Teilnehmer*/
+                LOGGER.info("3");
+                final int size = pollResultService.getPollResults(poll.getPollId()).size();
+                LOGGER.info("size of pollresults: " + size);
+                return size < Integer.parseInt(poll.getRepeatUntil());
+            default:
+                return false;
         }
-    }
-
-    void stopUmfrage(Poll poll) {
-        poll.setActivated(false);
     }
 
     private ZonedDateTime calculateNewDeactivation (final Poll oldPoll, final Poll newPoll) {
