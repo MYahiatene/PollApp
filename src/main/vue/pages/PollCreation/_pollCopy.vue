@@ -44,10 +44,24 @@
                         <v-col cols="12" lg="6">
                             <v-card class="mt-5">
                                 <v-card-title>Dynmischer Name</v-card-title>
-                                <v-card-text
-                                    >Klicken sie eines dieser Attribute an, um es bei der Erstellung der Umfrage im
-                                    Titel einfügen zu lassen
-                                </v-card-text>
+                                <v-expansion-panels v-model="panel1" flat>
+                                    <v-expansion-panel>
+                                        <v-expansion-panel-header>
+                                            Klicken sie eines dieser Attribute an, um es bei der Erstellung der Umfrage
+                                            im Titel einfügen zu lassen (Wie funktioniert das?)
+                                        </v-expansion-panel-header>
+                                        <v-expansion-panel-content>
+                                            <h4>Wie funktioniert die Dynamische Bereitstellung?</h4>
+                                            <p>
+                                                So funktioniert die Dynamische Bereitstellung.
+                                            </p>
+
+                                            <v-btn text color="info" style="float: right;" @click="panel1 = false">
+                                                Ok!
+                                            </v-btn>
+                                        </v-expansion-panel-content>
+                                    </v-expansion-panel>
+                                </v-expansion-panels>
                                 <v-card-actions>
                                     <v-chip class="ma-1" @click="addNumber">Nummer</v-chip>
                                     <v-chip class="ma-1" @click="addDate">Datum</v-chip>
@@ -60,9 +74,23 @@
                             </v-card>
                             <v-card class="mt-3 mb-3">
                                 <v-card-title>Dynamische Bereitstellung</v-card-title>
-                                <v-card-text>
-                                    Stellen Sie hier ein, in welchem Rythmus die Umfrage bereitgestellt werden soll
-                                </v-card-text>
+                                <v-expansion-panels v-model="panel2" flat>
+                                    <v-expansion-panel>
+                                        <v-expansion-panel-header>
+                                            Stellen Sie hier ein, in welchem Rythmus die Umfrage bereitgestellt werden
+                                            soll (Wie funktioniert das?)
+                                        </v-expansion-panel-header>
+                                        <v-expansion-panel-content>
+                                            <h4>Wie funktioniert die Dynamische Bereitstellung?</h4>
+                                            <p>
+                                                So funktioniert die Dynamische Bereitstellung.
+                                            </p>
+                                            <v-btn text color="info" style="float: right;" @click="panel2 = false">
+                                                Ok!
+                                            </v-btn>
+                                        </v-expansion-panel-content>
+                                    </v-expansion-panel>
+                                </v-expansion-panels>
                                 <v-card-actions>
                                     <v-col>
                                         <v-row no-gutters>
@@ -140,7 +168,23 @@
                             </v-card>
                             <v-card class="mb-5">
                                 <v-card-title>Beenden</v-card-title>
-                                <v-card-text>Wann soll die Umfrage wieder beendet werden? </v-card-text>
+                                <v-card-text> </v-card-text>
+                                <v-expansion-panels v-model="panel2" flat>
+                                    <v-expansion-panel>
+                                        <v-expansion-panel-header>
+                                           Stellen Sie hier ein, wann die Umfrage wieder beendet werden soll. (Wie funktioniert das?)
+                                        </v-expansion-panel-header>
+                                        <v-expansion-panel-content>
+                                            <h4>Wie funktioniert die Dynamische Bereitstellung?</h4>
+                                            <p>
+                                                So funktioniert die Dynamische Bereitstellung.
+                                            </p>
+                                            <v-btn text color="info" style="float: right;" @click="panel2 = false">
+                                                Ok!
+                                            </v-btn>
+                                        </v-expansion-panel-content>
+                                    </v-expansion-panel>
+                                </v-expansion-panels>
                                 <v-col>
                                     <v-row>
                                         <v-overflow-btn
@@ -375,6 +419,9 @@ export default {
             fontColor: null,
             logo: null,
             newPollId: -1,
+            panel1: false,
+            panel2: false,
+            panel3: false,
             activateDate: this.formatDate(new Date().toISOString().substr(0, 10)),
             deactivateDate: this.formatDate(new Date().toISOString().substr(0, 10)),
             creationDate: this.formatDate(new Date().toISOString().substr(0, 10)),
@@ -419,6 +466,7 @@ export default {
             rhythmRules: [
                 (v) => !!v || 'Rythmus ist nicht angegeben',
                 (v) => Number(v) % 1 === 0 || 'Rythmus muss ganze Zahl sein',
+                (v) => Number(v) > 0 || 'Rythmus muss größer als 0 sein',
             ],
             dayRules: [(v) => this.dayValid(v)],
             weekRules: [(v) => this.weekValid(v)],
