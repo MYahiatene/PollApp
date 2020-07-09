@@ -23,6 +23,11 @@ import java.util.ListIterator;
 @Service
 public class ExportServiceImpl implements ExportService {
 
+    /**
+     * @param poll Poll welcher zu einer CSV gemacht werden soll
+     * @param separator Separator für die CSV-Datei
+     * Die Funktion geht den Poll durch und macht daraus eine menschenleserliche CSV-Datei
+     * */
     @Override
     public String toCSVManual(final Poll poll, final String separator) {
         /*Name, PollID, Creator, Anonymität, Kategorie 1, Kategorie 1, Kategorie 2*/
@@ -67,6 +72,12 @@ public class ExportServiceImpl implements ExportService {
     /*Function iterates over the list of pollResults first filling the first row of Elements with the Questions and
     then filling the rest with the actual PollResults.*/
 
+    /**
+     * @param poll Die Poll zu denen die PollResults gehören
+     * @param results Die Liste an PollResults welche als CSV repräsentiert werden soll
+     * @param separator Der Separator für die CSV-Datei
+     * Die Funktion geht die Liste an PollResults durch und schreibt die Ergebnisse jeder Frage untereinander
+     * */
     @Override
     public String toCSVManual(final List<PollResult> results, final Poll poll, final String separator) {
 
@@ -94,6 +105,10 @@ public class ExportServiceImpl implements ExportService {
         return builder.toString();
     }
 
+    /**
+     * @param pollToConvert Der Poll für den die Header in der CSV-Datei hinzugefügt werden sollen
+     * @param separator Der benutzte Separator
+     * */
     private String addHeaders(final Poll pollToConvert, final String separator) {
         final List<Category> categories = pollToConvert.getCategoryList();
         final ListIterator<Category> categoryIterator = categories.listIterator();
@@ -113,7 +128,10 @@ public class ExportServiceImpl implements ExportService {
         return columnNamesList.toString();
     }
 
-
+    /**
+     * @param input
+     * Die Funktion geht die Liste an gegebenen Antworten in einer Antwort durch und macht Listen CSV-Verträglich
+     * */
     private String answerToCSV(final Answer input) {
         final ListIterator<String> answerIterator = input.getGivenAnswerList().listIterator();
         final StringBuilder output = new StringBuilder();
@@ -124,6 +142,10 @@ public class ExportServiceImpl implements ExportService {
         return output.toString();
     }
 
+    /**
+     * @param data Der Eingabe-String welcher ohne Escape-Character dargestellt werden soll
+     * Die Funktion nimmt einen String an und ersetzt die ganzen Escape-Character welche eine CSV kaputt machen würden
+     * */
     private static String escapeSpecialCharacters(String data) {
         String escapedData = data.replaceAll("\\R", " ");
         if (data.contains(",") || data.contains("\"") || data.contains("'")) {
@@ -133,6 +155,10 @@ public class ExportServiceImpl implements ExportService {
         return escapedData;
     }
 
+    /**
+     * @param result Die Poll welche zu einer JSON gemacht werden soll
+     * Die Funktion verwandelt eine Poll in eine JSON, dafür wird Jackson benötigt.
+     * */
     @Override
     public String toJSON(final Poll result) throws JsonProcessingException {
         final ObjectMapper objectMapper = new ObjectMapper();
@@ -141,6 +167,10 @@ public class ExportServiceImpl implements ExportService {
             return objectMapper.writeValueAsString(result);
     }
 
+    /**
+     * @param json Die Eingabe-JSON-Datei
+     * Die Funktion nimmt eine JSON entgegen und gibt ein PollCMD mit den enthaltenen Daten zurück.
+     * */
     @Override
     public PollCmd fromJSONToPoll(final String json) {
         try {
@@ -153,6 +183,10 @@ public class ExportServiceImpl implements ExportService {
         return null;
     }
 
+    /**
+     * @param result Das Eingabe-PollResult
+     * Die Funktion nimmt ein PollResult entgegen und generiert daraus eine JSON
+     * */
     public String toJSONSingularPR(final PollResult result) throws JsonProcessingException {
         final ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
@@ -160,6 +194,10 @@ public class ExportServiceImpl implements ExportService {
             return objectMapper.writeValueAsString(result);
     }
 
+    /**
+     * @param result Die Eingabeliste an PollResults
+     * Die Funktion nimmt eine Liste an PollResults entgegen und generiert daraus eine JSON
+     * */
     @Override
     public String toJSON(final List<PollResult> result) throws JsonProcessingException {
         final ObjectMapper objectMapper = new ObjectMapper();
@@ -168,6 +206,10 @@ public class ExportServiceImpl implements ExportService {
             return objectMapper.writeValueAsString(result);
     }
 
+    /**
+     * @param json Die Eingabe-JSON
+     * Die Funktion nimmt eine JSON entgegen und generiert daraus eine Liste an PollResults, die Funktion wird im Moment nicht genutzt aber vielleicht wird sie mal nütylich
+     * */
     @Override
     public List<PollResult> fromJSONToResult(final String json) {
         try {
@@ -181,6 +223,11 @@ public class ExportServiceImpl implements ExportService {
         }
     }
 
+    /**
+     * @param poll Eingabe-Poll
+     * @param result Eingabe-Liste an PollResults
+     * Die Funktion nimmt eine Poll und eine Liste an PollResults entgegen und generiert daraus eine "kombinierte" liste an beidem
+     * */
     @Override
     public String createExportJSON(final Poll poll, final List<PollResult> result) {
         final JSONObject combined = new JSONObject();
