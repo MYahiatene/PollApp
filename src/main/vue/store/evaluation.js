@@ -129,10 +129,6 @@ export const getters = {
             return JSON.parse(JSON.stringify(state.defaultDiagramFormat))
         }
     },
-
-    // getUserList(state) {
-    //     return (id) => {}
-    // },
 }
 export const mutations = {
     resetState(state) {

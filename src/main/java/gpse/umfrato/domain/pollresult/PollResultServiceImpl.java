@@ -5,6 +5,7 @@ import gpse.umfrato.web.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.logging.Logger;
@@ -62,6 +63,23 @@ public class PollResultServiceImpl implements PollResultService {
     public List<PollResult> getPollResults(final Long pollId) {
         LOGGER.info(pollId.toString());
         return pollResultRepository.findPollResultsByPollId(pollId);
+    }
+
+    /**
+     * This method returns all the poll takers.
+     * @param pollId the poll id
+     * @return returns all poll takers as a list belonging to one poll id
+     */
+    @Override
+    public List<String> getPollTakers(final Long pollId) {
+        LOGGER.info(pollId.toString());
+        List<PollResult> pollResults = pollResultRepository.findPollResultsByPollId(pollId);
+        List<String> takerList = new ArrayList<>();
+        for (int i = 0; i < pollResults.size(); i++) {
+            takerList.add(pollResults.get(i).getPollTaker());
+
+        }
+        return takerList;
     }
 
     /**

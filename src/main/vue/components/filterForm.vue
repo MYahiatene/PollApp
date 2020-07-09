@@ -308,9 +308,10 @@ export default {
             relativeTimeDiagram: false,
             consistencyOn: false,
 
-            userNames: ['Ben', 'Miko', 'Thorsten', 'Benno', 'Mikola', 'Thorstenna'],
+            // userNames: ['Ben', 'Miko', 'Thorsten', 'Benno', 'Mikola', 'Thorstenna'],
             selectedUsers: [],
             userInverted: false,
+            userNames: [],
         }
     },
     computed: {
@@ -372,14 +373,15 @@ export default {
     mounted() {
         console.log('mounted()')
         console.log(this.filters)
+        // this.$store.dispatch('participation/loadPollTakers', this.polls[this.pollIndex].pollId)
+        // this.$store.dispatch('participant/loadPollTakers', 0)
+
         this.chosenPoll = this.pollTitles[this.initialPollIndex]
         for (let i = 0; i < this.questionTitles.length; i++) {
             this.selectedQuestions.push(this.questionTitles[i])
         }
-        this.selectedUsers = []
-        for (let i = 0; i < this.userNames.length; i++) {
-            this.selectedUsers.push(this.userNames[i])
-        }
+        this.getPollTakers()
+
         this.updateNumberOfConsistencyQuestions()
         this.saveToStore()
     },
@@ -387,6 +389,7 @@ export default {
         ...mapActions({
             sendFilter: 'evaluation/sendFilter',
             updateData: 'evaluation/updateData',
+            getUsers: 'participation/loadPollTakers',
         }),
 
         async saveToStore() {
@@ -466,6 +469,24 @@ export default {
                     console.log(reason)
                     this.maxConsistencyValue = 0
                 })
+        },
+
+        getPollTakers() {
+            console.log('polls')
+            console.log(this.polls)
+            console.log(this.pollIndex)
+            if (this.polls[this.pollIndex].anonymityStatus === 3) {
+                const obj = {
+                    pollId: this.polls[this.pollIndex].pollId,
+                }
+                this.$axios.post('/getPollTakers', obj).then((response) => {
+                    this.userNames = response.data
+                    this.selectedUsers = []
+                    for (let i = 0; i < this.userNames.length; i++) {
+                        this.selectedUsers.push(this.userNames[i])
+                    }
+                })
+            }
         },
 
         addQAFilter() {
