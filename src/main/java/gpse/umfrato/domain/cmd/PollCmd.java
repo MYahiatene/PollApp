@@ -75,7 +75,11 @@ public class PollCmd {
 
     private Long prevInSeries = -1L;
 
-    private boolean ownDesign;
+    private Boolean ownDesign;
+
+    private Boolean checkLeapYear = false;
+
+    private String seriesPollName;
 
     public Poll getCmdPoll(ZoneOffset userOffset) {
         // parses the activationDAte and deactivationDate from a String to a ZonedDateTime
@@ -99,7 +103,7 @@ public class PollCmd {
         final ZonedDateTime creation = localCreation.atZone(timeZone);
         Poll poll = new Poll(pollCreator, anonymityStatus, pollName, creation, activation,
             deactivation, pollStatus, backgroundColor, fontColor, logo, visibility, categoryChange, activated,
-            deactivated, ownDesign, repeat, repeatUntil, day, week, month, stoppingReason, level, 1L);
+            deactivated, ownDesign, repeat, repeatUntil, day, week, month, stoppingReason, level, 1L, checkLeapYear);
         poll.setLastEditAt(ZonedDateTime.now());
         return poll;
     }
