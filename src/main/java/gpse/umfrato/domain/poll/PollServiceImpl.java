@@ -1,5 +1,6 @@
 package gpse.umfrato.domain.poll;
 
+import gpse.umfrato.domain.category.Category;
 import gpse.umfrato.domain.category.CategoryRepository;
 import gpse.umfrato.domain.category.CategoryService;
 import gpse.umfrato.domain.pollresult.PollResultRepository;
@@ -8,14 +9,16 @@ import gpse.umfrato.domain.consistencyquestion.ConsistencyQuestionService;
 import gpse.umfrato.domain.evaluation.session.SessionService;
 import gpse.umfrato.domain.participationlinks.ParticipationLinkService;
 import gpse.umfrato.domain.pollresult.PollResultService;
+import gpse.umfrato.domain.question.Question;
+import gpse.umfrato.domain.question.QuestionService;
+import gpse.umfrato.web.BadRequestException;
+import gpse.umfrato.domain.question.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
-import java.time.DayOfWeek;
-import java.time.Duration;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.time.temporal.IsoFields;
@@ -30,6 +33,7 @@ class PollServiceImpl implements PollService {
     private final CategoryRepository categoryRepository;
     private final PollRepository pollRepository;
     private final CategoryService categoryService;
+    private final QuestionService questionService;
     private final SessionService sessionService;
     private final PollResultService pollResultService;
     private final ParticipationLinkService participationLinkService;
@@ -50,7 +54,7 @@ class PollServiceImpl implements PollService {
                                        , final PollResultService pollResultService
                                        , final ParticipationLinkService participationLinkService
                                        , final ConsistencyQuestionService consistencyQuestionService,
-                           final PollResultRepository pollResultRepository) {
+                           final PollResultRepository pollResultRepository, final QuestionService questionService) {
         this.pollRepository = pollRepository;
         this.categoryService = categoryService;
         this.categoryRepository = categoryRepository;
@@ -59,6 +63,7 @@ class PollServiceImpl implements PollService {
         this.pollResultService = pollResultService;
         this.participationLinkService = participationLinkService;
         this.consistencyQuestionService = consistencyQuestionService;
+        this.questionService = questionService;
     }
 
     /**
@@ -89,7 +94,10 @@ class PollServiceImpl implements PollService {
     @Override
     @Transactional
     public Poll createSeriesPoll(final Poll poll) {
+        poll.setSeriesPollName(poll.getPollName());
         poll.setPollName(createSeriesPollName(poll));
+        poll.setNextSeries(calculateNextDate(poll));
+        LOGGER.info("next series: " + parseDate(poll.getNextSeries()));
         pollRepository.save(poll);
         categoryService.createCategory("Standardkategorie", poll.getPollId());
         return poll;
@@ -141,6 +149,7 @@ class PollServiceImpl implements PollService {
      */
     @Override
     public Integer increasePollStatus(final Long pollId) {
+        LOGGER.info("increasePollStatus");
         final Poll poll = pollRepository.getOne(pollId);
         switch (poll.getPollStatus()) {
             case 0:
@@ -151,7 +160,15 @@ class PollServiceImpl implements PollService {
                 poll.setActivatedDate(ZonedDateTime.now());
                 break;
             case 2:
+                LOGGER.info("increase to deactivation");
+                LOGGER.info(poll.toString());
                 poll.setPollStatus(3);
+                if (poll.getLevel() != -1) {
+                    LOGGER.info("create next series Poll");
+                    createNextSeriesPoll(poll);
+                    poll.setLevel(-1);
+                    pollRepository.save(poll);
+                }
                 poll.setDeactivatedDate(ZonedDateTime.now());
                 break;
             default:
@@ -205,7 +222,8 @@ class PollServiceImpl implements PollService {
         return "Poll erfolgreich gelöscht";
     }
 
-    @Override public List<Poll> getLastEditedPolls() {
+    @Override
+    public List<Poll> getLastEditedPolls() {
         return pollRepository.findTop5ByOrderByLastEditAt();
     }
 
@@ -227,21 +245,29 @@ class PollServiceImpl implements PollService {
      * @param poll the poll to check
      * @return updated Poll
      */
-    @Override public Poll checkActivationAndDeactivation(final Poll poll) {
+    @Override
+    public Poll checkActivationAndDeactivation(final Poll poll) {
+        LOGGER.info("check");
         final ZonedDateTime now = ZonedDateTime.now();
-        // now.set(Calendar.MONTH, now.get(Calendar.MONTH)+1);
-        if (poll.isActivated() && poll.getPollStatus() == 1 && poll.getActivatedDate().isBefore(now)) {
+        if ((poll.isActivated() || poll.getLevel() != -1)
+            && poll.getPollStatus() == 1 && poll.getActivatedDate().isBefore(now)) {
+            LOGGER.info("activate");
             increasePollStatus(poll.getPollId());
         }
-        if (poll.isDeactivated() && poll.getPollStatus() == 2 && poll.getDeactivatedDate().isBefore(now)) {
-            increasePollStatus(poll.getPollId());
+        if (poll.getPollStatus() == 2 && poll.getDeactivatedDate().isBefore(now)) {
+            if (poll.isDeactivated()) {
+                LOGGER.info("deactivate1");
+                increasePollStatus(poll.getPollId());
+            } else if (poll.getLevel() != -1) {
+                LOGGER.info("deactivate2");
+                increasePollStatus(poll.getPollId());
+            }
         }
         return pollRepository.findById(poll.getPollId()).orElseThrow(EntityNotFoundException :: new);
     }
 
     @Override
     public String createSeriesPollName(final Poll poll) {
-        // TODO: Wochentage richtig setzen
         String name = poll.getPollName();
         if (name.contains(":nr:")) {
             name = name.replace(":nr:", poll.getSeriesCounter().toString());
@@ -264,10 +290,12 @@ class PollServiceImpl implements PollService {
         return name;
     }
 
-    @Override public void calculateNextDate(final Poll poll) {
+    @Override
+    public ZonedDateTime calculateNextDate(final Poll poll) {
         LOGGER.info("Start calculateNextDate");
         // TODO: ähnliche if schleifen zu Methoden extrahieren für bessere übersichtlichkeit
         // TODO: bei Monaten Anzahl an Tagen berücksichtigen
+        // TODO: boolean poll.setNextSeries(next); & first = false durch return next ersetzen, boolean first löschen
         final int repeat = poll.getRepeat();
         final List<Integer> day = poll.getDay();
         final List<Integer> week = poll.getWeek();
@@ -285,267 +313,204 @@ class PollServiceImpl implements PollService {
         if (level == 0) {
             // adds the number of days, which represent the repetition, to the current date
             next = next.plusDays(repeat);
-            LOGGER.info("next: " + next.toString());
-            LOGGER.info(parseDate(next));
-            poll.setNextSeries(next);
+            return next;
         } else if (level == 1) {
             // days per x weeks given
-            boolean first = true;
             // if there are later days within the cycle, the next activation date will be the next day in days[]
             for (int i = 0; i < day.size() - 1; i++) {
-                if (prev.getDayOfWeek().getValue() < day.get(i + 1) && first) {
+                if (prev.getDayOfWeek().getValue() < day.get(i + 1)) {
                     next = next.with(TemporalAdjusters.next(DayOfWeek.of(day.get(i + 1))));
-                    poll.setNextSeries(next);
-                    first = false;
+                    return next;
                 }
             }
             // if the last day of the cycle is reached the new day will be in the given repeated time at the first day
             // of the cycle
-            if (first) {
-                next = next.plusWeeks(repeat - 1);
-                next = next.with(TemporalAdjusters.next(DayOfWeek.of(day.get(0))));
-                poll.setNextSeries(next);
-            }
-            LOGGER.info("next: " + next.toString());
-            LOGGER.info(parseDate(next));
+            next = next.plusWeeks(repeat - 1);
+            next = next.with(TemporalAdjusters.next(DayOfWeek.of(day.get(0))));
+            return next;
         } else if (level == 2) {
             if (week.size() == 0) {
                 LOGGER.info("no week given");
                 // days per x months given
-                boolean first = true;
                 // if there are later days within the cycle, the next activation date will be the next day in days[]
                 for (int i = 0; i < day.size() - 1; i++) {
-                    if (prev.getDayOfMonth() < day.get(i + 1) && first) {
-                        next = next.withDayOfMonth(day.get(i + 1));
-                        poll.setNextSeries(next);
-                        first = false;
+                    if (prev.getDayOfMonth() < day.get(i + 1)) {
+                        next = saveDayOfMonth(next, day.get(i + 1));
+                        return next;
                     }
                 }
                 // if the last day of the cycle is reached the new day will be in the given repeated time at the first
                 // day of the next cycle
-                if (first) {
-                    next = next.plusMonths(repeat);
-                    next = next.withDayOfMonth(day.get(0));
-                    poll.setNextSeries(next);
-                }
-                LOGGER.info("next: " + next.toString());
-                LOGGER.info(parseDate(next));
+                next = next.plusMonths(repeat);
+                next = saveDayOfMonth(next, day.get(0));
+                return next;
             } else {
                 LOGGER.info("day, week and month given");
                 LOGGER.info("day of the week: " + prev.getDayOfWeek().getValue());
                 LOGGER.info("week of the month: " + getWeekOfMonthWithDay(prev,1));
                 // days in weeks per months
-                boolean first = true;
                 // more than one week and more than one day per week given
                 for (int i = 0; i < week.size() - 1; i++) {
                     LOGGER.info("hier");
                     for (int j = 0; j < day.size() - 1; j++) {
                         LOGGER.info("hier rein");
                         // Original                        =      kein + 1                                    =     kein (  + 1) % week.size()
-                        LOGGER.info("fuck: " + getWeekOfMonthWithDay(prev, day.get(0)));
-                        LOGGER.info("fuck you: " + week.get((i + 1)));
-                        if (prev.getDayOfWeek().getValue() < day.get(j + 1) && first && getWeekOfMonthWithDay(prev, day.get(0)) <= week.get((i + 1) % week.size())) {
+                        if (prev.getDayOfWeek().getValue() < day.get(j + 1) && getWeekOfMonthWithDay(prev, day.get(0)) <= week.get((i + 1) % week.size())) {
                             LOGGER.info("next day in week");
                             next = next.with(TemporalAdjusters.next(DayOfWeek.of(day.get(j + 1))));
-                            poll.setNextSeries(next);
-                            first = false;
+                            return next;
                         }
                     }
-                    if (first && getWeekOfMonthWithDay(prev, day.get(0)) == week.get(i)) {
-                        /* next = next.with(TemporalAdjusters.next(DayOfWeek.of(day.get(0))));
-                        next = next.set(Calendar.WEEK_OF_MONTH, week.get(i+1)); */
+                    if (getWeekOfMonthWithDay(prev, day.get(0)) == week.get(i)) {
                         LOGGER.info("last day in week");
                         next = next.with(TemporalAdjusters.dayOfWeekInMonth(week.get(i + 1), DayOfWeek.of(day.get(0))));
-                        poll.setNextSeries(next);
-                        first = false;
+                        return next;
                     }
                 }
                 // more than one day per week given
                 for (int j = 0; j < day.size() - 1; j++) {
                     // Original                        =      kein + 1                                          prev.getDayOfWeek().getValue()
-                    if (prev.getDayOfWeek().getValue() < day.get(j + 1) && first && getWeekOfMonthWithDay(prev, day.get(0)) == week.get(0)) {
+                    if (prev.getDayOfWeek().getValue() < day.get(j + 1) && getWeekOfMonthWithDay(prev, day.get(0)) == week.get(0)) {
                         LOGGER.info("only days, adds day");
                         next = next.with(TemporalAdjusters.next(DayOfWeek.of(day.get(j + 1))));
-                        poll.setNextSeries(next);
-                        first = false;
+                        return next;
                     }
                 }
                 // last day of cycle reached, calculates the first day of the new one
-                if (first) {
-                    LOGGER.info("next month");
-                    next = next.plusMonths(repeat);
-                    next = next.with(TemporalAdjusters.dayOfWeekInMonth(week.get(0), DayOfWeek.of(day.get(0))));
-                    poll.setNextSeries(next);
-                }
-                LOGGER.info("next: " + next.toString());
-                LOGGER.info(parseDate(next));
+                LOGGER.info("next month");
+                next = next.plusMonths(repeat);
+                next = next.with(TemporalAdjusters.dayOfWeekInMonth(week.get(0), DayOfWeek.of(day.get(0))));
+                return next;
             }
         } else if (level == 3) {
             // days per year given
             LOGGER.info("day of the year" + prev.getDayOfYear());
             LOGGER.info("week of the year" + prev.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR));
             if (week.size() == 0 && month.size() == 0) {
-                boolean first = true;
                 for (int i = 0; i < day.size() - 1; i++) {
                     if (prev.getDayOfYear() == day.get(i)) {
                         next = next.plusDays(day.get(i + 1) - day.get(i));
-                        poll.setNextSeries(next);
-                        first = false;
+                        return next;
                     }
                 }
-                if (first) {
-                    next = next.plusYears(repeat);
-                    next = next.withDayOfYear(day.get(0));
-                    poll.setNextSeries(next);
-                }
-                LOGGER.info("next: " + next.toString());
-                LOGGER.info(parseDate(next));
+                next = next.plusYears(repeat);
+                next = next.withDayOfYear(day.get(0));
+                return next;
             } else if (month.size() == 0) {
                 // days of calendar weeks per year
-                boolean first = true;
                 // more than one day and more than one week given
                 for (int i = 0; i < week.size() - 1; i++) {
                     for (int j = 0; j < day.size() - 1; j++) {
-                        if (first && prev.getDayOfWeek().getValue() < day.get(j + 1) && prev.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR) == week.get(i)) {
+                        if (prev.getDayOfWeek().getValue() < day.get(j + 1) && prev.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR) == week.get(i)) {
                             next = next.with(TemporalAdjusters.next(DayOfWeek.of(day.get(j + 1))));
-                            poll.setNextSeries(next);
-                            first = false;
+                            return next;
                         }
                     }
                     // next week of the cycle
-                    if (first && prev.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR) < week.get(i + 1)) {
+                    if (prev.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR) < week.get(i + 1)) {
                         next = next.with(TemporalAdjusters.next(DayOfWeek.of(day.get(0))));
                         next = next.with(IsoFields.WEEK_OF_WEEK_BASED_YEAR, week.get(i + 1));
-                        poll.setNextSeries(next);
-                        first = false;
+                        return next;
                     }
                 }
                 // more than one day per week given
                 for (int j = 0; j < day.size() - 1; j++) {
-                    if (prev.getDayOfWeek().getValue() < day.get(j + 1) && first && (prev.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR) == week.get(0) || prev.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR) == week.get(week.size() - 1))) {
+                    if (prev.getDayOfWeek().getValue() < day.get(j + 1) && (prev.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR) == week.get(0) || prev.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR) == week.get(week.size() - 1))) {
                         next = next.with(TemporalAdjusters.next(DayOfWeek.of(day.get(j + 1))));
-                        poll.setNextSeries(next);
-                        first = false;
+                        return next;
                     }
                 }
                 // end of cycle reached
-                if (first) {
-                    next = next.plusYears(repeat);
-                    next = next.with(TemporalAdjusters.next(DayOfWeek.of(day.get(0))));
-                    next = next.with(IsoFields.WEEK_OF_WEEK_BASED_YEAR, week.get(0));
-                    poll.setNextSeries(next);
-                }
-                LOGGER.info("next: " + next.toString());
-                LOGGER.info(parseDate(next));
+                next = next.plusYears(repeat);
+                next = next.with(TemporalAdjusters.next(DayOfWeek.of(day.get(0))));
+                next = next.with(IsoFields.WEEK_OF_WEEK_BASED_YEAR, week.get(0));
+                return next;
             } else if (week.size() == 0) {
                 final int prevMonth = prev.getMonthValue();
                 // days per month given
-                boolean first = true;
                 // more than one day and more than one month given
                 for (int i = 0; i < month.size() - 1; i++) {
                     for (int j = 0; j < day.size() - 1; j++) {
-                        if (prev.getDayOfMonth() < day.get(j + 1) && first && prevMonth == month.get(i)) {
-                            next = next.withDayOfMonth(day.get(j + 1));
-                            poll.setNextSeries(next);
-                            first = false;
+                        if (prev.getDayOfMonth() < day.get(j + 1) && prevMonth == month.get(i)) {
+                            next = saveDayOfMonth(next, day.get(j + 1));
+                            return next;
                         }
                     }
                     // one day per month given; starts at future day in same month
-                    if (first && prev.getDayOfMonth() < day.get(0) && prevMonth == month.get(i)) {
-                        next = next.withDayOfMonth(day.get(0));
-                        poll.setNextSeries(next);
-                        first = false;
+                    if (prev.getDayOfMonth() < day.get(0) && prevMonth == month.get(i)) {
+                        next = saveDayOfMonth(next, day.get(0));
+                        return next;
                     }
                     // next month of the cycle
-                    if (first && prevMonth < month.get(i + 1)) {
-                        next = next.withDayOfMonth(day.get(0));
+                    if (prevMonth < month.get(i + 1)) {
+                        next = saveDayOfMonth(next, day.get(0));
                         next = next.withMonth(month.get(i + 1));
-                        poll.setNextSeries(next);
-                        first = false;
+                        return next;
                     }
                 }
                 // more than one day per month given
                 for (int j = 0; j < day.size() - 1; j++) {
-                    if (prev.getDayOfMonth() < day.get(j + 1) && first && (prevMonth == month.get(0) || prevMonth == month.get(month.size() - 1))) {
-                        next = next.withDayOfMonth(day.get(j + 1));
-                        poll.setNextSeries(next);
-                        first = false;
+                    if (prev.getDayOfMonth() < day.get(j + 1) && (prevMonth == month.get(0) || prevMonth == month.get(month.size() - 1))) {
+                        next = saveDayOfMonth(next, day.get(j + 1));
+                        return next;
                     }
                 }
                 // one day and one month given; starts at future day in same year
-                if (first && ((prev.getDayOfMonth() < day.get(0) && prevMonth == month.get(0)) || prevMonth < month.get(0))) {
+                if (((prev.getDayOfMonth() < day.get(0) && prevMonth == month.get(0)) || prevMonth < month.get(0))) {
                     next = next.withMonth(month.get(0));
-                    next = next.withDayOfMonth(day.get(0));
-                    poll.setNextSeries(next);
-                    first = false;
+                    next = saveDayOfMonth(next, day.get(0));
+                    return next;
                 }
                 // end of cycle reached
-                if (first) {
-                    next = next.plusYears(repeat);
-                    next = next.withDayOfMonth(day.get(0));
-                    next = next.withMonth(month.get(0));
-                    poll.setNextSeries(next);
-                }
-                LOGGER.info("next: " + next.toString());
-                LOGGER.info(parseDate(next));
+                next = next.plusYears(repeat);
+                next = saveDayOfMonth(next, day.get(0));
+                next = next.withMonth(month.get(0));
+                return next;
             } else {
                 final int prevMonth = prev.getMonthValue();
                 LOGGER.info("day of week: " + prev.getDayOfWeek().getValue());
                 LOGGER.info("week of month: " + getWeekOfMonthWithDay(prev,1));
                 LOGGER.info("month: " + prevMonth);
                 // days per weeks per months per years
-                boolean first = true;
                 // more than one day, more than one week and more than one month given
                 for (int i = 0; i < month.size() - 1; i++) {
                     for (int j = 0; j < week.size() - 1; j++) {
                         for (int k = 0; k < day.size() - 1; k++) {
                             // next day in week cycle
-                            if (first && prev.getDayOfWeek().getValue() < day.get(k + 1) && getWeekOfMonthWithDay(prev, day.get(0)) == week.get(j) && prevMonth == month.get(i)) {
-                                LOGGER.info("8");
+                            if (prev.getDayOfWeek().getValue() < day.get(k + 1) && getWeekOfMonthWithDay(prev, day.get(0)) == week.get(j) && prevMonth == month.get(i)) {
                                 next = next.with(TemporalAdjusters.next(DayOfWeek.of(day.get(k + 1))));
-                                poll.setNextSeries(next);
-                                first = false;
+                                return next;
                             }
                         } // end day
                         // one day more than one week and more than one month given, starts on future date in same week
-                        if (first && prev.getDayOfWeek().getValue() < day.get(0) && getWeekOfMonthWithDay(prev, day.get(0)) == week.get(j) && prevMonth == month.get(i)) {
-                            LOGGER.info("9");
+                        if (prev.getDayOfWeek().getValue() < day.get(0) && getWeekOfMonthWithDay(prev, day.get(0)) == week.get(j) && prevMonth == month.get(i)) {
                             next = next.with(TemporalAdjusters.next(DayOfWeek.of(day.get(0))));
-                            poll.setNextSeries(next);
-                            first = false;
+                            return next;
                         }
                         // next week / only one day given
-                        if (first && (prev.getDayOfWeek().getValue() == day.get(0) || prev.getDayOfWeek().getValue() == day.get(day.size() - 1)) && getWeekOfMonthWithDay(prev, day.get(0)) == week.get(j) && prevMonth == month.get(i)) {
-                            LOGGER.info("3");
+                        if ((prev.getDayOfWeek().getValue() == day.get(0) || prev.getDayOfWeek().getValue() == day.get(day.size() - 1)) && getWeekOfMonthWithDay(prev, day.get(0)) == week.get(j) && prevMonth == month.get(i)) {
                             next = next.with(TemporalAdjusters.dayOfWeekInMonth(week.get(j + 1), DayOfWeek.of(day.get(0))));
-                            poll.setNextSeries(next);
-                            first = false;
+                            return next;
                         }
                     } // end week
                     // one day, more than one week and more than one month given, starts on future date in same week
-                    if (first && getWeekOfMonthWithDay(prev, day.get(0)) < week.get(0) && prevMonth == month.get(i)) {
-                        LOGGER.info("15");
+                    if (getWeekOfMonthWithDay(prev, day.get(0)) < week.get(0) && prevMonth == month.get(i)) {
                         next = next.with(TemporalAdjusters.dayOfWeekInMonth(getWeekOfMonthWithDay(prev, day.get(0)), DayOfWeek.of(day.get(0))));
-                        poll.setNextSeries(next);
-                        first = false;
+                        return next;
                     }
                     // more than one day per week given
                     for (int k = 0; k < day.size() - 1; k++) {
                         // next day in week cycle
-                        if (first && prev.getDayOfWeek().getValue() < day.get(k + 1) && getWeekOfMonthWithDay(prev, day.get(0)) == week.get(week.size() - 1) && prevMonth == month.get(i)) {
-                            LOGGER.info("7");
+                        if (prev.getDayOfWeek().getValue() < day.get(k + 1) && getWeekOfMonthWithDay(prev, day.get(0)) == week.get(week.size() - 1) && prevMonth == month.get(i)) {
                             next = next.with(TemporalAdjusters.next(DayOfWeek.of(day.get(k + 1))));
-                            poll.setNextSeries(next);
-                            first = false;
+                            return next;
                         }
                     }
                     // end of week cycle reached / one day, one week, more than one month given
-                    if (first && prev.getDayOfWeek().getValue() < day.get(day.size() - 1) && getWeekOfMonthWithDay(prev, day.get(0)) == week.get(week.size() - 1) && prevMonth == month.get(i)) {
-                        LOGGER.info("4");
+                    if (prev.getDayOfWeek().getValue() < day.get(day.size() - 1) && getWeekOfMonthWithDay(prev, day.get(0)) == week.get(week.size() - 1) && prevMonth == month.get(i)) {
                         next = next.withMonth(month.get(i + 1));
                         next = next.with(TemporalAdjusters.dayOfWeekInMonth(week.get(0), DayOfWeek.of(day.get(0))));
-                        poll.setNextSeries(next);
-                        first = false;
+                        return next;
                     }
                 }
                 // end month
@@ -553,19 +518,15 @@ class PollServiceImpl implements PollService {
                 for (int j = 0; j < week.size() - 1; j++) {
                     for (int k = 0; k < day.size() - 1; k++) {
                         // next day in week cycle
-                        if (first && prev.getDayOfWeek().getValue() < day.get(k + 1) && getWeekOfMonthWithDay(prev, day.get(0)) == week.get(j) && prevMonth == month.get(month.size() - 1)) {
-                            LOGGER.info("6");
+                        if (prev.getDayOfWeek().getValue() < day.get(k + 1) && getWeekOfMonthWithDay(prev, day.get(0)) == week.get(j) && prevMonth == month.get(month.size() - 1)) {
                             next = next.with(TemporalAdjusters.next(DayOfWeek.of(day.get(k + 1))));
-                            poll.setNextSeries(next);
-                            first = false;
+                            return next;
                         }
                     }
                     // next week / only one day given
-                    if (first && (getWeekOfMonthWithDay(prev, day.get(0)) == week.get(j) || getWeekOfMonthWithDay(prev, day.get(day.size() - 1)) == week.get(j)) && prevMonth == month.get(month.size() - 1)) {
-                        LOGGER.info("2");
+                    if ((getWeekOfMonthWithDay(prev, day.get(0)) == week.get(j) || getWeekOfMonthWithDay(prev, day.get(day.size() - 1)) == week.get(j)) && prevMonth == month.get(month.size() - 1)) {
                         next = next.with(TemporalAdjusters.dayOfWeekInMonth(week.get(j + 1), DayOfWeek.of(day.get(0))));
-                        poll.setNextSeries(next);
-                        first = false;
+                        return next;
                     }
                     /* if (first && getWeekOfMonthWithDay(prev, day.get(0)) < week.get(j) && prevMonth == month.get(month.size() - 1)) { TODO: unnötig?
                         LOGGER.info("13");
@@ -574,20 +535,16 @@ class PollServiceImpl implements PollService {
                         first = false;
                     } */
                 }
-                if (first && getWeekOfMonthWithDay(prev, day.get(0)) < week.get(week.size() - 1) && prevMonth == month.get(0)) {
-                    LOGGER.info("14");
+                if (getWeekOfMonthWithDay(prev, day.get(0)) < week.get(week.size() - 1) && prevMonth == month.get(0)) {
                     next = next.with(TemporalAdjusters.dayOfWeekInMonth(week.get(week.size() - 1), DayOfWeek.of(day.get(0))));
-                    poll.setNextSeries(next);
-                    first = false;
+                    return next;
                 }
                 // more than one day given, only one week and one month given
                 for (int k = 0; k < day.size() - 1; k++) {
                     // next day in week cycle
-                    if (first && prev.getDayOfWeek().getValue() < day.get(k + 1) && getWeekOfMonthWithDay(prev, day.get(0)) == week.get(week.size() - 1) && prevMonth == month.get(month.size() - 1)) {
-                        LOGGER.info("5");
+                    if (prev.getDayOfWeek().getValue() < day.get(k + 1) && getWeekOfMonthWithDay(prev, day.get(0)) == week.get(week.size() - 1) && prevMonth == month.get(month.size() - 1)) {
                         next = next.with(TemporalAdjusters.next(DayOfWeek.of(day.get(k + 1))));
-                        poll.setNextSeries(next);
-                        first = false;
+                        return next;
                     }
                 }
                 /*if (first && prevMonth < month.get(month.size() - 1)) { TODO: unnötig?
@@ -598,30 +555,23 @@ class PollServiceImpl implements PollService {
                     first = false;
                 }*/
                 // one day one week and one month given; starts at future day in same year
-                if (first && ((prev.getDayOfWeek().getValue() < day.get(0) && getWeekOfMonthWithDay(prev, day.get(0)) == week.get(0) && prevMonth == month.get(0)) || // nur tag kleiner rest passt
+                if ((prev.getDayOfWeek().getValue() < day.get(0) && getWeekOfMonthWithDay(prev, day.get(0)) == week.get(0) && prevMonth == month.get(0)) || // nur tag kleiner rest passt
                     (getWeekOfMonthWithDay(prev, day.get(0)) < week.get(0) && prevMonth == month.get(0)) ||
-                    prevMonth < month.get(0)))
-                {
-                    LOGGER.info("12");
+                    prevMonth < month.get(0)) {
                     next = next.withMonth(month.get(0));
                     next = next.with(TemporalAdjusters.dayOfWeekInMonth(week.get(0), DayOfWeek.of(day.get(0))));
-                    poll.setNextSeries(next);
-                    first = false;
+                    return next;
                 }
                 // one day, one week, one month given or end of cycle reached
-                if (first) {
-                    LOGGER.info("1");
-                    next = next.plusYears(repeat);
-                    next = next.withMonth(month.get(0));
-                    next = next.with(TemporalAdjusters.dayOfWeekInMonth(week.get(0), DayOfWeek.of(day.get(0))));
-                    poll.setNextSeries(next);
-                    first = false;
-                }
-                LOGGER.info("next: " + next.toString());
-                LOGGER.info(parseDate(next));
+
+                next = next.plusYears(repeat);
+                next = next.withMonth(month.get(0));
+                next = next.with(TemporalAdjusters.dayOfWeekInMonth(week.get(0), DayOfWeek.of(day.get(0))));
+                return next;
             }
         }
-        poll.setActivatedDate(next);
+        // poll.setActivatedDate(next);
+        return next;
     }
 
     ZonedDateTime deltaNew(ZonedDateTime originalStart, ZonedDateTime originalEnd, ZonedDateTime nowStart) {
@@ -634,34 +584,91 @@ class PollServiceImpl implements PollService {
         return 1 + date.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR) - firstOfMonth.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR);
     }
 
-        private void stoppingReason(String repeatUntil, int stoppingReason, Poll poll){
-            switch(stoppingReason){
-                case 0: /*Datum*/{
-                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
-                    ZonedDateTime endTime = ZonedDateTime.parse(repeatUntil + " 23:59:59", formatter);
-                    // System.out.println("EndTime: "+endTime);
-                    if(ZonedDateTime.now().compareTo(endTime) > 0) {
-                        stopUmfrage(poll);
-                    }
-                    break;
+    private void stoppingReason(String repeatUntil, int stoppingReason, Poll poll) {
+        switch (stoppingReason) {
+            case 0: /*Datum*/ {
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
+                ZonedDateTime endTime = ZonedDateTime.parse(repeatUntil + " 23:59:59", formatter);
+                // System.out.println("EndTime: "+endTime);
+                if(ZonedDateTime.now().compareTo(endTime) > 0) {
+                    stopUmfrage(poll);
                 }
-                case 1: /*Wiederholungen*/{
-                    if(poll.getRepeat() > Integer.parseInt(repeatUntil)) {
-                        stopUmfrage(poll);
-                    }
-                    break;
-                }
-                case 2: /*Teilnehmer*/{
-                    if(pollResultRepository.findPollResultsByPollId(poll.getPollId()).size() > Integer.parseInt(repeatUntil)) {
-                        stopUmfrage(poll);
-                    }
-                    break;
-                }
-                default: break;
+                break;
             }
+            case 1: /*Wiederholungen*/{
+                if(poll.getRepeat() > Integer.parseInt(repeatUntil)) {
+                    stopUmfrage(poll);
+                }
+                break;
+            }
+            case 2: /*Teilnehmer*/{
+                if(pollResultRepository.findPollResultsByPollId(poll.getPollId()).size() > Integer.parseInt(repeatUntil)) {
+                    stopUmfrage(poll);
+                }
+                break;
+            }
+            default: break;
         }
+    }
 
     void stopUmfrage(Poll poll) {
         poll.setActivated(false);
+    }
+
+    private ZonedDateTime calculateNewDeactivation (final Poll oldPoll, final Poll newPoll) {
+        Period period = Period.between(oldPoll.getActivatedDate().toLocalDate(), oldPoll.getDeactivatedDate().toLocalDate());
+        ZonedDateTime newDeactivationDate = newPoll.getActivatedDate().plusDays(period.getDays());
+        return newDeactivationDate;
+    }
+
+    private void createNextSeriesPoll (final Poll poll) {
+        // TODO: lastEditFrom = null -> schlimm?
+        LOGGER.info("old poll: " + poll);
+        Poll nextSeriesPoll = new Poll(poll.getPollCreator(), poll.getAnonymityStatus(), poll.getSeriesPollName(),
+            poll.getCreationDate(), poll.getNextSeries(), poll.getDeactivatedDate(), 1,
+            poll.getBackgroundColor(), poll.getFontColor(), poll.getLogo(), poll.isVisibility(), poll.isCategoryChange(),
+            poll.isActivated(), poll.isDeactivated(), poll.getOwnDesign(), poll.getRepeat(), poll.getRepeatUntil(),
+            new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), poll.getStoppingReason(), poll.getLevel(),
+            poll.getSeriesCounter());
+        nextSeriesPoll.setDay(createElementCollectionCopies(poll.getDay()));
+        nextSeriesPoll.setWeek(createElementCollectionCopies(poll.getWeek()));
+        nextSeriesPoll.setMonth(createElementCollectionCopies(poll.getMonth()));
+        pollRepository.save(nextSeriesPoll);
+        LOGGER.info("newPoll: " + nextSeriesPoll);
+        nextSeriesPoll.setLastEditAt(ZonedDateTime.now());
+        final List<Category> categories = categoryService.getAllCategories(Long.valueOf(poll.getPollId()));
+        for (int i = 0; i < categories.size(); i++) {
+            final Category newCategory = categoryService.createCategory(categories.get(i).getCategoryName(),
+                nextSeriesPoll.getPollId());
+            questionService.copyQuestions(newCategory.getCategoryId(), nextSeriesPoll.getPollId(),
+                categories.get(i).getQuestionList());
+        }
+        nextSeriesPoll.setLastEditFrom(poll.getLastEditFrom());
+        nextSeriesPoll.setCreationDate(ZonedDateTime.now());
+        nextSeriesPoll.setSeriesPollName(poll.getSeriesPollName());
+        nextSeriesPoll.setSeriesCounter(nextSeriesPoll.getSeriesCounter() + 1);
+        nextSeriesPoll.setPollName(createSeriesPollName(nextSeriesPoll));
+        nextSeriesPoll.setPrevInSeries(poll.getPollId());
+        nextSeriesPoll.setNextSeries(calculateNextDate(nextSeriesPoll));
+        nextSeriesPoll.setDeactivatedDate(calculateNewDeactivation(poll, nextSeriesPoll));
+        participationLinkService.updateLinks(poll.getPollId(), nextSeriesPoll.getPollId());
+        pollRepository.save(nextSeriesPoll);
+        LOGGER.info("new series poll: " + nextSeriesPoll);
+    }
+
+    private List<Integer> createElementCollectionCopies(final List<Integer> value) {
+        List<Integer> copiedValues = new ArrayList<>();
+        for (Integer x : value) {
+            copiedValues.add(x);
+        }
+        return copiedValues;
+    }
+
+    private ZonedDateTime saveDayOfMonth(final ZonedDateTime date, final int day) {
+        try {
+            return date.withDayOfMonth(day);
+        } catch (DateTimeException d) {
+            return saveDayOfMonth(date, day -1);
+        }
     }
 }
