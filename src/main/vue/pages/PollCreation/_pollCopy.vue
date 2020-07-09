@@ -43,7 +43,7 @@
                     <v-row v-if="switch0" no-gutters>
                         <v-col cols="12" lg="6">
                             <v-card class="mt-5">
-                                <v-card-title>Dynmischer Name</v-card-title>
+                                <v-card-title>Dynamischer Name</v-card-title>
                                 <v-expansion-panels v-model="panel1" flat>
                                     <v-expansion-panel>
                                         <v-expansion-panel-header>
@@ -96,11 +96,11 @@
                                                 in welcher dieser Rythmus wiederholt werden soll, bspw. 1 Jahr
                                                 wiederholt diese Umfrage 1 Mal im Jahr. <br />
                                                 Nun müssen Sie mindestens einen Tag angeben, an dem die nächste Umfrage
-                                                jeweil starten soll, dies können sie genauer spezifizieren je nach
+                                                jeweils starten soll, dies können sie genauer spezifizieren je nach
                                                 Zeiteinheit in den Textfeldern, die die jeweiligen Möglichkeiten
                                                 betiteln. <br />
                                                 Bei der Zeiteinheit Wochen geben Sie eine Zahl für den jeweilgigen
-                                                Wochentag an , beginnend bei Montag mit 1 bis Sonntag mit 7. Bei der
+                                                Wochentag an, beginnend bei Montag mit 1 bis Sonntag mit 7. Bei der
                                                 Zeiteinheit Monaten können Sie entweder den Tag im Monat mit einer Zahl
                                                 angeben oder den Wochentag, durch eine Zahl, mit der Woche im Monat.
                                                 <br />
@@ -138,8 +138,8 @@
                                                 @change="(value) => switchLevel(value)"
                                             />
                                         </v-row>
-                                        <v-label v-if="selectedLevel > 0" x-small>
-                                            Mehrere Werte können getrennt eingegeben werden (z.B. "1 5" für Mittwoch und
+                                        <v-label class="ml-5" v-if="selectedLevel > 0" x-small>
+                                            Mehrere Werte können getrennt eingegeben werden (z.B. "1 5" für Montag und
                                             Freitag)
                                         </v-label>
                                         <v-row>
@@ -185,6 +185,17 @@
                                                 :required="switch0"
                                                 :rules="dayRules"
                                             />
+                                            <v-switch
+                                                class="ml-5"
+                                                v-if="
+                                                    selectedLevel === 3 &&
+                                                    day.length > 0 &&
+                                                    week.length === 0 &&
+                                                    month.length === 0
+                                                "
+                                                v-model="checkLeapYear"
+                                                label="Bei Schaltjahren Tage nach dem 29. Februar um einen Tag nach hinten verschieben"
+                                            />
                                         </v-row>
                                     </v-col>
                                 </v-card-actions>
@@ -192,7 +203,7 @@
                             <v-card class="mb-5">
                                 <v-card-title>Beenden</v-card-title>
                                 <v-card-text> </v-card-text>
-                                <v-expansion-panels v-model="panel2" flat>
+                                <v-expansion-panels v-model="panel3" flat>
                                     <v-expansion-panel>
                                         <v-expansion-panel-header>
                                             Stellen Sie hier ein, wann die Umfrage wieder beendet werden soll. (Wie
@@ -270,6 +281,7 @@
                                             :suffix="selectedDeactivation === 'Umfragenanzahl' ? 'erreicht' : ''"
                                             type="Number"
                                             min="1"
+                                            :rules="deactivationRules"
                                         />
                                     </v-row>
                                 </v-col>
@@ -444,6 +456,7 @@ export default {
             switch1: false,
             switch2: false,
             switch3: false,
+            checkLeapYear: false,
             categoryChange: false,
             visibility: false,
             valid: false,
@@ -500,6 +513,11 @@ export default {
                 (v) => !!v || 'Rythmus ist nicht angegeben',
                 (v) => Number(v) % 1 === 0 || 'Rythmus muss ganze Zahl sein',
                 (v) => Number(v) > 0 || 'Rythmus muss größer als 0 sein',
+            ],
+            deactivationRules: [
+                (v) => !!v || 'Ist nicht angegeben',
+                (v) => Number(v) % 1 === 0 || 'Muss ganze Zahl sein',
+                (v) => Number(v) > 0 || 'Muss größer als 0 sein',
             ],
             dayRules: [(v) => this.dayValid(v)],
             weekRules: [(v) => this.weekValid(v)],
@@ -721,6 +739,7 @@ export default {
                 week: this.stringToList(this.week),
                 month: this.stringToList(this.month),
                 ownDesign: this.switch3,
+                checkLeapYear: this.checkLeapYear,
             }
             console.log('obj: ', obj)
             if (this.pollId !== '0') {
@@ -789,15 +808,20 @@ export default {
         },
         currentDate() {
             const date = new Date()
-            return (
+            console.log(date)
+            console.log(date.getFullYear())
+            console.log(date.getMonth())
+            console.log(date.getDay())
+            const string =
                 date.getFullYear() +
                 '-' +
-                (date.getMonth() < 10 ? '0' : '') +
-                date.getMonth() +
+                (date.getMonth() + 1 < 10 ? '0' : '') +
+                (date.getMonth() + 1) +
                 '-' +
-                (date.getDay() < 10 ? '0' : '') +
-                date.getDay()
-            )
+                (date.getUTCDate() < 10 ? '0' : '') +
+                date.getUTCDate()
+            console.log(string)
+            return string
         },
         formatDate(date) {
             console.log('formatDate')

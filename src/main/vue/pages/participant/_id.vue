@@ -30,7 +30,7 @@
                                         <!--the visibility of the index of the current questions in relation to the total
                                     number of questions, given in the settings of the poll-->
                                         <div v-if="getVisibility">{{ (index+1) }}/{{ getNumberOfQuestions }}</div>
-                                        <div class="ps-4">{{ question.questionMessage }}</div>
+                                        <div class="ps-4">{{ question.questionId }}{{ question.questionMessage }}</div>
                                     </v-card-title>
                                     <div v-if="question.questionType === 'TextQuestion'">
                                         <v-card-text>
@@ -590,17 +590,10 @@ export default {
          */
         valuesForQuestions() {
             this.valueList = []
-            console.log('poll', this.getPoll[1].data)
-            console.log('category', this.getCategory)
             console.log('givenAnswers', this.givenAnswers)
             let index = 0
             for (let m = 0; m < this.getPoll[1].data.categoryList.length; m++) {
-                console.log('Ich gehe in die for-Schliefe')
-                console.log('catgory.length', this.getPoll[1].data.categoryList.length)
-                console.log('aktuelle Id', this.getCategory.categoryId)
-                console.log('zu vergleichende Id', this.getPoll[1].data.categoryList[m].categoryId)
                 if (this.getCategory.categoryId > this.getPoll[1].data.categoryList[m].categoryId) {
-                    console.log('Ich geh in das if statement!')
                     index += this.getPoll[1].data.categoryList[m].questionList.length
                 } else {
                     break
@@ -610,8 +603,12 @@ export default {
             for (let i = 0; i < this.getCategory.questionList.length; i++) {
                 const type = this.getCategory.questionList[i].questionType
 
+                console.log('type', type)
                 if (this.givenAnswers !== []) {
+                    console.log('!== []')
+                    console.log(this.givenAnswers[i + index])
                     if (this.givenAnswers[i + index] != null) {
+                        console.log('!= null')
                         // for RadioButtons we need answer text and given back are the indizes
                         if (
                             (type === 'ChoiceQuestion' &&
@@ -626,10 +623,11 @@ export default {
                         } // for Checkboxes and RangeQuestions it works the same
                         else if (type === 'ChoiceQuestion') {
                             const array = []
-                            for (let j = 0; j < this.givenAnswers[i + index].length; j++) {
+                            for (let j = 0; j < this.givenAnswers[i + index].givenAnswerList.length; j++) {
+                                console.log('dfg', this.givenAnswers[i + index].givenAnswerList[j])
                                 array.push(
                                     this.computedQuestionList[i].answerPossibilities[
-                                        this.givenAnswers[i + index].givenAnswerList
+                                        this.givenAnswers[i + index].givenAnswerList[j]
                                     ]
                                 )
                             }
@@ -643,6 +641,7 @@ export default {
                                     ]
                                 )
                             }
+                            console.log('array', array)
                             for (let j = 0; j < array.length; j++) {
                                 this.AnswerListsOfSortQuestions[i][j] = array[j]
                             }
@@ -650,6 +649,8 @@ export default {
                             // won't be used for SortQuestions, but needs to be correct index
                             this.valueList.push(array)
                         } else {
+                            console.log('type', type)
+                            console.log('textpush', this.givenAnswers[i + index].givenAnswerList[0])
                             this.valueList.push(this.givenAnswers[i + index].givenAnswerList[0])
                         }
                     } else {
@@ -993,6 +994,7 @@ export default {
          * Calls saveAnswers from the store with the answerobj (cmdAnswer with all given input)
          */
         saveAnswer() {
+            console.log('answerObj', this.answerObj)
             this.answerObj.username = this.getUsername
             this.$store.dispatch('participant/saveAnswer', this.answerObj)
         },
@@ -1005,16 +1007,33 @@ export default {
         async showAnswer() {
             this.answerObj.username = this.getUsername
             this.answerObj.pollId = this.getPoll[1].data.pollId
+            let givenAnswersUnsorted = []
+            // const givenAnswersSorted = []
             await this.$axios
                 .post('/getPollResult', this.answerObj)
                 .catch()
                 .then((result) => {
                     if (result.data.answerList !== undefined) {
-                        this.givenAnswers = result.data.answerList
+                        givenAnswersUnsorted = result.data.answerList
                     } else {
-                        this.givenAnswers = []
+                        givenAnswersUnsorted = []
                     }
                 })
+            for (let i = 0; i < this.getPoll[1].data.categoryList.length; i++) {
+                for (let j = 0; j < this.getPoll[1].data.categoryList[i].questionList.length; j++) {
+                    const questionId = this.getPoll[1].data.categoryList[i].questionList[j].questionId
+                    const length = this.givenAnswers.length
+                    for (let k = 0; k < givenAnswersUnsorted.length; k++) {
+                        if (givenAnswersUnsorted[k].questionId === questionId) {
+                            this.givenAnswers.push(givenAnswersUnsorted[k])
+                        }
+                    }
+                    if (length === this.givenAnswers.length) {
+                        this.givenAnswers.push(null)
+                    }
+                }
+            }
+            console.log('givenAnswers', this.givenAnswers)
         },
         showAnswerMultipleChoice() {
             this.answerObj.username = this.getUsername

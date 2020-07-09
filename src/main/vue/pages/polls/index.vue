@@ -487,7 +487,8 @@ export default {
                 backgroundColor: '#555555',
                 fontColor: '#fe7312',
                 level: -1,
-
+                ownDesign: true,
+                checkLeapYear: false,
                 logo:
                     'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAADICAIAAAAiOjnJAAAAAXNSR0IArs4c6QAAAARnQU1' +
                     'BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAA4dSURBVHhe7Z2/ixzHEsf93zhz5siZM2WOlL3sZc4UOVMgkAMjHF' +

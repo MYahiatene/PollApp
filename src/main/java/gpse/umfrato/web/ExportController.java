@@ -134,6 +134,8 @@ public class ExportController {
     @PostMapping("/importPoll")
     public Long fromJSONToPoll(final @RequestBody String file, final @RequestHeader int timeZoneOffset) throws MalformedURLException {
         final PollCmd pollCmd = exportService.fromJSONToPoll(file);
+        if(pollCmd == null)
+            return null;
         Instant actDate = Instant.ofEpochSecond(Long.parseLong(pollCmd.getActivatedDate().substring(0, 10))); //Instant.parse(pollCmd.getActivatedDate());
         ZonedDateTime actTime = ZonedDateTime.ofInstant(actDate, ZoneId.ofOffset("UTC", ZoneOffset.ofHoursMinutes(timeZoneOffset / 60,timeZoneOffset % 60)));
         pollCmd.setActivatedDate(actTime.toString());
@@ -146,12 +148,14 @@ public class ExportController {
 
         final Poll poll = new Poll(pollCmd.getPollCreator(), pollCmd.getAnonymityStatus(), pollCmd.getPollName(), creationTime, actTime, deactTime, 0,
             pollCmd.getBackgroundColor(), pollCmd.getFontColor(), pollCmd.getLogo(), pollCmd.isVisibility(),
-            pollCmd.isCategoryChange(), pollCmd.isActivated(), pollCmd.isDeactivated(), pollCmd.isOwnDesign(), pollCmd.getRepeat(),
+            pollCmd.isCategoryChange(), pollCmd.isActivated(), pollCmd.isDeactivated(), pollCmd.getOwnDesign(), pollCmd.getRepeat(),
         pollCmd.getRepeatUntil(), pollCmd.getDay(), pollCmd.getWeek(), pollCmd.getMonth(),
-        pollCmd.getStoppingReason(), pollCmd.getLevel(), 0L);
+        pollCmd.getStoppingReason(), pollCmd.getLevel(), 0L, pollCmd.getCheckLeapYear());
         poll.setPollId(null);
         Long pollId = pollRepository.save(poll).getPollId();
         poll.setLastEditAt(ZonedDateTime.now());
+        poll.setCheckLeapYear(pollCmd.getCheckLeapYear());
+        poll.setSeriesPollName(pollCmd.getSeriesPollName());
         if (poll.getAnonymityStatus().equals(ONE)) {
             final String link = participationLinkService.createParticipationLink().toString();
             participationLinkService.saveParticipationLink(poll.getPollId(), ALL_USERS, link);
