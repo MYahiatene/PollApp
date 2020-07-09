@@ -448,10 +448,8 @@ export default {
             this.qrDialog = true
         },
         abortSeries(item) {
-            const index = this.items.indexOf(item)
             const del = confirm('Sind sie sich sicher, dass sie diese Serienumfrage abbrechen möchten?')
             if (del) {
-                this.splicePolls(index)
                 this.$axios.put('/abortPoll/' + item.pollId)
             }
         },
