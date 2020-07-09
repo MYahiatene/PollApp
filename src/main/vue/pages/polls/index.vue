@@ -89,28 +89,30 @@
                                             <v-toolbar-title>Alle Umfragen</v-toolbar-title>
                                         </v-toolbar>
                                     </template>
+                                    <template v-slot:item.actions="{ item }">
+                                        <v-tooltip bottom>
+                                            <template v-slot:activator="{ on, attrs }">
+                                                <v-btn icon color="primary" v-bind="attrs" v-on="on">
+                                                    <v-icon @click="itemStatusAction(item)">
+                                                        {{ item.statusIcon }}
+                                                    </v-icon>
+                                                </v-btn>
+                                            </template>
+                                            <span> {{ item.statusText }}</span>
+                                        </v-tooltip>
+                                        <v-tooltip bottom>
+                                            <template v-slot:activator="{ on, attrs }">
+                                                <v-btn icon color="primary" v-bind="attrs" v-on="on">
+                                                    <v-icon @click="itemAction(item)">
+                                                        {{ item.actionIcon }}
+                                                    </v-icon>
+                                                </v-btn>
+                                            </template>
+                                            <span> {{ item.actionText }}</span>
+                                        </v-tooltip>
+                                    </template>
                                     <template v-slot:expanded-item="{ headers, item }">
                                         <td :colspan="headers.length">
-                                            <v-tooltip bottom>
-                                                <template v-slot:activator="{ on, attrs }">
-                                                    <v-btn icon color="primary" v-bind="attrs" v-on="on">
-                                                        <v-icon @click="itemStatusAction(item)">
-                                                            {{ item.statusIcon }}
-                                                        </v-icon>
-                                                    </v-btn>
-                                                </template>
-                                                <span> {{ item.statusText }}</span>
-                                            </v-tooltip>
-                                            <v-tooltip bottom>
-                                                <template v-slot:activator="{ on, attrs }">
-                                                    <v-btn icon color="primary" v-bind="attrs" v-on="on">
-                                                        <v-icon @click="itemAction(item)">
-                                                            {{ item.actionIcon }}
-                                                        </v-icon>
-                                                    </v-btn>
-                                                </template>
-                                                <span> {{ item.actionText }}</span>
-                                            </v-tooltip>
                                             <v-tooltip bottom>
                                                 <template v-slot:activator="{ on, attrs }">
                                                     <v-btn
@@ -288,6 +290,7 @@ export default {
             qrLink: '',
             qrTitle: '',
             headers: [
+                { text: '', value: 'actions', sortable: false },
                 { text: '', value: 'data-table-expand' },
                 { text: 'Umfrage', value: 'pollName' },
                 { text: 'Erstellt von', value: 'pollCreator' },
