@@ -180,11 +180,13 @@ public class Statistics {
                 prs = f.filter(prs);
             }
             final int participantCountFiltered = prs.size();
-            if(prs.size() > 0)
+            avgParticipantCountFiltered += participantCountFiltered;
+            avgParticipantCountUnfiltered += participantCountUnfiltered;
+            if (prs.size() > 0)
             {
                 final DiagramData dd = new DiagramData(poll, prs, showParticipantsOverTime,
                         participantsOverRelativeTime, questionIds, timeZone, categoryService, questionService);
-                diagramDataList.add(0, dd);
+                diagramDataList.add(dd);
             }
             Poll nextPoll;
             try {
@@ -194,8 +196,6 @@ public class Statistics {
             }
             questionIds = translateQuestionIds(poll, questionIds, nextPoll);
             poll = nextPoll;
-            avgParticipantCountFiltered += participantCountFiltered;
-            avgParticipantCountUnfiltered += participantCountUnfiltered;
             prev++;
         }
         avgParticipantCountUnfiltered /= prev + 1;
@@ -228,7 +228,7 @@ public class Statistics {
                     if (oq.getQuestionId().equals(qid)) {
                         Question translatedQuestion = pollToTranslateTo.getCategoryList().get(categoryIndex).getQuestionList().get(questionIndex);
                         double questionConfidence = questionSimilarity(oq, translatedQuestion);
-                        if (questionConfidence > 0.8) {  // TODO: ist 0.8 ein guter Wert?
+                        if (questionConfidence > 0.95) {  // TODO: ist 0.8 ein guter Wert?
                             translatedIds.add(translatedQuestion.getQuestionId());
                         } else {
                             Question bestMatch = translatedQuestion;
@@ -333,6 +333,7 @@ public class Statistics {
     private DiagramData combineDiagramData(final List<DiagramData> diagramDataList) {
         while (diagramDataList.size() > 1) {
             diagramDataList.get(0).combine(diagramDataList.get(1));
+            diagramDataList.remove(1);
         }
         return diagramDataList.get(0);
     }

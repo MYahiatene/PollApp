@@ -43,7 +43,10 @@ function formatToString(format) {
 }
 
 function stringToFormat(string) {
+    console.log('hi')
+    console.log(string)
     const short = JSON.parse(string)
+    console.log(short)
     return {
         questionId: short.q,
         showDiagram: short.d,
@@ -92,15 +95,11 @@ export const getters = {
     getDiagramOption(state) {
         console.log('getDiagramOptions()')
         return (id) => {
-            console.log('suche diagramoption ' + id)
             for (let i = 0; i < state.DiagramOptions.length; i++) {
                 if (state.DiagramOptions[i].questionId === id) {
-                    console.log('custom ' + i)
-                    console.log(state.DiagramOptions[i])
                     return JSON.parse(JSON.stringify(state.DiagramOptions[i]))
                 }
             }
-            console.log(state)
             return JSON.parse(JSON.stringify(state.defaultDiagramOptions))
         }
     },
@@ -114,6 +113,12 @@ export const getters = {
             for (let i = 0; i < state.DiagramData.questionList.length; i++) {
                 if (state.DiagramData.questionList[i].id === id) {
                     const defaultFormat = JSON.parse(JSON.stringify(state.defaultDiagramFormat))
+                    while (
+                        defaultFormat.backgroundColors.length >
+                        state.DiagramData.questionList[i].answerPossibilities.length
+                    ) {
+                        defaultFormat.backgroundColors.pop()
+                    }
                     const colors = state.defaultDiagramFormat.backgroundColors
                     for (let q = colors.length; q < state.DiagramData.questionList[i].answerPossibilities.length; q++) {
                         defaultFormat.backgroundColors.push(String(colors[q % colors.length]))
@@ -152,8 +157,10 @@ export const mutations = {
     setDiagramFormatsFromServer(state, formatList) {
         state.DiagramFormat = []
         state.defaultDiagramFormat = stringToFormat(formatList[0])
-        if (formatList.length > 1) {
-            state.DiagramFormat.push(stringToFormat(formatList.slice(1)))
+        formatList = formatList.slice(1)
+        while (formatList.length > 0) {
+            state.DiagramFormat.push(stringToFormat(formatList[0]))
+            formatList = formatList.slice(1)
         }
     },
     setDiagramFormats(state, { useOnAll, format }) {
@@ -169,12 +176,9 @@ export const mutations = {
                 return
             }
         }
-        console.log('saved default')
         state.DiagramFormat.push(format)
     },
     setDiagramOptionsFromServer(state, optionList) {
-        console.log('reset')
-        console.log(optionList)
         state.DiagramOptions = []
         state.defaultDiagramOptions = JSON.parse(optionList[0])
         if (optionList.length > 1) {
@@ -182,24 +186,18 @@ export const mutations = {
         }
     },
     setDiagramOptions(state, payload) {
-        console.log('setDiagramOptions()')
-        console.log(payload)
         if (payload.useOnAll) {
             state.DiagramOptions = []
         }
         state.defaultDiagramOptions = payload.option
     },
     setDiagramOption(state, option) {
-        console.log('setDiagramOption()')
-        console.log(option)
         for (let i = 0; i < state.DiagramOptions.length; i++) {
             if (state.DiagramOptions[i].questionId === option.questionId) {
                 Vue.set(state.DiagramOptions, i, option)
-                console.log('saved custom')
                 return
             }
         }
-        console.log('saved default')
         state.DiagramOptions.push(option)
     },
     setPollID(state, id) {
@@ -286,7 +284,6 @@ export const actions = {
         await this.$axios
             .get('/evaluation/getSessions/' + state.pollId)
             .then((response) => {
-                console.log(response)
                 commit('setSessions', response)
             })
             .catch((reason) => {
@@ -313,7 +310,6 @@ export const actions = {
         await this.$axios
             .get('/evaluation/deleteSession/' + sessionId)
             .then((response) => {
-                console.log(response)
                 if (sessionId === state.currentSession) {
                     commit('setCurrentSession', -1)
                     commit('saveFilter', [])

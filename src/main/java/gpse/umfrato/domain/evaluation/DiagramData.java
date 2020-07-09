@@ -90,8 +90,8 @@ public class DiagramData {
         private String title;
         private String type;
         private List<String> answerPossibilities;
-        private List<Integer> data;
-        private Calculation calculated = new Calculation();
+        private List<List<Integer>> data;
+        private List<Calculation> calculated = new ArrayList<>();
         @JsonIgnore
         private double start = 0;
         @JsonIgnore
@@ -109,9 +109,11 @@ public class DiagramData {
             this.title = questionMessage;
             this.answerPossibilities = answerPossibilities;
             data = new ArrayList<>();
+            data.add(new ArrayList<>());
             for (final String ignored: answerPossibilities) {
-                data.add(0);
+                data.get(0).add(0);
             }
+            calculated.add(new Calculation());
         }
 
         @Override
@@ -121,7 +123,7 @@ public class DiagramData {
 
         public void addAnswer(final double answerPossibility) {
             final int index = (int) ((answerPossibility - start) / step);
-            data.set(index, data.get(index) + 1);
+            data.get(0).set(index, data.get(0).get(index) + 1);
         }
 
         public void setModifier(final double start, final double step) {
@@ -142,13 +144,13 @@ public class DiagramData {
             final List<Integer> maxima = new ArrayList<>();
             int max = 0;
             //Häufigste Antwort und Menge der Antworten raussuchen
-            for (int i = 0; i < data.size(); i++) {
-                size += data.get(i);
-                if (data.get(i) > max) {
+            for (int i = 0; i < data.get(0).size(); i++) {
+                size += data.get(0).get(i);
+                if (data.get(0).get(i) > max) {
                     maxima.clear();
                     maxima.add(i);
-                    max = data.get(i);
-                } else if (data.get(i) == max) {
+                    max = data.get(0).get(i);
+                } else if (data.get(0).get(i) == max) {
                     maxima.add(i);
                 }
             }
@@ -157,27 +159,27 @@ public class DiagramData {
                 modeText.append(answerPossibilities.get(i)).append(DIVIDER_STRING);
             }
             modeText.replace(modeText.lastIndexOf(DIVIDER_STRING), modeText.length(), "");
-            calculated.mode = modeText.toString();
+            calculated.get(0).mode = modeText.toString();
             //Median ist an mittlerer Stelle
             double medianPos = size / 2.0;
-            calculated.relative = new ArrayList<>();
-            for (int i = 0; i < data.size(); i++) {
+            calculated.get(0).relative = new ArrayList<>();
+            for (int i = 0; i < data.get(0).size(); i++) {
                 //Relative Häufigkeiten nur Summe vor Division
-                calculated.relative.add(data.get(i).doubleValue() / (double) size);
-                medianPos -= data.get(i);
+                calculated.get(0).relative.add(data.get(0).get(i).doubleValue() / (double) size);
+                medianPos -= data.get(0).get(i);
                 // [1,1,1,1,1,1,2,2,2,3,3,3,4,6](originalDaten) => [0,6,3,3,1,0,1](data)
                 // => 14(data.size) => 7(/2) => 1(-6) => -2(-3) => 2(Position) => Median
-                if (medianPos <= 0 && calculated.median == null) {
+                if (medianPos <= 0 && calculated.get(0).median == null) {
                     if (size % 2 == 0 && medianPos == 0) {
                         if (i < answerPossibilities.size()) {
                             int j = i + 1;
-                            while (j < data.size() - 1 && data.get(j) == 0) {
+                            while (j < data.get(0).size() - 1 && data.get(0).get(j) == 0) {
                                 j++;
                             }
-                            calculated.median = answerPossibilities.get(i) + (j >= data.size() ? "" : DIVIDER_STRING + answerPossibilities.get(j));
+                            calculated.get(0).median = answerPossibilities.get(i) + (j >= data.get(0).size() ? "" : DIVIDER_STRING + answerPossibilities.get(j));
                         }
                     } else {
-                        calculated.median = answerPossibilities.get(i);
+                        calculated.get(0).median = answerPossibilities.get(i);
                     }
                 }
             }
@@ -207,13 +209,14 @@ public class DiagramData {
         private List<String> answerPossibilities;
         @JsonIgnore
         private List<List<Integer>> data = new ArrayList<>();
-        private List<List<SortValues>> meanOrder = new ArrayList<>();
+        private List<List<List<SortValues>>> meanOrder = new ArrayList<>();
 
         SortData(final long questionId, final String questionMessage, final List<String> answerPossibilities) {
             this.id = questionId;
             this.type = "sort";
             this.title = questionMessage;
             this.answerPossibilities = answerPossibilities;
+            this.meanOrder.add(new ArrayList<>());
         }
 
         @Getter
@@ -347,10 +350,10 @@ public class DiagramData {
                 SortValues currentItem = arrayOfValues.get(orderedItems[i]);
                 // console.log('arrayOfValues[orderedItems[i] with i as ' + i + 'is')
                 // console.log(currentItem)
-                meanOrder.add(new ArrayList<>());
+                meanOrder.get(0).add(new ArrayList<>());
                 while (twinsLeft) {
 
-                    meanOrder.get(position).add(currentItem);
+                    meanOrder.get(0).get(position).add(currentItem);
 
                     // console.log('added item ' + currentItem.itemID + 'at position :' + position)
                     if (currentItem.twin == -1) {
@@ -441,7 +444,7 @@ public class DiagramData {
 
         int calcTendency(final List<String> stringList, final String input) {
             int tendency = 0;
-            final List<String> wordList = Arrays.asList(input.split("[ .,;:?\\-_=()/&%$§!#'+*~|<>]+"));
+            final String[] wordList = input.split("[ .,;:?\\-_=()/&%$§!#'+*~|<>]+");
             for (final String word: wordList) {
                 if (Arrays.asList(positiveWords).contains(word.toLowerCase())) {
                     tendency += 1;
@@ -455,9 +458,7 @@ public class DiagramData {
         List<String> getWordList(List<TextAnswer> input) {
             List<String> stringList = new ArrayList<>();
             for (TextAnswer ta: input) {
-                for (String word: ta.text.toLowerCase().split("[ .,;:?\\-_=()/&%$§!#'+*~|<>]+")) {
-                    stringList.add(word);
-                }
+                stringList.addAll(Arrays.asList(ta.text.toLowerCase().split("[ .,;:?\\-_=()/&%$§!#'+*~|<>]+")));
             }
             return stringList;
         }
@@ -779,21 +780,32 @@ public class DiagramData {
     }
 
     public void combine(DiagramData other) {
-        for(QuestionData qd:other.getQuestionList())
+        for(int i = 0; i < getQuestionList().size();i++)
         {
+            QuestionData qd = this.getQuestionList().get(i);
+            QuestionData od = other.getQuestionList().get(i);
             switch (qd.questionType()) {
-                case SORT_QUESTION:{
+                case SORT_QUESTION: {
+                    SortData tsd = (SortData) qd;
+                    SortData osd = (SortData) od;
+                    tsd.meanOrder.addAll(osd.meanOrder);
                     break;
                 }
-                case TEXT_QUESTION:
-                {
+                case TEXT_QUESTION: {
+                    TextData ttd = (TextData) qd;
+                    TextData otd = (TextData) od;
+                    ttd.texts.addAll(otd.texts);
+                    ttd.frequency.addAll(otd.frequency);
                     break;
                 }
                 case CHOICE_QUESTION:
                 case RANGE_QUESTION:
-                case SLIDER_QUESTION:
-                {
-                   break;
+                case SLIDER_QUESTION: {
+                    ChoiceData tcd = (ChoiceData) qd;
+                    ChoiceData ocd = (ChoiceData) od;
+                    tcd.data.addAll(ocd.getData());
+                    tcd.calculated.addAll(ocd.calculated);
+                    break;
                 }
             }
         }

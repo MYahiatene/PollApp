@@ -38,6 +38,7 @@
                                             class="elevation-1"
                                             dense
                                             :footer-props="footerProps"
+                                            multi-sort
                                         >
                                         </v-data-table>
                                     </v-card>
@@ -50,6 +51,7 @@
                                             class="elevation-1"
                                             dense
                                             :footer-props="footerProps"
+                                            multi-sort
                                         >
                                         </v-data-table>
                                     </v-card>
@@ -102,14 +104,14 @@ export default {
             keys: ['text'],
             wordFrequenz: {},
             tableHeaders: [
-                { text: 'Antwort', value: 'text', sortable: false },
+                { text: 'Antwort', value: 'text', sortable: true },
                 { text: 'Länge', value: 'value', sortable: true },
                 { text: 'Beantwortet', value: 'edited', sortable: true },
                 { text: 'Benutzer', value: 'creator', sortable: true },
                 { text: 'Tendenzindex', value: 'tendency', sortable: true },
             ],
             freqHeaders: [
-                { text: 'Wort', value: 'text', sortable: false },
+                { text: 'Wort', value: 'text', sortable: true },
                 { text: 'Frequenz', value: 'frequency', sortable: true },
             ],
             fillers: [

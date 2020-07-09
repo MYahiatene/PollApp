@@ -94,6 +94,7 @@ export default {
             sessionTitle: '',
             choosenSessionTitle: '',
             titleErrorMessage: '',
+            dialog: false,
             headers: [
                 { text: 'Name', value: 'sessionTitle' },
                 { text: 'Zuletzt bearbeitet', value: 'lastEdited' },

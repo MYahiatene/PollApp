@@ -103,6 +103,14 @@ public class QuestionServiceImpl implements QuestionService {
             default:
                 return null;
         }
+        Category target = pollRepository.getOne(questionCmd.getPollId()).getCategoryList().get(0);
+        for(Category c: pollRepository.getOne(questionCmd.getPollId()).getCategoryList())
+        {
+            if(c.getCategoryId().equals(questionCmd.getCategoryId()))
+            {
+                target = c;
+            }
+        }
         question.setCategoryId(pollRepository.getOne(questionCmd.getPollId()).
             getCategoryList().get(0).getCategoryId());
         pollRepository.findById(questionCmd.getPollId()).get().getCategoryList().get(0).getQuestionList().

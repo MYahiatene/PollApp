@@ -98,7 +98,11 @@ export default {
         }),
         questionMessageBool: {
             get() {
-                if (this.questionType === 'TextQuestion' || this.questionType === 'RangeQuestion') {
+                if (
+                    this.questionType === 'TextQuestion' ||
+                    this.questionType === 'RangeQuestion' ||
+                    this.questionType === 'SliderQuestion'
+                ) {
                     return !(this.questionType.length && this.questionMessageModel.length && this.getSaveButtonStatus)
                 } else {
                     return !(

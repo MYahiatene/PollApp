@@ -362,6 +362,7 @@ export default {
         items2() {
             const i2 = []
             let c = -1
+            console.log('items2')
             console.log(this.items)
             for (let i = 0; i < this.items.length; i++) {
                 if (this.items[i].title === 'Teilnahmen über Zeit') {
@@ -369,6 +370,7 @@ export default {
                 }
             }
             for (let i = 0; i < this.items.length; i++) {
+                console.log(this.items[i])
                 i2[i] = {
                     answerPossibilities: this.items[i].answerPossibilities,
                     data: this.items[i].data,

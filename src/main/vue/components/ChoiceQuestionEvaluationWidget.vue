@@ -8,11 +8,11 @@
             <v-spacer></v-spacer>
             <!--            this button leads to the settings page for this specific question-->
 
-            <div v-if="(calculated.relative[0] === 'NaN')">
+            <div v-if="(calculated[0].relative[0] === 'NaN')">
                 Keine Antworten
             </div>
 
-            <div v-if="!(calculated.relative[0] === 'NaN')">
+            <div v-if="!(calculated[0].relative[0] === 'NaN')">
                 <v-tooltip bottom>
                     <template v-slot:activator="{ on, attrs }">
                         <v-btn
@@ -54,7 +54,7 @@
             </div>
         </v-app-bar>
 
-        <div v-if="!(calculated.relative[0] === 'NaN')">
+        <div v-if="!(calculated[0].relative[0] === 'NaN')">
             <v-container>
                 <v-row v-if="visualSettings">
                     <v-col cols="12" lg="12">
@@ -119,6 +119,7 @@ import { mapGetters, mapMutations } from 'vuex'
 import BarChartView from './BarChartView'
 import PieChartView from './PieChartView'
 import visualEvaluationSettings from './visualEvaluationSettings'
+
 export default {
     name: 'ChoiceQuestionEvaluationWidget',
     components: { BarChartView, PieChartView, visualEvaluationSettings },
@@ -137,7 +138,7 @@ export default {
             type: Array,
         },
         calculated: {
-            type: Object,
+            type: Array,
         },
     },
     data: () => ({
@@ -214,40 +215,36 @@ export default {
             },
         },
         chartData() {
-            console.log('chartData()')
             let baseData = []
             if (this.relativ) {
-                for (let i = 0; i < this.calculated.relative.length; i++) {
-                    baseData.push(this.calculated.relative[i] * 100)
+                for (let i = 0; i < this.calculated[0].relative.length; i++) {
+                    baseData.push(this.calculated[0].relative[i] * 100)
                 }
             } else {
                 baseData = this.dataInput
             }
             const data = []
-            if (baseData.length !== 0) {
-                data.push(baseData[0])
-                for (let i = 1; i < baseData.length; i++) {
-                    data.push((this.cumulated ? data[i - 1] : 0) + baseData[i])
+            for (let i = 0; i < baseData.length; i++) {
+                for (let j = 0; j < baseData[0].length; j++) {
+                    if (i === 0) {
+                        data.push([])
+                        data[j].push(baseData[i][j])
+                    } else {
+                        data[j].push(baseData[i][j] + data[j][i - 1])
+                    }
                 }
             }
+            console.log(data)
             return data
         },
         diagramType() {
-            const dt = this.getFormat(this.questionId).diagramType
-            console.log(dt)
-            return dt
+            return this.getFormat(this.questionId).diagramType
         },
         backgroundColors() {
-            console.log('backgroundColor()')
-            const bcs = this.getFormat(this.questionId).backgroundColors
-            console.log(bcs)
-            return bcs
+            return this.getFormat(this.questionId).backgroundColors
         },
         backgroundColor() {
-            console.log('backgroundColor()')
-            const bc = this.getFormat(this.questionId).backgroundColor
-            console.log(bc)
-            return bc
+            return this.getFormat(this.questionId).backgroundColor
         },
         multipleColors() {
             return this.getFormat(this.questionId).multipleColors
@@ -261,16 +258,15 @@ export default {
         items() {
             const h = []
             for (let i = 0; i < this.answerPossibilities.length; i++) {
-                const percentage = Math.round(this.calculated.relative[i] * 100)
-                h.push({ antwort: this.answerPossibilities[i], abs: this.dataInput[i], rel: percentage + '%' })
+                const percentage = Math.round(this.calculated[0].relative[i] * 100)
+                h.push({ antwort: this.answerPossibilities[i], abs: this.dataInput[0][i], rel: percentage + '%' })
             }
             return h
         },
         // here we compute the data for the visual diagram, writing it into a format the components can process.
         // We either give one color or an array of colors
         chartdataSet() {
-            console.log('chartdataSet()')
-            const data = {
+            return {
                 labels: this.answerPossibilities,
                 datasets: [
                     {
@@ -280,8 +276,6 @@ export default {
                     },
                 ],
             }
-            console.log(data)
-            return data
         },
         /*
 
@@ -289,7 +283,6 @@ export default {
        */
 
         choppedBackgroundColors() {
-            console.log('choppedBackgroundColors()')
             const c = []
             for (let i = 0; i < this.answerPossibilities.length; i++) {
                 c[i] = this.backgroundColors[i % this.backgroundColors.length]
@@ -316,40 +309,21 @@ export default {
         },
     },
     methods: {
-        /*
-
-      this method is emitted by the settings window.
-      Once its called we update the visual settings.
-      the diagram key is added to force the widget to actually update the color
-
-       */
         ...mapMutations({
             setDiagramOption: 'evaluation/setDiagramOption',
         }),
-
-        /* updateVisuals(showDiagram, diagramType, diagramColors, diagramColor, multipleColors, showTable) {
-            this.showDiagram = showDiagram
-            this.diagramType = diagramType
-
-            this.multipleColors = multipleColors
-
-            this.choppedBackgroundColors = diagramColors
-
-            this.backgroundColor = diagramColor
-            this.privateBackgroundColor = diagramColor
-
-            this.showTable = showTable
-
-            this.visualSettings = false
-            if (multipleColors) {
-                for (let i = 0; i < diagramColors.length; i++) {
-                    this.diagramKey = this.diagramKey + diagramColors[i]
+        arrayTransposed(array) {
+            console.log(array)
+            const newArray = []
+            for (let j = 0; j < array[0].length; j++) {
+                newArray.push([])
+                for (let i = 0; i < array.length; i++) {
+                    newArray[j].push(array[i][j])
                 }
-            } else {
-                this.diagramKey = diagramColor
             }
-            this.visualsUpdated = true
-        }, */
+            console.log(newArray)
+            return newArray
+        },
     },
 }
 </script>

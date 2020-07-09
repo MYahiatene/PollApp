@@ -188,7 +188,7 @@
                                                         </v-icon>
                                                     </v-btn>
                                                 </template>
-                                                <span> Links generieren</span>
+                                                <span> QR generieren</span>
                                             </v-tooltip>
                                             <v-tooltip bottom>
                                                 <template v-slot:activator="{ on, attrs }">
