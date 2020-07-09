@@ -220,7 +220,7 @@ export default {
         currentIndex: 0,
         seriesPoll: false,
         numberOfWidgets: 1,
-        diagramData: [
+        diagramDataTest: [
             {
                 meanOrder: [
                     [
@@ -283,7 +283,7 @@ export default {
 
     computed: {
         ...mapGetters({
-            // diagramData: 'evaluation/getDiagramData', // diagramdata.questionlist(questionID)
+            diagramData: 'evaluation/getDiagramData', // diagramdata.questionlist(questionID)
         }),
     },
 
