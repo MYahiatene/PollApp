@@ -15,6 +15,9 @@
                     >
                         <template v-slot:header>
                             <v-toolbar class="mb-1">
+                                <v-btn icon color="primary" @click="initialize">
+                                    <v-icon> mdi-refresh</v-icon>
+                                </v-btn>
                                 <v-btn large color="primary" @click="initializeDatabase">
                                     <v-icon :color="progressA">mdi-auto-fix</v-icon>
                                 </v-btn>
