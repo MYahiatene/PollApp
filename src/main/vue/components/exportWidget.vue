@@ -14,6 +14,7 @@
                 label="Trennzeichen"
                 :rules="separatorRule"
             />
+            <v-switch v-if="exportResult" v-model="dereferenceAnswers" label="Antworten dereferenzieren" />
         </div>
         <div v-if="exportResult">
             <v-switch v-model="useFilters" label="Daten vor Export filtern" />
@@ -55,6 +56,7 @@ export default {
             newFilename: '',
             fileNumber: -1,
             customSeparator: ';',
+            dereferenceAnswers: false,
             separatorRule: [
                 (v) => {
                     return v.length !== 1 ? 'Trennzeichen muss genau ein Zeichen sein' : true
@@ -138,6 +140,7 @@ export default {
                     sessionID: this.useFilters ? this.sessionId : -2,
                     formatString: this.selectedFormat,
                     customSeparator: this.customSeparator,
+                    dereference: this.dereferenceAnswers,
                 })
                 this.downloadClick()
             } else {

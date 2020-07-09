@@ -61,7 +61,7 @@
                                         <qrGenerator />
                                     </v-dialog>
                                 </template>
-                                <import-widget />
+                                <import-widget @done="initialize" />
                             </v-toolbar>
                         </template>
                         <v-container>

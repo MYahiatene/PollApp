@@ -47,7 +47,7 @@ public class ExportServiceImpl implements ExportService {
 
         //String catSeparatorIncrement = "";
         for (final Category category : poll.getCategoryList()) {
-            output.append(category.getCategoryName()).append(separator).append("Antwortmöglichkeiten").append('\n');
+            output.append(category.getCategoryName()).append(separator).append("Antwortoptionen").append('\n');
             for (final Question question : category.getQuestionList()) {
                 //output.append(catSeparatorIncrement);
                 output.append(escapeSpecialCharacters(question.getQuestionMessage())).
@@ -78,6 +78,11 @@ public class ExportServiceImpl implements ExportService {
     /*Function iterates over the list of pollResults first filling the first row of Elements with the Questions and
     then filling the rest with the actual PollResults.*/
 
+    /**
+     * @param questionId Die gesuchte Fragen-ID
+     * @param questionList Die Fragenliste aus der wir die Frage extrahieren möchten
+     * Diese Funktion gibt die Frage zurück welche die gleiche ID hat wie die gewünschte
+     * */
     Question getQuestionFromQuestionList(long questionId, List<Question> questionList){
         for(Question q : questionList){
             if(q.getQuestionId().equals(questionId)) {
@@ -94,7 +99,8 @@ public class ExportServiceImpl implements ExportService {
      * Die Funktion geht die Liste an PollResults durch und schreibt die Ergebnisse jeder Frage untereinander
      * */
     @Override
-    public String toCSVManual(final List<PollResult> results, final Poll poll, final String separator) {
+    public String toCSVManual(final List<PollResult> results, final Poll poll, final String separator,
+                              final boolean dereferenceAnswerPossibilities) {
 
         final String columnNamesList = "PollTaker" + separator +  "LastEdit" + addHeaders(poll, separator) + '\n';
         /*This is what does the work I guess*/
@@ -121,8 +127,8 @@ public class ExportServiceImpl implements ExportService {
                 final Answer singularAnswer = answerIterator.next();
                 /*Iterate over list to make every Answer one column in the csv table*/
                 // System.out.println(getQuestionFromQuestionList(singularAnswer.getQuestionId(), questionList).getQuestionType());
-                if(getQuestionFromQuestionList(singularAnswer.getQuestionId(), questionList).getQuestionType().equals(CHOICE_QUESTION)
-                    || getQuestionFromQuestionList(singularAnswer.getQuestionId(), questionList).getQuestionType().equals(SORT_QUESTION)) {
+                if(dereferenceAnswerPossibilities && (getQuestionFromQuestionList(singularAnswer.getQuestionId(), questionList).getQuestionType().equals(CHOICE_QUESTION)
+                    || getQuestionFromQuestionList(singularAnswer.getQuestionId(), questionList).getQuestionType().equals(SORT_QUESTION))) {
                     builder.append(answerToReadableCSV(singularAnswer, getQuestionFromQuestionList(singularAnswer.getQuestionId(), questionList))).append(separator);
                 }
                 else {
@@ -171,6 +177,11 @@ public class ExportServiceImpl implements ExportService {
         return output.toString();
     }
 
+    /**
+     * @param answer Die gegebene Antwort für die die Antwortliste durch die mögliche Antwort aus der Frage substituiert werden soll
+     * @param q Die zugehörige Frage
+     * Diese Funktion gibt statt den gewählten Indizes die Antwort aus der Frage zurück
+     * */
     private String answerToReadableCSV(Answer answer, Question q){
         final ListIterator<String> answerIterator = answer.getGivenAnswerList().listIterator();
         final StringBuilder output = new StringBuilder();
