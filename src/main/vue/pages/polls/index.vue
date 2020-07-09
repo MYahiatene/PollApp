@@ -696,6 +696,7 @@ export default {
         },
 
         async answerPoll() {
+            const targetPollId = 1
             for (let j = 0; j < 25; j++) {
                 if (j < 200) {
                     this.progressColorB = '#006eff'
@@ -718,46 +719,59 @@ export default {
                 this.participantNr += 2
                 await this.$store.dispatch('participant/saveAnswer', {
                     username: '' + i,
-                    pollId: 1,
+                    pollId: targetPollId,
                     questionId: 4,
-                    answerList: [Math.floor(Math.random() * 4)],
+                    answerList: ['' + Math.floor(Math.random() * 4)],
                 })
+                console.log(1)
                 await this.$store.dispatch('participant/saveAnswer', {
                     username: '' + i,
-                    pollId: 1,
+                    pollId: targetPollId,
                     questionId: 5,
-                    answerList: [Math.floor(Math.random() * 5), Math.floor(Math.random() * 4)],
+                    answerList: ['' + Math.floor(Math.random() * 5), '' + Math.floor(Math.random() * 4)],
                 })
+                console.log(2)
+                const p = ['Haus', 'Baum', 'Apfel', 'Spitzzange', 'Webcam']
                 await this.$store.dispatch('participant/saveAnswer', {
                     username: '' + i,
-                    pollId: 1,
+                    pollId: targetPollId,
                     questionId: 6,
-                    answerList: ['Hallo'],
+                    answerList: [p[Math.floor(Math.random() * 4)]],
                 })
+                console.log(3)
+                const p2 = [
+                    'Das ist ein langer Text',
+                    'Das ist ein scheiße langer Text',
+                    'Das ist auch ein sehr lange Text',
+                ]
                 await this.$store.dispatch('participant/saveAnswer', {
                     username: '' + i,
-                    pollId: 1,
+                    pollId: targetPollId,
                     questionId: 7,
-                    answerList: ['Das ist ein langer Text'],
+                    answerList: [p2[Math.floor(Math.random() * 2)]],
                 })
+                console.log(4)
                 await this.$store.dispatch('participant/saveAnswer', {
                     username: '' + i,
-                    pollId: 1,
+                    pollId: targetPollId,
                     questionId: 8,
                     answerList: [Math.floor(Math.random() * 8)],
                 })
+                console.log(5)
                 await this.$store.dispatch('participant/saveAnswer', {
                     username: '' + i,
-                    pollId: 1,
+                    pollId: targetPollId,
                     questionId: 9,
                     answerList: [Math.floor(Math.random() * 100) / 100],
                 })
+                console.log(6)
                 await this.$store.dispatch('participant/saveAnswer', {
                     username: '' + i,
-                    pollId: 1,
+                    pollId: targetPollId,
                     questionId: 10,
                     answerList: [Math.floor((Math.random() * 50000) / 10)],
                 })
+                console.log(7)
                 const array = ['0', '1', '2', '3', '4']
                 let a, b
                 for (let k = array.length - 1; k > 0; k--) {
@@ -772,6 +786,7 @@ export default {
                     questionId: 11,
                     answerList: array,
                 })
+                console.log(8)
             }
         },
     },

@@ -13,7 +13,7 @@
             <p v-if="error.statusCode === 502">Bad Gateway</p>
             <p v-if="error.statusCode === 503">Service nicht erreichbar. Wir arbeiten daran.</p>
             <p v-if="error.statusCode === 504">Gateway Timeout</p>
-            <p></p>
+            <p>Lächel mal :)</p>
             <v-btn to="/">Zurück zur Hauptseite</v-btn>
             <v-btn to="/help">Hilfe-Seite</v-btn>
         </v-card>
