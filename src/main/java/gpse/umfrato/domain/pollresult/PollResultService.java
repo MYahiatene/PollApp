@@ -28,6 +28,14 @@ public interface PollResultService {
      */
     List<PollResult> getPollResults(final Long pollId);
 
+
+    /**
+     * This method returns all the poll takers.
+     * @param pollId the poll id
+     * @return returns all poll takers as a list belonging to one poll id
+     */
+    List<String> getPollTakers(final Long pollId);
+
     /**
      * This method returns the poll result belonging to one poll id and one poll taker.
      * @param pollId the id of the poll
