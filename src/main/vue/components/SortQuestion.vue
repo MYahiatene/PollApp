@@ -13,7 +13,7 @@
                     "
                 ></v-text-field> </v-row
             ><v-row>
-                <v-col cols="9"></v-col>
+                <v-col cols="8"></v-col>
                 <v-col cols="2">
                     <v-btn @click="addAnswer">
                         <v-icon color="primary" left>
@@ -22,10 +22,10 @@
                         Antwort
                     </v-btn>
                 </v-col>
-            </v-row></v-form
-        >
-    </v-container></template
->
+            </v-row>
+        </v-form>
+    </v-container>
+</template>
 
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'

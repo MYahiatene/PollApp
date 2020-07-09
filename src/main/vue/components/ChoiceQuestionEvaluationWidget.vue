@@ -217,21 +217,20 @@ export default {
         chartData() {
             let baseData = []
             if (this.relativ) {
-                for (let i = 0; i < this.calculated[0].relative.length; i++) {
-                    baseData.push(this.calculated[0].relative[i] * 100)
+                for (let i = 0; i < this.calculated.length; i++) {
+                    baseData.push([])
+                    for (let j = 0; j < this.calculated.relative.length; j++) {
+                        baseData[i].push(this.calculated[i].relative[j] * 100)
+                    }
                 }
             } else {
                 baseData = this.dataInput
             }
             const data = []
             for (let i = 0; i < baseData.length; i++) {
-                for (let j = 0; j < baseData[0].length; j++) {
-                    if (i === 0) {
-                        data.push([])
-                        data[j].push(baseData[i][j])
-                    } else {
-                        data[j].push(baseData[i][j] + data[j][i - 1])
-                    }
+                data.push([baseData[i][0]])
+                for (let j = 1; j < baseData[i].length; j++) {
+                    data[i].push(baseData[i][j] + (this.cumulated ? data[i][j - 1] : 0))
                 }
             }
             console.log(this.questionTitle)
@@ -269,15 +268,11 @@ export default {
         // We either give one color or an array of colors
         chartdataSet() {
             const c = []
-            for (let i = 0; i < this.chartData[0].length; i++) {
-                const d = []
-                for (let j = 0; j < this.chartData.length; j++) {
-                    d.push(this.chartData[j][i])
-                }
+            for (let i = 0; i < this.chartData.length; i++) {
                 c.push({
                     label: this.questionTitle,
                     backgroundColor: this.multipleColors ? this.choppedBackgroundColors : this.backgroundColor,
-                    data: d,
+                    data: this.chartData[i],
                 })
             }
             return {

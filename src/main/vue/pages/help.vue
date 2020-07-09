@@ -16,7 +16,7 @@
                 0521/XXXXXXXXX
             </v-chip>
             <v-spacer></v-spacer>
-            Wir freuen uns, Ihnen helfen zu dürfen.
+            Wir freuen uns, Ihnen helfen zu dürfen. Ihr Umfrato-Team.
         </v-card-text>
     </v-card>
 </template>

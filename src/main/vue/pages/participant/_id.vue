@@ -30,7 +30,7 @@
                                         <!--the visibility of the index of the current questions in relation to the total
                                     number of questions, given in the settings of the poll-->
                                         <div v-if="getVisibility">{{ (index+1) }}/{{ getNumberOfQuestions }}</div>
-                                        <div class="ps-4">{{ question.questionId }}{{ question.questionMessage }}</div>
+                                        <div class="ps-4">{{ question.questionMessage }}</div>
                                     </v-card-title>
                                     <div v-if="question.questionType === 'TextQuestion'">
                                         <v-card-text>
@@ -38,23 +38,23 @@
                                             <!--question.textMultiline ===-->
                                             <div v-if="question.textMultiline === true">
                                                 <v-textarea
+                                                    v-model="valueList[index]"
                                                     label="Antwort"
                                                     auto-grow
                                                     counter
                                                     :color="fontColor"
                                                     :rules="textQuestionRules"
                                                     rows="1"
-                                                    v-model="valueList[index]"
                                                     @input="saveAnswerField($event, question)"
                                                 >
                                                 </v-textarea>
                                             </div>
                                             <div v-else>
                                                 <v-text-field
+                                                    v-model="valueList[index]"
                                                     label="Antwort"
                                                     :color="fontColor"
                                                     :rules="textQuestionRules"
-                                                    v-model="valueList[index]"
                                                     @input="saveAnswerField($event, question)"
                                                 ></v-text-field>
                                             </div>
@@ -67,12 +67,12 @@
                                             <div v-if="question.dropDown">
                                                 <v-card-text>
                                                     <v-overflow-btn
+                                                        v-model="valueList[index]"
                                                         class="my-2"
                                                         :items="question.answerPossibilities"
                                                         :value="answer"
                                                         :color="fontColor"
                                                         label="Auswahl"
-                                                        v-model="valueList[index]"
                                                         @change="saveAnswerRadioButton(question, answer)"
                                                     ></v-overflow-btn>
                                                 </v-card-text>
@@ -108,11 +108,11 @@
                                             <div v-if="question.dropDown">
                                                 <v-card-text>
                                                     <v-select
+                                                        v-model="valueList[index]"
                                                         class="my-2"
                                                         :color="fontColor"
                                                         :item-color="fontColor"
                                                         :items="question.answerPossibilities"
-                                                        v-model="valueList[index]"
                                                         label="Auswahl"
                                                         multiple
                                                         clearable
@@ -162,6 +162,7 @@
                                                     :key="answer.text"
                                                 >
                                                     <v-checkbox
+                                                        v-model="valueList[index]"
                                                         class="my-n2 mx-3"
                                                         dense
                                                         :label="answer"
@@ -169,7 +170,6 @@
                                                         :value="answer"
                                                         :error="errorCheckbox(index, question)"
                                                         :error-messages="errorMessageCheckbox"
-                                                        v-model="valueList[index]"
                                                         @change="saveAnswerCheckbox($event, question, answer, index)"
                                                     ></v-checkbox>
                                                 </v-list>
@@ -237,9 +237,9 @@
                                         <v-radio-group v-model="valueList[index]">
                                             <v-radio
                                                 v-for="answer in question.answerPossibilities"
+                                                :key="answer.text"
                                                 class="mx-4"
                                                 :color="fontColor"
-                                                :key="answer.text"
                                                 :label="`${answer}`"
                                                 :value="answer"
                                                 @change="saveAnswerRadioButton(question, answer)"
@@ -270,17 +270,17 @@
                                             </div>
                                         </draggable>
                                         <v-btn
-                                            @click="restoreAP(index, question)"
                                             :color="backgroundColor"
                                             class="ma-2"
+                                            @click="restoreAP(index, question)"
                                         >
                                             Zurücksetzen
                                         </v-btn>
                                         <v-btn
                                             v-if="!sqWasAnsweredList[index]"
-                                            @click="saveAnswerSortQuestion(index, question)"
                                             :color="backgroundColor"
                                             class="ma-2"
+                                            @click="saveAnswerSortQuestion(index, question)"
                                         >
                                             Reihenfolge so übernehmen
                                         </v-btn>
@@ -409,6 +409,10 @@ export default {
         await this.showAnswer()
         await this.showParticipated()
         await this.valuesForQuestions()
+        if (this.poll[1].data.pollStatus === 3) {
+            console.log('PollStatus 3')
+            await this.$router.push('/pollOver')
+        }
     },
 
     mounted() {
