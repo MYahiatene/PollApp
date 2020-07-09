@@ -32,6 +32,10 @@ public class ExportServiceImpl implements ExportService {
     private static final String CHOICE_QUESTION = "ChoiceQuestion";
     private static final String SORT_QUESTION = "SortQuestion";
 
+    /**
+     * @param anonStatus Gegebener Anonymitätsstatus als Zahl
+     * Die Funktion wandelt einen numerischen Status in den äquivalenten String um
+     * */
     private String anonymStat(String anonStatus){
         switch(anonStatus){
             case "1": return "Anonym";
@@ -115,8 +119,9 @@ public class ExportServiceImpl implements ExportService {
                               final boolean dereferenceAnswerPossibilities) {
 
         String columnNamesList = "";
-        if(Integer.parseInt(poll.getAnonymityStatus()) == 1)
+        if(Integer.parseInt(poll.getAnonymityStatus()) == 1) {
             columnNamesList += "PollTaker" + separator;
+        }
         columnNamesList += "LastEdit" + addHeaders(poll, separator) + '\n';
         /*This is what does the work I guess*/
 
@@ -136,8 +141,9 @@ public class ExportServiceImpl implements ExportService {
             final ListIterator<Answer> answerIterator = singularResult.getAnswerList().listIterator();
             ZonedDateTime lastEdit = singularResult.getLastEditAt();
             DateTimeFormatter lastEditFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy - HH:mm:ss z");
-            if(Integer.parseInt(poll.getAnonymityStatus()) == 1)
+            if(Integer.parseInt(poll.getAnonymityStatus()) == 1) {
                 builder.append(singularResult.getPollTaker()).append(separator);
+            }
             builder.append(lastEdit.format(lastEditFormatter)).append(separator);
             while (answerIterator.hasNext()) {
                 final Answer singularAnswer = answerIterator.next();
@@ -214,6 +220,11 @@ public class ExportServiceImpl implements ExportService {
         return output.toString();
     }
 
+    /**
+     * @param answer Gegebene Antwort
+     * @param q Gegebene Frage die zur Antwort gehört
+     * Die Funktion wandelt die ausgewählte Antwort in den String um den der Umfrageteilnehmer sehen würde
+     * */
     private String answerToRangeCSV(Answer answer, Question q){
         final DecimalFormat format = new DecimalFormat("#.######",
             DecimalFormatSymbols.getInstance(Locale.GERMAN));
