@@ -376,7 +376,7 @@ export default {
             category: ['Object'],
             question: ['Object'],
             categoryIndex: 1,
-            categoryLength: 0,
+            categoryLength: 1,
             enabled: false,
             disableMe: false,
             slideValueList: [],
@@ -413,7 +413,7 @@ export default {
 
     mounted() {
         this.createListOfAnswerPossibilitiesForSortQuestions()
-        console.log(this.AnswerListsOfSortQuestions)
+        this.categoryLength = this.getPoll[1].data.categoryList.length
     },
     computed: {
         /**
@@ -562,7 +562,7 @@ export default {
         hasNoNext() {
             console.log('categoryLength', this.categoryLength)
             console.log('categoryIndex', this.categoryIndex)
-            return this.categoryIndex === this.categoryLength
+            return this.categoryIndex >= this.categoryLength
         },
         /**
          * Returns true if there is no previous category in the poll or if the ChangeOfCategories is not allowed in

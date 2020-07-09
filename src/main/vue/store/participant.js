@@ -203,6 +203,7 @@ export const actions = {
         console.log('answerObjImStore', answerObj)
         this.$axios.defaults.baseURL = 'http://localhost:8088/api/'
         this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('user-token')
+        console.log(answerObj)
         return this.$axios.post('/poll/' + answerObj.pollId + '/addanswer', answerObj)
     },
     /**
