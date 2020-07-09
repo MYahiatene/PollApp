@@ -18,10 +18,15 @@
                                             <h2 style="font-weight: normal; text-align: center;" class="ma-0">
                                                 Kategorien
                                             </h2>
-                                        </v-card-title></v-col
-                                    >
-                                    <v-spacer></v-spacer
-                                ></v-row>
+                                        </v-card-title>
+                                        <ControlQuestions
+                                            :poll-index="0"
+                                            :use-evaluation-store="false"
+                                            :polls-prop="[pollData]"
+                                        />
+                                    </v-col>
+                                    <v-spacer />
+                                </v-row>
                                 <v-row>
                                     <v-col cols="6">
                                         <v-btn depressed @click="createCategory()" class="ml-11">
@@ -112,10 +117,11 @@
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import CategoryListElement from '../../components/CategoryListElement'
 import QuestionBuildWidget from '../../components/QuestionBuildWidget'
+import ControlQuestions from '../../components/ControlQuestions'
 
 export default {
     name: 'QuestionOverview',
-    components: { CategoryListElement, QuestionBuildWidget },
+    components: { ControlQuestions, CategoryListElement, QuestionBuildWidget },
     data() {
         return {
             editIndex: false,

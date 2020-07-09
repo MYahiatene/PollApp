@@ -44,10 +44,33 @@
                         <v-col cols="12" lg="6">
                             <v-card class="mt-5">
                                 <v-card-title>Dynmischer Name</v-card-title>
-                                <v-card-text
-                                    >Klicken sie eines dieser Attribute an, um es bei der Erstellung der Umfrage im
-                                    Titel einfügen zu lassen
-                                </v-card-text>
+                                <v-expansion-panels v-model="panel1" flat>
+                                    <v-expansion-panel>
+                                        <v-expansion-panel-header>
+                                            Klicken sie eines dieser Attribute an, um es bei der Erstellung der Umfrage
+                                            im Titel einfügen zu lassen (Wie funktioniert das?)
+                                        </v-expansion-panel-header>
+                                        <v-expansion-panel-content>
+                                            <h4>Wie funktioniert der dynamische Name?</h4>
+                                            <p>
+                                                Durch Klicken auf einen der angegeben Buttons fügen sie einen
+                                                Platzhalter für das dementsprechende Feld im Titel der Umfrage ein. Dies
+                                                wird dann für jede Umfrage dieser Serie angepasst. Der Platzhalter kann
+                                                auch direkt in das Textfeld für den Titel eingegeben werden. <br />
+                                                Beispiel: <br />
+                                                "Umfrage :nr:", wenn Sie auf Nummer drücken, für eine fortlaufende
+                                                Nummer im Titel, d.h. die erste Umfrage heißt dann Umfrage 1, die Zweite
+                                                Umfrage 2, ... <br />
+                                                "Jahresrückblick :jr:", wenn Sie auf Jahr drücken, steht das Jahr des
+                                                Aktivierungsdatums im Titel.
+                                            </p>
+
+                                            <v-btn text color="info" style="float: right;" @click="panel1 = false">
+                                                Ok!
+                                            </v-btn>
+                                        </v-expansion-panel-content>
+                                    </v-expansion-panel>
+                                </v-expansion-panels>
                                 <v-card-actions>
                                     <v-chip class="ma-1" @click="addNumber">Nummer</v-chip>
                                     <v-chip class="ma-1" @click="addDate">Datum</v-chip>
@@ -60,9 +83,37 @@
                             </v-card>
                             <v-card class="mt-3 mb-3">
                                 <v-card-title>Dynamische Bereitstellung</v-card-title>
-                                <v-card-text>
-                                    Stellen Sie hier ein, in welchem Rythmus die Umfrage bereitgestellt werden soll
-                                </v-card-text>
+                                <v-expansion-panels v-model="panel2" flat>
+                                    <v-expansion-panel>
+                                        <v-expansion-panel-header>
+                                            Stellen Sie hier ein, in welchem Rythmus die Umfrage bereitgestellt werden
+                                            soll (Wie funktioniert das?)
+                                        </v-expansion-panel-header>
+                                        <v-expansion-panel-content>
+                                            <h4>Wie funktioniert die Dynamische Bereitstellung?</h4>
+                                            <p>
+                                                Hier müssen Sie eine Zahl für den Rythmus angeben und eine Zeiteinheit,
+                                                in welcher dieser Rythmus wiederholt werden soll, bspw. 1 Jahr
+                                                wiederholt diese Umfrage 1 Mal im Jahr. <br />
+                                                Nun müssen Sie mindestens einen Tag angeben, an dem die nächste Umfrage
+                                                jeweil starten soll, dies können sie genauer spezifizieren je nach
+                                                Zeiteinheit in den Textfeldern, die die jeweiligen Möglichkeiten
+                                                betiteln. <br />
+                                                Bei der Zeiteinheit Wochen geben Sie eine Zahl für den jeweilgigen
+                                                Wochentag an , beginnend bei Montag mit 1 bis Sonntag mit 7. Bei der
+                                                Zeiteinheit Monaten können Sie entweder den Tag im Monat mit einer Zahl
+                                                angeben oder den Wochentag, durch eine Zahl, mit der Woche im Monat.
+                                                <br />
+                                                Bei der Zeiteinheit Jahr können Sie entweder einen Tag im Jahr mit einer
+                                                Zahl angeben oder einen Tag, mit einer Zahl, in einem Monat, mit einer
+                                                Zahl von 1 - 12, oder mit einem Wochentag in einer Woche eines Monats.
+                                            </p>
+                                            <v-btn text color="info" style="float: right;" @click="panel2 = false">
+                                                Ok!
+                                            </v-btn>
+                                        </v-expansion-panel-content>
+                                    </v-expansion-panel>
+                                </v-expansion-panels>
                                 <v-card-actions>
                                     <v-col>
                                         <v-row no-gutters>
@@ -140,7 +191,33 @@
                             </v-card>
                             <v-card class="mb-5">
                                 <v-card-title>Beenden</v-card-title>
-                                <v-card-text>Wann soll die Umfrage wieder beendet werden? </v-card-text>
+                                <v-card-text> </v-card-text>
+                                <v-expansion-panels v-model="panel2" flat>
+                                    <v-expansion-panel>
+                                        <v-expansion-panel-header>
+                                            Stellen Sie hier ein, wann die Umfrage wieder beendet werden soll. (Wie
+                                            funktioniert das?)
+                                        </v-expansion-panel-header>
+                                        <v-expansion-panel-content>
+                                            <h4>Wie funktioniert das Beenden der Serienumfrage?</h4>
+                                            <p>
+                                                Das Beenden der Serienumfrage bedeutet nicht das Deaktivieren der
+                                                Umfrage, sondern das Stoppen der gesamten Serie, so dass keine weitern
+                                                Instanzen dieser Serienumfrage mehr erstellt werden. <br />
+                                                Dafür müssen Sie einen der 3 gegebenen Gründe angeben und diesen dann
+                                                genau definieren. <br />Bei Datum müssen Sie ein Datum auswählen nach
+                                                dem die Serie gestoppt werden soll. <br />Bei Umfragenanzahl geben Sie
+                                                an nach der wievielten Umfrage dieser Serie gestoppt werden soll.
+                                                <br />Bei Teilnehmeranzahl geben Sie eine Anzahl an, wenn nach einer
+                                                Umfrage der Serie nicht so viele Teilnehmer an der Umfrage teilgenommen
+                                                haben wird die Serie beendet.
+                                            </p>
+                                            <v-btn text color="info" style="float: right;" @click="panel3 = false">
+                                                Ok!
+                                            </v-btn>
+                                        </v-expansion-panel-content>
+                                    </v-expansion-panel>
+                                </v-expansion-panels>
                                 <v-col>
                                     <v-row>
                                         <v-overflow-btn
@@ -375,6 +452,9 @@ export default {
             fontColor: null,
             logo: null,
             newPollId: -1,
+            panel1: false,
+            panel2: false,
+            panel3: false,
             activateDate: this.formatDate(new Date().toISOString().substr(0, 10)),
             deactivateDate: this.formatDate(new Date().toISOString().substr(0, 10)),
             creationDate: this.formatDate(new Date().toISOString().substr(0, 10)),
@@ -419,6 +499,7 @@ export default {
             rhythmRules: [
                 (v) => !!v || 'Rythmus ist nicht angegeben',
                 (v) => Number(v) % 1 === 0 || 'Rythmus muss ganze Zahl sein',
+                (v) => Number(v) > 0 || 'Rythmus muss größer als 0 sein',
             ],
             dayRules: [(v) => this.dayValid(v)],
             weekRules: [(v) => this.weekValid(v)],

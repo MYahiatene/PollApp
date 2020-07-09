@@ -1,1 +1,13 @@
-{"pollId":33,"pollCreator":"tbettmann","creationDate":1594298340.000000000,"lastEditAt":1594298399.749648000,"lastEditFrom":null,"activatedDate":1594298340.000000000,"deactivatedDate":1594298340.000000000,"anonymityStatus":"1","backgroundColor":null,"fontColor":null,"logo":null,"pollName":"Serienumfrage","pollStatus":0,"visibility":false,"categoryChange":false,"activated":false,"deactivated":false,"participationLink":null,"categoryList":[{"categoryId":34,"categoryName":"Standardkategorie","pollId":33,"questionList":[]}],"repeat":2,"repeatUntil":"31.07.2020","day":[1,3,5],"week":[],"month":[],"stoppingReason":0,"level":1,"seriesCounter":1,"nextSeries":null,"prevInSeries":-1}
+Name;PollCreator;Anonymitätsstatus
+testUmfrage;tbettmann;1
+
+Standardkategorie;Antwortoptionen
+Kat1F1; A B C
+Kat1F2;
+Kat3F1;
+
+Fuck GPSE;Antwortoptionen
+Kat2F1; A
+
+Neue Kategorie;Antwortoptionen
+Kat3F2; A B D

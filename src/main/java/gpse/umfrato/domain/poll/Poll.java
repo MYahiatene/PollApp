@@ -60,7 +60,7 @@ public class Poll {
      * This attribute represents the status of the anonymity if it is anonymous, part-anonymous
      * or not anonymous.
      */
-    private String anonymityStatus; // Anonym = 1, andere KA
+    private String anonymityStatus; // Anonym = 1, Teilanonym = 2, Nicht-Anonym = 3
 
     private Boolean ownDesign;
     /**
@@ -139,6 +139,8 @@ public class Poll {
     private ZonedDateTime nextSeries;
 
     private Long prevInSeries = -1L;
+
+    private String seriesPollName;
 
     /**
      * This constructor receives a poll name and saves in the poll object.
