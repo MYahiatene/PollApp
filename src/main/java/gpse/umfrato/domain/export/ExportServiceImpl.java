@@ -14,11 +14,14 @@ import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Locale;
 
 @Service
 public class ExportServiceImpl implements ExportService {
@@ -28,6 +31,15 @@ public class ExportServiceImpl implements ExportService {
     private static final String SLIDER_QUESTION = "SliderQuestion";
     private static final String CHOICE_QUESTION = "ChoiceQuestion";
     private static final String SORT_QUESTION = "SortQuestion";
+
+    private String anonymStat(String anonStatus){
+        switch(anonStatus){
+            case "1": return "Anonym";
+            case "2": return "Teilanonym";
+            case "3": return "Nichtanonym";
+            default: return "Unbekannt";
+        }
+    }
 
     /**
      * @param poll Poll welcher zu einer CSV gemacht werden soll
@@ -39,11 +51,11 @@ public class ExportServiceImpl implements ExportService {
         /*Name, PollID, Creator, Anonymität, Kategorie 1, Kategorie 1, Kategorie 2*/
         /*TestPoll, 1, Tbettmann, 1, Frage 1, Frage 2, Frage 1 aus Kat. 2*/
         final StringBuilder output = new StringBuilder();
-        output.append("Name").append(separator).append("PollID").append(separator).append("PollCreator").
+        output.append("Name").append(separator).append("PollCreator").
             append(separator).append("Anonymitätsstatus");
         output.append('\n');
-        output.append(poll.getPollName()).append(separator).append(poll.getPollId()).append(separator).
-            append(poll.getPollCreator()).append(separator).append(poll.getAnonymityStatus()).append('\n').append('\n');
+        output.append(poll.getPollName()).append(separator).
+            append(poll.getPollCreator()).append(separator).append(anonymStat(poll.getAnonymityStatus())).append('\n').append('\n');
 
         //String catSeparatorIncrement = "";
         for (final Category category : poll.getCategoryList()) {
@@ -102,7 +114,10 @@ public class ExportServiceImpl implements ExportService {
     public String toCSVManual(final List<PollResult> results, final Poll poll, final String separator,
                               final boolean dereferenceAnswerPossibilities) {
 
-        final String columnNamesList = "PollTaker" + separator +  "LastEdit" + addHeaders(poll, separator) + '\n';
+        String columnNamesList = "";
+        if(Integer.parseInt(poll.getAnonymityStatus()) == 1)
+            columnNamesList += "PollTaker" + separator;
+        columnNamesList += "LastEdit" + addHeaders(poll, separator) + '\n';
         /*This is what does the work I guess*/
 
         final StringBuilder builder = new StringBuilder();
@@ -121,8 +136,9 @@ public class ExportServiceImpl implements ExportService {
             final ListIterator<Answer> answerIterator = singularResult.getAnswerList().listIterator();
             ZonedDateTime lastEdit = singularResult.getLastEditAt();
             DateTimeFormatter lastEditFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy - HH:mm:ss z");
-            builder.append(singularResult.getPollTaker()).append(separator).append(lastEdit.format(lastEditFormatter)).
-                append(separator);
+            if(Integer.parseInt(poll.getAnonymityStatus()) == 1)
+                builder.append(singularResult.getPollTaker()).append(separator);
+            builder.append(lastEdit.format(lastEditFormatter)).append(separator);
             while (answerIterator.hasNext()) {
                 final Answer singularAnswer = answerIterator.next();
                 /*Iterate over list to make every Answer one column in the csv table*/
@@ -130,6 +146,9 @@ public class ExportServiceImpl implements ExportService {
                 if(dereferenceAnswerPossibilities && (getQuestionFromQuestionList(singularAnswer.getQuestionId(), questionList).getQuestionType().equals(CHOICE_QUESTION)
                     || getQuestionFromQuestionList(singularAnswer.getQuestionId(), questionList).getQuestionType().equals(SORT_QUESTION))) {
                     builder.append(answerToReadableCSV(singularAnswer, getQuestionFromQuestionList(singularAnswer.getQuestionId(), questionList))).append(separator);
+                }
+                else if(dereferenceAnswerPossibilities && (getQuestionFromQuestionList(singularAnswer.getQuestionId(), questionList).getQuestionType().equals(RANGE_QUESTION))){
+                    builder.append(answerToRangeCSV(singularAnswer, getQuestionFromQuestionList(singularAnswer.getQuestionId(), questionList))).append(separator);
                 }
                 else {
                     builder.append(answerToCSV(singularAnswer)).append(separator);
@@ -191,6 +210,28 @@ public class ExportServiceImpl implements ExportService {
             // System.out.println("QuestionMessages: "+q.getAnswerPossibilities());
             final String answerForSingularQuestion = q.getAnswerPossibilities().get(Integer.parseInt(next));
             output.append(escapeSpecialCharacters(answerForSingularQuestion)).append(' ');
+        }
+        return output.toString();
+    }
+
+    private String answerToRangeCSV(Answer answer, Question q){
+        final DecimalFormat format = new DecimalFormat("#.######",
+            DecimalFormatSymbols.getInstance(Locale.GERMAN));
+        final List<String> answerPossibilities = new ArrayList<>();
+        if (q.getBelowMessage() != null && !q.getBelowMessage().isEmpty()) {
+            answerPossibilities.add(q.getBelowMessage());
+        }
+        for (double i = q.getStartValue(); i < q.getEndValue();) {
+            answerPossibilities.add(format.format(i) + " - " + (format.format(i += q.getStepSize())));
+        }
+        if (q.getAboveMessage() != null && !q.getAboveMessage().isEmpty()) {
+            answerPossibilities.add(q.getAboveMessage());
+        }
+        final ListIterator<String> answerIterator = answer.getGivenAnswerList().listIterator();
+        final StringBuilder output = new StringBuilder();
+        while(answerIterator.hasNext()){
+            String next = answerIterator.next();
+            output.append(answerPossibilities.get(Integer.parseInt(next))).append(' ');
         }
         return output.toString();
     }
