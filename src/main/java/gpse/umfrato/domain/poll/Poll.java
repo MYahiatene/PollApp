@@ -142,6 +142,8 @@ public class Poll {
 
     private String seriesPollName;
 
+    private Boolean checkLeapYear;
+
     /**
      * This constructor receives a poll name and saves in the poll object.
      *
@@ -165,7 +167,7 @@ public class Poll {
                 final String backgroundColor, final String fontColor, final String logo, final boolean visibility,
                 final boolean categoryChange, final boolean activated, final boolean deactivated, final boolean ownDesign, final Integer repeat,
                 final String repeatUntil, final List<Integer> day, final List<Integer> week, final List<Integer> month,
-                final Integer stoppingReason, final Integer level, final Long seriesCounter) {
+                final Integer stoppingReason, final Integer level, final Long seriesCounter, final Boolean checkLeapYear) {
         this.pollName = pollName;
         this.pollCreator = pollCreator;
         this.anonymityStatus = anonymityStatus;
@@ -189,5 +191,6 @@ public class Poll {
         this.stoppingReason = stoppingReason;
         this.level = level;
         this.seriesCounter = seriesCounter;
+        this.checkLeapYear = checkLeapYear;
     }
 }

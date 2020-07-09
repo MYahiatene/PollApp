@@ -55,6 +55,8 @@ public class SmallPoll {
 
     private Integer series;
 
+    private Boolean isSeries;
+
     public SmallPoll(Poll original, PollResultService pollResultService,
                      ParticipationLinkService participationLinkService, final ZoneId timeZone) {
         final DateTimeFormatter df = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm", Locale.GERMAN).withZone(timeZone);
@@ -72,6 +74,7 @@ public class SmallPoll {
         this.categoryCount = original.getCategoryList().size();
         this.questionCount = 0;
         this.series = Math.toIntExact(original.getSeriesCounter());
+        this.isSeries = original.getLevel() >= 0;
         for (final Category c: original.getCategoryList()) {
             this.questionCount += c.getQuestionList().size();
         }

@@ -308,6 +308,7 @@ class PollServiceImpl implements PollService {
         final List<Integer> month = poll.getMonth();
         final int level = poll.getLevel();
         final ZonedDateTime prev = poll.getActivatedDate();
+        final boolean checkLeapYear = poll.getCheckLeapYear();
         ZonedDateTime next = prev;
         LOGGER.info("given");
         LOGGER.info("repeat: " + repeat);
@@ -396,11 +397,19 @@ class PollServiceImpl implements PollService {
                 for (int i = 0; i < day.size() - 1; i++) {
                     if (prev.getDayOfYear() == day.get(i)) {
                         next = next.plusDays(day.get(i + 1) - day.get(i));
+                        final LocalDate ld = next.toLocalDate();
+                        if (checkLeapYear && ld.isLeapYear() && day.get(i + 1) > 59) {
+                            next = next.plusDays(1);
+                        }
                         return next;
                     }
                 }
                 next = next.plusYears(repeat);
                 next = next.withDayOfYear(day.get(0));
+                final LocalDate ld = next.toLocalDate();
+                if (checkLeapYear && ld.isLeapYear() && day.get(day.size() - 1) > 59) {
+                    next = next.plusDays(1);
+                }
                 return next;
             } else if (month.size() == 0) {
                 // days of calendar weeks per year
@@ -607,8 +616,7 @@ class PollServiceImpl implements PollService {
 
     private ZonedDateTime calculateNewDeactivation (final Poll oldPoll, final Poll newPoll) {
         Period period = Period.between(oldPoll.getActivatedDate().toLocalDate(), oldPoll.getDeactivatedDate().toLocalDate());
-        ZonedDateTime newDeactivationDate = newPoll.getActivatedDate().plusDays(period.getDays());
-        return newDeactivationDate;
+        return newPoll.getActivatedDate().plusDays(period.getDays());
     }
 
     private void createNextSeriesPoll (final Poll poll) {
@@ -619,19 +627,17 @@ class PollServiceImpl implements PollService {
             poll.getBackgroundColor(), poll.getFontColor(), poll.getLogo(), poll.isVisibility(), poll.isCategoryChange(),
             poll.isActivated(), poll.isDeactivated(), poll.getOwnDesign(), poll.getRepeat(), poll.getRepeatUntil(),
             new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), poll.getStoppingReason(), poll.getLevel(),
-            poll.getSeriesCounter());
+            poll.getSeriesCounter(), poll.getCheckLeapYear());
         nextSeriesPoll.setDay(createElementCollectionCopies(poll.getDay()));
         nextSeriesPoll.setWeek(createElementCollectionCopies(poll.getWeek()));
         nextSeriesPoll.setMonth(createElementCollectionCopies(poll.getMonth()));
         pollRepository.save(nextSeriesPoll);
         LOGGER.info("newPoll: " + nextSeriesPoll);
         nextSeriesPoll.setLastEditAt(ZonedDateTime.now());
-        final List<Category> categories = categoryService.getAllCategories(Long.valueOf(poll.getPollId()));
-        for (int i = 0; i < categories.size(); i++) {
-            final Category newCategory = categoryService.createCategory(categories.get(i).getCategoryName(),
-                nextSeriesPoll.getPollId());
-            questionService.copyQuestions(newCategory.getCategoryId(), nextSeriesPoll.getPollId(),
-                categories.get(i).getQuestionList());
+        final List<Category> categories = categoryService.getAllCategories(poll.getPollId());
+        for (Category category: categories) {
+            final Category newCategory = categoryService.createCategory(category.getCategoryName(), nextSeriesPoll.getPollId());
+            questionService.copyQuestions(newCategory.getCategoryId(), nextSeriesPoll.getPollId(), category.getQuestionList());
         }
         nextSeriesPoll.setLastEditFrom(poll.getLastEditFrom());
         nextSeriesPoll.setCreationDate(ZonedDateTime.now());
