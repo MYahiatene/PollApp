@@ -219,7 +219,7 @@ export default {
             if (this.relativ) {
                 for (let i = 0; i < this.calculated.length; i++) {
                     baseData.push([])
-                    for (let j = 0; j < this.calculated.relative.length; j++) {
+                    for (let j = 0; j < this.calculated[i].relative.length; j++) {
                         baseData[i].push(this.calculated[i].relative[j] * 100)
                     }
                 }
