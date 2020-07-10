@@ -44,7 +44,10 @@
         </v-content>
         <!--footer-->
         <v-footer :fixed="fixed" app>
-            <span>&copy; {{ new Date().getFullYear() }}</span>
+            <span>Reply &copy; {{ new Date().getFullYear() }}</span>
+            <v-btn text small color="primary" to="/help">Hilfe</v-btn>
+            <v-btn text small color="primary" to="/privacy">Datenschutz</v-btn>
+            <v-btn text small color="primary" to="/terms">Impressum</v-btn>
         </v-footer>
     </v-app>
 </template>
