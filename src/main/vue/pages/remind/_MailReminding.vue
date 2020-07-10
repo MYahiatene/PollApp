@@ -9,7 +9,7 @@
                             <v-combobox
                                 v-model="selectNotify"
                                 :items="toBeNotified"
-                                label="Alle Teilnehmer"
+                                label="Teilnehmer, die banachrichtigt werden sollen"
                                 solo
                                 dense
                             ></v-combobox>
@@ -81,7 +81,7 @@ export default {
                 { text: 'Teilnehmer, die Umfrage bereits abgeschlossen haben', id: 1 },
                 { text: 'Teilnehmer, die Umfrage noch nicht abgeschlossen haben', id: 2 },
             ],
-            selectNotify: '',
+            selectNotify: { text: 'Alle Teilnehmer', id: 0 },
 
             autoGrow: true,
             autofocus: true,
