@@ -216,6 +216,8 @@ export default {
         },
         chartData() {
             let baseData = []
+
+            console.log(this.calculated)
             if (this.relativ) {
                 for (let i = 0; i < this.calculated.length; i++) {
                     baseData.push([])

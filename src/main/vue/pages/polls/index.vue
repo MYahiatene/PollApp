@@ -118,7 +118,7 @@
                                                     <v-btn
                                                         icon
                                                         color="primary"
-                                                        :disabled="item.pollStatus === 3"
+                                                        :disabled="item.pollStatus === 3 || item.anonymityStatus < 2"
                                                         v-bind="attrs"
                                                         v-on="on"
                                                     >
@@ -134,7 +134,11 @@
                                                     <v-btn
                                                         icon
                                                         color="primary"
-                                                        :disabled="item.pollStatus < 1 || item.pollStatus > 2"
+                                                        :disabled="
+                                                            item.pollStatus < 1 ||
+                                                            item.pollStatus > 2 ||
+                                                            item.anonymityStatus < 2
+                                                        "
                                                         v-bind="attrs"
                                                         v-on="on"
                                                     >
@@ -477,7 +481,7 @@ export default {
                 today.getMinutes()
             const poll = {
                 pollCreator: 'Jan',
-                anonymityStatus: '1',
+                anonymityStatus: '3',
                 pollName: 'Beispielumfrage',
                 activated: false,
                 deactivated: false,
@@ -489,8 +493,8 @@ export default {
                 visibility: true,
                 backgroundColor: '#555555',
                 fontColor: '#fe7312',
-                level: 0,
-                repeat: 1,
+                level: -1,
+                repeat: -1,
                 day: [],
                 week: [],
                 month: [],

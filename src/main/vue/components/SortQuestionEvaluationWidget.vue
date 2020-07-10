@@ -45,8 +45,10 @@
                     {{ span }}
                 </v-card-subtitle>
 
-                <v-card dense v-if="spanExplanation" class="ma-1 pa-1">
-                    <v-btn icon @click="spanExplanation = !spanExplanation"><v-icon>mdi-close</v-icon></v-btn>
+                <v-card dense v-if="spanExplanation" class="ma-1 pa-3">
+                    <v-btn icon @click="spanExplanation = !spanExplanation" class="mt-n2 ml-n2"
+                        ><v-icon>mdi-close</v-icon></v-btn
+                    >
                     <p>Hier reicht die potentielle Spannweite von 0 bis {{ answerPossibilites.length - 1 }}.</p>
                     <p>
                         Eine geringe Spannweite bedeutet, dass alle Konzepte im Mittel ähnlich bewertet wurden, sich die

@@ -11,6 +11,7 @@ import java.util.List;
 public class MailServiceImpl implements MailService {
     private List<String> mailAdresses;
     private JavaMailSender javaMailSender;
+    private static final String MAILADRESS = "gpseteam5.1@gmail.com";
 
     @Autowired
     public MailServiceImpl(final JavaMailSender javaMailSender) {
@@ -31,6 +32,8 @@ public class MailServiceImpl implements MailService {
     public void sendMail(final String mailSubject, final String mailMessage, final String emailAdress) {
         final SimpleMailMessage message = new SimpleMailMessage();
         final String mailText = mailMessage;
+
+        message.setFrom(MAILADRESS);
         message.setTo(emailAdress);
         message.setSubject(mailSubject);
         message.setText(mailText);

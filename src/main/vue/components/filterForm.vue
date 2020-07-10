@@ -7,10 +7,16 @@
         </template>
 
         <v-card class="ma-2 pa-2">
-            <v-card-title>Erweiterte Analyse {{ filters.length }}</v-card-title>
+            <v-card-title>Erweiterte Analyse </v-card-title>
             <template>
                 <v-overflow-btn v-model="chosenPoll" editable prefix="Basisdaten:" :items="pollTitles" dense>
                 </v-overflow-btn>
+                <div v-if="poll">
+                    <v-slider v-if="isSeriesPoll" v-model="seriesPollNumber" min="0" :max="(poll.seriesCounter - 1)">
+                        "Anzahl der betrachteten vorhergegangenen Serienumfragen"
+                    </v-slider>
+                </div>
+
                 <v-expansion-panels accordion multiple hover>
                     <v-expansion-panel>
                         <v-expansion-panel-header>
@@ -312,6 +318,7 @@ export default {
             selectedUsers: [],
             userInverted: false,
             userNames: [],
+            seriesPollNumber: 0,
         }
     },
     computed: {
@@ -320,6 +327,10 @@ export default {
             getSessions: 'evaluation/getSessions',
             filters: 'evaluation/getFilterList',
         }),
+
+        isSeriesPoll() {
+            return this.poll.level !== -1 && this.poll.level !== undefined && this.poll.level !== null
+        },
 
         categories() {
             return this.polls[this.pollIndex].categoryList
@@ -337,6 +348,10 @@ export default {
         pollIndex() {
             console.log('pollIndex()')
             return this.pollTitles.indexOf(this.chosenPoll)
+        },
+
+        poll() {
+            return this.polls[this.pollIndex]
         },
 
         chosenQuestionIds() {
@@ -401,6 +416,7 @@ export default {
                 baseQuestionIds: this.chosenQuestionIds, // these are questionIDs
                 timeDiagram: this.showTimeDiagram,
                 timeDiagramRelative: this.relativeTimeDiagram,
+                numberOfEvaluatedSeriesPolls: this.seriesPollNumber,
             })
             filterData.push({
                 filterType: 'consistency',
@@ -578,6 +594,7 @@ export default {
                             }
                         }
                     }
+                    this.seriesPollNumber = this.filters[0].numberOfEvaluatedSeriesPolls
 
                     console.log(this.selectedQuestions)
                 }
@@ -675,6 +692,7 @@ export default {
             this.dateFilterList = []
             this.addDateFilter()
             this.addQAFilter()
+            this.seriesPollNumber = 0
             this.updateFilter()
             this.saveToStore()
         },
