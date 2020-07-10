@@ -77,9 +77,9 @@ public class ParticipationLinkServiceImpl implements ParticipationLinkService {
         participationLinkRepository.deleteAllByPollId(pollId);
     }
 
-    @Override public void updateLinks(Long oldPollId, Long newPollId) {
-        List<ParticipationLink> links = participationLinkRepository.findParticipationLinksByPollId(oldPollId);
-        for(ParticipationLink pl:links)
+    @Override public void updateLinks(final Long oldPollId, final Long newPollId) {
+        final List<ParticipationLink> links = participationLinkRepository.findParticipationLinksByPollId(oldPollId);
+        for(final ParticipationLink pl:links)
         {
             pl.setPollId(newPollId);
         }

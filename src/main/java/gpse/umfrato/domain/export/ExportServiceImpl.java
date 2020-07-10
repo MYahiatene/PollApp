@@ -38,7 +38,7 @@ public class ExportServiceImpl implements ExportService {
      * @param anonStatus Gegebener Anonymitätsstatus als Zahl
      * Die Funktion wandelt einen numerischen Status in den äquivalenten String um
      * */
-    private String anonymStat(String anonStatus){
+    private String anonymStat(final String anonStatus){
         switch(anonStatus){
             case "1": return "Anonym";
             case "2": return "Teilanonym";
@@ -101,8 +101,8 @@ public class ExportServiceImpl implements ExportService {
      * @param questionList Die Fragenliste aus der wir die Frage extrahieren möchten
      * Diese Funktion gibt die Frage zurück welche die gleiche ID hat wie die gewünschte
      * */
-    Question getQuestionFromQuestionList(long questionId, List<Question> questionList){
-        for(Question q : questionList){
+    Question getQuestionFromQuestionList(final long questionId, final List<Question> questionList){
+        for(final Question q : questionList){
             if(q.getQuestionId().equals(questionId)) {
                 return q;
             }
@@ -129,9 +129,9 @@ public class ExportServiceImpl implements ExportService {
 
         final StringBuilder builder = new StringBuilder();
 
-        List<Question> questionList = new ArrayList<>();
-        for(Category c : poll.getCategoryList()) {
-            for (Question q: c.getQuestionList()) {
+        final List<Question> questionList = new ArrayList<>();
+        for(final Category c : poll.getCategoryList()) {
+            for (final Question q: c.getQuestionList()) {
                 questionList.add(q);
             }
         }
@@ -141,8 +141,8 @@ public class ExportServiceImpl implements ExportService {
         builder.append(columnNamesList).append('\n');
         for (final PollResult singularResult : results) {
             final ListIterator<Answer> answerIterator = singularResult.getAnswerList().listIterator();
-            ZonedDateTime lastEdit = singularResult.getLastEditAt();
-            DateTimeFormatter lastEditFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy - HH:mm:ss z");
+            final ZonedDateTime lastEdit = singularResult.getLastEditAt();
+            final DateTimeFormatter lastEditFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy - HH:mm:ss z");
             if(Integer.parseInt(poll.getAnonymityStatus()) == 1) {
                 builder.append(singularResult.getPollTaker()).append(separator);
             }
@@ -209,11 +209,11 @@ public class ExportServiceImpl implements ExportService {
      * @param q Die zugehörige Frage
      * Diese Funktion gibt statt den gewählten Indizes die Antwort aus der Frage zurück
      * */
-    private String answerToReadableCSV(Answer answer, Question q){
+    private String answerToReadableCSV(final Answer answer, final  Question q){
         final ListIterator<String> answerIterator = answer.getGivenAnswerList().listIterator();
         final StringBuilder output = new StringBuilder();
         while(answerIterator.hasNext()){
-            String next = answerIterator.next();
+            final String next = answerIterator.next();
             // System.out.println("Answer next: "+next);
             // System.out.println("QuestionMessages: "+q.getAnswerPossibilities());
             final String answerForSingularQuestion = q.getAnswerPossibilities().get(Integer.parseInt(next));
@@ -227,7 +227,7 @@ public class ExportServiceImpl implements ExportService {
      * @param q Gegebene Frage die zur Antwort gehört
      * Die Funktion wandelt die ausgewählte Antwort in den String um den der Umfrageteilnehmer sehen würde
      * */
-    private String answerToRangeCSV(Answer answer, Question q){
+    private String answerToRangeCSV(final Answer answer, final Question q){
         final DecimalFormat format = new DecimalFormat("#.######",
             DecimalFormatSymbols.getInstance(Locale.GERMAN));
         final List<String> answerPossibilities = new ArrayList<>();
@@ -243,7 +243,7 @@ public class ExportServiceImpl implements ExportService {
         final ListIterator<String> answerIterator = answer.getGivenAnswerList().listIterator();
         final StringBuilder output = new StringBuilder();
         while(answerIterator.hasNext()){
-            String next = answerIterator.next();
+            final String next = answerIterator.next();
             output.append(answerPossibilities.get(Integer.parseInt(next))).append(' ');
         }
         return output.toString();

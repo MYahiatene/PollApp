@@ -125,7 +125,12 @@ public class DiagramData {
 
         public void addAnswer(final double answerPossibility) {
             final int index = (int) ((answerPossibility - start) / step);
-            data.get(0).set(index, data.get(0).get(index) + 1);
+            try {
+                data.get(0).set(index, data.get(0).get(index) + 1);
+            } catch(IndexOutOfBoundsException e){
+                data.get(0).add(index, 0);
+                data.get(0).set(index, data.get(0).get(index) + 1);
+            }
         }
 
         public void setModifier(final double start, final double step) {
@@ -487,9 +492,9 @@ public class DiagramData {
          * @param input Die Eingabeliste an TextAnswers welche zu einer Liste an Strings gemacht werden soll
          * Diese Funktion macht eine Liste an TextAnswers zu einer Liste an Strings um für diese die Frequenz und Tendenz zu berechnen
          * */
-        List<String> getWordList(List<TextAnswer> input) {
-            List<String> stringList = new ArrayList<>();
-            for (TextAnswer ta: input) {
+        List<String> getWordList(final List<TextAnswer> input) {
+            final List<String> stringList = new ArrayList<>();
+            for (final TextAnswer ta: input) {
                 stringList.addAll(Arrays.asList(ta.text.toLowerCase().split("[ .,;:?\\-_=()/&%$§!#'+*~|<>]+")));
             }
             return stringList;
@@ -514,8 +519,8 @@ public class DiagramData {
          * @param ta Die Textantwort für die die Wortfrequenz berechnet werden soll
          * Diese Funktion berechnet die Frequenz eines einzelenen Wortes so wie die Funktion genutzt wird
          * */
-        int getWordFrequency(List<TextAnswer> input, TextAnswer ta) {
-            List<String> wordList = getWordList(input);
+        int getWordFrequency(final List<TextAnswer> input, final  TextAnswer ta) {
+            final List<String> wordList = getWordList(input);
             return Collections.frequency(wordList, ta.text);
 
         }
@@ -525,9 +530,9 @@ public class DiagramData {
          * Diese Funktion entfernt die Duplikate aus einer Liste an JSObjects
          * */
         List<JSObject> removeDuplicates(final List<JSObject> duplicates) {
-            List<String> keyList = new ArrayList<>();
-            List<JSObject> noDuplicates = new ArrayList<>();
-            for (JSObject jso: duplicates) {
+            final List<String> keyList = new ArrayList<>();
+            final List<JSObject> noDuplicates = new ArrayList<>();
+            for (final JSObject jso: duplicates) {
                 if (!keyList.contains(jso.text)) {
                     noDuplicates.add(jso);
                     keyList.add(jso.text);
@@ -573,7 +578,7 @@ public class DiagramData {
             public String edited;
             public String creator;
 
-            JSObject(final int value, final String text, final int tendency, int frequency, final String edited,
+            JSObject(final int value, final String text, final int tendency, final int frequency, final String edited,
                      final String creator) {
                 this.value = value;
                 this.text = text;
@@ -694,16 +699,15 @@ public class DiagramData {
             {
                 // System.out.println(patternString);
                 //final DateTimeFormatter finalDf = DateTimeFormatter.ofPattern(tPlus, Locale.GERMANY);
-
+                String tPlus = "";
                 for (ZonedDateTime date = min; date.compareTo(max) <= 0;date = date.plusSeconds(step)) {
-                    String deltaString = "T+";
+                    final String deltaString = "T+";
                     //Instant endT = Instant.ofEpochSecond(end);
                     //System.out.println("EndT: "+endT);
                     //ZonedDateTime endTime = endT.atZone(ZoneId.of("Europe/Berlin")); //ZonedDateTime.parse(String.valueOf(end), df.withZone(ZoneId.of("Europe/Berlin")));
                     //System.out.println("endtime : "+endTime);
                     //Instant endTime = Instant.ofEpochSecond(end);
-                    Duration delta = Duration.between(pollStartTime, date);
-                    String tPlus = "";
+                    final Duration delta = Duration.between(pollStartTime, date);
                     if (step < 60 * 60 * 24 * 30) {
                         tPlus = deltaString + String.format("%dd", delta.toDays());
                     }
@@ -719,6 +723,7 @@ public class DiagramData {
                     /*System.out.println("APLUS: "+tPlus);*/
                     answerPossibilities.add(tPlus);
                 }
+
                 // System.out.println(answerPossibilities);
                 participantsOverTime = new ChoiceData(0, "Teilnahmen über Zeit", answerPossibilities);
                 /*System.out.println(datesList.toString());*/
@@ -729,6 +734,7 @@ public class DiagramData {
                     System.out.println("Step: "+step);*/
                     participantsOverTime.addAnswer((double) slot);
                 }
+
                 participantsOverTime.statistics();
             }
             else {
@@ -828,7 +834,7 @@ public class DiagramData {
         return json.toString();
     }
 
-    public void combine(DiagramData other) {
+    public void combine(final DiagramData other) {
         if(showParticipantsOverTime)
         {
             this.participantsOverTime.data.addAll(other.participantsOverTime.getData());
@@ -836,29 +842,29 @@ public class DiagramData {
         }
         for(int i = 0; i < getQuestionList().size();i++)
         {
-            QuestionData qd = this.getQuestionList().get(i);
-            QuestionData od = other.getQuestionList().get(i);
+            final QuestionData qd = this.getQuestionList().get(i);
+            final QuestionData od = other.getQuestionList().get(i);
             LOGGER.info("this");
             qd.print();
             LOGGER.info("other");
             od.print();
             switch (qd.questionType()) {
                 case SORT_QUESTION: {
-                    SortData tsd = (SortData) qd;
-                    SortData osd = (SortData) od;
+                    final SortData tsd = (SortData) qd;
+                    final SortData osd = (SortData) od;
                     tsd.meanOrder.addAll(osd.meanOrder);
                     break;
                 }
                 case TEXT_QUESTION: {
-                    TextData ttd = (TextData) qd;
-                    TextData otd = (TextData) od;
+                    final TextData ttd = (TextData) qd;
+                    final TextData otd = (TextData) od;
                     ttd.texts.addAll(otd.texts);
                     ttd.frequency.addAll(otd.frequency);
                     break;
                 }
                 case CHOICE_QUESTION: {
-                    ChoiceData tcd = (ChoiceData) qd;
-                    ChoiceData ocd = (ChoiceData) od;
+                    final ChoiceData tcd = (ChoiceData) qd;
+                    final ChoiceData ocd = (ChoiceData) od;
                     tcd.data.addAll(ocd.getData());
                     tcd.calculated.addAll(ocd.calculated);
                     break;

@@ -29,7 +29,7 @@ public class AnswerServiceImpl implements AnswerService {
      * @param answerRepository     the answer repository with answers
      */
     @Autowired
-    public AnswerServiceImpl(final AnswerRepository answerRepository, PollRepository pollRepository,
+    public AnswerServiceImpl(final AnswerRepository answerRepository, final PollRepository pollRepository,
                                         final PollResultRepository pollResultRepository) {
         this.answerRepository = answerRepository;
         this.pollRepository = pollRepository;

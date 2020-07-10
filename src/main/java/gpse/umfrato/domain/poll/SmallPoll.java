@@ -57,8 +57,8 @@ public class SmallPoll {
 
     private Boolean isSeries;
 
-    public SmallPoll(Poll original, PollResultService pollResultService,
-                     ParticipationLinkService participationLinkService, final ZoneId timeZone) {
+    public SmallPoll(final Poll original, final PollResultService pollResultService,
+                     final ParticipationLinkService participationLinkService, final ZoneId timeZone) {
         final DateTimeFormatter df = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm", Locale.GERMAN).withZone(timeZone);
         this.pollId = original.getPollId();
         this.pollName = original.getPollName();

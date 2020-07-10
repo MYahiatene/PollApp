@@ -73,8 +73,8 @@ public class PollResultServiceImpl implements PollResultService {
     @Override
     public List<String> getPollTakers(final Long pollId) {
         LOGGER.info(pollId.toString());
-        List<PollResult> pollResults = pollResultRepository.findPollResultsByPollId(pollId);
-        List<String> takerList = new ArrayList<>();
+        final List<PollResult> pollResults = pollResultRepository.findPollResultsByPollId(pollId);
+        final List<String> takerList = new ArrayList<>();
         for (int i = 0; i < pollResults.size(); i++) {
             takerList.add(pollResults.get(i).getPollTaker());
 

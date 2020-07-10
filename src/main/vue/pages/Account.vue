@@ -75,7 +75,7 @@
                         </v-card-actions>
                     </v-card>
                 </v-dialog>
-                <v-btn color="accent" class="ma-4 float-right" v-on="on" @click="logOut()">Abmelden</v-btn>
+                <v-btn color="accent" class="ma-4 float-right" v-on="on" @click="logout">Abmelden</v-btn>
                 <v-dialog v-model="dialog2" persistent max-width="600px">
                     <v-card>
                         <v-card-title>
@@ -107,7 +107,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapMutations, mapGetters } from 'vuex'
 import AuthGate from '../components/AuthGate'
 export default {
     name: 'Account',
@@ -147,9 +147,7 @@ export default {
         this.loadUserData()
     },
     methods: {
-        logOut() {
-            // TODO: Abmeldefunktion implementieren
-        },
+        ...mapMutations({ logout: 'login/logout' }),
         async createToken() {
             await this.$store.dispatch('administration/setToken')
             this.token = this.authenticate
