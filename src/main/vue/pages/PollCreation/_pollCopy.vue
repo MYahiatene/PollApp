@@ -99,7 +99,7 @@
                                                 jeweils starten soll, dies können sie genauer spezifizieren je nach
                                                 Zeiteinheit in den Textfeldern, die die jeweiligen Möglichkeiten
                                                 betiteln. <br />
-                                                Bei der Zeiteinheit Wochen geben Sie eine Zahl für den jeweilgigen
+                                                Bei der Zeiteinheit Wochen geben Sie eine Zahl für den jeweiligigen
                                                 Wochentag an, beginnend bei Montag mit 1 bis Sonntag mit 7. Bei der
                                                 Zeiteinheit Monaten können Sie entweder den Tag im Monat mit einer Zahl
                                                 angeben oder den Wochentag, durch eine Zahl, mit der Woche im Monat.
@@ -213,7 +213,7 @@
                                             <h4>Wie funktioniert das Beenden der Serienumfrage?</h4>
                                             <p>
                                                 Das Beenden der Serienumfrage bedeutet nicht das Deaktivieren der
-                                                Umfrage, sondern das Stoppen der gesamten Serie, so dass keine weitern
+                                                Umfrage, sondern das Stoppen der gesamten Serie, so dass keine weiteren
                                                 Instanzen dieser Serienumfrage mehr erstellt werden. <br />
                                                 Dafür müssen Sie einen der 3 gegebenen Gründe angeben und diesen dann
                                                 genau definieren. <br />Bei Datum müssen Sie ein Datum auswählen nach
