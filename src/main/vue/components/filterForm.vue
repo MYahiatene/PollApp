@@ -13,6 +13,7 @@
                 </v-overflow-btn>
                 <div v-if="poll">
                     <v-slider v-if="isSeriesPoll" v-model="seriesPollNumber" min="0" :max="(poll.seriesCounter - 1)">
+                        "Anzahl der betrachteten vorhergegangenen Serienumfragen"
                     </v-slider>
                 </div>
 
@@ -328,7 +329,7 @@ export default {
         }),
 
         isSeriesPoll() {
-            return this.poll.level !== -1 && this.poll.level
+            return this.poll.level !== -1 && this.poll.level !== undefined && this.poll.level !== null
         },
 
         categories() {
@@ -415,6 +416,7 @@ export default {
                 baseQuestionIds: this.chosenQuestionIds, // these are questionIDs
                 timeDiagram: this.showTimeDiagram,
                 timeDiagramRelative: this.relativeTimeDiagram,
+                numberOfEvaluatedSeriesPolls: this.seriesPollNumber,
             })
             filterData.push({
                 filterType: 'consistency',
@@ -592,6 +594,7 @@ export default {
                             }
                         }
                     }
+                    this.seriesPollNumber = this.filters[0].numberOfEvaluatedSeriesPolls
 
                     console.log(this.selectedQuestions)
                 }
@@ -689,6 +692,7 @@ export default {
             this.dateFilterList = []
             this.addDateFilter()
             this.addQAFilter()
+            this.seriesPollNumber = 0
             this.updateFilter()
             this.saveToStore()
         },
