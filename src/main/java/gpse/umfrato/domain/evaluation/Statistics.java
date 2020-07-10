@@ -57,6 +57,7 @@ public class Statistics {
      *                                   questionIds is a List of only
      *                                   one (-1) the questionList will get filled with all questions contained in
      *                                   the poll
+     *
      */
     public Statistics(final QuestionService questionService, final PollService pollService,
                       final PollResultService pollResultService, final CategoryService categoryService,
@@ -99,6 +100,7 @@ public class Statistics {
 
     /**
      * constructs a list of filters from the input.
+     *
      *
      * @param input a list of filterCmd
      */
@@ -146,6 +148,7 @@ public class Statistics {
     /**
      * loads the filterList from a session.
      *
+     *
      * @param sessionId of the session to
      * @return whether or not there have been loaded any filters
      */
@@ -158,6 +161,7 @@ public class Statistics {
     /**
      * returns the filtered list of pollResults to use by other functions like the exportController.
      *
+     *
      * @return a filtered list of pollResults
      */
     public List<PollResult> filteredResults() {
@@ -169,6 +173,7 @@ public class Statistics {
     }
 
     /**
+     *
      * returns the processed Poll as a JSON to display it in the frontend.
      *
      * @return a filtered list of pollResults
@@ -228,6 +233,8 @@ public class Statistics {
      * This is necessary to allow the User to correct mistakes in the question and to allow the participant to
      * add answer-possibilities
      *
+     *
+     *
      * @param original            the original poll
      * @param originalQuestionIds the original questionIds that will be translated
      * @param pollToTranslateTo   the other poll to translate the question-ids to
@@ -281,6 +288,8 @@ public class Statistics {
     /**
      * This method rates the similarity of question a and question b by comparing the question-message and the
      * answer-possibilities.
+     *
+     *
      *
      * @param a question a
      * @param b question b

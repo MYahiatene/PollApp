@@ -3,7 +3,7 @@
         <v-app-bar dense flat>
             <!--            the title includes the Question and its id-->
             <v-toolbar-title>
-                {{ questionTitle }} {{ seriesPoll ? '(Version: ' + currentIndex + ')' : '' }}</v-toolbar-title
+                {{ questionTitle }} {{ seriesPoll ? '(Umfrage : ' + currentIndex + ')' : '' }}</v-toolbar-title
             >
             <v-spacer></v-spacer>
             <div v-if="seriesPoll">

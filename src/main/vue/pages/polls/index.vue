@@ -18,13 +18,13 @@
                                 <v-btn icon color="primary" @click="initialize">
                                     <v-icon> mdi-refresh</v-icon>
                                 </v-btn>
-                                <v-btn large color="primary" @click="initializeDatabase">
-                                    <v-icon :color="progressA">mdi-auto-fix</v-icon>
-                                </v-btn>
-                                <v-spacer />
-                                <v-btn large color="secondary" @click="answerPoll">
-                                    <v-icon :color="progressB">mdi-auto-fix</v-icon>
-                                </v-btn>
+                                <!--                                <v-btn large color="primary" @click="initializeDatabase">-->
+                                <!--                                    <v-icon :color="progressA">mdi-auto-fix</v-icon>-->
+                                <!--                                </v-btn>-->
+                                <!--                                <v-spacer />-->
+                                <!--                                <v-btn large color="secondary" @click="answerPoll">-->
+                                <!--                                    <v-icon :color="progressB">mdi-auto-fix</v-icon>-->
+                                <!--                                </v-btn>-->
                                 <v-spacer />
                                 <v-text-field
                                     v-model="search"
