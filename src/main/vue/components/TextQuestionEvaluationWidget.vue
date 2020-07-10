@@ -132,6 +132,7 @@ export default {
                 { text: 'Beantwortet', value: 'edited', sortable: true },
                 { text: 'Benutzer', value: 'creator', sortable: true },
                 { text: 'Tendenzindex', value: 'tendency', sortable: true },
+                { text: 'Serie', value: 'seriesCounter', sortable: true },
             ],
             freqHeaders: [
                 { text: 'Wort', value: 'text', sortable: true },
