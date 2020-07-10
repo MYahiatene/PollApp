@@ -510,7 +510,7 @@ public class DiagramData {
             for (final TextAnswer ta: input) {
                 outputList.add(new JSObject(ta.text.split("[ .,;:?\\-_=()/&%$§!#'+*~|<>]+").length,
                     ta.text, calcTendency(getWordList(input), ta.text),
-                    getWordFrequency(input, ta), ta.edited, ta.creator)); // Antwortlänge, Antwort, Antworttendenz
+                    getWordFrequency(input, ta), ta.edited, ta.creator, ta.seriesCounter)); // Antwortlänge, Antwort, Antworttendenz
             }
             return outputList;
         }
@@ -552,11 +552,13 @@ public class DiagramData {
                 answers.add(ta.text);
             }
             final List<JSObject> duplicateList = new ArrayList<>();
+            int index = 0;
             for (final String answer: answers) { //Wir brauchen nur die Strings
                 for (final String word: answer.split("[ .,;:?\\-_=()/&%$§!#'+*~|<>]+")) {
                     duplicateList.add(new JSObject(0, word, 0, Collections.frequency(getWordList(input),
-                        word.toLowerCase()), "", ""));
+                        word.toLowerCase()), "", "", input.get(index).seriesCounter));
                 }
+                index++;
             }
             return removeDuplicates(duplicateList);
         }
@@ -578,15 +580,17 @@ public class DiagramData {
             public int frequency;
             public String edited;
             public String creator;
+            public long seriesCounter;
 
             JSObject(final int value, final String text, final int tendency, final int frequency, final String edited,
-                     final String creator) {
+                     final String creator, final Long seriesConter) {
                 this.value = value;
                 this.text = text;
                 this.tendency = tendency;
                 this.frequency = frequency;
                 this.edited = edited;
                 this.creator = creator;
+                this.seriesCounter = seriesCounter;
             }
         }
     }
