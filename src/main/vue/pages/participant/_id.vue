@@ -354,6 +354,11 @@
             </v-container>
         </div>
     </div>
+    <div v-else>
+        <v-card>
+            <v-card-title>Die Umfrage ist nicht aktiv</v-card-title>
+        </v-card>
+    </div>
 </template>
 
 <script>
