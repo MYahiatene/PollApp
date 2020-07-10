@@ -20,6 +20,8 @@ public class FilterCmd {
 
     private Boolean timeDiagramRelative;
 
+    private Integer numberOfEvaluatedSeriesPolls;
+
     //QuestionFilter
     private Long targetQuestionId;
 

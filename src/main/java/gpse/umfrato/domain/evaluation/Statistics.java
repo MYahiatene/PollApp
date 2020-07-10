@@ -38,9 +38,9 @@ public class Statistics {
     private final List<Long> questionIds = new ArrayList<>();
     private final boolean showParticipantsOverTime;
     private final boolean participantsOverRelativeTime;
-    private final Integer numberOfPastPollsToEvaluate = 1;
     private final ZoneId timeZone;
     private List<Filter> filters = new ArrayList<>();
+    private Integer numberOfPastPollsToEvaluate = 10;
 
     /**
      * Initializes the Statistic.
@@ -76,6 +76,11 @@ public class Statistics {
             participantsOverRelativeTime = false;
         } else {
             participantsOverRelativeTime = data.getTimeDiagramRelative();
+        }
+        if (data.getNumberOfEvaluatedSeriesPolls() == null) {
+            numberOfPastPollsToEvaluate = -1;
+        } else {
+            numberOfPastPollsToEvaluate = data.getNumberOfEvaluatedSeriesPolls();
         }
         final List<Category> categories = categoryService.getAllCategories(pollId);
         questionIds.addAll(data.getBaseQuestionIds());
@@ -173,7 +178,7 @@ public class Statistics {
         int prev = 0;
         Poll poll = pollService.getPoll(pollId);
         List<Long> questionIds = this.questionIds;
-        while(prev <= numberOfPastPollsToEvaluate) {
+        while(numberOfPastPollsToEvaluate == -1 || prev <= numberOfPastPollsToEvaluate) {
             List<PollResult> prs = pollResultService.getPollResults(pollId);
             final int participantCountUnfiltered = prs.size();
             for (final Filter f: filters) {
@@ -227,10 +232,11 @@ public class Statistics {
                 for (Question oq: oc.getQuestionList()) {
                     if (oq.getQuestionId().equals(qid)) {
                         Question translatedQuestion = pollToTranslateTo.getCategoryList().get(categoryIndex).getQuestionList().get(questionIndex);
-                        double questionConfidence = questionSimilarity(oq, translatedQuestion);
-                        if (questionConfidence > 0.95) {  // TODO: ist 0.8 ein guter Wert?
-                            translatedIds.add(translatedQuestion.getQuestionId());
+                        translatedIds.add(translatedQuestion.getQuestionId());
+                        if (true) {
+
                         } else {
+                            double questionConfidence = questionSimilarity(oq, translatedQuestion);
                             Question bestMatch = translatedQuestion;
                             double bestConfidence = questionConfidence;
                             for (Category tc: pollToTranslateTo.getCategoryList()) {
@@ -285,6 +291,10 @@ public class Statistics {
      * @return a similarity value between 0 (not equal at all) and 1 (completely identical)
      */
     private double stringSimilarity(final String a, final String b) {
+        if(a.equals(b))
+        {
+            return 1.0;
+        }
         String longer = a, shorter = b;
         if (a.length() < b.length()) {
             longer = b; shorter = a;

@@ -233,12 +233,6 @@
                                                 </template>
                                                 <span> Umfrage löschen </span>
                                             </v-tooltip>
-                                            <v-icon>
-                                                mdi-vector-polyline
-                                            </v-icon>
-                                            <v-icon>
-                                                mdi-lock-pattern
-                                            </v-icon>
                                         </td>
                                     </template>
                                 </v-data-table>
