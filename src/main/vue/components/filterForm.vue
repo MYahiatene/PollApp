@@ -12,9 +12,15 @@
                 <!--                <v-overflow-btn v-model="chosenPoll" editable prefix="Basisdaten:" :items="pollTitles" dense>-->
                 <!--                </v-overflow-btn>-->
                 <div v-if="poll">
-                    <v-slider v-if="isSeriesPoll" v-model="seriesPollNumber" min="0" :max="(poll.seriesCounter - 1)">
-                        "Anzahl der betrachteten vorhergegangenen Serienumfragen"
-                    </v-slider>
+                    <v-slider
+                        class="ml-4 mr-8"
+                        v-if="isSeriesPoll"
+                        v-model="seriesPollNumber"
+                        min="0"
+                        :max="(poll.seriesCounter - 1)"
+                        label="Anzahl der betrachteten vorhergegangenen Serienumfragen"
+                        thumb-label="always"
+                    />
                 </div>
 
                 <v-expansion-panels accordion multiple hover>
