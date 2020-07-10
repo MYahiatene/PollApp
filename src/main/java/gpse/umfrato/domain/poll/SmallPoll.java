@@ -7,7 +7,6 @@ import gpse.umfrato.domain.pollresult.PollResultService;
 import lombok.Data;
 
 import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;

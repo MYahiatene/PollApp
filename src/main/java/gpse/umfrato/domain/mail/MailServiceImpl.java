@@ -9,9 +9,9 @@ import java.util.List;
 
 @Service
 public class MailServiceImpl implements MailService {
+    private static final String MAILADRESS = "gpseteam5.1@gmail.com";
     private List<String> mailAdresses;
     private JavaMailSender javaMailSender;
-    private static final String MAILADRESS = "gpseteam5.1@gmail.com";
 
     @Autowired
     public MailServiceImpl(final JavaMailSender javaMailSender) {
