@@ -42,8 +42,6 @@ public class MailController {
 
         try {
 
-            final SimpleMailMessage message = new SimpleMailMessage();
-
             String invitationLink;
 
             for (final String mail : mailCmd.getMailList()) {
@@ -114,10 +112,6 @@ public class MailController {
             } else { // Alle Teilnehmer
                 participationList = participationLinkService.getAllParticipationLinks(mailCmd.getPollId());
             }
-
-
-            final SimpleMailMessage message = new SimpleMailMessage();
-
 
             for (final ParticipationLink participationLink : participationList) {
                 if (participationLink.getUsername().contains("@") && participationLink.getUsername().contains(".")) {
