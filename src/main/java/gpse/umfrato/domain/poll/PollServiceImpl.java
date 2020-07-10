@@ -300,8 +300,6 @@ class PollServiceImpl implements PollService {
     public ZonedDateTime calculateNextDate(final Poll poll) {
         LOGGER.info("Start calculateNextDate");
         // TODO: ähnliche if schleifen zu Methoden extrahieren für bessere übersichtlichkeit
-        // TODO: bei Monaten Anzahl an Tagen berücksichtigen
-        // TODO: boolean poll.setNextSeries(next); & first = false durch return next ersetzen, boolean first löschen
         final int repeat = poll.getRepeat();
         final List<Integer> day = poll.getDay();
         final List<Integer> week = poll.getWeek();

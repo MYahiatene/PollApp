@@ -179,7 +179,7 @@ public class Statistics {
         Poll poll = pollService.getPoll(pollId);
         List<Long> questionIds = this.questionIds;
         while(numberOfPastPollsToEvaluate == -1 || prev <= numberOfPastPollsToEvaluate) {
-            List<PollResult> prs = pollResultService.getPollResults(pollId);
+            List<PollResult> prs = pollResultService.getPollResults(poll.getPollId());
             final int participantCountUnfiltered = prs.size();
             for (final Filter f: filters) {
                 prs = f.filter(prs);
@@ -200,7 +200,9 @@ public class Statistics {
                 break;
             }
             questionIds = translateQuestionIds(poll, questionIds, nextPoll);
+            LOGGER.info("prev " + poll.getPollId());
             poll = nextPoll;
+            LOGGER.info("next " + poll.getPollId());
             prev++;
         }
         avgParticipantCountUnfiltered /= prev + 1;
@@ -232,11 +234,12 @@ public class Statistics {
                 for (Question oq: oc.getQuestionList()) {
                     if (oq.getQuestionId().equals(qid)) {
                         Question translatedQuestion = pollToTranslateTo.getCategoryList().get(categoryIndex).getQuestionList().get(questionIndex);
-                        translatedIds.add(translatedQuestion.getQuestionId());
-                        if (true) {
-
+                        double questionConfidence = questionSimilarity(oq, translatedQuestion);
+                        if (questionSimilarity(oq,translatedQuestion) > 0.8) {
+                            translatedIds.add(translatedQuestion.getQuestionId());
+                            LOGGER.info("+ORIGINAL: " + oq.getQuestionMessage() + " " + oq.getQuestionId());
+                            LOGGER.info("+TRANSATED: " + translatedQuestion.getQuestionMessage() + " " + translatedQuestion.getQuestionId());
                         } else {
-                            double questionConfidence = questionSimilarity(oq, translatedQuestion);
                             Question bestMatch = translatedQuestion;
                             double bestConfidence = questionConfidence;
                             for (Category tc: pollToTranslateTo.getCategoryList()) {
@@ -249,6 +252,8 @@ public class Statistics {
                                 }
                             }
                             translatedIds.add(bestMatch.getQuestionId());
+                            LOGGER.info(">ORIGINAL: " + oq.getQuestionMessage() + " " + oq.getQuestionId());
+                            LOGGER.info(">TRANSATED: " + bestMatch.getQuestionMessage() + " " + bestMatch.getQuestionId());
                         }
                     }
                     questionIndex++;
@@ -256,6 +261,8 @@ public class Statistics {
                 categoryIndex++;
             }
         }
+        LOGGER.info("Original IDs: " + originalQuestionIds.toString());
+        LOGGER.info("Translated IDs: " + translatedIds.toString());
         return translatedIds;
     }
 
@@ -269,17 +276,18 @@ public class Statistics {
     {
         if(a.getQuestionType().equals(b.getQuestionType())) {
             double confidence = stringSimilarity(a.getQuestionMessage(), b.getQuestionMessage());
-            double answerConfidence = 0.0;
-            for (String as:a.getAnswerPossibilities())
-            {
-                for (String bs:b.getAnswerPossibilities())
-                {
-                    answerConfidence += stringSimilarity(as,bs);
+            if(a.getAnswerPossibilities().isEmpty()) {
+                double answerConfidence = 0.0;
+                for (String as: a.getAnswerPossibilities()) {
+                    for (String bs: b.getAnswerPossibilities()) {
+                        answerConfidence += stringSimilarity(as, bs);
+                    }
                 }
+                confidence += answerConfidence / (Math.max(a.getAnswerPossibilities().size(), b.getAnswerPossibilities().size()));
+                confidence += a.getNumberOfPossibleAnswers() == b.getNumberOfPossibleAnswers() ? 1.0 : 0.0;
+                return confidence / 3;
             }
-            confidence += answerConfidence / (Math.max(a.getAnswerPossibilities().size(), b.getAnswerPossibilities().size()));
-            confidence += a.getNumberOfPossibleAnswers() == b.getNumberOfPossibleAnswers() ? 1.0 : 0.0;
-            return confidence / 3;
+            return confidence;
         }
         return 0.0;
     }

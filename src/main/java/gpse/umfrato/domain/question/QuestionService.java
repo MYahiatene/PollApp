@@ -74,6 +74,14 @@ public interface QuestionService {
     Question addChoiceQuestion(final Question question, final Long pollId);
 
     /**
+     * Copies a sortQuestion to a category. Needs to adds every answer separately to the new question.
+     * @param question
+     * @param pollId
+     * @return
+     */
+    Question addSortQuestion(final Question question, final Long pollId);
+
+    /**
      * Copies all questions from one category.
      * @param categoryId
      * @param pollId
