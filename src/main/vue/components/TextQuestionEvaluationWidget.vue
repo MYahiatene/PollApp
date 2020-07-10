@@ -42,10 +42,33 @@
                                         >
                                         </v-data-table>
                                     </v-card>
-                                    <v-card v-if="tableView" class="ma-1" flat>
+                                    <!--<v-card v-if="tableView" class="ma-1" flat>
                                         <v-data-table
                                             :headers="freqHeaders"
                                             :items="frequency"
+                                            :search="search"
+                                            :custom-filter="filterOnlyCapsText"
+                                            class="elevation-1"
+                                            dense
+                                            :footer-props="footerProps"
+                                            multi-sort
+                                        >
+                                        </v-data-table>
+                                    </v-card>-->
+                                    <v-card
+                                        v-for="(thing, index) in seriesToList(frequency)"
+                                        :key="index"
+                                        class="ma-1"
+                                        flat
+                                    >
+                                        <template>
+                                            <v-toolbar flat>
+                                                <v-toolbar-title>Umfrage {{ thing[0].seriesCounter }}</v-toolbar-title>
+                                            </v-toolbar>
+                                        </template>
+                                        <v-data-table
+                                            :headers="freqHeaders"
+                                            :items="thing"
                                             :search="search"
                                             :custom-filter="filterOnlyCapsText"
                                             class="elevation-1"
@@ -109,6 +132,7 @@ export default {
                 { text: 'Beantwortet', value: 'edited', sortable: true },
                 { text: 'Benutzer', value: 'creator', sortable: true },
                 { text: 'Tendenzindex', value: 'tendency', sortable: true },
+                { text: 'Serie', value: 'seriesCounter', sortable: true },
             ],
             freqHeaders: [
                 { text: 'Wort', value: 'text', sortable: true },
@@ -137,6 +161,18 @@ export default {
             console.log(this.diagramData[this.questionID].frequency)
             return this.diagramData[this.questionID].frequency
         },
+        seriesToList() {
+            return (seriesList) => {
+                const outputList = [[]]
+                console.log('SeriesList: ', seriesList)
+                for (const key in seriesList) {
+                    console.log('Key: ', seriesList[key])
+                    outputList[seriesList[key].seriesCounter].push(seriesList[key])
+                }
+                console.log('OutputList: ', outputList)
+                return outputList
+            }
+        },
     },
     mounted() {
         // console.log('mounted')
@@ -159,7 +195,6 @@ export default {
             // console.log(freqMap)
             return freqMap
         },
-
         filterOnlyCapsText(value, search, item) {
             return (
                 value != null &&

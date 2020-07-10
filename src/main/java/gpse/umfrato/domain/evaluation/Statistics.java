@@ -183,23 +183,26 @@ public class Statistics {
             LOGGER.warning("Ungültige Umfrage");
             return "{\"name\":\"Ungültige Umfrage\"}";
         }
-        int avgParticipantCountFiltered = 0;
-        int avgParticipantCountUnfiltered = 0;
         String response;
         final List<DiagramData> diagramDataList = new ArrayList<>();
         int prev = 0;
         Poll poll = pollService.getPoll(pollId);
         List<Long> questionIds = this.questionIds;
-        while (numberOfPastPollsToEvaluate == -1 || prev <= numberOfPastPollsToEvaluate) {
+        int participantCountUnfiltered = 0;
+        int participantCountFiltered = 0;
+        while(numberOfPastPollsToEvaluate == -1 || prev <= numberOfPastPollsToEvaluate) {
             List<PollResult> prs = pollResultService.getPollResults(poll.getPollId());
-            final int participantCountUnfiltered = prs.size();
-            for (final Filter f : filters) {
+            if(poll.getPollId().equals(pollId)) {
+                participantCountUnfiltered = prs.size();
+            }
+            for (final Filter f: filters) {
                 prs = f.filter(prs);
             }
-            final int participantCountFiltered = prs.size();
-            avgParticipantCountFiltered += participantCountFiltered;
-            avgParticipantCountUnfiltered += participantCountUnfiltered;
-            if (prs.size() > 0) {
+            if(poll.getPollId().equals(pollId)) {
+                participantCountFiltered = prs.size();
+            }
+            if (prs.size() > 0)
+            {
                 final DiagramData dd = new DiagramData(poll, prs, showParticipantsOverTime,
                     participantsOverRelativeTime, questionIds, timeZone, categoryService, questionService);
                 diagramDataList.add(dd);
@@ -216,10 +219,8 @@ public class Statistics {
             LOGGER.info("next " + poll.getPollId());
             prev++;
         }
-        avgParticipantCountUnfiltered /= prev + 1;
-        avgParticipantCountFiltered /= prev + 1;
-        response = NAME_STRING + pollService.getPoll(this.pollId).getPollName() + PARTICIPANTS_STRING
-            + avgParticipantCountFiltered + "/" + avgParticipantCountUnfiltered + "\",\"questionList\": ";
+        response = NAME_STRING + pollService.getPoll(this.pollId).getPollName() + PARTICIPANTS_STRING +
+                participantCountFiltered + "/" + participantCountUnfiltered + "\",\"questionList\": ";
         if (diagramDataList.isEmpty()) {
             return response + "[]}";
         }
