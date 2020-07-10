@@ -71,9 +71,10 @@ public class EvaluationController {
         if (input.isEmpty()) {
             return "?";
         }
-        final ZoneId timeZone = ZoneId.ofOffset("UTC", ZoneOffset.ofHoursMinutes(timeZoneOffset / 60 , timeZoneOffset % 60));
+        final ZoneId timeZone = ZoneId.ofOffset("UTC", ZoneOffset.ofHoursMinutes(timeZoneOffset / 60,
+            timeZoneOffset % 60));
         final Statistics calculation = new Statistics(questionService, pollService, pollResultService, categoryService,
-                consistencyQuestionService, sessionService, timeZone, input.get(0));
+            consistencyQuestionService, sessionService, timeZone, input.get(0));
         calculation.loadFilter(input);
         return calculation.generateDiagram();
     }
@@ -86,8 +87,8 @@ public class EvaluationController {
         if (pollService.getPoll(pollId).getAnonymityStatus().equals("1")) {
             return String.valueOf(pollResultService.getPollResults(pollId).size());
         } else {
-            return pollResultService.getPollResults(pollId).size() + " / " +
-                participationLinkService.getAllParticipationLinks(pollId).size();
+            return pollResultService.getPollResults(pollId).size() + " / "
+                + participationLinkService.getAllParticipationLinks(pollId).size();
         }
     }
 
@@ -128,7 +129,7 @@ public class EvaluationController {
     @GetMapping("/getSessions/{pollId:\\d+}")
     public List<Session> getSessions(final @PathVariable Long pollId) {
         final List<Session> sessions = sessionService.getAllSessions(pollId);
-        for (final Session s: sessions) {
+        for (final Session s : sessions) {
             s.setFilterList(Collections.emptyList());
             s.setDiagramFormat(Collections.emptyList());
         }

@@ -85,16 +85,16 @@ public class PollCmd {
         // System.out.println(this);
         final DateTimeFormatter df = DateTimeFormatter.ofPattern("dd.MM.yyyy&HH:mm");
         LocalDateTime localActivation = null;
-        final LocalDateTime localCreation = LocalDateTime.parse(creationDate,df);
+        final LocalDateTime localCreation = LocalDateTime.parse(creationDate, df);
         final ZoneId timeZone = ZoneId.ofOffset("UTC", userOffset);
         ZonedDateTime activation = null;
         ZonedDateTime deactivation = null;
-        if(activatedDate != null) {
+        if (activatedDate != null) {
             localActivation = LocalDateTime.parse(activatedDate, df);
             activation = localActivation.atZone(timeZone);
         }
         LocalDateTime localDeactivation = null;
-        if(deactivatedDate != null) {
+        if (deactivatedDate != null) {
             localDeactivation = LocalDateTime.parse(deactivatedDate, df);
             deactivation = localDeactivation.atZone(timeZone);
         }
