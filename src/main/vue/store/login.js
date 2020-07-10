@@ -40,6 +40,11 @@ export const mutations = {
     setUsername(state, username) {
         state.username = username
     },
+    logout(state) {
+        console.log('logout')
+        state.authenticated = false
+        localStorage.setItem('user-token', '')
+    },
 }
 export const actions = {
     async requestToken({ commit }, input) {
