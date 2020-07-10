@@ -15,6 +15,7 @@ export const state = () => ({
     changeOfCategories: false,
     numberOfQuestions: 0,
     categoryIndex: 1,
+    pollTakers: [],
     poll: ['Object'],
     answer: ['Object'],
     category: ['Object'],
@@ -62,6 +63,9 @@ export const getters = {
     },
     getParticipated: (state) => {
         return state.participated
+    },
+    getPollTakers: (state) => {
+        return state.pollTakers
     },
 }
 
@@ -125,6 +129,10 @@ export const mutations = {
     setQuestionId: (state, id) => {
         state.questionId = id
     },
+
+    setPollTakers: (state, pollTakers) => {
+        state.pollTakers = pollTakers
+    },
 }
 export const actions = {
     /**
@@ -156,6 +164,15 @@ export const actions = {
             state.participated = response.data
             console.log('store', state.participated)
         })
+    },
+
+    async loadPollTakers({ commit }, id) {
+        this.$axios.defaults.baseURL = 'http://localhost:8088/api/'
+        this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('user-token')
+        const takers = await this.$axios.post('/getPollTakers', id)
+        console.log('USERS')
+        console.log(takers)
+        commit('setPollTakers', takers)
     },
     /**
      * Defines mapAction showAnswer and sets the global axios with the token saved in localstorage and the baseURL to get

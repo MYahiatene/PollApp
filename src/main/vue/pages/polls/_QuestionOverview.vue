@@ -20,13 +20,13 @@
                                             <h2 style="font-weight: normal; text-align: center;" class="ma-0">
                                                 Kategorien
                                             </h2>
+                                            <v-spacer />
+                                            <ControlQuestions
+                                                :poll-index="0"
+                                                :use-evaluation-store="false"
+                                                :polls-prop="[pollData]"
+                                            />
                                         </v-card-title>
-
-                                        <ControlQuestions
-                                            :poll-index="0"
-                                            :use-evaluation-store="false"
-                                            :polls-prop="[pollData]"
-                                        />
                                     </v-col>
 
                                     <v-spacer />

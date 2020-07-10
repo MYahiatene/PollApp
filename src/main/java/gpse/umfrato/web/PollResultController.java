@@ -1,6 +1,7 @@
 package gpse.umfrato.web;
 
 import gpse.umfrato.domain.cmd.AnswerCmd;
+import gpse.umfrato.domain.cmd.PollCmd;
 import gpse.umfrato.domain.cmd.PollResultCmd;
 import gpse.umfrato.domain.pollresult.PollResult;
 import gpse.umfrato.domain.pollresult.PollResultService;
@@ -8,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.logging.Logger;
 
 /**
@@ -58,6 +60,14 @@ public class PollResultController {
         } catch (NullPointerException e) {
             LOGGER.info("Null Pointer Exception!");
         }
+    }
+
+    @PostMapping("/getPollTakers")
+    public List<String> getPollTakers(final @RequestBody PollCmd pollCmd) {
+        LOGGER.info("Halloooo");
+        LOGGER.info(String.valueOf(pollCmd.getPollId()));
+        return pollResultService.getPollTakers(pollCmd.getPollId());
+
     }
 
     /**

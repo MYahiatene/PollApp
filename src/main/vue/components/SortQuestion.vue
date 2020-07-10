@@ -22,10 +22,10 @@
                         Antwort
                     </v-btn>
                 </v-col>
-            </v-row></v-form
-        >
-    </v-container></template
->
+            </v-row>
+        </v-form>
+    </v-container>
+</template>
 
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'

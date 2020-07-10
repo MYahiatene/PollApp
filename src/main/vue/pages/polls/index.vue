@@ -206,7 +206,7 @@
                                                     <v-btn
                                                         icon
                                                         color="primary"
-                                                        :disabled="!item.series"
+                                                        :disabled="!item.isSeries"
                                                         v-bind="attrs"
                                                         v-on="on"
                                                     >
@@ -483,15 +483,21 @@ export default {
                 deactivated: false,
                 creationDate: dd + '.' + mm + '.' + yyyy + '&' + time,
                 activatedDate: dd + '.' + mm + '.' + yyyy + '&' + time,
-                deactivatedDate: dd + '.' + mm + '.' + yyyy + '&' + time,
+                deactivatedDate: '11' + '.' + mm + '.' + yyyy + '&' + time,
                 pollStatus: 0,
                 categoryChange: true,
                 visibility: true,
                 backgroundColor: '#555555',
                 fontColor: '#fe7312',
-                level: -1,
+                level: 0,
+                repeat: 1,
+                day: [],
+                week: [],
+                month: [],
                 ownDesign: true,
                 checkLeapYear: false,
+                stoppingReason: 1,
+                repeatUntil: '10',
                 logo:
                     'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAADICAIAAAAiOjnJAAAAAXNSR0IArs4c6QAAAARnQU1' +
                     'BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAA4dSURBVHhe7Z2/ixzHEsf93zhz5siZM2WOlL3sZc4UOVMgkAMjHF' +
@@ -696,7 +702,16 @@ export default {
         },
 
         async answerPoll() {
-            const targetPollId = 1
+            const polls = this.prepareItems
+            const targetPollId = polls[polls.length - 1].pollId
+            const response = await this.$axios.get('/getonepoll', {
+                params: {
+                    pollId: targetPollId,
+                },
+            })
+            const pollData = response.data
+            console.log('Beantworte poll: ' + targetPollId)
+            console.log(pollData)
             for (let j = 0; j < 25; j++) {
                 if (j < 200) {
                     this.progressColorB = '#006eff'
@@ -720,14 +735,14 @@ export default {
                 await this.$store.dispatch('participant/saveAnswer', {
                     username: '' + i,
                     pollId: targetPollId,
-                    questionId: 4,
+                    questionId: pollData.categoryList[0].questionList[0].questionId,
                     answerList: ['' + Math.floor(Math.random() * 4)],
                 })
                 console.log(1)
                 await this.$store.dispatch('participant/saveAnswer', {
                     username: '' + i,
                     pollId: targetPollId,
-                    questionId: 5,
+                    questionId: pollData.categoryList[0].questionList[1].questionId,
                     answerList: ['' + Math.floor(Math.random() * 5), '' + Math.floor(Math.random() * 4)],
                 })
                 console.log(2)
@@ -735,7 +750,7 @@ export default {
                 await this.$store.dispatch('participant/saveAnswer', {
                     username: '' + i,
                     pollId: targetPollId,
-                    questionId: 6,
+                    questionId: pollData.categoryList[0].questionList[2].questionId,
                     answerList: [p[Math.floor(Math.random() * 4)]],
                 })
                 console.log(3)
@@ -747,28 +762,28 @@ export default {
                 await this.$store.dispatch('participant/saveAnswer', {
                     username: '' + i,
                     pollId: targetPollId,
-                    questionId: 7,
+                    questionId: pollData.categoryList[0].questionList[3].questionId,
                     answerList: [p2[Math.floor(Math.random() * 2)]],
                 })
                 console.log(4)
                 await this.$store.dispatch('participant/saveAnswer', {
                     username: '' + i,
                     pollId: targetPollId,
-                    questionId: 8,
+                    questionId: pollData.categoryList[0].questionList[4].questionId,
                     answerList: [Math.floor(Math.random() * 8)],
                 })
                 console.log(5)
                 await this.$store.dispatch('participant/saveAnswer', {
                     username: '' + i,
                     pollId: targetPollId,
-                    questionId: 9,
+                    questionId: pollData.categoryList[0].questionList[5].questionId,
                     answerList: [Math.floor(Math.random() * 100) / 100],
                 })
                 console.log(6)
                 await this.$store.dispatch('participant/saveAnswer', {
                     username: '' + i,
                     pollId: targetPollId,
-                    questionId: 10,
+                    questionId: pollData.categoryList[0].questionList[6].questionId,
                     answerList: [Math.floor((Math.random() * 50000) / 10)],
                 })
                 console.log(7)
@@ -782,8 +797,8 @@ export default {
                 }
                 await this.$store.dispatch('participant/saveAnswer', {
                     username: '' + i,
-                    pollId: 1,
-                    questionId: 11,
+                    pollId: targetPollId,
+                    questionId: pollData.categoryList[0].questionList[7].questionId,
                     answerList: array,
                 })
                 console.log(8)

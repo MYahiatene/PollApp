@@ -38,9 +38,9 @@ public class Statistics {
     private final List<Long> questionIds = new ArrayList<>();
     private final boolean showParticipantsOverTime;
     private final boolean participantsOverRelativeTime;
-    private final Integer numberOfPastPollsToEvaluate = 1;
     private final ZoneId timeZone;
     private List<Filter> filters = new ArrayList<>();
+    private Integer numberOfPastPollsToEvaluate = 10;
 
     /**
      * Initializes the Statistic.
@@ -76,6 +76,11 @@ public class Statistics {
             participantsOverRelativeTime = false;
         } else {
             participantsOverRelativeTime = data.getTimeDiagramRelative();
+        }
+        if (data.getNumberOfEvaluatedSeriesPolls() == null) {
+            numberOfPastPollsToEvaluate = -1;
+        } else {
+            numberOfPastPollsToEvaluate = data.getNumberOfEvaluatedSeriesPolls();
         }
         final List<Category> categories = categoryService.getAllCategories(pollId);
         questionIds.addAll(data.getBaseQuestionIds());
@@ -173,8 +178,8 @@ public class Statistics {
         int prev = 0;
         Poll poll = pollService.getPoll(pollId);
         List<Long> questionIds = this.questionIds;
-        while(prev <= numberOfPastPollsToEvaluate) {
-            List<PollResult> prs = pollResultService.getPollResults(pollId);
+        while(numberOfPastPollsToEvaluate == -1 || prev <= numberOfPastPollsToEvaluate) {
+            List<PollResult> prs = pollResultService.getPollResults(poll.getPollId());
             final int participantCountUnfiltered = prs.size();
             for (final Filter f: filters) {
                 prs = f.filter(prs);
@@ -195,7 +200,9 @@ public class Statistics {
                 break;
             }
             questionIds = translateQuestionIds(poll, questionIds, nextPoll);
+            LOGGER.info("prev " + poll.getPollId());
             poll = nextPoll;
+            LOGGER.info("next " + poll.getPollId());
             prev++;
         }
         avgParticipantCountUnfiltered /= prev + 1;
@@ -228,8 +235,10 @@ public class Statistics {
                     if (oq.getQuestionId().equals(qid)) {
                         Question translatedQuestion = pollToTranslateTo.getCategoryList().get(categoryIndex).getQuestionList().get(questionIndex);
                         double questionConfidence = questionSimilarity(oq, translatedQuestion);
-                        if (questionConfidence > 0.95) {  // TODO: ist 0.8 ein guter Wert?
+                        if (questionSimilarity(oq,translatedQuestion) > 0.8) {
                             translatedIds.add(translatedQuestion.getQuestionId());
+                            LOGGER.info("+ORIGINAL: " + oq.getQuestionMessage() + " " + oq.getQuestionId());
+                            LOGGER.info("+TRANSATED: " + translatedQuestion.getQuestionMessage() + " " + translatedQuestion.getQuestionId());
                         } else {
                             Question bestMatch = translatedQuestion;
                             double bestConfidence = questionConfidence;
@@ -243,6 +252,8 @@ public class Statistics {
                                 }
                             }
                             translatedIds.add(bestMatch.getQuestionId());
+                            LOGGER.info(">ORIGINAL: " + oq.getQuestionMessage() + " " + oq.getQuestionId());
+                            LOGGER.info(">TRANSATED: " + bestMatch.getQuestionMessage() + " " + bestMatch.getQuestionId());
                         }
                     }
                     questionIndex++;
@@ -250,6 +261,8 @@ public class Statistics {
                 categoryIndex++;
             }
         }
+        LOGGER.info("Original IDs: " + originalQuestionIds.toString());
+        LOGGER.info("Translated IDs: " + translatedIds.toString());
         return translatedIds;
     }
 
@@ -263,17 +276,18 @@ public class Statistics {
     {
         if(a.getQuestionType().equals(b.getQuestionType())) {
             double confidence = stringSimilarity(a.getQuestionMessage(), b.getQuestionMessage());
-            double answerConfidence = 0.0;
-            for (String as:a.getAnswerPossibilities())
-            {
-                for (String bs:b.getAnswerPossibilities())
-                {
-                    answerConfidence += stringSimilarity(as,bs);
+            if(a.getAnswerPossibilities().isEmpty()) {
+                double answerConfidence = 0.0;
+                for (String as: a.getAnswerPossibilities()) {
+                    for (String bs: b.getAnswerPossibilities()) {
+                        answerConfidence += stringSimilarity(as, bs);
+                    }
                 }
+                confidence += answerConfidence / (Math.max(a.getAnswerPossibilities().size(), b.getAnswerPossibilities().size()));
+                confidence += a.getNumberOfPossibleAnswers() == b.getNumberOfPossibleAnswers() ? 1.0 : 0.0;
+                return confidence / 3;
             }
-            confidence += answerConfidence / (Math.max(a.getAnswerPossibilities().size(), b.getAnswerPossibilities().size()));
-            confidence += a.getNumberOfPossibleAnswers() == b.getNumberOfPossibleAnswers() ? 1.0 : 0.0;
-            return confidence / 3;
+            return confidence;
         }
         return 0.0;
     }
@@ -285,6 +299,10 @@ public class Statistics {
      * @return a similarity value between 0 (not equal at all) and 1 (completely identical)
      */
     private double stringSimilarity(final String a, final String b) {
+        if(a.equals(b))
+        {
+            return 1.0;
+        }
         String longer = a, shorter = b;
         if (a.length() < b.length()) {
             longer = b; shorter = a;

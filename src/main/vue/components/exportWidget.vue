@@ -1,10 +1,12 @@
 <template>
     <v-card class="pa-3">
         <v-card-title> {{ title }} exportieren </v-card-title>
-        <v-card-text>
-            Hier exportieren Sie die Ergebnisse ihrer Umfrage
+        <v-card-text v-if="exportResult">
+            Hier exportieren Sie die Ergebnisse einer Umfrage
         </v-card-text>
-
+        <v-card-text v-else>
+            Hier exportieren Sie eine Umfrage
+        </v-card-text>
         Format:<v-overflow-btn v-model="selectedFormat" label="Exportieren als" :items="formats" />
         <div v-if="selectedFormat === 'csv'">
             <v-switch v-model="useCustomSeparator" label="Benutzerdefiniertes Trennzeichen benutzen" />

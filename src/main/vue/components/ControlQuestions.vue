@@ -1,9 +1,19 @@
 <template>
     <v-dialog v-model="dialog" overlay-color="background" persistent width="500" overlay-opacity="0.95" fullscreen>
         <template v-slot:activator="{ on }">
-            <v-btn v-on="on">
+            <v-btn v-if="useEvaluationStore" v-on="on">
                 Konsistenzfragen bearbeiten
             </v-btn>
+            <v-tooltip v-else bottom>
+                <template v-slot:activator="{ attrs }">
+                    <v-btn class="mr-n5" icon v-bind="attrs" v-on="on">
+                        <v-icon large color="primary">
+                            mdi-lock-pattern
+                        </v-icon>
+                    </v-btn>
+                </template>
+                <span>Konsistenzfragen bearbeiten</span>
+            </v-tooltip>
         </template>
         <v-card class="ma-1 pa-5">
             <h2>Konsistenzfragen von Umfrage: "{{ pollName }}"</h2>
