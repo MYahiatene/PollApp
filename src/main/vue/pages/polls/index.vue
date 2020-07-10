@@ -118,7 +118,7 @@
                                                     <v-btn
                                                         icon
                                                         color="primary"
-                                                        :disabled="item.pollStatus === 3"
+                                                        :disabled="item.pollStatus === 3 || item.anonymityStatus < 2"
                                                         v-bind="attrs"
                                                         v-on="on"
                                                     >
@@ -134,7 +134,11 @@
                                                     <v-btn
                                                         icon
                                                         color="primary"
-                                                        :disabled="item.pollStatus < 1 || item.pollStatus > 2"
+                                                        :disabled="
+                                                            item.pollStatus < 1 ||
+                                                            item.pollStatus > 2 ||
+                                                            item.anonymityStatus < 2
+                                                        "
                                                         v-bind="attrs"
                                                         v-on="on"
                                                     >

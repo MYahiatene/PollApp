@@ -42,7 +42,7 @@ public class MailController {
 
         try {
 
-            String invitationLink;
+            String invitationLink = new String();
 
             for (final String mail : mailCmd.getMailList()) {
 
@@ -54,13 +54,6 @@ public class MailController {
                 } else if (mailCmd.getAnonymityStatus().equals("2")) { // 2 = teilanonym, Username ist unique Key
 
                     invitationLink = participationLinkService.createParticipationLink().toString();
-                    participationLinkService.saveParticipationLink(mailCmd.getPollId(), mail, invitationLink);
-
-                } else { // 1 = anonym, es ist jedes mal der selbe Link
-
-                    final List<ParticipationLink> participationLinks = participationLinkService.
-                        getAllParticipationLinks(mailCmd.getPollId());
-                    invitationLink = participationLinks.get(0).getGeneratedParticipationLink();
                     participationLinkService.saveParticipationLink(mailCmd.getPollId(), mail, invitationLink);
 
                 }
