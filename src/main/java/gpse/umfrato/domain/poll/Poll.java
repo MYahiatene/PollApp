@@ -151,8 +151,8 @@ public class Poll {
      * @param pollName        the name of the poll
      * @param anonymityStatus the anonymityStatus of the poll
      * @param createdAt       the date when the poll is created
-     * @param activatedDate     the date when the poll activated
-     * @param deactivatedDate   the date when the poll deactivates
+     * @param activatedDate   the date when the poll activated
+     * @param deactivatedDate the date when the poll deactivates
      * @param pollStatus      the status (activated/deactivated) of the poll
      * @param backgroundColor the background color displayed on the website
      * @param fontColor       the color used for all questions
@@ -167,7 +167,8 @@ public class Poll {
                 final String backgroundColor, final String fontColor, final String logo, final boolean visibility,
                 final boolean categoryChange, final boolean activated, final boolean deactivated, final boolean ownDesign, final Integer repeat,
                 final String repeatUntil, final List<Integer> day, final List<Integer> week, final List<Integer> month,
-                final Integer stoppingReason, final Integer level, final Long seriesCounter, final Boolean checkLeapYear) {
+                final Integer stoppingReason, final Integer level, final Long seriesCounter, final Boolean checkLeapYear,
+                final ZonedDateTime lastEditAt, final String lastEditFrom) {
         this.pollName = pollName;
         this.pollCreator = pollCreator;
         this.anonymityStatus = anonymityStatus;

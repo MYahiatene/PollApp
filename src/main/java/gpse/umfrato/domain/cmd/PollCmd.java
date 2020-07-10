@@ -3,7 +3,6 @@ package gpse.umfrato.domain.cmd;
 import gpse.umfrato.domain.poll.Poll;
 import lombok.Data;
 
-import java.text.ParseException;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -99,11 +98,14 @@ public class PollCmd {
             localDeactivation = LocalDateTime.parse(deactivatedDate, df);
             deactivation = localDeactivation.atZone(timeZone);
         }
+        // final ZonedDateTime lastEditAtZone = LocalDateTime.parse(lastEditAt, df).atZone(timeZone);
+
 
         final ZonedDateTime creation = localCreation.atZone(timeZone);
         final Poll poll = new Poll(pollCreator, anonymityStatus, pollName, creation, activation,
             deactivation, pollStatus, backgroundColor, fontColor, logo, visibility, categoryChange, activated,
-            deactivated, ownDesign, repeat, repeatUntil, day, week, month, stoppingReason, level, 1L, checkLeapYear);
+            deactivated, ownDesign, repeat, repeatUntil, day, week, month, stoppingReason, level, 1L, checkLeapYear,
+            creation, lastEditFrom);
         poll.setLastEditAt(ZonedDateTime.now());
         return poll;
     }

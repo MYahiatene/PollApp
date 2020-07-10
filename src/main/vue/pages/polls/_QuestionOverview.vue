@@ -202,6 +202,7 @@ export default {
             isAuthenticated: 'login/isAuthenticated',
             getCategories: 'pollOverview/getCategory',
             getBuildIndex: 'questionOverview/getBuildIndex',
+            getUsername: 'login/getUsername',
         }),
         pollId() {
             return parseInt(this.$route.params.QuestionOverview)
@@ -236,6 +237,11 @@ export default {
     methods: {
         editPollName(pollData) {
             this.$axios.put('/editpollname', { pollId: pollData.pollId, pollName: pollData.pollName })
+            const obj = {
+                lastEditFrom: this.getUsername,
+                pollId: this.pollData.pollId,
+            }
+            this.$axios.post('/newLastEdit', obj)
         },
         addQuestion() {
             this.setQuestion({
@@ -262,6 +268,7 @@ export default {
             this.buildIndex = 1
         },
         editQuestion(question) {
+            // Tot?
             this.$axios.post('/editquestion', {
                 questionId: this.selectedQuestion.questionId,
                 answerPossibilities: this.selectedQuestion.answerPossibilities,
@@ -270,6 +277,11 @@ export default {
                 questionType: this.selectedQuestion.questionType,
             })
             this.questionIndex = 0
+            const obj = {
+                lastEditFrom: this.getUsername,
+                pollId: this.pollData.pollId,
+            }
+            this.$axios.post('/newLastEdit', obj)
         },
         onEnd(evt) {
             /*
@@ -342,6 +354,11 @@ export default {
             this.categoryData[0].questionList.forEach((question) => {
                 console.log(question.questionId)
             })
+            const obj = {
+                lastEditFrom: this.getUsername,
+                pollId: this.pollData.pollId,
+            }
+            this.$axios.post('/newLastEdit', obj)
         },
         createCategory() {
             this.$axios
@@ -356,6 +373,11 @@ export default {
                     this.categoryData.push(this.defaultCategory)
                     console.log(this.categoryData)
                 })
+            const obj = {
+                lastEditFrom: this.getUsername,
+                pollId: this.pollData.pollId,
+            }
+            this.$axios.post('/newLastEdit', obj)
         },
         editCat(category) {
             this.questionIndex = 0
@@ -369,6 +391,11 @@ export default {
                 name: category.categoryName,
             })
             this.categoryIndex = false
+            const obj = {
+                lastEditFrom: this.getUsername,
+                pollId: this.pollData.pollId,
+            }
+            this.$axios.post('/newLastEdit', obj)
         },
         activateCreateQuestion() {
             this.questionIndex = 0

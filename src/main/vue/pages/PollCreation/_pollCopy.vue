@@ -740,6 +740,8 @@ export default {
                 month: this.stringToList(this.month),
                 ownDesign: this.switch3,
                 checkLeapYear: this.checkLeapYear,
+                lastEditAt: this.created,
+                lastEditFrom: this.getUsername,
             }
             console.log('obj: ', obj)
             if (this.pollId !== '0') {
@@ -758,7 +760,6 @@ export default {
                         this.newPollId = result.data
                     })
             }
-            await this.$router.push('/polls')
         },
         addNumber() {
             this.title += ':nr:'

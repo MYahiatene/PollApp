@@ -7,8 +7,6 @@ import gpse.umfrato.domain.participationlinks.ParticipationLinkService;
 import gpse.umfrato.domain.pollresult.PollResultService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.MailException;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.MalformedURLException;
@@ -22,6 +20,9 @@ public class MailController {
 
 
     static final int DEFAULT_PORT = 8080;
+    static final String LINK = "{link}";
+    static final String EMAILSEND = "Email sent.";
+    static final String EMAILFAILED = "Email sending failed.";
 
     private MailService mailService;
     //private JavaMailSender mailSender;
@@ -29,8 +30,9 @@ public class MailController {
     private PollResultService pollResultService;
 
     @Autowired
-    public MailController(final MailService mailService,//final JavaMailSender javaMailSender,
-                          final ParticipationLinkService participationLinkService, final PollResultService pollResultService) {
+    public MailController(final MailService mailService,
+                          final ParticipationLinkService participationLinkService,
+                          final PollResultService pollResultService) {
         this.mailService = mailService;
         //this.mailSender = javaMailSender;
         this.participationLinkService = participationLinkService;
@@ -59,17 +61,17 @@ public class MailController {
                 }
 
                 String mailText = mailCmd.getEmailMessage();
-                mailText = mailText.replace("{link}", invitationLink);
+                mailText = mailText.replace(LINK, invitationLink);
 
                 this.mailService.sendMail(mailCmd.getEmailSubject(), mailText, mail);
 
             }
 
-            return "Email sent.";
+            return EMAILSEND;
 
         } catch (MailException e) {
 
-            return "Email sending failed.";
+            return EMAILFAILED;
 
         } catch (MalformedURLException e) {
 
@@ -84,8 +86,8 @@ public class MailController {
 
         try {
 
-            final List<ParticipationLink> allParticipants = participationLinkService.getAllParticipationLinks
-                (mailCmd.getPollId());
+            final List<ParticipationLink> allParticipants = participationLinkService.getAllParticipationLinks(
+                mailCmd.getPollId());
 
             final List<ParticipationLink> participationList;
             if (mailCmd.getNotificateParticipants() == 1) { // Teilnehmer, die Poll bereits abgeschlossen
@@ -109,18 +111,18 @@ public class MailController {
             for (final ParticipationLink participationLink : participationList) {
                 if (participationLink.getUsername().contains("@") && participationLink.getUsername().contains(".")) {
                     String mailText = mailCmd.getEmailMessage();
-                    mailText = mailText.replace("{link}", participationLink.getGeneratedParticipationLink());
+                    mailText = mailText.replace(LINK, participationLink.getGeneratedParticipationLink());
 
                     this.mailService.sendMail(mailCmd.getEmailSubject(), mailText, participationLink.getUsername());
 
                 }
             }
 
-            return "Email sent.";
+            return EMAILSEND;
 
         } catch (MailException e) {
 
-            return "Email sending failed.";
+            return EMAILFAILED;
 
         }
     }

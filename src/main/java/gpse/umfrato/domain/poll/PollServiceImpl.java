@@ -4,14 +4,10 @@ import gpse.umfrato.domain.category.Category;
 import gpse.umfrato.domain.category.CategoryRepository;
 import gpse.umfrato.domain.category.CategoryService;
 import gpse.umfrato.domain.pollresult.PollResultRepository;
-import gpse.umfrato.domain.consistencyquestion.ConsistencyQuestion;
 import gpse.umfrato.domain.consistencyquestion.ConsistencyQuestionService;
 import gpse.umfrato.domain.evaluation.session.SessionService;
 import gpse.umfrato.domain.participationlinks.ParticipationLinkService;
 import gpse.umfrato.domain.pollresult.PollResultService;
-import gpse.umfrato.domain.question.Question;
-import gpse.umfrato.domain.question.QuestionService;
-import gpse.umfrato.web.BadRequestException;
 import gpse.umfrato.domain.question.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,6 +26,7 @@ import java.util.logging.Logger;
 class PollServiceImpl implements PollService {
 
     private static final Logger LOGGER = Logger.getLogger("PollServiceImpl");
+    private static final String STANDRDKATEGORIE = "Standardkategorie";
     private final CategoryRepository categoryRepository;
     private final PollRepository pollRepository;
     private final CategoryService categoryService;
@@ -50,10 +47,10 @@ class PollServiceImpl implements PollService {
      */
     @Autowired
     public PollServiceImpl(final PollRepository pollRepository, final CategoryService categoryService,
-                           final CategoryRepository categoryRepository , final SessionService sessionService
-                                       , final PollResultService pollResultService
-                                       , final ParticipationLinkService participationLinkService
-                                       , final ConsistencyQuestionService consistencyQuestionService,
+                           final CategoryRepository categoryRepository, final SessionService sessionService,
+                           final PollResultService pollResultService,
+                           final ParticipationLinkService participationLinkService,
+                           final ConsistencyQuestionService consistencyQuestionService,
                            final PollResultRepository pollResultRepository, final QuestionService questionService) {
         this.pollRepository = pollRepository;
         this.categoryService = categoryService;
@@ -75,12 +72,13 @@ class PollServiceImpl implements PollService {
     @Transactional
     public Poll createPoll(final Poll poll) {
         pollRepository.save(poll);
-        categoryService.createCategory("Standardkategorie", poll.getPollId());
+        categoryService.createCategory(STANDRDKATEGORIE, poll.getPollId());
         return poll;
     }
 
     /**
      * Saves the new poll in the repository.
+     *
      * @param poll
      * @return new poll
      */
@@ -99,7 +97,7 @@ class PollServiceImpl implements PollService {
         poll.setNextSeries(calculateNextDate(poll));
         LOGGER.info("next series: " + parseDate(poll.getNextSeries()));
         pollRepository.save(poll);
-        categoryService.createCategory("Standardkategorie", poll.getPollId());
+        categoryService.createCategory(STANDRDKATEGORIE, poll.getPollId());
         return poll;
     }
 
@@ -127,8 +125,19 @@ class PollServiceImpl implements PollService {
      */
     @Override
     public Poll getPoll(final Long pollId) throws EntityNotFoundException {
-        final Poll poll = pollRepository.findById(pollId).orElseThrow(EntityNotFoundException :: new);
+        final Poll poll = pollRepository.findById(pollId).orElseThrow(EntityNotFoundException::new);
         return checkActivationAndDeactivation(poll);
+    }
+
+    public void newLastEdit(Long pollId, ZonedDateTime lastEditAt, String lastEditFrom, ZoneId timeZone) {
+        final DateTimeFormatter df = DateTimeFormatter.ofPattern("dd.MM.yyyy&HH:mm");
+        final Poll poll = pollRepository.findById(pollId).orElseThrow(EntityNotFoundException::new);
+        // final ZonedDateTime lastEditAtZone = LocalDateTime.parse(lastEditAt, df).atZone(timeZone);
+        poll.setLastEditAt(lastEditAt);
+        LOGGER.info("lastEditedAt" + lastEditAt);
+        poll.setLastEditFrom(lastEditFrom);
+        LOGGER.info("lastEditedFrom" + lastEditFrom);
+        pollRepository.save(poll);
     }
 
     /**
@@ -144,6 +153,7 @@ class PollServiceImpl implements PollService {
 
     /**
      * This method lets the poll-status progress.
+     *
      * @param pollId the id of the poll which will be increased
      * @return returns the poll activation status
      */
@@ -188,6 +198,7 @@ class PollServiceImpl implements PollService {
      * This method tries to decrease the poll-status.
      * if the given poll has the status 1 it will be returned to 0,
      * otherwise the method will do nothing.
+     *
      * @param pollId the id of the poll which will be decreased
      * @return returns the poll activation status
      */
@@ -203,7 +214,8 @@ class PollServiceImpl implements PollService {
 
     /**
      * This method edits a poll name.
-     * @param pollId the id of the poll which name will be edited
+     *
+     * @param pollId   the id of the poll which name will be edited
      * @param pollName the new name of the poll
      */
     @Override
@@ -215,6 +227,7 @@ class PollServiceImpl implements PollService {
 
     /**
      * This method deletes a poll.
+     *
      * @param pollID the id of the poll which will be deleted
      * @return returns a confirmation String
      */
@@ -248,6 +261,7 @@ class PollServiceImpl implements PollService {
     /**
      * Checks if a poll should be automatically activated/deactivated and if the activationDAte/deactivationDate is
      * reached, the pollStatus is updated.
+     *
      * @param poll the poll to check
      * @return updated Poll
      */
@@ -269,7 +283,7 @@ class PollServiceImpl implements PollService {
                 increasePollStatus(poll.getPollId());
             }
         }
-        return pollRepository.findById(poll.getPollId()).orElseThrow(EntityNotFoundException :: new);
+        return pollRepository.findById(poll.getPollId()).orElseThrow(EntityNotFoundException::new);
     }
 
     @Override
@@ -288,10 +302,12 @@ class PollServiceImpl implements PollService {
             name = name.replace(":jr:", String.valueOf(poll.getActivatedDate().getYear()));
         }
         if (name.contains(":kw:")) {
-            name = name.replace(":kw:", String.valueOf(poll.getActivatedDate().get(IsoFields.WEEK_OF_WEEK_BASED_YEAR)));
+            name = name.replace(":kw:", String.valueOf(poll.getActivatedDate().get(
+                IsoFields.WEEK_OF_WEEK_BASED_YEAR)));
         }
         if (name.contains(":wt:")) {
-            name = name.replace(":wt:", poll.getActivatedDate().getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.GERMAN));
+            name = name.replace(":wt:", poll.getActivatedDate().getDayOfWeek().getDisplayName(TextStyle.FULL,
+                Locale.GERMAN));
         }
         return name;
     }
@@ -352,15 +368,15 @@ class PollServiceImpl implements PollService {
             } else {
                 LOGGER.info("day, week and month given");
                 LOGGER.info("day of the week: " + prev.getDayOfWeek().getValue());
-                LOGGER.info("week of the month: " + getWeekOfMonthWithDay(prev,1));
+                LOGGER.info("week of the month: " + getWeekOfMonthWithDay(prev, 1));
                 // days in weeks per months
                 // more than one week and more than one day per week given
                 for (int i = 0; i < week.size() - 1; i++) {
                     LOGGER.info("hier");
                     for (int j = 0; j < day.size() - 1; j++) {
                         LOGGER.info("hier rein");
-                        // Original                        =      kein + 1                                    =     kein (  + 1) % week.size()
-                        if (prev.getDayOfWeek().getValue() < day.get(j + 1) && getWeekOfMonthWithDay(prev, day.get(0)) <= week.get((i + 1) % week.size())) {
+                        if (prev.getDayOfWeek().getValue() < day.get(j + 1) && getWeekOfMonthWithDay(prev, day.get(0))
+                            <= week.get((i + 1) % week.size())) {
                             LOGGER.info("next day in week");
                             next = next.with(TemporalAdjusters.next(DayOfWeek.of(day.get(j + 1))));
                             return next;
@@ -374,8 +390,8 @@ class PollServiceImpl implements PollService {
                 }
                 // more than one day per week given
                 for (int j = 0; j < day.size() - 1; j++) {
-                    // Original                        =      kein + 1                                          prev.getDayOfWeek().getValue()
-                    if (prev.getDayOfWeek().getValue() < day.get(j + 1) && getWeekOfMonthWithDay(prev, day.get(0)) == week.get(0)) {
+                    if (prev.getDayOfWeek().getValue() < day.get(j + 1) && getWeekOfMonthWithDay(prev, day.get(0))
+                        == week.get(0)) {
                         LOGGER.info("only days, adds day");
                         next = next.with(TemporalAdjusters.next(DayOfWeek.of(day.get(j + 1))));
                         return next;
@@ -414,7 +430,8 @@ class PollServiceImpl implements PollService {
                 // more than one day and more than one week given
                 for (int i = 0; i < week.size() - 1; i++) {
                     for (int j = 0; j < day.size() - 1; j++) {
-                        if (prev.getDayOfWeek().getValue() < day.get(j + 1) && prev.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR) == week.get(i)) {
+                        if (prev.getDayOfWeek().getValue() < day.get(j + 1) && prev.get(
+                            IsoFields.WEEK_OF_WEEK_BASED_YEAR) == week.get(i)) {
                             next = next.with(TemporalAdjusters.next(DayOfWeek.of(day.get(j + 1))));
                             return next;
                         }
@@ -428,7 +445,8 @@ class PollServiceImpl implements PollService {
                 }
                 // more than one day per week given
                 for (int j = 0; j < day.size() - 1; j++) {
-                    if (prev.getDayOfWeek().getValue() < day.get(j + 1) && (prev.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR) == week.get(0) || prev.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR) == week.get(week.size() - 1))) {
+                    if (prev.getDayOfWeek().getValue() < day.get(j + 1) && (prev.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR)
+                        == week.get(0) || prev.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR) == week.get(week.size() - 1))) {
                         next = next.with(TemporalAdjusters.next(DayOfWeek.of(day.get(j + 1))));
                         return next;
                     }
@@ -463,7 +481,8 @@ class PollServiceImpl implements PollService {
                 }
                 // more than one day per month given
                 for (int j = 0; j < day.size() - 1; j++) {
-                    if (prev.getDayOfMonth() < day.get(j + 1) && (prevMonth == month.get(0) || prevMonth == month.get(month.size() - 1))) {
+                    if (prev.getDayOfMonth() < day.get(j + 1) && (prevMonth == month.get(0) || prevMonth == month
+                        .get(month.size() - 1))) {
                         next = saveDayOfMonth(next, day.get(j + 1));
                         return next;
                     }
@@ -482,7 +501,7 @@ class PollServiceImpl implements PollService {
             } else {
                 final int prevMonth = prev.getMonthValue();
                 LOGGER.info("day of week: " + prev.getDayOfWeek().getValue());
-                LOGGER.info("week of month: " + getWeekOfMonthWithDay(prev,1));
+                LOGGER.info("week of month: " + getWeekOfMonthWithDay(prev, 1));
                 LOGGER.info("month: " + prevMonth);
                 // days per weeks per months per years
                 // more than one day, more than one week and more than one month given
@@ -490,37 +509,45 @@ class PollServiceImpl implements PollService {
                     for (int j = 0; j < week.size() - 1; j++) {
                         for (int k = 0; k < day.size() - 1; k++) {
                             // next day in week cycle
-                            if (prev.getDayOfWeek().getValue() < day.get(k + 1) && getWeekOfMonthWithDay(prev, day.get(0)) == week.get(j) && prevMonth == month.get(i)) {
+                            if (prev.getDayOfWeek().getValue() < day.get(k + 1) && getWeekOfMonthWithDay(prev, day
+                                .get(0)) == week.get(j) && prevMonth == month.get(i)) {
                                 next = next.with(TemporalAdjusters.next(DayOfWeek.of(day.get(k + 1))));
                                 return next;
                             }
                         } // end day
                         // one day more than one week and more than one month given, starts on future date in same week
-                        if (prev.getDayOfWeek().getValue() < day.get(0) && getWeekOfMonthWithDay(prev, day.get(0)) == week.get(j) && prevMonth == month.get(i)) {
+                        if (prev.getDayOfWeek().getValue() < day.get(0) && getWeekOfMonthWithDay(prev, day.get(0))
+                            == week.get(j) && prevMonth == month.get(i)) {
                             next = next.with(TemporalAdjusters.next(DayOfWeek.of(day.get(0))));
                             return next;
                         }
                         // next week / only one day given
-                        if ((prev.getDayOfWeek().getValue() == day.get(0) || prev.getDayOfWeek().getValue() == day.get(day.size() - 1)) && getWeekOfMonthWithDay(prev, day.get(0)) == week.get(j) && prevMonth == month.get(i)) {
-                            next = next.with(TemporalAdjusters.dayOfWeekInMonth(week.get(j + 1), DayOfWeek.of(day.get(0))));
+                        if ((prev.getDayOfWeek().getValue() == day.get(0) || prev.getDayOfWeek().getValue()
+                            == day.get(day.size() - 1)) && getWeekOfMonthWithDay(prev, day.get(0)) == week.get(j)
+                            && prevMonth == month.get(i)) {
+                            next = next.with(TemporalAdjusters.dayOfWeekInMonth(week.get(j + 1), DayOfWeek.of(
+                                day.get(0))));
                             return next;
                         }
                     } // end week
                     // one day, more than one week and more than one month given, starts on future date in same week
                     if (getWeekOfMonthWithDay(prev, day.get(0)) < week.get(0) && prevMonth == month.get(i)) {
-                        next = next.with(TemporalAdjusters.dayOfWeekInMonth(getWeekOfMonthWithDay(prev, day.get(0)), DayOfWeek.of(day.get(0))));
+                        next = next.with(TemporalAdjusters.dayOfWeekInMonth(getWeekOfMonthWithDay(prev, day.get(0)),
+                            DayOfWeek.of(day.get(0))));
                         return next;
                     }
                     // more than one day per week given
                     for (int k = 0; k < day.size() - 1; k++) {
                         // next day in week cycle
-                        if (prev.getDayOfWeek().getValue() < day.get(k + 1) && getWeekOfMonthWithDay(prev, day.get(0)) == week.get(week.size() - 1) && prevMonth == month.get(i)) {
+                        if (prev.getDayOfWeek().getValue() < day.get(k + 1) && getWeekOfMonthWithDay(prev, day.get(0))
+                            == week.get(week.size() - 1) && prevMonth == month.get(i)) {
                             next = next.with(TemporalAdjusters.next(DayOfWeek.of(day.get(k + 1))));
                             return next;
                         }
                     }
                     // end of week cycle reached / one day, one week, more than one month given
-                    if (prev.getDayOfWeek().getValue() < day.get(day.size() - 1) && getWeekOfMonthWithDay(prev, day.get(0)) == week.get(week.size() - 1) && prevMonth == month.get(i)) {
+                    if (prev.getDayOfWeek().getValue() < day.get(day.size() - 1) && getWeekOfMonthWithDay(prev,
+                        day.get(0)) == week.get(week.size() - 1) && prevMonth == month.get(i)) {
                         next = next.withMonth(month.get(i + 1));
                         next = next.with(TemporalAdjusters.dayOfWeekInMonth(week.get(0), DayOfWeek.of(day.get(0))));
                         return next;
@@ -531,31 +558,29 @@ class PollServiceImpl implements PollService {
                 for (int j = 0; j < week.size() - 1; j++) {
                     for (int k = 0; k < day.size() - 1; k++) {
                         // next day in week cycle
-                        if (prev.getDayOfWeek().getValue() < day.get(k + 1) && getWeekOfMonthWithDay(prev, day.get(0)) == week.get(j) && prevMonth == month.get(month.size() - 1)) {
+                        if (prev.getDayOfWeek().getValue() < day.get(k + 1) && getWeekOfMonthWithDay(prev, day.get(0))
+                            == week.get(j) && prevMonth == month.get(month.size() - 1)) {
                             next = next.with(TemporalAdjusters.next(DayOfWeek.of(day.get(k + 1))));
                             return next;
                         }
                     }
                     // next week / only one day given
-                    if ((getWeekOfMonthWithDay(prev, day.get(0)) == week.get(j) || getWeekOfMonthWithDay(prev, day.get(day.size() - 1)) == week.get(j)) && prevMonth == month.get(month.size() - 1)) {
+                    if ((getWeekOfMonthWithDay(prev, day.get(0)) == week.get(j) || getWeekOfMonthWithDay(prev,
+                        day.get(day.size() - 1)) == week.get(j)) && prevMonth == month.get(month.size() - 1)) {
                         next = next.with(TemporalAdjusters.dayOfWeekInMonth(week.get(j + 1), DayOfWeek.of(day.get(0))));
                         return next;
                     }
-                    /* if (first && getWeekOfMonthWithDay(prev, day.get(0)) < week.get(j) && prevMonth == month.get(month.size() - 1)) { TODO: unnötig?
-                        LOGGER.info("13");
-                        next = next.with(TemporalAdjusters.dayOfWeekInMonth(week.get(j), DayOfWeek.of(day.get(0))));
-                        poll.setNextSeries(next);
-                        first = false;
-                    } */
                 }
                 if (getWeekOfMonthWithDay(prev, day.get(0)) < week.get(week.size() - 1) && prevMonth == month.get(0)) {
-                    next = next.with(TemporalAdjusters.dayOfWeekInMonth(week.get(week.size() - 1), DayOfWeek.of(day.get(0))));
+                    next = next.with(TemporalAdjusters.dayOfWeekInMonth(week.get(week.size() - 1),
+                        DayOfWeek.of(day.get(0))));
                     return next;
                 }
                 // more than one day given, only one week and one month given
                 for (int k = 0; k < day.size() - 1; k++) {
                     // next day in week cycle
-                    if (prev.getDayOfWeek().getValue() < day.get(k + 1) && getWeekOfMonthWithDay(prev, day.get(0)) == week.get(week.size() - 1) && prevMonth == month.get(month.size() - 1)) {
+                    if (prev.getDayOfWeek().getValue() < day.get(k + 1) && getWeekOfMonthWithDay(prev, day.get(0))
+                        == week.get(week.size() - 1) && prevMonth == month.get(month.size() - 1)) {
                         next = next.with(TemporalAdjusters.next(DayOfWeek.of(day.get(k + 1))));
                         return next;
                     }
@@ -568,9 +593,10 @@ class PollServiceImpl implements PollService {
                     first = false;
                 }*/
                 // one day one week and one month given; starts at future day in same year
-                if ((prev.getDayOfWeek().getValue() < day.get(0) && getWeekOfMonthWithDay(prev, day.get(0)) == week.get(0) && prevMonth == month.get(0)) || // nur tag kleiner rest passt
-                    (getWeekOfMonthWithDay(prev, day.get(0)) < week.get(0) && prevMonth == month.get(0)) ||
-                    prevMonth < month.get(0)) {
+                if ((prev.getDayOfWeek().getValue() < day.get(0) && getWeekOfMonthWithDay(prev, day.get(0))
+                    == week.get(0) && prevMonth == month.get(0)) || // nur tag kleiner rest passt
+                    (getWeekOfMonthWithDay(prev, day.get(0)) < week.get(0) && prevMonth == month.get(0))
+                    || prevMonth < month.get(0)) {
                     next = next.withMonth(month.get(0));
                     next = next.with(TemporalAdjusters.dayOfWeekInMonth(week.get(0), DayOfWeek.of(day.get(0))));
                     return next;
@@ -596,7 +622,8 @@ class PollServiceImpl implements PollService {
         switch (poll.getStoppingReason()) {
             case 0: /*Datum*/
                 LOGGER.info("1");
-                final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss", Locale.GERMAN).withZone(poll.getActivatedDate().getZone());
+                final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss",
+                    Locale.GERMAN).withZone(poll.getActivatedDate().getZone());
                 LOGGER.info("getRepeatUntil: " + poll.getRepeatUntil());
                 final ZonedDateTime endTime = ZonedDateTime.parse(poll.getRepeatUntil() + " 23:59:59", formatter);
                 return poll.getNextSeries().compareTo(endTime) > 0;
@@ -613,20 +640,22 @@ class PollServiceImpl implements PollService {
         }
     }
 
-    private ZonedDateTime calculateNewDeactivation (final Poll oldPoll, final Poll newPoll) {
-        final Period period = Period.between(oldPoll.getActivatedDate().toLocalDate(), oldPoll.getDeactivatedDate().toLocalDate());
+    private ZonedDateTime calculateNewDeactivation(final Poll oldPoll, final Poll newPoll) {
+        final Period period = Period.between(oldPoll.getActivatedDate().toLocalDate(), oldPoll.getDeactivatedDate()
+            .toLocalDate());
         return newPoll.getActivatedDate().plusDays(period.getDays());
     }
 
-    private void createNextSeriesPoll (final Poll poll) {
+    private void createNextSeriesPoll(final Poll poll) {
         // TODO: lastEditFrom = null -> schlimm?
         LOGGER.info("old poll: " + poll);
         final Poll nextSeriesPoll = new Poll(poll.getPollCreator(), poll.getAnonymityStatus(), poll.getSeriesPollName(),
             poll.getCreationDate(), poll.getNextSeries(), poll.getDeactivatedDate(), 1,
-            poll.getBackgroundColor(), poll.getFontColor(), poll.getLogo(), poll.isVisibility(), poll.isCategoryChange(),
+            poll.getBackgroundColor(), poll.getFontColor(), poll.getLogo(), poll.isVisibility(),
+            poll.isCategoryChange(),
             poll.isActivated(), poll.isDeactivated(), poll.getOwnDesign(), poll.getRepeat(), poll.getRepeatUntil(),
             new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), poll.getStoppingReason(), poll.getLevel(),
-            poll.getSeriesCounter(), poll.getCheckLeapYear());
+            poll.getSeriesCounter(), poll.getCheckLeapYear(), poll.getLastEditAt(), poll.getLastEditFrom());
         nextSeriesPoll.setDay(createElementCollectionCopies(poll.getDay()));
         nextSeriesPoll.setWeek(createElementCollectionCopies(poll.getWeek()));
         nextSeriesPoll.setMonth(createElementCollectionCopies(poll.getMonth()));
@@ -634,9 +663,11 @@ class PollServiceImpl implements PollService {
         LOGGER.info("newPoll: " + nextSeriesPoll);
         nextSeriesPoll.setLastEditAt(ZonedDateTime.now());
         final List<Category> categories = categoryService.getAllCategories(poll.getPollId());
-        for (final Category category: categories) {
-            final Category newCategory = categoryService.createCategory(category.getCategoryName(), nextSeriesPoll.getPollId());
-            questionService.copyQuestions(newCategory.getCategoryId(), nextSeriesPoll.getPollId(), category.getQuestionList());
+        for (final Category category : categories) {
+            final Category newCategory = categoryService.createCategory(category.getCategoryName(),
+                nextSeriesPoll.getPollId());
+            questionService.copyQuestions(newCategory.getCategoryId(), nextSeriesPoll.getPollId(),
+                category.getQuestionList());
         }
         nextSeriesPoll.setLastEditFrom(poll.getLastEditFrom());
         nextSeriesPoll.setCreationDate(ZonedDateTime.now());
