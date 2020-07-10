@@ -527,11 +527,11 @@ export default {
             }
             return [
                 (v) => {
-                    if (v) return v.length > min || 'Eingabe muss länger als ' + min + ' Zeichen sein!'
+                    if (v) return v.length >= min || 'Eingabe muss länger als ' + min + ' Zeichen sein!'
                     else return true
                 },
                 (v) => {
-                    if (v) return v.length < max || 'Eingabe muss kürzer als ' + max + ' Zeichen sein!'
+                    if (v) return v.length <= max || 'Eingabe muss kürzer als ' + max + ' Zeichen sein!'
                     else return true
                 },
             ]
