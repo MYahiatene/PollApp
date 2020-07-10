@@ -45,15 +45,18 @@ public class Statistics {
     /**
      * Initializes the Statistic.
      * This function is not Autowired and needs to be filled manually.
-     * @param questionService a questionServiceImpl
-     * @param pollService a pollServiceImpl
-     * @param pollResultService a pollResultServiceImpl
-     * @param categoryService a categoryServiceImpl
+     *
+     * @param questionService            a questionServiceImpl
+     * @param pollService                a pollServiceImpl
+     * @param pollResultService          a pollResultServiceImpl
+     * @param categoryService            a categoryServiceImpl
      * @param consistencyQuestionService a consistencyQuestionServiceImpl
-     * @param sessionService a sessionServiceImpl
-     * @param timeZone the timeZone of the client
-     * @param data filter one containing the pollId and a selection of questionIds if the questionIds is a List of only
-     *             one (-1) the questionList will get filled with all questions contained in the poll
+     * @param sessionService             a sessionServiceImpl
+     * @param timeZone                   the timeZone of the client
+     * @param data                       filter one containing the pollId and a selection of questionIds if the
+     *                                   questionIds is a List of only
+     *                                   one (-1) the questionList will get filled with all questions contained in
+     *                                   the poll
      */
     public Statistics(final QuestionService questionService, final PollService pollService,
                       final PollResultService pollResultService, final CategoryService categoryService,
@@ -85,8 +88,8 @@ public class Statistics {
         final List<Category> categories = categoryService.getAllCategories(pollId);
         questionIds.addAll(data.getBaseQuestionIds());
         if (!data.getBaseQuestionIds().isEmpty() && data.getBaseQuestionIds().get(0).equals(-1L)) {
-            for (final Category c: categories) {
-                for (final Question q: questionService.getAllQuestions(c.getCategoryId())) {
+            for (final Category c : categories) {
+                for (final Question q : questionService.getAllQuestions(c.getCategoryId())) {
                     questionIds.add(q.getQuestionId());
                 }
             }
@@ -96,16 +99,17 @@ public class Statistics {
 
     /**
      * constructs a list of filters from the input.
+     *
      * @param input a list of filterCmd
      */
     public void loadFilter(final List<FilterCmd> input) {
         filters = new ArrayList<>();
-        for (final FilterCmd cmd: input) {
+        for (final FilterCmd cmd : input) {
             Filter filter = null;
             switch (cmd.getFilterType()) {
                 case "questionAnswer":
                     filter = new QuestionFilter(pollId, cmd.getTargetQuestionId(), cmd.getTargetAnswerPossibilities(),
-                        cmd.getInvertFilter(), cmd.getIsSlider(),  false);
+                        cmd.getInvertFilter(), cmd.getIsSlider(), false);
                     break;
                 case "consistency":
                     filter = new ConsistencyFilter(consistencyQuestionService.getAllConsistencyQuestions(pollId),
@@ -141,6 +145,7 @@ public class Statistics {
 
     /**
      * loads the filterList from a session.
+     *
      * @param sessionId of the session to
      * @return whether or not there have been loaded any filters
      */
@@ -152,11 +157,12 @@ public class Statistics {
 
     /**
      * returns the filtered list of pollResults to use by other functions like the exportController.
+     *
      * @return a filtered list of pollResults
      */
     public List<PollResult> filteredResults() {
         List<PollResult> prs = pollResultService.getPollResults(pollId);
-        for (final Filter f: filters) {
+        for (final Filter f : filters) {
             prs = f.filter(prs);
         }
         return prs;
@@ -164,6 +170,7 @@ public class Statistics {
 
     /**
      * returns the processed Poll as a JSON to display it in the frontend.
+     *
      * @return a filtered list of pollResults
      */
     public String generateDiagram() {
@@ -178,19 +185,18 @@ public class Statistics {
         int prev = 0;
         Poll poll = pollService.getPoll(pollId);
         List<Long> questionIds = this.questionIds;
-        while(numberOfPastPollsToEvaluate == -1 || prev <= numberOfPastPollsToEvaluate) {
+        while (numberOfPastPollsToEvaluate == -1 || prev <= numberOfPastPollsToEvaluate) {
             List<PollResult> prs = pollResultService.getPollResults(poll.getPollId());
             final int participantCountUnfiltered = prs.size();
-            for (final Filter f: filters) {
+            for (final Filter f : filters) {
                 prs = f.filter(prs);
             }
             final int participantCountFiltered = prs.size();
             avgParticipantCountFiltered += participantCountFiltered;
             avgParticipantCountUnfiltered += participantCountUnfiltered;
-            if (prs.size() > 0)
-            {
+            if (prs.size() > 0) {
                 final DiagramData dd = new DiagramData(poll, prs, showParticipantsOverTime,
-                        participantsOverRelativeTime, questionIds, timeZone, categoryService, questionService);
+                    participantsOverRelativeTime, questionIds, timeZone, categoryService, questionService);
                 diagramDataList.add(dd);
             }
             Poll nextPoll;
@@ -207,8 +213,8 @@ public class Statistics {
         }
         avgParticipantCountUnfiltered /= prev + 1;
         avgParticipantCountFiltered /= prev + 1;
-        response = NAME_STRING + pollService.getPoll(this.pollId).getPollName() + PARTICIPANTS_STRING +
-                avgParticipantCountFiltered + "/" + avgParticipantCountUnfiltered + "\",\"questionList\": ";
+        response = NAME_STRING + pollService.getPoll(this.pollId).getPollName() + PARTICIPANTS_STRING
+            + avgParticipantCountFiltered + "/" + avgParticipantCountUnfiltered + "\",\"questionList\": ";
         if (diagramDataList.isEmpty()) {
             return response + "[]}";
         }
@@ -217,33 +223,38 @@ public class Statistics {
     }
 
     /**
-     * This method matches the questionIds of the original Poll to the questionIds of an other Poll by rating the equality of each question.
-     * This is necessary to allow the User to correct mistakes in the question and to allow the participant to add answer-possibilities
-     * @param original the original poll
+     * This method matches the questionIds of the original Poll to the questionIds of an other Poll by rating the
+     * equality of each question.
+     * This is necessary to allow the User to correct mistakes in the question and to allow the participant to
+     * add answer-possibilities
+     *
+     * @param original            the original poll
      * @param originalQuestionIds the original questionIds that will be translated
-     * @param pollToTranslateTo the other poll to translate the question-ids to
+     * @param pollToTranslateTo   the other poll to translate the question-ids to
      * @return a list of question-ids matching the originals but translated to the context of pollToTranslateTo
      */
-    private List<Long> translateQuestionIds(final Poll original, final List<Long> originalQuestionIds, final Poll pollToTranslateTo)
-    {
+    private List<Long> translateQuestionIds(final Poll original, final List<Long> originalQuestionIds,
+                                            final Poll pollToTranslateTo) {
         final List<Long> translatedIds = new ArrayList<>();
-        for(final Long qid:originalQuestionIds) {
+        for (final Long qid : originalQuestionIds) {
             int categoryIndex = 0;
-            for (final Category oc: original.getCategoryList()) {
+            for (final Category oc : original.getCategoryList()) {
                 int questionIndex = 0;
-                for (final Question oq: oc.getQuestionList()) {
+                for (final Question oq : oc.getQuestionList()) {
                     if (oq.getQuestionId().equals(qid)) {
-                        final Question translatedQuestion = pollToTranslateTo.getCategoryList().get(categoryIndex).getQuestionList().get(questionIndex);
+                        final Question translatedQuestion = pollToTranslateTo.getCategoryList().get(categoryIndex)
+                            .getQuestionList().get(questionIndex);
                         final double questionConfidence = questionSimilarity(oq, translatedQuestion);
-                        if (questionSimilarity(oq,translatedQuestion) > 0.8) {
+                        if (questionSimilarity(oq, translatedQuestion) > 0.8) {
                             translatedIds.add(translatedQuestion.getQuestionId());
                             LOGGER.info("+ORIGINAL: " + oq.getQuestionMessage() + " " + oq.getQuestionId());
-                            LOGGER.info("+TRANSATED: " + translatedQuestion.getQuestionMessage() + " " + translatedQuestion.getQuestionId());
+                            LOGGER.info("+TRANSATED: " + translatedQuestion.getQuestionMessage() + " "
+                                + translatedQuestion.getQuestionId());
                         } else {
                             Question bestMatch = translatedQuestion;
                             double bestConfidence = questionConfidence;
-                            for (final Category tc: pollToTranslateTo.getCategoryList()) {
-                                for (final Question tq: tc.getQuestionList()) {
+                            for (final Category tc : pollToTranslateTo.getCategoryList()) {
+                                for (final Question tq : tc.getQuestionList()) {
                                     final double newQuestionConfidence = questionSimilarity(oq, tq);
                                     if (newQuestionConfidence > bestConfidence) {
                                         bestConfidence = newQuestionConfidence;
@@ -253,7 +264,8 @@ public class Statistics {
                             }
                             translatedIds.add(bestMatch.getQuestionId());
                             LOGGER.info(">ORIGINAL: " + oq.getQuestionMessage() + " " + oq.getQuestionId());
-                            LOGGER.info(">TRANSATED: " + bestMatch.getQuestionMessage() + " " + bestMatch.getQuestionId());
+                            LOGGER.info(">TRANSATED: " + bestMatch.getQuestionMessage() + " " + bestMatch
+                                .getQuestionId());
                         }
                     }
                     questionIndex++;
@@ -267,23 +279,25 @@ public class Statistics {
     }
 
     /**
-     * This method rates the similarity of question a and question b by comparing the question-message and the answer-possibilities
+     * This method rates the similarity of question a and question b by comparing the question-message and the
+     * answer-possibilities.
+     *
      * @param a question a
      * @param b question b
      * @return a similarity value between 0 (not equal at all) and 1 (completely identical)
      */
-    private double questionSimilarity(final Question a, final Question b)
-    {
-        if(a.getQuestionType().equals(b.getQuestionType())) {
+    private double questionSimilarity(final Question a, final Question b) {
+        if (a.getQuestionType().equals(b.getQuestionType())) {
             double confidence = stringSimilarity(a.getQuestionMessage(), b.getQuestionMessage());
-            if(a.getAnswerPossibilities().isEmpty()) {
+            if (a.getAnswerPossibilities().isEmpty()) {
                 double answerConfidence = 0.0;
-                for (final String as: a.getAnswerPossibilities()) {
-                    for (final String bs: b.getAnswerPossibilities()) {
+                for (final String as : a.getAnswerPossibilities()) {
+                    for (final String bs : b.getAnswerPossibilities()) {
                         answerConfidence += stringSimilarity(as, bs);
                     }
                 }
-                confidence += answerConfidence / (Math.max(a.getAnswerPossibilities().size(), b.getAnswerPossibilities().size()));
+                confidence += answerConfidence / (Math.max(a.getAnswerPossibilities().size(),
+                    b.getAnswerPossibilities().size()));
                 confidence += a.getNumberOfPossibleAnswers() == b.getNumberOfPossibleAnswers() ? 1.0 : 0.0;
                 return confidence / 3;
             }
@@ -293,19 +307,21 @@ public class Statistics {
     }
 
     /**
-     * This method rates the equality of two strings a and b between 0 and 1
+     * This method rates the equality of two strings a and b between 0 and 1.
+     *
      * @param a string a
      * @param b string b
      * @return a similarity value between 0 (not equal at all) and 1 (completely identical)
      */
     private double stringSimilarity(final String a, final String b) {
-        if(a.equals(b))
-        {
+        if (a.equals(b)) {
             return 1.0;
         }
-        String longer = a, shorter = b;
+        String longer = a;
+        String shorter = b;
         if (a.length() < b.length()) {
-            longer = b; shorter = a;
+            longer = b;
+            shorter = a;
         }
         final int longerLength = longer.length();
         if (longerLength == 0) {
@@ -324,8 +340,7 @@ public class Statistics {
             for (int j = 0; j <= b.length(); j++) {
                 if (i == 0) {
                     costs[j] = j;
-                }
-                else {
+                } else {
                     if (j > 0) {
                         int newValue = costs[j - 1];
                         if (a.charAt(i - 1) != b.charAt(j - 1)) {
@@ -344,7 +359,8 @@ public class Statistics {
     }
 
     /**
-     * This method combines a list of DiagramData's to one DiagramData to display serialPolls in a single Evaluation
+     * This method combines a list of DiagramData's to one DiagramData to display serialPolls in a single Evaluation.
+     *
      * @param diagramDataList a list of DiagramData's
      * @return a combination of all DiagramData's
      */

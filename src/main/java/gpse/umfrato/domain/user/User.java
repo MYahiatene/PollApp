@@ -62,7 +62,7 @@ public class User implements UserDetails {
      * and is not allowed to change his/her answers again.
      */
     @JsonIgnore
-    @ElementCollection()
+    @ElementCollection
     private List<Long> participated = new ArrayList<>();
 
     /**

@@ -117,31 +117,72 @@ public class Poll {
     @OneToMany(orphanRemoval = true)
     private List<Category> categoryList = new ArrayList<>();
 
+    /**
+     * This attribute represents the number of reputations of the given timeslot.
+     */
     private Integer repeat;
 
+    /**
+     * This attribute represents the attribute when a series of polls should be stopped. Can be a date or a number.
+     */
     private String repeatUntil;
 
+    /**
+     * This attribute represents the days of a week, month or year, depending on the context at which the series should
+     * have a new poll.
+     */
     @ElementCollection
     private List<Integer> day = new ArrayList<>();
 
+    /**
+     * This attribute represents the weeks of a month or year, depending on the context at which the series should
+     * have a new poll. Only if there is minimum one day given.
+     */
     @ElementCollection
     private List<Integer> week = new ArrayList<>();
 
+    /**
+     * This attribute represents the months of a year at which the series should have a new poll. Only if there is
+     * minimum one day given.
+     */
     @ElementCollection
     private List<Integer> month = new ArrayList<>();
 
+    /**
+     * This attribute represents the reason to stop a series of polls. Is a number: 0 = Date, 1 = number of polls, 2 =
+     * number of participants.
+     */
     private Integer stoppingReason;
 
+    /**
+     * This attribute represents the level of reputation. Represented by 0 for days, 1 for weeks, 2 for months and 3 for
+     * years
+     */
     private Integer level;
 
+    /**
+     * This attribute represents which index the poll has within a series.
+     */
     private Long seriesCounter;
 
+    /**
+     * This attribute represents the next poll in the series.
+     */
     private ZonedDateTime nextSeries;
 
+    /**
+     * This attribute represents the pollId of the previous poll in the series.
+     */
     private Long prevInSeries = -1L;
 
+    /**
+     * This attribtue represents the default pollName of a series with placeholders.
+     */
     private String seriesPollName;
 
+    /**
+     * This attribute represents if leap years should be payed attention in the calculations of a series.
+     */
     private Boolean checkLeapYear;
 
     /**
@@ -161,14 +202,27 @@ public class Poll {
      * @param categoryChange  whether or not it is possible to go to an already answered category
      * @param activated       whether the poll should be activated automatically
      * @param deactivated     whether the poll should be deactivated automatically
+     * @param checkLeapYear   if leap year is true
+     * @param day             the day
+     * @param lastEditAt      the date when the poll was edited last
+     * @param lastEditFrom    the user who edited the poll at last
+     * @param level           the level of poll
+     * @param month           the month
+     * @param ownDesign       the design if selected
+     * @param repeat          number of repeats
+     * @param repeatUntil     repeats until a value
+     * @param seriesCounter   the series counter
+     * @param stoppingReason  reason why stopped
+     * @param week            the week
      */
-    public Poll(final String pollCreator, final String anonymityStatus, final String pollName, final ZonedDateTime createdAt,
-                final ZonedDateTime activatedDate, final ZonedDateTime deactivatedDate, final int pollStatus,
-                final String backgroundColor, final String fontColor, final String logo, final boolean visibility,
-                final boolean categoryChange, final boolean activated, final boolean deactivated, final boolean ownDesign, final Integer repeat,
+    public Poll(final String pollCreator, final String anonymityStatus, final String pollName,
+                final ZonedDateTime createdAt, final ZonedDateTime activatedDate, final ZonedDateTime deactivatedDate,
+                final int pollStatus, final String backgroundColor, final String fontColor, final String logo,
+                final boolean visibility, final boolean categoryChange, final boolean activated,
+                final boolean deactivated, final boolean ownDesign, final Integer repeat,
                 final String repeatUntil, final List<Integer> day, final List<Integer> week, final List<Integer> month,
-                final Integer stoppingReason, final Integer level, final Long seriesCounter, final Boolean checkLeapYear,
-                final ZonedDateTime lastEditAt, final String lastEditFrom) {
+                final Integer stoppingReason, final Integer level, final Long seriesCounter,
+                final Boolean checkLeapYear, final ZonedDateTime lastEditAt, final String lastEditFrom) {
         this.pollName = pollName;
         this.pollCreator = pollCreator;
         this.anonymityStatus = anonymityStatus;

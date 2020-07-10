@@ -45,7 +45,8 @@ class UserServiceImpl implements UserService {
         // for a completely fresh user to be generated the password value sent from the frontend must be null
         if (password == null) {
             final char[] safePwd = randomPasswordGenerator.generatePwd();
-            final String encryptedSafePwd = PasswordEncoderFactories.createDelegatingPasswordEncoder().encode(new String(safePwd));
+            final String encryptedSafePwd = PasswordEncoderFactories.createDelegatingPasswordEncoder().encode(
+                new String(safePwd));
             user = new User(username, encryptedSafePwd, firstName, lastName, role, email, participated);
 
             final String pwd = new String(safePwd);
@@ -105,7 +106,7 @@ class UserServiceImpl implements UserService {
      * This method adds a pollId to the partcicipated List of a user.
      *
      * @param username the username of the user
-     * @param pollId pollId of the poll, the user just clicked Absenden on
+     * @param pollId   pollId of the poll, the user just clicked Absenden on
      */
     @Override
     public void addParticipatedPoll(final String username, final Long pollId) {
@@ -117,6 +118,7 @@ class UserServiceImpl implements UserService {
         LOGGER.info(tmp.toString());
         userRepository.save(user);
     }
+
     /**
      * This method deletes the user in the repository based on the id username.
      *

@@ -22,10 +22,11 @@ public class AnswerServiceImpl implements AnswerService {
      *
      * @param pollResultRepository the repository where the pollResults are saved
      * @param answerRepository     the answer repository with answers
+     * @param pollRepository       the poll repository with polls
      */
     @Autowired
     public AnswerServiceImpl(final AnswerRepository answerRepository, final PollRepository pollRepository,
-                                        final PollResultRepository pollResultRepository) {
+                             final PollResultRepository pollResultRepository) {
         this.answerRepository = answerRepository;
         this.pollRepository = pollRepository;
         this.pollResultRepository = pollResultRepository;
@@ -40,8 +41,8 @@ public class AnswerServiceImpl implements AnswerService {
      */
     @Override
     public Answer giveAnswer(final String username, final Long pollId, final Long questionId,
-                                       final List<String> answerList) {
-        if(pollRepository.getOne(pollId).getPollStatus() == 2) {
+                             final List<String> answerList) {
+        if (pollRepository.getOne(pollId).getPollStatus() == 2) {
             final Answer answer = new Answer(answerList, questionId);
             PollResult pollResult = pollResultRepository.findPollResultByPollIdAndPollTaker(pollId, username);
             if (pollResult == null) {
@@ -49,7 +50,7 @@ public class AnswerServiceImpl implements AnswerService {
             }
             int idx = 0;
             boolean answerDa = false;
-            for (final Answer a: pollResult.getAnswerList()) {
+            for (final Answer a : pollResult.getAnswerList()) {
                 if (a.getQuestionId().equals(answer.getQuestionId())) {
                     pollResult.getAnswerList().set(idx, answer);
                     answerDa = true;
@@ -77,7 +78,7 @@ public class AnswerServiceImpl implements AnswerService {
     @Override
     public String deleteAnswer(final Long answerId) {
         final String givenAnswerList = answerRepository.findById(answerId)
-                .orElseThrow(EntityNotFoundException :: new).getGivenAnswerList().toString();
+            .orElseThrow(EntityNotFoundException::new).getGivenAnswerList().toString();
         answerRepository.deleteById(answerId);
         return givenAnswerList;
     }
@@ -92,10 +93,11 @@ public class AnswerServiceImpl implements AnswerService {
     public List<Answer> getAnswerFromOneQuestion(final Long questionId) {
         return answerRepository.findAnswerByQuestionId(questionId);
     }
+
     /**
      * This method returns all answers from a selected question.
      *
-     * @param pollId the id of the poll
+     * @param pollId   the id of the poll
      * @param username the id of the user
      * @return all answers from a question in a list
      */

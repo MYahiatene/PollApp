@@ -42,8 +42,8 @@ public class PollController {
     /**
      * This class constructor initializes the poll service and the participationLink service.
      *
-     * @param pollService              the poll service to work with the poll.
-     * @param participationLinkService the participationLink service to work with.
+     * @param pollService                the poll service to work with the poll.
+     * @param participationLinkService   the participationLink service to work with.
      * @param pollResultService
      * @param consistencyQuestionService
      * @param questionService
@@ -64,7 +64,8 @@ public class PollController {
     /**
      * This method creates the poll with the given settings from the PollCreation page.
      *
-     * @param pollCmd takes the necessary pollCmd object.
+     * @param pollCmd        takes the necessary pollCmd object.
+     * @param timeZoneOffset the time zone offset
      * @return returns string with PollID or Error
      */
     @PostMapping(value = "/createpoll", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -73,10 +74,12 @@ public class PollController {
         try {
             // create SeriesPoll
             Poll poll = null;
-            if(pollCmd.getRepeat() != null) {
-                poll = pollService.createSeriesPoll(pollCmd.getCmdPoll(ZoneOffset.ofHoursMinutes(timeZoneOffset / 60,timeZoneOffset % 60)));
+            if (pollCmd.getRepeat() != null) {
+                poll = pollService.createSeriesPoll(pollCmd.getCmdPoll(ZoneOffset.ofHoursMinutes(
+                    timeZoneOffset / 60, timeZoneOffset % 60)));
             } else {
-                poll = pollService.createPoll(pollCmd.getCmdPoll(ZoneOffset.ofHoursMinutes(timeZoneOffset / 60,timeZoneOffset % 60)));
+                poll = pollService.createPoll(pollCmd.getCmdPoll(ZoneOffset.ofHoursMinutes(timeZoneOffset / 60,
+                    timeZoneOffset % 60)));
             }
             if (poll.getAnonymityStatus().equals(ONE)) {
                 final String link = participationLinkService.createParticipationLink().toString();
@@ -92,6 +95,7 @@ public class PollController {
     public void abortPoll(final @PathVariable Long pollId) {
         // TODO: Serienumfrage deaktivieren
     }
+
     /**
      * This method returns a list with information about every poll.
      *
@@ -99,9 +103,10 @@ public class PollController {
      */
     @GetMapping("/poll")
     public List<SmallPoll> getSmallPolls(final @RequestHeader int timeZoneOffset) {
-        final ZoneId timeZone = ZoneId.ofOffset("UTC", ZoneOffset.ofHoursMinutes(timeZoneOffset / 60 , timeZoneOffset % 60));
+        final ZoneId timeZone = ZoneId.ofOffset("UTC", ZoneOffset.ofHoursMinutes(timeZoneOffset / 60,
+            timeZoneOffset % 60));
         final List<SmallPoll> polls = new ArrayList<>();
-        for (final Poll p: pollService.getAllPolls()) {
+        for (final Poll p : pollService.getAllPolls()) {
             polls.add(new SmallPoll(p, pollResultService, participationLinkService, timeZone));
         }
         return polls;
@@ -109,12 +114,14 @@ public class PollController {
 
     @PostMapping("/newLastEdit")
     public void newLastEdit(final @RequestBody PollCmd pollCmd, final @RequestHeader int timeZoneOffset) {
-        ZoneId timeZone = ZoneId.ofOffset("UTC", ZoneOffset.ofHoursMinutes(timeZoneOffset / 60 , timeZoneOffset % 60));
+        ZoneId timeZone = ZoneId.ofOffset("UTC", ZoneOffset.ofHoursMinutes(timeZoneOffset / 60,
+            timeZoneOffset % 60));
         pollService.newLastEdit(pollCmd.getPollId(), ZonedDateTime.now(), pollCmd.getLastEditFrom(), timeZone);
     }
 
     /**
      * Creates a new Poll with the information from the another one.
+     *
      * @param pollCmd
      * @return returns string with PollID or Error
      */
@@ -122,7 +129,8 @@ public class PollController {
     @PreAuthorize("hasAnyAuthority('Admin', 'Creator')")
     public Long createCopyPoll(final @RequestBody PollCmd pollCmd, final @RequestHeader int timeZoneOffset) {
         try {
-            final Poll poll = pollService.createCopyPoll(pollCmd.getCmdPoll(ZoneOffset.ofHoursMinutes(timeZoneOffset / 60,timeZoneOffset % 60)));
+            final Poll poll = pollService.createCopyPoll(pollCmd.getCmdPoll(ZoneOffset.ofHoursMinutes(
+                timeZoneOffset / 60, timeZoneOffset % 60)));
             if (poll.getAnonymityStatus().equals(ONE)) {
                 final String link = participationLinkService.createParticipationLink().toString();
                 participationLinkService.saveParticipationLink(poll.getPollId(), ALL_USERS, link);
@@ -201,9 +209,10 @@ public class PollController {
 
     @GetMapping("relevantpolls")
     public List<SmallPoll> getNewestPolls(final @RequestHeader int timeZoneOffset) {
-        final ZoneId timeZone = ZoneId.ofOffset("UTC", ZoneOffset.ofHoursMinutes(timeZoneOffset / 60 , timeZoneOffset % 60));
+        final ZoneId timeZone = ZoneId.ofOffset("UTC", ZoneOffset.ofHoursMinutes(timeZoneOffset / 60,
+            timeZoneOffset % 60));
         final List<SmallPoll> relevantPolls = new ArrayList<>();
-        for (final Poll p: pollService.getLastEditedPolls()) {
+        for (final Poll p : pollService.getLastEditedPolls()) {
             relevantPolls.add(new SmallPoll(p, pollResultService, participationLinkService, timeZone));
         }
         return relevantPolls;
@@ -253,6 +262,7 @@ public class PollController {
     public void addConsistencyQuestion(final @PathVariable long cqId) {
         consistencyQuestionService.deleteConsistencyQuestion(cqId);
     }
+
     @PostMapping("/poll/{pollId:\\d+}/question/{questionId:\\d+}/addAnswerPossibility")
     public Poll addAnswerPossibility(final @PathVariable Long pollId, final @PathVariable Long questionId,
                                      final @RequestBody String answer) {
@@ -261,6 +271,7 @@ public class PollController {
         questionService.setNewAnswer(question, tmp.substring(2, tmp.length() - 2));
         return pollService.getPoll(pollId);
     }
+
     /**
      * This method edits the name of the poll.
      *
@@ -292,13 +303,19 @@ public class PollController {
     @GetMapping("/getAnonType")
     public String getAnonType(final @RequestParam long pollId) {
         switch (pollService.getPoll(pollId).getAnonymityStatus()) {
-            case "0": return ANONYM;
-            case ONE: return ANONYM;
-            case "2": return "Teilanonym";
-            case "3": return "Nichtanonym";
-            default: return ANONYM;
+            case "0":
+                return ANONYM;
+            case ONE:
+                return ANONYM;
+            case "2":
+                return "Teilanonym";
+            case "3":
+                return "Nichtanonym";
+            default:
+                return ANONYM;
         }
     }
+
     @GetMapping("/getActDate")
     public String getActDate(final @RequestParam long pollId) {
         final ZonedDateTime date = pollService.getPoll(pollId).getActivatedDate();

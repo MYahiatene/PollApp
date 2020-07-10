@@ -50,11 +50,18 @@ public class DiagramData {
     private ChoiceData participantsOverTime;
 
     interface QuestionData {
-        enum QuestionType { CHOICE_QUESTION, TEXT_QUESTION, RANGE_QUESTION, SLIDER_QUESTION, SORT_QUESTION }
+        enum QuestionType {
+            CHOICE_QUESTION,
+            TEXT_QUESTION,
+            RANGE_QUESTION,
+            SLIDER_QUESTION,
+            SORT_QUESTION
+        }
 
         /**
          * questionId to compare while running through all questions.
          * this function has no 'get' in its title to prevent Jackson from finding it
+         *
          * @return questionId represented by the questionData
          */
         long questionId();
@@ -62,6 +69,7 @@ public class DiagramData {
         /**
          * questionType for casting.
          * this function has no 'get' in its title to prevent Jackson from finding it
+         *
          * @return QuestionType
          */
         QuestionType questionType();
@@ -75,6 +83,7 @@ public class DiagramData {
 
         /**
          * prepares the object for transfer.
+         *
          * @return json string representing the QuestionData
          */
         String toJSON();
@@ -97,7 +106,9 @@ public class DiagramData {
         @JsonIgnore
         private double step = 1;
 
-        @Getter @Setter private static class Calculation {
+        @Getter
+        @Setter
+        private static class Calculation {
             private List<Double> relative;
             private String median;
             private String mode;
@@ -110,7 +121,7 @@ public class DiagramData {
             this.answerPossibilities = answerPossibilities;
             data = new ArrayList<>();
             data.add(new ArrayList<>());
-            for (final String ignored: answerPossibilities) {
+            for (final String ignored : answerPossibilities) {
                 data.get(0).add(0);
             }
             calculated.add(new Calculation());
@@ -167,7 +178,7 @@ public class DiagramData {
                 }
             }
             final StringBuilder modeText = new StringBuilder();
-            for (final Integer i: maxima) {
+            for (final Integer i : maxima) {
                 modeText.append(answerPossibilities.get(i)).append(DIVIDER_STRING);
             }
             modeText.replace(modeText.lastIndexOf(DIVIDER_STRING), modeText.length(), "");
@@ -188,7 +199,8 @@ public class DiagramData {
                             while (j < data.get(0).size() - 1 && data.get(0).get(j) == 0) {
                                 j++;
                             }
-                            calculated.get(0).median = answerPossibilities.get(i) + (j >= data.get(0).size() ? "" : DIVIDER_STRING + answerPossibilities.get(j));
+                            calculated.get(0).median = answerPossibilities.get(i) + (j >= data.get(0).size() ? ""
+                                : DIVIDER_STRING + answerPossibilities.get(j));
                         }
                     } else {
                         calculated.get(0).median = answerPossibilities.get(i);
@@ -246,7 +258,7 @@ public class DiagramData {
 
         void addAnswers(final List<String> answers) {
             final List<Integer> newAnswer = new ArrayList<>();
-            for (final String s: answers) {
+            for (final String s : answers) {
                 newAnswer.add(Integer.valueOf(s));
             }
             data.add(newAnswer);
@@ -300,20 +312,23 @@ public class DiagramData {
                 }
             }
 
-            // in this array we store for each item (i) and each position (j) how many times the item was placed in that position
+            // in this array we store for each item (i) and each position (j) how many times the item was placed in
+            // that position
 
-            for (final List<Integer> datum: data) {
+            for (final List<Integer> datum : data) {
                 for (int j = 0; j < datum.size(); j++) {
                     final int index = datum.get(j);
-                    arrayOfValues.get(index).wasAtPositionNumbers.set(j, arrayOfValues.get(index).wasAtPositionNumbers.get(j) + 1);
+                    arrayOfValues.get(index).wasAtPositionNumbers.set(j, arrayOfValues.get(index).wasAtPositionNumbers.
+                        get(j) + 1);
                 }
             }
 
             // Now we compute the mean order.
 
-            // every item gets a mean position value computed from the number it was placed on a position times the index of that position
+            // every item gets a mean position value computed from the number it was placed on a position times the
+            // index of that position
 
-            for (SortValues arrayOfValue: arrayOfValues) {
+            for (SortValues arrayOfValue : arrayOfValues) {
                 for (int j = 0; j < arrayOfValue.wasAtPositionNumbers.size(); j++) {
                     arrayOfValue.meanPositionValue += arrayOfValue.wasAtPositionNumbers.get(j) * (j + 1);
                 }
@@ -352,9 +367,10 @@ public class DiagramData {
 
             // Now we compute the variance and standard deviation of the wasAtPositionNumbers
 
-            for (SortValues arrayOfValue: arrayOfValues) {
+            for (SortValues arrayOfValue : arrayOfValues) {
                 for (int j = 0; j < arrayOfValue.wasAtPositionNumbers.size(); j++) {
-                    arrayOfValue.variance += arrayOfValue.wasAtPositionNumbers.get(j) * Math.pow(j + 1 - arrayOfValue.meanPositionValue, 2);
+                    arrayOfValue.variance += arrayOfValue.wasAtPositionNumbers.get(j) * Math.pow(j + 1 - arrayOfValue.
+                        meanPositionValue, 2);
                 }
                 arrayOfValue.variance = arrayOfValue.variance / data.size();
                 arrayOfValue.standardDeviation = Math.sqrt(arrayOfValue.variance);
@@ -392,7 +408,8 @@ public class DiagramData {
             // console.log(this.meanOrder)
         }
 
-        @Override public String toJSON() {
+        @Override
+        public String toJSON() {
             final ObjectMapper mapper = new ObjectMapper();
             try {
                 return mapper.writeValueAsString(this);
@@ -413,18 +430,65 @@ public class DiagramData {
         private String type;
         private String title;
 
-        @JsonIgnore
-        List<TextAnswer> answers = new ArrayList<>();
+
         List<JSObject> frequency = new ArrayList<>();
         List<JSObject> texts = new ArrayList<>();
 
         @JsonIgnore
+        List<TextAnswer> answers = new ArrayList<>();
+        @JsonIgnore
         String[] positiveWords = {
-            "gut", "super", "großartig", "fesch", "schnafte", "töfte", "flott", "positiv", "erfreut", "beeindruckend", "eifrig", "eindrucksvoll", "schön", "reizend", "idyllisch", "groovy", "nice", "urcool", "megaaffentittengeil", "bäumig", "pfundig", "endgeil", "benutzerfreundlich", "angenehm", "anregend", "ansprechend", "atemberaubend", "attraktiv", "auffallend", "aufmerksam", "aufregend", "ausgewogen", "ausgezeichnet", "außergewöhnlich", "beeindruckend", "befriedigend", "begeisternd", "bejahend", "bekräftigend", "belebend", "beliebt", "bemerkenswert", "beneidenswert", "benutzerfreundlich", "bequem", "berauschend", "beruhigend", "berühmt", "beschwingt", "bestätigend", "bewährt", "bewundernswert", "brüderlich", "chancengleich", "charismatisch", "charmant", "couragiert", "dankbar", "durchdacht", "edel", "ehrgeizig", "ehrlich", "eifrig", "eindeutig", "eindrucksvoll", "einfallsreich", "einfühlend", "einwandfrei", "ekstatisch", "elegant", "elektrisierend", "empfehlenswert", "energisch", "engagiert", "entgegenkommend", "entspannt", "entzückend", "erfolgreich", "erfreulich", "erfüllend", "erhellend", "erleuchtend", "erreichbar", "erstaunlich", "erstklassig", "euphorisch", "exquisit", "exzellent", "fähig", "fantastisch", "faszinierend", "fehlerfrei", "feierlich", "fesselnd", "festlich", "fleißig", "freundlich", "friedlich", "frisch", "froh", "fröhlich", "frohlockend", "furchtlos", "gedeihlich", "geduldig", "geerdet", "gefeiert", "genial", "genießerisch", "genussvoll", "geschätzt", "geschickt", "geschmackvoll", "gestärkt", "gesund", "gewinnend", "glänzend", "glaubwürdig", "glücklich", "göttlich", "grandios", "großzügig", "handlich", "harmonisch", "heilig", "heilsam", "heiter", "herausragend", "herrlich", "hervorragend", "herzlich", "hilfreich", "hinreißend", "hochgeschätzt", "höflich", "humorvoll", "ideal", "idyllisch", "inspirierend", "interessant", "intuitiv", "jubelnd", "jugendlich", "klug", "kompetent", "königlich", "köstlich", "kraftvoll", "lächelnd", "langlebig", "lebendig", "leidenschaftlich", "leuchtend", "liebenswert", "liebenswürdig", "liebevoll", "lobenswert", "luxuriös", "makellos", "malerisch", "meisterhaft", "motivierend", "mutig", "niedlich", "nutzbringend", "offen", "ordentlich", "organisiert", "perfekt", "phänomenal", "positiv", "prächtig", "prachtvoll", "prickelnd", "problemlos", "produktiv", "pünktlich", "reibungslos", "reichhaltig", "renommiert", "respektvoll", "romantisch", "rücksichtsvoll", "sauber", "schick", "schmeichelnd", "schön", "schwungvoll", "seriös", "sicher", "solidarisch", "spektakulär", "spielerisch", "spontan", "stilvoll", "sympathisch", "tadellos", "tapfer", "tolerant", "treu", "triumphierend", "tüchtig", "überraschend", "überschwänglich", "überzeugend", "umsichtig", "unberührt", "unbeschwert", "uneigennützig", "unglaublich", "unkompliziert", "unterstützend", "unwiderstehlich", "verantwortungsvoll", "verführerisch", "vergnüglich", "verjüngend", "verliebt", "verlockend", "vertrauensvoll", "verwöhnend", "verzaubert", "verzückt", "vollendet", "vorteilhaft", "warm", "warmherzig", "wegweisend", "weise", "wendig", "wertvoll", "wichtig", "wirksam", "wohlerzogen", "wohlmeinend", "wohltätig", "wohltuend", "wunderbar", "wünschenswert", "würdevoll", "zauberhaft", "zugänglich", "zuverlässig"
+            "gut", "super", "großartig", "fesch", "schnafte", "töfte", "flott", "positiv", "erfreut", "beeindruckend",
+            "eifrig", "eindrucksvoll", "schön", "reizend", "idyllisch", "groovy", "nice", "urcool",
+            "megaaffentittengeil", "bäumig", "pfundig", "endgeil", "benutzerfreundlich", "angenehm", "anregend",
+            "ansprechend", "atemberaubend", "attraktiv", "auffallend", "aufmerksam", "aufregend", "ausgewogen",
+            "ausgezeichnet", "außergewöhnlich", "beeindruckend", "befriedigend", "begeisternd", "bejahend",
+            "bekräftigend", "belebend", "beliebt", "bemerkenswert", "beneidenswert", "benutzerfreundlich", "bequem",
+            "berauschend", "beruhigend", "berühmt", "beschwingt", "bestätigend", "bewährt", "bewundernswert",
+            "brüderlich", "chancengleich", "charismatisch", "charmant", "couragiert", "dankbar", "durchdacht", "edel",
+            "ehrgeizig", "ehrlich", "eifrig", "eindeutig", "eindrucksvoll", "einfallsreich", "einfühlend",
+            "einwandfrei", "ekstatisch", "elegant", "elektrisierend", "empfehlenswert", "energisch", "engagiert",
+            "entgegenkommend", "entspannt", "entzückend", "erfolgreich", "erfreulich", "erfüllend", "erhellend",
+            "erleuchtend", "erreichbar", "erstaunlich", "erstklassig", "euphorisch", "exquisit", "exzellent", "fähig",
+            "fantastisch", "faszinierend", "fehlerfrei", "feierlich", "fesselnd", "festlich", "fleißig", "freundlich",
+            "friedlich", "frisch", "froh", "fröhlich", "frohlockend", "furchtlos", "gedeihlich", "geduldig", "geerdet",
+            "gefeiert", "genial", "genießerisch", "genussvoll", "geschätzt", "geschickt", "geschmackvoll", "gestärkt",
+            "gesund", "gewinnend", "glänzend", "glaubwürdig", "glücklich", "göttlich", "grandios", "großzügig",
+            "handlich", "harmonisch", "heilig", "heilsam", "heiter", "herausragend", "herrlich", "hervorragend",
+            "herzlich", "hilfreich", "hinreißend", "hochgeschätzt", "höflich", "humorvoll", "ideal", "idyllisch",
+            "inspirierend", "interessant", "intuitiv", "jubelnd", "jugendlich", "klug", "kompetent", "königlich",
+            "köstlich", "kraftvoll", "lächelnd", "langlebig", "lebendig", "leidenschaftlich", "leuchtend",
+            "liebenswert", "liebenswürdig", "liebevoll", "lobenswert", "luxuriös", "makellos", "malerisch",
+            "meisterhaft", "motivierend", "mutig", "niedlich", "nutzbringend", "offen", "ordentlich", "organisiert",
+            "perfekt", "phänomenal", "positiv", "prächtig", "prachtvoll", "prickelnd", "problemlos", "produktiv",
+            "pünktlich", "reibungslos", "reichhaltig", "renommiert", "respektvoll", "romantisch", "rücksichtsvoll",
+            "sauber", "schick", "schmeichelnd", "schön", "schwungvoll", "seriös", "sicher", "solidarisch",
+            "spektakulär", "spielerisch", "spontan", "stilvoll", "sympathisch", "tadellos", "tapfer", "tolerant",
+            "treu", "triumphierend", "tüchtig", "überraschend", "überschwänglich", "überzeugend", "umsichtig",
+            "unberührt", "unbeschwert", "uneigennützig", "unglaublich", "unkompliziert", "unterstützend",
+            "unwiderstehlich", "verantwortungsvoll", "verführerisch", "vergnüglich", "verjüngend", "verliebt",
+            "verlockend", "vertrauensvoll", "verwöhnend", "verzaubert", "verzückt", "vollendet", "vorteilhaft", "warm",
+            "warmherzig", "wegweisend", "weise", "wendig", "wertvoll", "wichtig", "wirksam", "wohlerzogen",
+            "wohlmeinend", "wohltätig", "wohltuend", "wunderbar", "wünschenswert", "würdevoll", "zauberhaft",
+            "zugänglich", "zuverlässig"
         };
         @JsonIgnore
         String[] negativeWords = {
-            "doof", "schlecht", "negativ", "scheiße", "enttäuschend", "enttäuschung", "enttäuscht", "uff", "yikes", "fuck", "lahm", "afd", "NN", "abgefeimt", "affektiert", "aggressiv", "ambivalent", "angeberisch", "anmaßend", "arglistig", "argwöhnisch", "arrogant", "aufdringlich", "aufgeblasen", "beratungsresistent", "blasiert", "borniert", "boshaft", "cholerisch", "dekadent", "demagogisch", "deprimiert", "despotisch", "distanziert", "dogmatisch", "dominant", "dreist", "egoistisch", "egozentrisch", "eifersüchtig", "eigenmächtig", "einfältig", "eingebildet", "einseitig", "eitel", "ekelerregend", "elitär", "fies", "jähzornig", "garstig", "gefallsüchtig", "gefrustet", "gnädig", "gönnerhaft", "großkotzig", "großspurig", "großtuerisch", "heimtückig", "herablassen", "hinterhältig", "hintertrieben", "hochfahrend", "hochmütig", "hoffärtig", "hoffnungslos", "hysterisch", "ignorant", "infam", "intrigant", "kleinkariert", "kompliziert", "kopfhängerisch", "langweilig", "lethargisch", "lügnerisch", "maliziös", "manipulativ", "mutlos", "naiv", "narzisstisch", "neurotisch", "oberflächlich", "pedantisch", "phlegmatisch", "protzig", "reserviert", "reserviert", "resigniert", "rücksichtslos", "scheinheilig", "schlampig", "schuftig", "selbstgefällig", "selbstgerecht", "selbstsüchtig", "selbstverliebt", "skrupellos", "spießig", "stur", "überheblich", "unbeweglich", "ungeduldig", "unnahbar", "unsozial", "unzugänglich", "verbohrt", "verlogen", "vernagelt", "verschlagen", "versnobt", "snobistisch", "verstiegen", "willkürlich", "zynisch"
+            "doof", "schlecht", "negativ", "scheiße", "enttäuschend", "enttäuschung", "enttäuscht", "uff", "yikes",
+            "fuck", "lahm", "afd", "NN", "abgefeimt", "affektiert", "aggressiv", "ambivalent", "angeberisch",
+            "anmaßend", "arglistig", "argwöhnisch", "arrogant", "aufdringlich", "aufgeblasen", "beratungsresistent",
+            "blasiert", "borniert", "boshaft", "cholerisch", "dekadent", "demagogisch", "deprimiert", "despotisch",
+            "distanziert", "dogmatisch", "dominant", "dreist", "egoistisch", "egozentrisch", "eifersüchtig",
+            "eigenmächtig", "einfältig", "eingebildet", "einseitig", "eitel", "ekelerregend", "elitär", "fies",
+            "jähzornig", "garstig", "gefallsüchtig", "gefrustet", "gnädig", "gönnerhaft", "großkotzig", "großspurig",
+            "großtuerisch", "heimtückig", "herablassen", "hinterhältig", "hintertrieben", "hochfahrend", "hochmütig",
+            "hoffärtig", "hoffnungslos", "hysterisch", "ignorant", "infam", "intrigant", "kleinkariert", "kompliziert",
+            "kopfhängerisch", "langweilig", "lethargisch", "lügnerisch", "maliziös", "manipulativ", "mutlos", "naiv",
+            "narzisstisch", "neurotisch", "oberflächlich", "pedantisch", "phlegmatisch", "protzig", "reserviert",
+            "reserviert", "resigniert", "rücksichtslos", "scheinheilig", "schlampig", "schuftig", "selbstgefällig",
+            "selbstgerecht", "selbstsüchtig", "selbstverliebt", "skrupellos", "spießig", "stur", "überheblich",
+            "unbeweglich", "ungeduldig", "unnahbar", "unsozial", "unzugänglich", "verbohrt", "verlogen", "vernagelt",
+            "verschlagen", "versnobt", "snobistisch", "verstiegen", "willkürlich", "zynisch",
         };
 
         @Getter
@@ -449,7 +513,8 @@ public class DiagramData {
             return this.id;
         }
 
-        public void addAnswer(final Long id, final String text, final String editedDate, final String creator, final Long seriesCounter) {
+        public void addAnswer(final Long id, final String text, final String editedDate, final String creator,
+                              final Long seriesCounter) {
             answers.add(new TextAnswer(id, text, editedDate, creator, seriesCounter));
         }
 
@@ -473,13 +538,13 @@ public class DiagramData {
 
         /**
          * @param stringList Input-String-Eingabeliste
-         * @param input Der String für den die Tendenz berechnet werden muss
-         * Diese Funktion berechnet den Tendenzindex für die Wörter im Input
-         * */
+         * @param input      Der String für den die Tendenz berechnet werden muss
+         *                   Diese Funktion berechnet den Tendenzindex für die Wörter im Input
+         */
         int calcTendency(final List<String> stringList, final String input) {
             int tendency = 0;
             final String[] wordList = input.split("[ .,;:?\\-_=()/&%$§!#'+*~|<>]+");
-            for (final String word: wordList) {
+            for (final String word : wordList) {
                 if (Arrays.asList(positiveWords).contains(word.toLowerCase())) {
                     tendency += 1;
                 } else if (Arrays.asList(negativeWords).contains(word.toLowerCase())) {
@@ -491,11 +556,12 @@ public class DiagramData {
 
         /**
          * @param input Die Eingabeliste an TextAnswers welche zu einer Liste an Strings gemacht werden soll
-         * Diese Funktion macht eine Liste an TextAnswers zu einer Liste an Strings um für diese die Frequenz und Tendenz zu berechnen
-         * */
+         *              Diese Funktion macht eine Liste an TextAnswers zu einer Liste an Strings um für diese die
+         *              Frequenz und Tendenz zu berechnen
+         */
         List<String> getWordList(final List<TextAnswer> input) {
             final List<String> stringList = new ArrayList<>();
-            for (final TextAnswer ta: input) {
+            for (final TextAnswer ta : input) {
                 stringList.addAll(Arrays.asList(ta.text.toLowerCase().split("[ .,;:?\\-_=()/&%$§!#'+*~|<>]+")));
             }
             return stringList;
@@ -503,11 +569,12 @@ public class DiagramData {
 
         /**
          * @param input Die Eingabeliste an Antworten
-         * Diese Funktion generiert eine Liste an JSObjects um die Frequenz, die Antwortlänge und den ganzen andeden Kram in einer Klasse darzustellen
-         * */
+         *              Diese Funktion generiert eine Liste an JSObjects um die Frequenz, die Antwortlänge und den
+         *              ganzen andeden Kram in einer Klasse darzustellen
+         */
         List<JSObject> doWordStuff(final List<TextAnswer> input) { //Antworten Darstellen
             final List<JSObject> outputList = new ArrayList<>();
-            for (final TextAnswer ta: input) {
+            for (final TextAnswer ta : input) {
                 outputList.add(new JSObject(ta.text.split("[ .,;:?\\-_=()/&%$§!#'+*~|<>]+").length,
                     ta.text, calcTendency(getWordList(input), ta.text),
                     getWordFrequency(input, ta), ta.edited, ta.creator, ta.seriesCounter)); // Antwortlänge, Antwort, Antworttendenz
@@ -517,10 +584,10 @@ public class DiagramData {
 
         /**
          * @param input Die Eingabe-Antwortliste
-         * @param ta Die Textantwort für die die Wortfrequenz berechnet werden soll
-         * Diese Funktion berechnet die Frequenz eines einzelenen Wortes so wie die Funktion genutzt wird
-         * */
-        int getWordFrequency(final List<TextAnswer> input, final  TextAnswer ta) {
+         * @param ta    Die Textantwort für die die Wortfrequenz berechnet werden soll
+         *              Diese Funktion berechnet die Frequenz eines einzelenen Wortes so wie die Funktion genutzt wird
+         */
+        int getWordFrequency(final List<TextAnswer> input, final TextAnswer ta) {
             final List<String> wordList = getWordList(input);
             return Collections.frequency(wordList, ta.text);
 
@@ -528,12 +595,12 @@ public class DiagramData {
 
         /**
          * @param duplicates Duplikatenthaltende Liste
-         * Diese Funktion entfernt die Duplikate aus einer Liste an JSObjects
-         * */
+         *                   Diese Funktion entfernt die Duplikate aus einer Liste an JSObjects
+         */
         List<JSObject> removeDuplicates(final List<JSObject> duplicates) {
             final List<String> keyList = new ArrayList<>();
             final List<JSObject> noDuplicates = new ArrayList<>();
-            for (final JSObject jso: duplicates) {
+            for (final JSObject jso : duplicates) {
                 if (!keyList.contains(jso.text)) {
                     noDuplicates.add(jso);
                     keyList.add(jso.text);
@@ -544,11 +611,12 @@ public class DiagramData {
 
         /**
          * @param input Eingabe-Antwort-Liste
-         * Diese Funktion berechnet die Wortfrequenz und das ganze Zeug welches im TextQuestionEvaluationWidget unter Wortfrequenz dargestellt wird.
-         * */
+         *              Diese Funktion berechnet die Wortfrequenz und das ganze Zeug welches im
+         *              TextQuestionEvaluationWidget unter Wortfrequenz dargestellt wird.
+         */
         List<JSObject> doWordFrequencyStuff(final List<TextAnswer> input) { //Wortfrequenzen darstellen
             final List<String> answers = new ArrayList<>();
-            for (final TextAnswer ta: input) {
+            for (final TextAnswer ta : input) {
                 answers.add(ta.text);
             }
             final List<JSObject> duplicateList = new ArrayList<>();
@@ -563,7 +631,8 @@ public class DiagramData {
             return removeDuplicates(duplicateList);
         }
 
-        @Override public String toJSON() {
+        @Override
+        public String toJSON() {
             final ObjectMapper mapper = new ObjectMapper();
             try {
                 return mapper.writeValueAsString(this);
@@ -617,8 +686,8 @@ public class DiagramData {
      */
     private void generateQuestionData() {
         final List<Category> categories = categoryService.getAllCategories(poll.getPollId());
-        for (final Category c: categories) {
-            for (final Question q: questionService.getAllQuestions(c.getCategoryId())) {
+        for (final Category c : categories) {
+            for (final Question q : questionService.getAllQuestions(c.getCategoryId())) {
                 if (!questionIds.contains(q.getQuestionId())) {
                     continue;
                 }
@@ -669,14 +738,16 @@ public class DiagramData {
 
     /**
      * gathers all lastEditedAt dates and prepares them to be displayed in a diagram.
+     *
      * @param results the pollResults from which the dates come
      */
     private void generateParticipantsOverTime(final List<PollResult> results, final ZonedDateTime pollStartTime) {
         final List<ZonedDateTime> datesList = new ArrayList<>();
-        final DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss",Locale.GERMANY).withZone(timeZone); //'2020-07-08 19:55:21'
-        for (final PollResult pr: results) {
+        final DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.GERMANY)
+            .withZone(timeZone); //'2020-07-08 19:55:21'
+        for (final PollResult pr : results) {
             /*System.out.println("PollResult pr: "+pr);*/
-            if(showParticipantsOverTime) {
+            if (showParticipantsOverTime) {
                 datesList.add(pr.getLastEditAt());
             }
         }
@@ -685,7 +756,7 @@ public class DiagramData {
         } else {
             ZonedDateTime min = datesList.get(0);
             ZonedDateTime max = datesList.get(0);
-            for (final ZonedDateTime d: datesList) {
+            for (final ZonedDateTime d : datesList) {
                 if (d.isAfter(max)) {
                     max = d;
                 } else if (d.isBefore(min)) {
@@ -700,16 +771,16 @@ public class DiagramData {
                 step = 1L;
             }
             final List<String> answerPossibilities = new ArrayList<>();
-            if(participantsOverRelativeTime)
-            {
+            if (participantsOverRelativeTime) {
                 // System.out.println(patternString);
                 //final DateTimeFormatter finalDf = DateTimeFormatter.ofPattern(tPlus, Locale.GERMANY);
                 String tPlus = "";
-                for (ZonedDateTime date = min; date.compareTo(max) <= 0;date = date.plusSeconds(step)) {
+                for (ZonedDateTime date = min; date.compareTo(max) <= 0; date = date.plusSeconds(step)) {
                     final String deltaString = "T+";
                     //Instant endT = Instant.ofEpochSecond(end);
                     //System.out.println("EndT: "+endT);
-                    //ZonedDateTime endTime = endT.atZone(ZoneId.of("Europe/Berlin")); //ZonedDateTime.parse(String.valueOf(end), df.withZone(ZoneId.of("Europe/Berlin")));
+                    //ZonedDateTime endTime = endT.atZone(ZoneId.of("Europe/Berlin")); //ZonedDateTime.parse(String
+                    // .valueOf(end), df.withZone(ZoneId.of("Europe/Berlin")));
                     //System.out.println("endtime : "+endTime);
                     //Instant endTime = Instant.ofEpochSecond(end);
                     final Duration delta = Duration.between(pollStartTime, date);
@@ -730,9 +801,10 @@ public class DiagramData {
                 }
 
                 // System.out.println(answerPossibilities);
-                participantsOverTime = new ChoiceData(0, "Teilnahmen über Zeit", answerPossibilities);
+                participantsOverTime = new ChoiceData(0, "Teilnahmen über Zeit",
+                    answerPossibilities);
                 /*System.out.println(datesList.toString());*/
-                for (final ZonedDateTime d: datesList) {
+                for (final ZonedDateTime d : datesList) {
                     final long slot = (d.toEpochSecond() - start) / step;
                     /*System.out.println("Slot: "+slot);
                     System.out.println("Start: "+start);
@@ -741,8 +813,7 @@ public class DiagramData {
                 }
 
                 participantsOverTime.statistics();
-            }
-            else {
+            } else {
                 String patternString = "MM.yyyy";
                 if (step < 60 * 60 * 24 * 30) {
                     patternString = "dd." + patternString;
@@ -756,13 +827,15 @@ public class DiagramData {
                 if (step < 60) {
                     patternString += ":ss";
                 }
-                final DateTimeFormatter finalDf = DateTimeFormatter.ofPattern(patternString, Locale.GERMAN).withZone(timeZone);
+                final DateTimeFormatter finalDf = DateTimeFormatter.ofPattern(patternString, Locale.GERMAN)
+                    .withZone(timeZone);
                 for (ZonedDateTime date = min; date.compareTo(max) <= 0; date = date.plusSeconds(step)) {
                     answerPossibilities.add(finalDf.format(date));
                 }
             }
-            participantsOverTime = new ChoiceData(0, "Teilnahmen über Zeit", answerPossibilities);
-            for (final ZonedDateTime d: datesList) {
+            participantsOverTime = new ChoiceData(0, "Teilnahmen über Zeit",
+                answerPossibilities);
+            for (final ZonedDateTime d : datesList) {
                 final long slot = (d.toEpochSecond() - start) / step;
                 participantsOverTime.addAnswer((double) slot);
             }
@@ -772,19 +845,21 @@ public class DiagramData {
 
     /**
      * fills them with data and calls their statistics function.
+     *
      * @param results the raw data to get processed and prepared for display
      */
     private void loadData(final List<PollResult> results) {
-        final DateTimeFormatter df = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm", Locale.GERMAN).withZone(timeZone);
+        final DateTimeFormatter df = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm", Locale.GERMAN)
+            .withZone(timeZone);
         generateQuestionData();
-        for (final PollResult pr: results) {
-            for (final Answer a: pr.getAnswerList()) {
-                for (final QuestionData qd: questionList) {
+        for (final PollResult pr : results) {
+            for (final Answer a : pr.getAnswerList()) {
+                for (final QuestionData qd : questionList) {
                     if (qd.questionId() == a.getQuestionId()) {
                         switch (qd.questionType()) {
                             case CHOICE_QUESTION:
                                 final ChoiceData cd = (ChoiceData) qd;
-                                for (final String s: a.getGivenAnswerList()) {
+                                for (final String s : a.getGivenAnswerList()) {
                                     cd.addAnswer(Double.parseDouble(s));
                                 }
                                 break;
@@ -792,9 +867,10 @@ public class DiagramData {
                                 if (!a.getGivenAnswerList().isEmpty()) {
                                     final TextData td = (TextData) qd;
                                     td.addAnswer(pr.getPollResultId(),
-                                            a.getGivenAnswerList().get(a.getGivenAnswerList().size() - 1),
-                                            df.format(pr.getLastEditAt()),
-                                            poll.getAnonymityStatus().equals("2") ? pr.getPollTaker(): "", poll.getSeriesCounter());
+                                        a.getGivenAnswerList().get(a.getGivenAnswerList().size() - 1),
+                                        df.format(pr.getLastEditAt()),
+                                        poll.getAnonymityStatus().equals("2") ? pr.getPollTaker() : "",
+                                        poll.getSeriesCounter());
                                 }
                                 break;
                             case SORT_QUESTION:
@@ -811,15 +887,16 @@ public class DiagramData {
             }
         }
         if (showParticipantsOverTime) {
-            generateParticipantsOverTime(results,poll.getActivatedDate());
+            generateParticipantsOverTime(results, poll.getActivatedDate());
         }
-        for (final QuestionData qd: questionList) {
+        for (final QuestionData qd : questionList) {
             qd.statistics();
         }
     }
 
     /**
      * creates the JSON string from the diagramData.
+     *
      * @return the diagramData as a JSON-String
      */
     public String toJSON() {
@@ -842,13 +919,11 @@ public class DiagramData {
     }
 
     public void combine(final DiagramData other) {
-        if(showParticipantsOverTime)
-        {
+        if (showParticipantsOverTime) {
             this.participantsOverTime.data.addAll(other.participantsOverTime.getData());
             this.participantsOverTime.calculated.addAll(other.participantsOverTime.calculated);
         }
-        for(int i = 0; i < getQuestionList().size();i++)
-        {
+        for (int i = 0; i < getQuestionList().size(); i++) {
             final QuestionData qd = this.getQuestionList().get(i);
             final QuestionData od = other.getQuestionList().get(i);
             LOGGER.info("this");
