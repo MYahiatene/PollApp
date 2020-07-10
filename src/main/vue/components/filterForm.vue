@@ -7,10 +7,15 @@
         </template>
 
         <v-card class="ma-2 pa-2">
-            <v-card-title>Erweiterte Analyse {{ filters.length }}</v-card-title>
+            <v-card-title>Erweiterte Analyse </v-card-title>
             <template>
                 <v-overflow-btn v-model="chosenPoll" editable prefix="Basisdaten:" :items="pollTitles" dense>
                 </v-overflow-btn>
+                <div v-if="poll">
+                    <v-slider v-if="isSeriesPoll" v-model="seriesPollNumber" min="0" :max="(poll.seriesCounter - 1)">
+                    </v-slider>
+                </div>
+
                 <v-expansion-panels accordion multiple hover>
                     <v-expansion-panel>
                         <v-expansion-panel-header>
@@ -312,6 +317,7 @@ export default {
             selectedUsers: [],
             userInverted: false,
             userNames: [],
+            seriesPollNumber: 0,
         }
     },
     computed: {
@@ -320,6 +326,10 @@ export default {
             getSessions: 'evaluation/getSessions',
             filters: 'evaluation/getFilterList',
         }),
+
+        isSeriesPoll() {
+            return this.poll.level !== -1 && this.poll.level
+        },
 
         categories() {
             return this.polls[this.pollIndex].categoryList
@@ -337,6 +347,10 @@ export default {
         pollIndex() {
             console.log('pollIndex()')
             return this.pollTitles.indexOf(this.chosenPoll)
+        },
+
+        poll() {
+            return this.polls[this.pollIndex]
         },
 
         chosenQuestionIds() {
