@@ -94,8 +94,19 @@ public interface PollService {
      */
     Poll checkActivationAndDeactivation(final Poll poll);
 
+    /**
+     * This method sets the current data in placeholders in the title of a poll for series polls.
+     * @param poll
+     * @return the pollname
+     */
     String createSeriesPollName(final Poll poll);
 
+    /**
+     * This method calculates the activation date for the next poll in a series from given data days, weeks, months,
+     * the level of reputation (days, weeks, months, years) and the reputation number.
+     * @param poll
+     * @return next activation date
+     */
     ZonedDateTime calculateNextDate(final Poll poll);
 
     void newLastEdit(Long pollId, ZonedDateTime lastEditAt, String lastEditFrom, ZoneId timezone);

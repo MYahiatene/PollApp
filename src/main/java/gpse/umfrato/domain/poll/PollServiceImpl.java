@@ -89,6 +89,11 @@ class PollServiceImpl implements PollService {
         return poll;
     }
 
+    /**
+     * This method creates the first poll from a series of polls and sets the standard for the series.
+     * @param poll
+     * @return created poll
+     */
     @Override
     @Transactional
     public Poll createSeriesPoll(final Poll poll) {
@@ -167,7 +172,7 @@ class PollServiceImpl implements PollService {
                 break;
             case 1:
                 poll.setPollStatus(2);
-                if (poll.getLevel() != -1) {
+                if (poll.getLevel() == -1) {
                     LOGGER.info("hier");
                     poll.setActivatedDate(ZonedDateTime.now());
                 }
@@ -289,6 +294,11 @@ class PollServiceImpl implements PollService {
         return pollRepository.findById(poll.getPollId()).orElseThrow(EntityNotFoundException::new);
     }
 
+    /**
+     * This method sets the current data in placeholders in the title of a poll for series polls.
+     * @param poll
+     * @return the pollname
+     */
     @Override
     public String createSeriesPollName(final Poll poll) {
         String name = poll.getPollName();
@@ -315,6 +325,12 @@ class PollServiceImpl implements PollService {
         return name;
     }
 
+    /**
+     * This method calculates the activation date for the next poll in a series from given data days, weeks, months,
+     * the level of reputation (days, weeks, months, years) and the reputation number.
+     * @param poll
+     * @return next activation date
+     */
     @Override
     public ZonedDateTime calculateNextDate(final Poll poll) {
         LOGGER.info("Start calculateNextDate");
@@ -616,11 +632,23 @@ class PollServiceImpl implements PollService {
         return next;
     }
 
+    /**
+     * This method gets the current week of the month, calculated from week where the given day first appears.
+     * @param date
+     * @param day
+     * @return number of the week of the month
+     */
     private int getWeekOfMonthWithDay(final ZonedDateTime date, final int day) {
         final ZonedDateTime firstOfMonth = date.with(TemporalAdjusters.dayOfWeekInMonth(1, DayOfWeek.of(day)));
         return 1 + date.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR) - firstOfMonth.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR);
     }
 
+    /**
+     * This method returns true, if a series of polls should be deactivated, i.e. when the deactivation reason is
+     * reached.
+     * @param poll
+     * @return boolean for stopping the series
+     */
     private boolean stoppingReason(final Poll poll) {
         switch (poll.getStoppingReason()) {
             case 0: /*Datum*/
@@ -643,6 +671,12 @@ class PollServiceImpl implements PollService {
         }
     }
 
+    /**
+     * This method calculates the deactivation date for a poll in a series from the previous poll of the series.
+     * @param oldPoll
+     * @param newPoll
+     * @return deactivation date
+     */
     private ZonedDateTime calculateNewDeactivation (final Poll oldPoll, final Poll newPoll) {
         LOGGER.info("calculateNewDeactivation");
         LOGGER.info("oldPoll: " + oldPoll);
@@ -655,6 +689,11 @@ class PollServiceImpl implements PollService {
         return newDeactivation;
     }
 
+    /**
+     * This method initializes a new poll in a series from the data of the previous poll of the series and saves it in
+     * the repository.
+     * @param poll
+     */
     private void createNextSeriesPoll(final Poll poll) {
         // TODO: lastEditFrom = null -> schlimm?
         LOGGER.info("createNextSeriesPoll start");
@@ -692,6 +731,11 @@ class PollServiceImpl implements PollService {
         LOGGER.info("new series poll: " + nextSeriesPoll);
     }
 
+    /**
+     * This method copies all elements from one list in a new list, used for ElementCollections tha can not be copied.
+     * @param value
+     * @return copied List
+     */
     private List<Integer> createElementCollectionCopies(final List<Integer> value) {
         final List<Integer> copiedValues = new ArrayList<>();
         for (final Integer x : value) {
@@ -700,6 +744,13 @@ class PollServiceImpl implements PollService {
         return copiedValues;
     }
 
+    /**
+     * This method sets the new day of the month and if its a leap year, calculates the day of the month with regard to
+     * the leap year.
+     * @param date
+     * @param day
+     * @return date with new day of the month
+     */
     private ZonedDateTime saveDayOfMonth(final ZonedDateTime date, final int day) {
         try {
             return date.withDayOfMonth(day);
