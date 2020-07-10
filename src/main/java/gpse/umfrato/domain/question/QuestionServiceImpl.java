@@ -266,16 +266,7 @@ public class QuestionServiceImpl implements QuestionService {
         Question newQuestion = null;
         newQuestion = new Question(question.getQuestionMessage(), new ArrayList<>(),
             question.getNumberOfPossibleAnswers(), question.isUserAnswers(), question.isDropDown());
-        for (String answer: question.getAnswerPossibilities()) {
-            newQuestion.getAnswerPossibilities().add(answer);
-        }
-        newQuestion.setCategoryId(pollRepository.findById(pollId)
-            .orElseThrow(EntityNotFoundException::new).getCategoryList().get(0).getCategoryId());
-        pollRepository.findById(pollId).orElseThrow(EntityNotFoundException::new)
-            .getCategoryList().get(0).getQuestionList().add(newQuestion);
-        questionRepository.save(newQuestion);
-
-        return newQuestion;
+        return copyAnswerPossibilities(question, pollId, newQuestion);
     }
 
     /**
@@ -288,11 +279,15 @@ public class QuestionServiceImpl implements QuestionService {
     public Question addSortQuestion(final Question question, final Long pollId) {
         Question newQuestion = null;
         newQuestion = new Question(question.getQuestionMessage(), new ArrayList<>());
+        return copyAnswerPossibilities(question, pollId, newQuestion);
+    }
+
+    private Question copyAnswerPossibilities(Question question, Long pollId, Question newQuestion) {
         for (String answer: question.getAnswerPossibilities()) {
             newQuestion.getAnswerPossibilities().add(answer);
         }
         newQuestion.setCategoryId(pollRepository.findById(pollId)
-                .orElseThrow(EntityNotFoundException::new).getCategoryList().get(0).getCategoryId());
+                .orElseThrow(EntityNotFoundException ::new).getCategoryList().get(0).getCategoryId());
         pollRepository.findById(pollId).orElseThrow(EntityNotFoundException::new)
                 .getCategoryList().get(0).getQuestionList().add(newQuestion);
         questionRepository.save(newQuestion);
