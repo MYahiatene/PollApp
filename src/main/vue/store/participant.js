@@ -166,12 +166,17 @@ export const actions = {
         })
     },
 
+    /**
+     * Loads all pollTakers who took a poll with the specified id
+     * @param commit
+     * @param id is the pollId
+     * @returns {Promise<void>}
+     */
+
     async loadPollTakers({ commit }, id) {
         this.$axios.defaults.baseURL = 'http://localhost:8088/api/'
         this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('user-token')
         const takers = await this.$axios.post('/getPollTakers', id)
-        console.log('USERS')
-        console.log(takers)
         commit('setPollTakers', takers)
     },
     /**

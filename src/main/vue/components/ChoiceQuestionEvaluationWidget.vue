@@ -63,6 +63,7 @@
                             <visual-evaluation-settings
                                 :question-id="questionId"
                                 :change-default="false"
+                                :series="isSeries"
                                 @done=";(diagramKey += 1), (visualSettings = false)"
                             ></visual-evaluation-settings>
                         </v-card>
@@ -95,10 +96,14 @@
 
                 <v-row>
                     <v-col cols="3">
-                        <v-chip :color="this.$vuetify.theme.currentTheme.info">Median: {{ calculated.median }}</v-chip>
+                        <v-chip :key="medianKey" :color="this.$vuetify.theme.currentTheme.info"
+                            >Median: {{ calculated[0].median }}</v-chip
+                        >
                     </v-col>
                     <v-col cols="3">
-                        <v-chip :color="this.$vuetify.theme.currentTheme.info">Modus: {{ calculated.mode }}</v-chip>
+                        <v-chip :key="medianKey" :color="this.$vuetify.theme.currentTheme.info"
+                            >Modus: {{ calculated[0].mode }}</v-chip
+                        >
                     </v-col>
                 </v-row>
                 <v-row>
@@ -184,6 +189,7 @@ export default {
             { text: 'Relative Häufigkeit', value: 'rel', sortable: false },
         ],
     }),
+
     computed: {
         // here we compute the data for the table
         ...mapGetters({
@@ -216,6 +222,7 @@ export default {
         },
         chartData() {
             let baseData = []
+            console.log('calculated:')
 
             console.log(this.calculated)
             if (this.relativ) {
@@ -273,7 +280,11 @@ export default {
             for (let i = 0; i < this.chartData.length; i++) {
                 c.push({
                     label: this.questionTitle,
-                    backgroundColor: this.multipleColors ? this.choppedBackgroundColors : this.backgroundColor,
+                    backgroundColor: this.multipleColors
+                        ? this.chartData.length > 1
+                            ? this.choppedBackgroundColors[i % this.choppedBackgroundColors.length]
+                            : this.choppedBackgroundColors
+                        : this.backgroundColor,
                     data: this.chartData[i],
                 })
             }
@@ -289,9 +300,16 @@ export default {
 
         choppedBackgroundColors() {
             const c = []
-            for (let i = 0; i < this.answerPossibilities.length; i++) {
-                c[i] = this.backgroundColors[i % this.backgroundColors.length]
+            if (this.isSeries) {
+                for (let i = 0; i < this.chartData.length; i++) {
+                    c[i] = this.backgroundColors[i % this.backgroundColors.length]
+                }
+            } else {
+                for (let i = 0; i < this.answerPossibilities.length; i++) {
+                    c[i] = this.backgroundColors[i % this.backgroundColors.length]
+                }
             }
+
             return c
         },
 
@@ -311,6 +329,10 @@ export default {
                     yAxes: [{ display: false }],
                 },
             }
+        },
+
+        isSeries() {
+            return this.chartData.length > 1
         },
     },
     methods: {

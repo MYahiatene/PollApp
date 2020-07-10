@@ -7,10 +7,10 @@
         </template>
 
         <v-card class="ma-2 pa-2">
-            <v-card-title>Erweiterte Analyse </v-card-title>
+            <v-card-title>Erweiterte Analyse von {{ pollName }}</v-card-title>
             <template>
-                <v-overflow-btn v-model="chosenPoll" editable prefix="Basisdaten:" :items="pollTitles" dense>
-                </v-overflow-btn>
+                <!--                <v-overflow-btn v-model="chosenPoll" editable prefix="Basisdaten:" :items="pollTitles" dense>-->
+                <!--                </v-overflow-btn>-->
                 <div v-if="poll">
                     <v-slider v-if="isSeriesPoll" v-model="seriesPollNumber" min="0" :max="(poll.seriesCounter - 1)">
                         "Anzahl der betrachteten vorhergegangenen Serienumfragen"
@@ -95,9 +95,9 @@
                         <v-expansion-panel-content>
                             <v-container fluid>
                                 <v-row>
-                                    <v-col colls="12" lg="10">
+                                    <v-col colls="12" lg="8">
                                         <div v-if="maxConsistencyValue === 0">
-                                            Erstelle erst Konsistenzfragen!
+                                            Erstellen Sie erst Konsistenzfragen!
                                         </div>
                                         <div v-else-if="maxConsistencyValue === 1">
                                             <v-switch
@@ -126,7 +126,7 @@
                                             </v-slider>
                                         </div>
                                     </v-col>
-                                    <v-col>
+                                    <v-col colls="12" lg="4">
                                         <control-questions
                                             :poll-index="pollIndex"
                                             @close-event="updateNumberOfConsistencyQuestions"
@@ -270,9 +270,15 @@ export default {
         ControlQuestions,
     },
     props: {
-        initialPollIndex: {
+        pollIndex: {
             type: Number,
             default: 0,
+        },
+        pollId: {
+            type: Number,
+        },
+        pollName: {
+            type: String,
         },
     },
     data() {
@@ -288,7 +294,6 @@ export default {
 
             dateFilterList: [],
 
-            chosenPoll: '',
             selectedQuestions: [],
             questionTitlesDisplayedInSelect: 3,
             userNamesDisplayedInSelect: 5,
@@ -318,7 +323,7 @@ export default {
             selectedUsers: [],
             userInverted: false,
             userNames: [],
-            seriesPollNumber: 0,
+            seriesPollNumber: -1,
         }
     },
     computed: {
@@ -329,26 +334,26 @@ export default {
         }),
 
         isSeriesPoll() {
-            return this.poll.level !== -1 && this.poll.level !== undefined && this.poll.level !== null
+            return this.poll.level < 0 && this.poll.level !== undefined && this.poll.level !== null
         },
 
         categories() {
             return this.polls[this.pollIndex].categoryList
         },
 
-        pollTitles() {
-            console.log('pollTitles()')
-            const pollTitles = []
-            for (let i = 0; i < this.polls.length; i++) {
-                pollTitles.push('#' + this.polls[i].pollId + ' ' + this.polls[i].pollName)
-            }
-            return pollTitles
-        },
+        // pollTitles() {
+        //     console.log('pollTitles()')
+        //     const pollTitles = []
+        //     for (let i = 0; i < this.polls.length; i++) {
+        //         pollTitles.push(this.polls[i].pollName)
+        //     }
+        //     return pollTitles
+        // },
 
-        pollIndex() {
-            console.log('pollIndex()')
-            return this.pollTitles.indexOf(this.chosenPoll)
-        },
+        // pollIndex() {
+        //     console.log('pollIndex()')
+        //     return this.pollTitles.indexOf(this.chosenPoll)
+        // },
 
         poll() {
             return this.polls[this.pollIndex]
@@ -388,10 +393,11 @@ export default {
     mounted() {
         console.log('mounted()')
         console.log(this.filters)
+        console.log(this.isSeriesPoll)
         // this.$store.dispatch('participation/loadPollTakers', this.polls[this.pollIndex].pollId)
         // this.$store.dispatch('participant/loadPollTakers', 0)
 
-        this.chosenPoll = this.pollTitles[this.initialPollIndex]
+        // this.chosenPoll = this.pollTitles[this.initialPollIndex]
         for (let i = 0; i < this.questionTitles.length; i++) {
             this.selectedQuestions.push(this.questionTitles[i])
         }
@@ -412,7 +418,7 @@ export default {
             const filterData = []
             filterData.push({
                 filterType: 'dataFilter',
-                basePollId: this.polls[this.pollIndex].pollId,
+                basePollId: this.pollId,
                 baseQuestionIds: this.chosenQuestionIds, // these are questionIDs
                 timeDiagram: this.showTimeDiagram,
                 timeDiagramRelative: this.relativeTimeDiagram,
