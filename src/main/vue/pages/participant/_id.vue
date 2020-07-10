@@ -413,6 +413,10 @@ export default {
             console.log('PollStatus 3')
             await this.$router.push('/pollOver')
         }
+        if (this.poll[1].data.pollStatus === 0 || this.poll[1].data.pollStatus === 1) {
+            console.log('PollStatus 0')
+            await this.$router.push('/PollNotActive')
+        }
     },
 
     mounted() {
