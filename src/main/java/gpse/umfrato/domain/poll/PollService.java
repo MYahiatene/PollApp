@@ -109,5 +109,6 @@ public interface PollService {
      */
     ZonedDateTime calculateNextDate(final Poll poll);
 
+
     void newLastEdit(Long pollId, ZonedDateTime lastEditAt, String lastEditFrom, ZoneId timezone);
 }

@@ -10,6 +10,7 @@ import gpse.umfrato.domain.participationlinks.ParticipationLinkService;
 import gpse.umfrato.domain.pollresult.PollResultService;
 import gpse.umfrato.domain.question.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
@@ -134,6 +135,7 @@ class PollServiceImpl implements PollService {
         return checkActivationAndDeactivation(poll);
     }
 
+    @Override
     public void newLastEdit(Long pollId, ZonedDateTime lastEditAt, String lastEditFrom, ZoneId timeZone) {
         final DateTimeFormatter df = DateTimeFormatter.ofPattern("dd.MM.yyyy&HH:mm");
         final Poll poll = pollRepository.findById(pollId).orElseThrow(EntityNotFoundException::new);
