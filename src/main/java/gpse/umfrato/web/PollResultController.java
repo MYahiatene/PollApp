@@ -62,10 +62,15 @@ public class PollResultController {
         }
     }
 
+    /**
+     * This method returns a list of all the pollTakers who took a Poll with a certain id
+     *
+     * @param pollCmd an object that carries the poll
+     */
+
     @PostMapping("/getPollTakers")
     public List<String> getPollTakers(final @RequestBody PollCmd pollCmd) {
-        LOGGER.info("Halloooo");
-        LOGGER.info(String.valueOf(pollCmd.getPollId()));
+
         return pollResultService.getPollTakers(pollCmd.getPollId());
 
     }

@@ -152,7 +152,7 @@ it passes the attributes:
                             @click="updateCurrentChip(index)"
                             large
                         >
-                            {{ answerTitles[index] }}</v-chip
+                            {{ series ? 'Daten ' + index : answerTitles[index] }}</v-chip
                         >
                         <v-chip
                             v-else
@@ -161,8 +161,8 @@ it passes the attributes:
                             style="min-width: 2cm; text-align: center;"
                             @click="updateCurrentChip(index)"
                         >
-                            {{ answerTitles[index] }}</v-chip
-                        >
+                            {{ series ? 'Daten ' + index : answerTitles[index] }}
+                        </v-chip>
                     </div>
                 </draggable>
             </v-col>
@@ -229,6 +229,10 @@ export default {
         },
         // is this a settings window for one particular question or all questions?
         changeDefault: {
+            type: Boolean,
+            default: false,
+        },
+        series: {
             type: Boolean,
             default: false,
         },

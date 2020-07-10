@@ -90,7 +90,12 @@ that each display a basic evaluation of one specific question-->
                     </v-tooltip>
                     <export-widget-dialog :export-result="true"></export-widget-dialog>
                     <session-manager @close-event="widgetKey += 1"></session-manager>
-                    <filter-form :initial-poll-index="getPollIndex" @close-event="widgetKey += 1"></filter-form>
+                    <filter-form
+                        :initial-poll-index="getPollIndex"
+                        :pollId="getPollId"
+                        :pollName="getPollName"
+                        @close-event="widgetKey += 1"
+                    ></filter-form>
 
                     <!--                   title of the poll-->
 
@@ -404,6 +409,23 @@ export default {
             }
             console.log('shit')
             return -1
+        },
+
+        getPollId() {
+            return parseInt(this.$route.params.BaseEvaluationPage)
+        },
+
+        getPollName() {
+            for (let i = 0; i < this.getPolls.length; i++) {
+                console.log(i)
+                if (this.getPolls[i].pollId.toString() === this.$route.params.BaseEvaluationPage) {
+                    console.log('treffer')
+                    console.log(i)
+                    return this.getPolls[i].pollName
+                }
+            }
+            console.log('shit')
+            return ''
         },
     },
     methods: {
