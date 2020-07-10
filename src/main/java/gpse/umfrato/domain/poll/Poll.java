@@ -202,14 +202,27 @@ public class Poll {
      * @param categoryChange  whether or not it is possible to go to an already answered category
      * @param activated       whether the poll should be activated automatically
      * @param deactivated     whether the poll should be deactivated automatically
+     * @param checkLeapYear   if leap year is true
+     * @param day             the day
+     * @param lastEditAt      the date when the poll was edited last
+     * @param lastEditFrom    the user who edited the poll at last
+     * @param level           the level of poll
+     * @param month           the month
+     * @param ownDesign       the design if selected
+     * @param repeat          number of repeats
+     * @param repeatUntil     repeats until a value
+     * @param seriesCounter   the series counter
+     * @param stoppingReason  reason why stopped
+     * @param week            the week
      */
-    public Poll(final String pollCreator, final String anonymityStatus, final String pollName, final ZonedDateTime createdAt,
-                final ZonedDateTime activatedDate, final ZonedDateTime deactivatedDate, final int pollStatus,
-                final String backgroundColor, final String fontColor, final String logo, final boolean visibility,
-                final boolean categoryChange, final boolean activated, final boolean deactivated, final boolean ownDesign, final Integer repeat,
+    public Poll(final String pollCreator, final String anonymityStatus, final String pollName,
+                final ZonedDateTime createdAt, final ZonedDateTime activatedDate, final ZonedDateTime deactivatedDate,
+                final int pollStatus, final String backgroundColor, final String fontColor, final String logo,
+                final boolean visibility, final boolean categoryChange, final boolean activated,
+                final boolean deactivated, final boolean ownDesign, final Integer repeat,
                 final String repeatUntil, final List<Integer> day, final List<Integer> week, final List<Integer> month,
-                final Integer stoppingReason, final Integer level, final Long seriesCounter, final Boolean checkLeapYear,
-                final ZonedDateTime lastEditAt, final String lastEditFrom) {
+                final Integer stoppingReason, final Integer level, final Long seriesCounter,
+                final Boolean checkLeapYear, final ZonedDateTime lastEditAt, final String lastEditFrom) {
         this.pollName = pollName;
         this.pollCreator = pollCreator;
         this.anonymityStatus = anonymityStatus;
