@@ -387,7 +387,6 @@ export default {
                     name: 'Design 20',
                     colorArray: ['#0A1647', '#1A76A1', '#260B87', '#3162CB', '#131D5E'],
                 },
-
             ],
             setRandomLength: false,
             upperLengthLimit: 20,
