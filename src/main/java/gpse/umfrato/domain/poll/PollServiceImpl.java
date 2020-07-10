@@ -129,6 +129,17 @@ class PollServiceImpl implements PollService {
         return checkActivationAndDeactivation(poll);
     }
 
+    public void newLastEdit(Long pollId, ZonedDateTime lastEditAt, String lastEditFrom, ZoneId timeZone) {
+        final DateTimeFormatter df = DateTimeFormatter.ofPattern("dd.MM.yyyy&HH:mm");
+        final Poll poll = pollRepository.findById(pollId).orElseThrow(EntityNotFoundException::new);
+        // final ZonedDateTime lastEditAtZone = LocalDateTime.parse(lastEditAt, df).atZone(timeZone);
+        poll.setLastEditAt(lastEditAt);
+        LOGGER.info("lastEditedAt" + lastEditAt);
+        poll.setLastEditFrom(lastEditFrom);
+        LOGGER.info("lastEditedFrom" + lastEditFrom);
+        pollRepository.save(poll);
+    }
+
     /**
      * This method creates a unique username for anonym polls.
      *
@@ -644,7 +655,7 @@ class PollServiceImpl implements PollService {
             poll.isCategoryChange(),
             poll.isActivated(), poll.isDeactivated(), poll.getOwnDesign(), poll.getRepeat(), poll.getRepeatUntil(),
             new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), poll.getStoppingReason(), poll.getLevel(),
-            poll.getSeriesCounter(), poll.getCheckLeapYear());
+            poll.getSeriesCounter(), poll.getCheckLeapYear(), poll.getLastEditAt(), poll.getLastEditFrom());
         nextSeriesPoll.setDay(createElementCollectionCopies(poll.getDay()));
         nextSeriesPoll.setWeek(createElementCollectionCopies(poll.getWeek()));
         nextSeriesPoll.setMonth(createElementCollectionCopies(poll.getMonth()));

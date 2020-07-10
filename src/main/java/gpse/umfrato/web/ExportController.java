@@ -148,7 +148,7 @@ public class ExportController {
             pollCmd.getBackgroundColor(), pollCmd.getFontColor(), pollCmd.getLogo(), pollCmd.isVisibility(),
             pollCmd.isCategoryChange(), pollCmd.isActivated(), pollCmd.isDeactivated(), pollCmd.getOwnDesign(), pollCmd.getRepeat(),
         pollCmd.getRepeatUntil(), pollCmd.getDay(), pollCmd.getWeek(), pollCmd.getMonth(),
-        pollCmd.getStoppingReason(), pollCmd.getLevel(), 0L, pollCmd.getCheckLeapYear());
+        pollCmd.getStoppingReason(), pollCmd.getLevel(), 0L, pollCmd.getCheckLeapYear(), ZonedDateTime.now(), null);
         poll.setPollId(null);
         final Long pollId = pollRepository.save(poll).getPollId();
         poll.setLastEditAt(ZonedDateTime.now());

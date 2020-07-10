@@ -98,11 +98,14 @@ public class PollCmd {
             localDeactivation = LocalDateTime.parse(deactivatedDate, df);
             deactivation = localDeactivation.atZone(timeZone);
         }
+        // final ZonedDateTime lastEditAtZone = LocalDateTime.parse(lastEditAt, df).atZone(timeZone);
+
 
         final ZonedDateTime creation = localCreation.atZone(timeZone);
         final Poll poll = new Poll(pollCreator, anonymityStatus, pollName, creation, activation,
             deactivation, pollStatus, backgroundColor, fontColor, logo, visibility, categoryChange, activated,
-            deactivated, ownDesign, repeat, repeatUntil, day, week, month, stoppingReason, level, 1L, checkLeapYear);
+            deactivated, ownDesign, repeat, repeatUntil, day, week, month, stoppingReason, level, 1L, checkLeapYear,
+            creation, lastEditFrom);
         poll.setLastEditAt(ZonedDateTime.now());
         return poll;
     }

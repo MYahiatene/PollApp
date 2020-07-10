@@ -107,13 +107,19 @@ public class PollController {
         return polls;
     }
 
+    @PostMapping("/newLastEdit")
+    public void newLastEdit(final @RequestBody PollCmd pollCmd, final @RequestHeader int timeZoneOffset) {
+        ZoneId timeZone = ZoneId.ofOffset("UTC", ZoneOffset.ofHoursMinutes(timeZoneOffset / 60 , timeZoneOffset % 60));
+        pollService.newLastEdit(pollCmd.getPollId(), ZonedDateTime.now(), pollCmd.getLastEditFrom(), timeZone);
+    }
+
     /**
      * Creates a new Poll with the information from the another one.
      * @param pollCmd
      * @return returns string with PollID or Error
      */
     @PostMapping(value = "/createcopypoll", produces = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasAuthority('Admin')")
+    @PreAuthorize("hasAnyAuthority('Admin', 'Creator')")
     public Long createCopyPoll(final @RequestBody PollCmd pollCmd, final @RequestHeader int timeZoneOffset) {
         try {
             final Poll poll = pollService.createCopyPoll(pollCmd.getCmdPoll(ZoneOffset.ofHoursMinutes(timeZoneOffset / 60,timeZoneOffset % 60)));

@@ -162,14 +162,13 @@ public class Poll {
      * @param activated       whether the poll should be activated automatically
      * @param deactivated     whether the poll should be deactivated automatically
      */
-    public Poll(final String pollCreator, final String anonymityStatus, final String pollName,
-                final ZonedDateTime createdAt, final ZonedDateTime activatedDate, final ZonedDateTime deactivatedDate,
-                final int pollStatus, final String backgroundColor, final String fontColor, final String logo,
-                final boolean visibility, final boolean categoryChange, final boolean activated,
-                final boolean deactivated, final boolean ownDesign, final Integer repeat, final String repeatUntil,
-                final List<Integer> day, final List<Integer> week, final List<Integer> month,
-                final Integer stoppingReason, final Integer level, final Long seriesCounter,
-                final Boolean checkLeapYear) {
+    public Poll(final String pollCreator, final String anonymityStatus, final String pollName, final ZonedDateTime createdAt,
+                final ZonedDateTime activatedDate, final ZonedDateTime deactivatedDate, final int pollStatus,
+                final String backgroundColor, final String fontColor, final String logo, final boolean visibility,
+                final boolean categoryChange, final boolean activated, final boolean deactivated, final boolean ownDesign, final Integer repeat,
+                final String repeatUntil, final List<Integer> day, final List<Integer> week, final List<Integer> month,
+                final Integer stoppingReason, final Integer level, final Long seriesCounter, final Boolean checkLeapYear,
+                final ZonedDateTime lastEditAt, final String lastEditFrom) {
         this.pollName = pollName;
         this.pollCreator = pollCreator;
         this.anonymityStatus = anonymityStatus;

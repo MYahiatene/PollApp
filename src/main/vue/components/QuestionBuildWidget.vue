@@ -95,6 +95,7 @@ export default {
             getQuestionMessage: 'questionOverview/getQuestionMessage',
             getBuildIndex: 'questionOverview/getBuildIndex',
             getSaveButtonStatus: 'questionOverview/getSaveButtonStatus',
+            getUsername: 'login/getUsername',
         }),
         questionMessageBool: {
             get() {
@@ -169,6 +170,11 @@ export default {
                     .then((response) => {
                         this.categoryData[0].questionList.push(response.data)
                     })
+                const obj = {
+                    lastEditFrom: this.getUsername,
+                    pollId: this.$route.params.QuestionOverview,
+                }
+                this.$axios.post('/newLastEdit', obj)
             } else {
                 this.$axios.put('/editquestion', {
                     pollId: this.$route.params.QuestionOverview,
@@ -191,6 +197,11 @@ export default {
                     hideValues: this.getQuestion.hideValues,
                     dropDown: this.getQuestion.dropDown,
                 })
+                const obj = {
+                    lastEditFrom: this.getUsername,
+                    pollId: this.$route.params.QuestionOverview,
+                }
+                this.$axios.post('/newLastEdit', obj)
             }
             this.setBuildIndex(0)
         },
