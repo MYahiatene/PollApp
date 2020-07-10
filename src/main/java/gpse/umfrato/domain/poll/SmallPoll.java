@@ -65,8 +65,8 @@ public class SmallPoll {
         this.creationDate = df.format(original.getCreationDate());
         this.lastEditAt = df.format(original.getLastEditAt());
         this.lastEditFrom = original.getLastEditFrom();
-        this.activatedDate = original.isActivated() ? df.format(original.getActivatedDate()) : DEFAULT;
-        this.deactivatedDate = original.isDeactivated() ? df.format(original.getDeactivatedDate()) : DEFAULT;
+        this.activatedDate = original.isActivated() || original.getLevel() != -1 ? df.format(original.getActivatedDate()) : DEFAULT;
+        this.deactivatedDate = original.isDeactivated() || original.getLevel() != -1 ? df.format(original.getDeactivatedDate()) : DEFAULT;
         this.anonymityStatus = original.getAnonymityStatus();
         this.pollStatus = original.getPollStatus();
         this.participationLinks = participationLinkService.getAllParticipationLinks(pollId);

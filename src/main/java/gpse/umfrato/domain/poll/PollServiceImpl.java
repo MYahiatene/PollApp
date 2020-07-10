@@ -167,13 +167,15 @@ class PollServiceImpl implements PollService {
                 break;
             case 1:
                 poll.setPollStatus(2);
-                poll.setActivatedDate(ZonedDateTime.now());
+                if (poll.getLevel() != -1) {
+                    LOGGER.info("hier");
+                    poll.setActivatedDate(ZonedDateTime.now());
+                }
                 break;
             case 2:
                 LOGGER.info("increase to deactivation");
                 LOGGER.info("poll: " + poll.toString());
                 poll.setPollStatus(3);
-                poll.setDeactivatedDate(ZonedDateTime.now());
                 if (poll.getLevel() != -1) {
                     LOGGER.info("poll level: " + poll.getLevel());
                     if (!stoppingReason(poll)) {
@@ -186,6 +188,7 @@ class PollServiceImpl implements PollService {
                         poll.setLevel(-1);
                     }
                 }
+                poll.setDeactivatedDate(ZonedDateTime.now());
                 break;
             default:
                 break;
@@ -640,14 +643,21 @@ class PollServiceImpl implements PollService {
         }
     }
 
-    private ZonedDateTime calculateNewDeactivation(final Poll oldPoll, final Poll newPoll) {
-        final Period period = Period.between(oldPoll.getActivatedDate().toLocalDate(), oldPoll.getDeactivatedDate()
-            .toLocalDate());
-        return newPoll.getActivatedDate().plusDays(period.getDays());
+    private ZonedDateTime calculateNewDeactivation (final Poll oldPoll, final Poll newPoll) {
+        LOGGER.info("calculateNewDeactivation");
+        LOGGER.info("oldPoll: " + oldPoll);
+        LOGGER.info("newPoll: " + newPoll);
+        Period period = Period.between(oldPoll.getActivatedDate().toLocalDate(), oldPoll.getDeactivatedDate().toLocalDate());
+        LOGGER.info("period: " + period.getDays());
+        ZonedDateTime newDeactivation = newPoll.getActivatedDate().plusDays(period.getDays());
+        newDeactivation = newDeactivation.withHour(newPoll.getDeactivatedDate().getHour());
+        newDeactivation = newDeactivation.withMinute(newPoll.getDeactivatedDate().getMinute());
+        return newDeactivation;
     }
 
     private void createNextSeriesPoll(final Poll poll) {
         // TODO: lastEditFrom = null -> schlimm?
+        LOGGER.info("createNextSeriesPoll start");
         LOGGER.info("old poll: " + poll);
         final Poll nextSeriesPoll = new Poll(poll.getPollCreator(), poll.getAnonymityStatus(), poll.getSeriesPollName(),
             poll.getCreationDate(), poll.getNextSeries(), poll.getDeactivatedDate(), 1,
