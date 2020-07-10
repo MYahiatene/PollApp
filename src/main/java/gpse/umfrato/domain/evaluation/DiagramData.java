@@ -435,6 +435,7 @@ public class DiagramData {
             private String text;
             private String edited;
             private String creator;
+            private Long seriesCounter;
         }
 
         TextData(final long questionId, final String questionMessage) {
@@ -448,8 +449,8 @@ public class DiagramData {
             return this.id;
         }
 
-        public void addAnswer(final Long id, final String text, final String editedDate, final String creator) {
-            answers.add(new TextAnswer(id, text, editedDate, creator));
+        public void addAnswer(final Long id, final String text, final String editedDate, final String creator, final Long seriesCounter) {
+            answers.add(new TextAnswer(id, text, editedDate, creator, seriesCounter));
         }
 
         @Override
@@ -787,7 +788,9 @@ public class DiagramData {
                                 if (!a.getGivenAnswerList().isEmpty()) {
                                     final TextData td = (TextData) qd;
                                     td.addAnswer(pr.getPollResultId(),
-                                            a.getGivenAnswerList().get(a.getGivenAnswerList().size() - 1), df.format(pr.getLastEditAt()), pr.getPollTaker());
+                                            a.getGivenAnswerList().get(a.getGivenAnswerList().size() - 1),
+                                            df.format(pr.getLastEditAt()),
+                                            poll.getAnonymityStatus().equals("2") ? pr.getPollTaker(): "", poll.getSeriesCounter());
                                 }
                                 break;
                             case SORT_QUESTION:
