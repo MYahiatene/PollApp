@@ -123,6 +123,15 @@ public class UserController {
     public void checkToken() {
 
     }
+
+    /**
+     * Used to check if the user has a valid token.
+     */
+    @PreAuthorize("hasAnyAuthority('Admin','Editor', 'Creator', 'User')")
+    @GetMapping("/checkAutologin")
+    public void checkAutologin() {
+    }
+
     /**
      * Checks if the users token has the authority "Editor".
      */

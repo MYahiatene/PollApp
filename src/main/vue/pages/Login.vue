@@ -39,34 +39,57 @@ export default {
             showPassword: false,
         }
     },
+    mounted() {
+        this.autoLogin()
+        this.setRoleInStore()
+    },
     computed: {
         ...mapGetters({
             authenticated: 'login/isAuthenticated',
         }),
     },
     methods: {
-        ...mapActions({ requestToken: 'login/requestToken' }),
+        ...mapActions({ requestToken: 'login/requestToken', autoLogin: 'login/autoLogin' }),
         ...mapMutations({ setRole: 'account/setRole' }),
         setRoleInStore() {
             let role = ''
-            this.$axios.get('/checkToken').then((response) => {
-                if (response.status === 200) {
-                    role = 'Admin'
-                    this.setRole(role)
-                }
-            })
-            this.$axios.get('/checkCreatorToken').then((response) => {
-                if (response.status === 200) {
-                    role = 'Creator'
-                    this.setRole(role)
-                }
-            })
-            this.$axios.get('/checkEditorToken').then((response) => {
-                if (response.status === 200) {
-                    role = 'Editor'
-                    this.setRole(role)
-                }
-            })
+            const errorString = []
+            this.$axios
+                .get('/checkToken')
+                .then((response) => {
+                    if (response.status === 200) {
+                        role = 'Admin'
+                        this.setRole(role)
+                    }
+                })
+                .catch((error) => {
+                    errorString.push(error)
+                })
+            this.$axios
+                .get('/checkCreatorToken')
+                .then((response) => {
+                    if (response.status === 200) {
+                        role = 'Creator'
+                        this.setRole(role)
+                    }
+                })
+                .catch((error) => {
+                    errorString.push(error)
+                })
+            this.$axios
+                .get('/checkEditorToken')
+                .then((response) => {
+                    if (response.status === 200) {
+                        role = 'Editor'
+                        this.setRole(role)
+                    }
+                })
+                .catch((error) => {
+                    errorString.push(error)
+                })
+            if (errorString.length > 2) {
+                this.setRole('User')
+            }
         },
         async requestToken() {
             await this.$store.dispatch('login/requestToken', this.auth).catch((reason) => {
