@@ -125,7 +125,12 @@ public class DiagramData {
 
         public void addAnswer(final double answerPossibility) {
             final int index = (int) ((answerPossibility - start) / step);
-            data.get(0).set(index, data.get(0).get(index) + 1);
+            try {
+                data.get(0).set(index, data.get(0).get(index) + 1);
+            } catch(IndexOutOfBoundsException e){
+                data.get(0).add(index, 0);
+                data.get(0).set(index, data.get(0).get(index) + 1);
+            }
         }
 
         public void setModifier(final double start, final double step) {
@@ -694,7 +699,7 @@ public class DiagramData {
             {
                 // System.out.println(patternString);
                 //final DateTimeFormatter finalDf = DateTimeFormatter.ofPattern(tPlus, Locale.GERMANY);
-
+                String tPlus = "";
                 for (ZonedDateTime date = min; date.compareTo(max) <= 0;date = date.plusSeconds(step)) {
                     String deltaString = "T+";
                     //Instant endT = Instant.ofEpochSecond(end);
@@ -703,7 +708,6 @@ public class DiagramData {
                     //System.out.println("endtime : "+endTime);
                     //Instant endTime = Instant.ofEpochSecond(end);
                     Duration delta = Duration.between(pollStartTime, date);
-                    String tPlus = "";
                     if (step < 60 * 60 * 24 * 30) {
                         tPlus = deltaString + String.format("%dd", delta.toDays());
                     }
@@ -719,6 +723,7 @@ public class DiagramData {
                     /*System.out.println("APLUS: "+tPlus);*/
                     answerPossibilities.add(tPlus);
                 }
+
                 // System.out.println(answerPossibilities);
                 participantsOverTime = new ChoiceData(0, "Teilnahmen über Zeit", answerPossibilities);
                 /*System.out.println(datesList.toString());*/
@@ -729,6 +734,7 @@ public class DiagramData {
                     System.out.println("Step: "+step);*/
                     participantsOverTime.addAnswer((double) slot);
                 }
+
                 participantsOverTime.statistics();
             }
             else {
