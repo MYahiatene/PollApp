@@ -283,7 +283,7 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     private Question copyAnswerPossibilities(final Question question, final Long pollId, final Question newQuestion) {
-        for (String answer: question.getAnswerPossibilities()) {
+        for (final String answer: question.getAnswerPossibilities()) {
             newQuestion.getAnswerPossibilities().add(answer);
         }
         newQuestion.setCategoryId(pollRepository.findById(pollId)

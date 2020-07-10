@@ -174,7 +174,7 @@ public class Statistics {
         int avgParticipantCountFiltered = 0;
         int avgParticipantCountUnfiltered = 0;
         String response;
-        List<DiagramData> diagramDataList = new ArrayList<>();
+        final List<DiagramData> diagramDataList = new ArrayList<>();
         int prev = 0;
         Poll poll = pollService.getPoll(pollId);
         List<Long> questionIds = this.questionIds;
@@ -212,7 +212,7 @@ public class Statistics {
         if (diagramDataList.isEmpty()) {
             return response + "[]}";
         }
-        DiagramData dd = combineDiagramData(diagramDataList);
+        final DiagramData dd = combineDiagramData(diagramDataList);
         return response + dd.toJSON() + "}";
     }
 
@@ -226,15 +226,15 @@ public class Statistics {
      */
     private List<Long> translateQuestionIds(final Poll original, final List<Long> originalQuestionIds, final Poll pollToTranslateTo)
     {
-        List<Long> translatedIds = new ArrayList<>();
-        for(Long qid:originalQuestionIds) {
+        final List<Long> translatedIds = new ArrayList<>();
+        for(final Long qid:originalQuestionIds) {
             int categoryIndex = 0;
-            for (Category oc: original.getCategoryList()) {
+            for (final Category oc: original.getCategoryList()) {
                 int questionIndex = 0;
-                for (Question oq: oc.getQuestionList()) {
+                for (final Question oq: oc.getQuestionList()) {
                     if (oq.getQuestionId().equals(qid)) {
-                        Question translatedQuestion = pollToTranslateTo.getCategoryList().get(categoryIndex).getQuestionList().get(questionIndex);
-                        double questionConfidence = questionSimilarity(oq, translatedQuestion);
+                        final Question translatedQuestion = pollToTranslateTo.getCategoryList().get(categoryIndex).getQuestionList().get(questionIndex);
+                        final double questionConfidence = questionSimilarity(oq, translatedQuestion);
                         if (questionSimilarity(oq,translatedQuestion) > 0.8) {
                             translatedIds.add(translatedQuestion.getQuestionId());
                             LOGGER.info("+ORIGINAL: " + oq.getQuestionMessage() + " " + oq.getQuestionId());
@@ -242,9 +242,9 @@ public class Statistics {
                         } else {
                             Question bestMatch = translatedQuestion;
                             double bestConfidence = questionConfidence;
-                            for (Category tc: pollToTranslateTo.getCategoryList()) {
-                                for (Question tq: tc.getQuestionList()) {
-                                    double newQuestionConfidence = questionSimilarity(oq, tq);
+                            for (final Category tc: pollToTranslateTo.getCategoryList()) {
+                                for (final Question tq: tc.getQuestionList()) {
+                                    final double newQuestionConfidence = questionSimilarity(oq, tq);
                                     if (newQuestionConfidence > bestConfidence) {
                                         bestConfidence = newQuestionConfidence;
                                         bestMatch = tq;
@@ -278,8 +278,8 @@ public class Statistics {
             double confidence = stringSimilarity(a.getQuestionMessage(), b.getQuestionMessage());
             if(a.getAnswerPossibilities().isEmpty()) {
                 double answerConfidence = 0.0;
-                for (String as: a.getAnswerPossibilities()) {
-                    for (String bs: b.getAnswerPossibilities()) {
+                for (final String as: a.getAnswerPossibilities()) {
+                    for (final String bs: b.getAnswerPossibilities()) {
                         answerConfidence += stringSimilarity(as, bs);
                     }
                 }
@@ -307,7 +307,7 @@ public class Statistics {
         if (a.length() < b.length()) {
             longer = b; shorter = a;
         }
-        int longerLength = longer.length();
+        final int longerLength = longer.length();
         if (longerLength == 0) {
             return 1.0;
         }

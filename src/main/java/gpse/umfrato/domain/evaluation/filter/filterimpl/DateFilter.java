@@ -19,7 +19,7 @@ public class DateFilter implements Filter {
     private boolean valid = true;
 
 public DateFilter(final String startDate, final String endDate, final Boolean inverted) {
-    DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm", Locale.GERMAN);
+    final DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm", Locale.GERMAN);
     if (!(startEmpty = startDate.isEmpty())) {
         try {
             start = ZonedDateTime.parse(startDate, df);
@@ -48,7 +48,7 @@ public List<PollResult> filter(final List<PollResult> input) {
     if (valid) {
         final List<PollResult> filteredList = new ArrayList<>();
         for (final PollResult pr: input) {
-            ZonedDateTime date = pr.getLastEditAt();
+            final ZonedDateTime date = pr.getLastEditAt();
             if (((startEmpty || date.compareTo(start) >= 0) && (endEmpty || date.compareTo(end) <= 0)) != inverted) {
                 filteredList.add(pr);
             }

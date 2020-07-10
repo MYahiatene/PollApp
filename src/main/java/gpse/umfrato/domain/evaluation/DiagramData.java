@@ -493,8 +493,8 @@ public class DiagramData {
          * Diese Funktion macht eine Liste an TextAnswers zu einer Liste an Strings um für diese die Frequenz und Tendenz zu berechnen
          * */
         List<String> getWordList(final List<TextAnswer> input) {
-            List<String> stringList = new ArrayList<>();
-            for (TextAnswer ta: input) {
+            final List<String> stringList = new ArrayList<>();
+            for (final TextAnswer ta: input) {
                 stringList.addAll(Arrays.asList(ta.text.toLowerCase().split("[ .,;:?\\-_=()/&%$§!#'+*~|<>]+")));
             }
             return stringList;
@@ -520,7 +520,7 @@ public class DiagramData {
          * Diese Funktion berechnet die Frequenz eines einzelenen Wortes so wie die Funktion genutzt wird
          * */
         int getWordFrequency(final List<TextAnswer> input, final  TextAnswer ta) {
-            List<String> wordList = getWordList(input);
+            final List<String> wordList = getWordList(input);
             return Collections.frequency(wordList, ta.text);
 
         }
@@ -530,9 +530,9 @@ public class DiagramData {
          * Diese Funktion entfernt die Duplikate aus einer Liste an JSObjects
          * */
         List<JSObject> removeDuplicates(final List<JSObject> duplicates) {
-            List<String> keyList = new ArrayList<>();
-            List<JSObject> noDuplicates = new ArrayList<>();
-            for (JSObject jso: duplicates) {
+            final List<String> keyList = new ArrayList<>();
+            final List<JSObject> noDuplicates = new ArrayList<>();
+            for (final JSObject jso: duplicates) {
                 if (!keyList.contains(jso.text)) {
                     noDuplicates.add(jso);
                     keyList.add(jso.text);
@@ -701,13 +701,13 @@ public class DiagramData {
                 //final DateTimeFormatter finalDf = DateTimeFormatter.ofPattern(tPlus, Locale.GERMANY);
                 String tPlus = "";
                 for (ZonedDateTime date = min; date.compareTo(max) <= 0;date = date.plusSeconds(step)) {
-                    String deltaString = "T+";
+                    final String deltaString = "T+";
                     //Instant endT = Instant.ofEpochSecond(end);
                     //System.out.println("EndT: "+endT);
                     //ZonedDateTime endTime = endT.atZone(ZoneId.of("Europe/Berlin")); //ZonedDateTime.parse(String.valueOf(end), df.withZone(ZoneId.of("Europe/Berlin")));
                     //System.out.println("endtime : "+endTime);
                     //Instant endTime = Instant.ofEpochSecond(end);
-                    Duration delta = Duration.between(pollStartTime, date);
+                    final Duration delta = Duration.between(pollStartTime, date);
                     if (step < 60 * 60 * 24 * 30) {
                         tPlus = deltaString + String.format("%dd", delta.toDays());
                     }
@@ -842,29 +842,29 @@ public class DiagramData {
         }
         for(int i = 0; i < getQuestionList().size();i++)
         {
-            QuestionData qd = this.getQuestionList().get(i);
-            QuestionData od = other.getQuestionList().get(i);
+            final QuestionData qd = this.getQuestionList().get(i);
+            final QuestionData od = other.getQuestionList().get(i);
             LOGGER.info("this");
             qd.print();
             LOGGER.info("other");
             od.print();
             switch (qd.questionType()) {
                 case SORT_QUESTION: {
-                    SortData tsd = (SortData) qd;
-                    SortData osd = (SortData) od;
+                    final SortData tsd = (SortData) qd;
+                    final SortData osd = (SortData) od;
                     tsd.meanOrder.addAll(osd.meanOrder);
                     break;
                 }
                 case TEXT_QUESTION: {
-                    TextData ttd = (TextData) qd;
-                    TextData otd = (TextData) od;
+                    final TextData ttd = (TextData) qd;
+                    final TextData otd = (TextData) od;
                     ttd.texts.addAll(otd.texts);
                     ttd.frequency.addAll(otd.frequency);
                     break;
                 }
                 case CHOICE_QUESTION: {
-                    ChoiceData tcd = (ChoiceData) qd;
-                    ChoiceData ocd = (ChoiceData) od;
+                    final ChoiceData tcd = (ChoiceData) qd;
+                    final ChoiceData ocd = (ChoiceData) od;
                     tcd.data.addAll(ocd.getData());
                     tcd.calculated.addAll(ocd.calculated);
                     break;

@@ -90,14 +90,14 @@ public class MailController {
             final List<ParticipationLink> participationList;
             if (mailCmd.getNotificateParticipants() == 1) { // Teilnehmer, die Poll bereits abgeschlossen
                 participationList = new ArrayList<>();
-                for (ParticipationLink participationLink : allParticipants) {
+                for (final ParticipationLink participationLink : allParticipants) {
                     if (pollResultService.getParticipated(participationLink.getUsername(), mailCmd.getPollId())) {
                         participationList.add(participationLink);
                     }
                 }
             } else if (mailCmd.getNotificateParticipants() == 2) { // Teilnehmer, die Poll nicht abgeschlossen
                 participationList = new ArrayList<>();
-                for (ParticipationLink participationLink : allParticipants) {
+                for (final ParticipationLink participationLink : allParticipants) {
                     if (!(pollResultService.getParticipated(participationLink.getUsername(), mailCmd.getPollId()))) {
                         participationList.add(participationLink);
                     }

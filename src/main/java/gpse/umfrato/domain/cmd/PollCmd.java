@@ -87,7 +87,7 @@ public class PollCmd {
         final DateTimeFormatter df = DateTimeFormatter.ofPattern("dd.MM.yyyy&HH:mm");
         LocalDateTime localActivation = null;
         final LocalDateTime localCreation = LocalDateTime.parse(creationDate,df);
-        ZoneId timeZone = ZoneId.ofOffset("UTC", userOffset);
+        final ZoneId timeZone = ZoneId.ofOffset("UTC", userOffset);
         ZonedDateTime activation = null;
         ZonedDateTime deactivation = null;
         if(activatedDate != null) {
@@ -101,7 +101,7 @@ public class PollCmd {
         }
 
         final ZonedDateTime creation = localCreation.atZone(timeZone);
-        Poll poll = new Poll(pollCreator, anonymityStatus, pollName, creation, activation,
+        final Poll poll = new Poll(pollCreator, anonymityStatus, pollName, creation, activation,
             deactivation, pollStatus, backgroundColor, fontColor, logo, visibility, categoryChange, activated,
             deactivated, ownDesign, repeat, repeatUntil, day, week, month, stoppingReason, level, 1L, checkLeapYear);
         poll.setLastEditAt(ZonedDateTime.now());

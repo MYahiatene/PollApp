@@ -588,7 +588,7 @@ class PollServiceImpl implements PollService {
     }
 
     private int getWeekOfMonthWithDay(final ZonedDateTime date, final int day) {
-        ZonedDateTime firstOfMonth = date.with(TemporalAdjusters.dayOfWeekInMonth(1, DayOfWeek.of(day)));
+        final ZonedDateTime firstOfMonth = date.with(TemporalAdjusters.dayOfWeekInMonth(1, DayOfWeek.of(day)));
         return 1 + date.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR) - firstOfMonth.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR);
     }
 
@@ -596,9 +596,9 @@ class PollServiceImpl implements PollService {
         switch (poll.getStoppingReason()) {
             case 0: /*Datum*/
                 LOGGER.info("1");
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss", Locale.GERMAN).withZone(poll.getActivatedDate().getZone());
+                final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss", Locale.GERMAN).withZone(poll.getActivatedDate().getZone());
                 LOGGER.info("getRepeatUntil: " + poll.getRepeatUntil());
-                ZonedDateTime endTime = ZonedDateTime.parse(poll.getRepeatUntil() + " 23:59:59", formatter);
+                final ZonedDateTime endTime = ZonedDateTime.parse(poll.getRepeatUntil() + " 23:59:59", formatter);
                 return poll.getNextSeries().compareTo(endTime) > 0;
             case 1: /*Wiederholungen*/
                 LOGGER.info("2");
@@ -614,14 +614,14 @@ class PollServiceImpl implements PollService {
     }
 
     private ZonedDateTime calculateNewDeactivation (final Poll oldPoll, final Poll newPoll) {
-        Period period = Period.between(oldPoll.getActivatedDate().toLocalDate(), oldPoll.getDeactivatedDate().toLocalDate());
+        final Period period = Period.between(oldPoll.getActivatedDate().toLocalDate(), oldPoll.getDeactivatedDate().toLocalDate());
         return newPoll.getActivatedDate().plusDays(period.getDays());
     }
 
     private void createNextSeriesPoll (final Poll poll) {
         // TODO: lastEditFrom = null -> schlimm?
         LOGGER.info("old poll: " + poll);
-        Poll nextSeriesPoll = new Poll(poll.getPollCreator(), poll.getAnonymityStatus(), poll.getSeriesPollName(),
+        final Poll nextSeriesPoll = new Poll(poll.getPollCreator(), poll.getAnonymityStatus(), poll.getSeriesPollName(),
             poll.getCreationDate(), poll.getNextSeries(), poll.getDeactivatedDate(), 1,
             poll.getBackgroundColor(), poll.getFontColor(), poll.getLogo(), poll.isVisibility(), poll.isCategoryChange(),
             poll.isActivated(), poll.isDeactivated(), poll.getOwnDesign(), poll.getRepeat(), poll.getRepeatUntil(),
@@ -634,7 +634,7 @@ class PollServiceImpl implements PollService {
         LOGGER.info("newPoll: " + nextSeriesPoll);
         nextSeriesPoll.setLastEditAt(ZonedDateTime.now());
         final List<Category> categories = categoryService.getAllCategories(poll.getPollId());
-        for (Category category: categories) {
+        for (final Category category: categories) {
             final Category newCategory = categoryService.createCategory(category.getCategoryName(), nextSeriesPoll.getPollId());
             questionService.copyQuestions(newCategory.getCategoryId(), nextSeriesPoll.getPollId(), category.getQuestionList());
         }
@@ -652,8 +652,8 @@ class PollServiceImpl implements PollService {
     }
 
     private List<Integer> createElementCollectionCopies(final List<Integer> value) {
-        List<Integer> copiedValues = new ArrayList<>();
-        for (Integer x : value) {
+        final List<Integer> copiedValues = new ArrayList<>();
+        for (final Integer x : value) {
             copiedValues.add(x);
         }
         return copiedValues;

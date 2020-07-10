@@ -137,15 +137,15 @@ public class ExportController {
         if(pollCmd == null) {
             return null;
         }
-        Instant actDate = Instant.ofEpochSecond(Long.parseLong(pollCmd.getActivatedDate().substring(0, 10))); //Instant.parse(pollCmd.getActivatedDate());
-        ZonedDateTime actTime = ZonedDateTime.ofInstant(actDate, ZoneId.ofOffset("UTC", ZoneOffset.ofHoursMinutes(timeZoneOffset / 60,timeZoneOffset % 60)));
+        final Instant actDate = Instant.ofEpochSecond(Long.parseLong(pollCmd.getActivatedDate().substring(0, 10))); //Instant.parse(pollCmd.getActivatedDate());
+        final ZonedDateTime actTime = ZonedDateTime.ofInstant(actDate, ZoneId.ofOffset("UTC", ZoneOffset.ofHoursMinutes(timeZoneOffset / 60,timeZoneOffset % 60)));
         pollCmd.setActivatedDate(actTime.toString());
-        Instant deactDate = Instant.ofEpochSecond(Long.parseLong(pollCmd.getDeactivatedDate().substring(0, 10)));
-        ZonedDateTime deactTime = ZonedDateTime.ofInstant(deactDate, ZoneId.ofOffset("UTC", ZoneOffset.ofHoursMinutes(timeZoneOffset / 60,timeZoneOffset % 60)));
+        final Instant deactDate = Instant.ofEpochSecond(Long.parseLong(pollCmd.getDeactivatedDate().substring(0, 10)));
+        final ZonedDateTime deactTime = ZonedDateTime.ofInstant(deactDate, ZoneId.ofOffset("UTC", ZoneOffset.ofHoursMinutes(timeZoneOffset / 60,timeZoneOffset % 60)));
         pollCmd.setDeactivatedDate(deactTime.toString());
 
-        Instant creationDate = Instant.ofEpochSecond(Long.parseLong(pollCmd.getCreationDate().substring(0, 10)));
-        ZonedDateTime creationTime = ZonedDateTime.ofInstant(creationDate, ZoneId.ofOffset("UTC", ZoneOffset.ofHoursMinutes(timeZoneOffset / 60,timeZoneOffset % 60)));
+        final Instant creationDate = Instant.ofEpochSecond(Long.parseLong(pollCmd.getCreationDate().substring(0, 10)));
+        final ZonedDateTime creationTime = ZonedDateTime.ofInstant(creationDate, ZoneId.ofOffset("UTC", ZoneOffset.ofHoursMinutes(timeZoneOffset / 60,timeZoneOffset % 60)));
 
         final Poll poll = new Poll(pollCmd.getPollCreator(), pollCmd.getAnonymityStatus(), pollCmd.getPollName(), creationTime, actTime, deactTime, 0,
             pollCmd.getBackgroundColor(), pollCmd.getFontColor(), pollCmd.getLogo(), pollCmd.isVisibility(),
@@ -153,7 +153,7 @@ public class ExportController {
         pollCmd.getRepeatUntil(), pollCmd.getDay(), pollCmd.getWeek(), pollCmd.getMonth(),
         pollCmd.getStoppingReason(), pollCmd.getLevel(), 0L, pollCmd.getCheckLeapYear());
         poll.setPollId(null);
-        Long pollId = pollRepository.save(poll).getPollId();
+        final Long pollId = pollRepository.save(poll).getPollId();
         poll.setLastEditAt(ZonedDateTime.now());
         poll.setCheckLeapYear(pollCmd.getCheckLeapYear());
         poll.setSeriesPollName(pollCmd.getSeriesPollName());
@@ -178,12 +178,12 @@ public class ExportController {
      * Die Funktion macht eine Liste an CategoryCMDs zu einer Liste an Kategorien da es dafür keine Funktion gab
      * */
     private List<Category> cmdToCategory(final List<CategoryCmd> input, final Long pollId){
-        List<Category> outputList = new ArrayList<>();
-        for(CategoryCmd cmd : input) {
-            Category cat = categoryService.createCategory(cmd.getCategoryName(), pollId);
+        final List<Category> outputList = new ArrayList<>();
+        for(final CategoryCmd cmd : input) {
+            final Category cat = categoryService.createCategory(cmd.getCategoryName(), pollId);
             /*System.out.println(cat.getCategoryId());*/
             Long indexCounter = 0L;
-            for(QuestionCmd q : cmd.getQuestionList()) {
+            for(final QuestionCmd q : cmd.getQuestionList()) {
                 q.setCategoryId(cat.getCategoryId());
                 q.setPollId(pollId);
                 questionService.changeCategory(questionService.addQuestion(q).getQuestionId(), cat.getCategoryId() ,indexCounter);
@@ -231,7 +231,7 @@ public class ExportController {
                                 final @RequestParam String format, final @RequestParam String separator, final @RequestParam Boolean dereferenceAnswerPossibilities,
                                 final @RequestBody List<FilterCmd> filterList , final @RequestHeader int timeZoneOffset)
             throws JsonProcessingException, FileNotFoundException, UnsupportedDataTypeException {
-        ZoneId timeZone = ZoneId.ofOffset("UTC", ZoneOffset.ofHoursMinutes(timeZoneOffset / 60 , timeZoneOffset % 60));
+        final ZoneId timeZone = ZoneId.ofOffset("UTC", ZoneOffset.ofHoursMinutes(timeZoneOffset / 60 , timeZoneOffset % 60));
         final FilterCmd cmd = new FilterCmd();
         cmd.setBasePollId(pollId);
         cmd.setBaseQuestionIds(Collections.singletonList(-1L));

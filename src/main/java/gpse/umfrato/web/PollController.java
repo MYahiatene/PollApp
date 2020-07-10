@@ -99,7 +99,7 @@ public class PollController {
      */
     @GetMapping("/poll")
     public List<SmallPoll> getSmallPolls(final @RequestHeader int timeZoneOffset) {
-        ZoneId timeZone = ZoneId.ofOffset("UTC", ZoneOffset.ofHoursMinutes(timeZoneOffset / 60 , timeZoneOffset % 60));
+        final ZoneId timeZone = ZoneId.ofOffset("UTC", ZoneOffset.ofHoursMinutes(timeZoneOffset / 60 , timeZoneOffset % 60));
         final List<SmallPoll> polls = new ArrayList<>();
         for (final Poll p: pollService.getAllPolls()) {
             polls.add(new SmallPoll(p, pollResultService, participationLinkService, timeZone));
@@ -195,7 +195,7 @@ public class PollController {
 
     @GetMapping("relevantpolls")
     public List<SmallPoll> getNewestPolls(final @RequestHeader int timeZoneOffset) {
-        ZoneId timeZone = ZoneId.ofOffset("UTC", ZoneOffset.ofHoursMinutes(timeZoneOffset / 60 , timeZoneOffset % 60));
+        final ZoneId timeZone = ZoneId.ofOffset("UTC", ZoneOffset.ofHoursMinutes(timeZoneOffset / 60 , timeZoneOffset % 60));
         final List<SmallPoll> relevantPolls = new ArrayList<>();
         for (final Poll p: pollService.getLastEditedPolls()) {
             relevantPolls.add(new SmallPoll(p, pollResultService, participationLinkService, timeZone));

@@ -71,7 +71,7 @@ public class EvaluationController {
         if (input.isEmpty()) {
             return "?";
         }
-        ZoneId timeZone = ZoneId.ofOffset("UTC", ZoneOffset.ofHoursMinutes(timeZoneOffset / 60 , timeZoneOffset % 60));
+        final ZoneId timeZone = ZoneId.ofOffset("UTC", ZoneOffset.ofHoursMinutes(timeZoneOffset / 60 , timeZoneOffset % 60));
         final Statistics calculation = new Statistics(questionService, pollService, pollResultService, categoryService,
                 consistencyQuestionService, sessionService, timeZone, input.get(0));
         calculation.loadFilter(input);

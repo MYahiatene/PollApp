@@ -78,8 +78,8 @@ public class ParticipationLinkServiceImpl implements ParticipationLinkService {
     }
 
     @Override public void updateLinks(final Long oldPollId, final Long newPollId) {
-        List<ParticipationLink> links = participationLinkRepository.findParticipationLinksByPollId(oldPollId);
-        for(ParticipationLink pl:links)
+        final List<ParticipationLink> links = participationLinkRepository.findParticipationLinksByPollId(oldPollId);
+        for(final ParticipationLink pl:links)
         {
             pl.setPollId(newPollId);
         }
