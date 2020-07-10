@@ -340,7 +340,7 @@ export default {
         }),
 
         isSeriesPoll() {
-            return this.poll.level < 0 && this.poll.level !== undefined && this.poll.level !== null
+            return this.poll.level !== undefined && this.poll.level !== null && this.poll.level >= 0
         },
 
         categories() {

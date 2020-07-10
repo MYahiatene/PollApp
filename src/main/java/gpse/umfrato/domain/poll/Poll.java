@@ -155,7 +155,7 @@ public class Poll {
     private Integer stoppingReason;
 
     /**
-     * This attribute represents the level of reputation. Represented by 0 for days, 1 for weeks, 2 for months and 3 for
+     * This attribute represents the level of repetition. Represented by 0 for days, 1 for weeks, 2 for months and 3 for
      * years
      */
     private Integer level;
