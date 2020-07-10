@@ -481,7 +481,7 @@ export default {
                 today.getMinutes()
             const poll = {
                 pollCreator: 'Jan',
-                anonymityStatus: '3',
+                anonymityStatus: '1',
                 pollName: 'Beispielumfrage',
                 activated: false,
                 deactivated: false,
@@ -493,15 +493,15 @@ export default {
                 visibility: true,
                 backgroundColor: '#555555',
                 fontColor: '#fe7312',
-                level: -1,
-                repeat: -1,
+                level: 0,
+                repeat: 1,
                 day: [],
                 week: [],
                 month: [],
                 ownDesign: true,
                 checkLeapYear: false,
                 stoppingReason: 1,
-                repeatUntil: '10',
+                repeatUntil: '3',
                 logo:
                     'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAADICAIAAAAiOjnJAAAAAXNSR0IArs4c6QAAAARnQU1' +
                     'BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAA4dSURBVHhe7Z2/ixzHEsf93zhz5siZM2WOlL3sZc4UOVMgkAMjHF' +

@@ -602,7 +602,7 @@ class PollServiceImpl implements PollService {
                 return poll.getNextSeries().compareTo(endTime) > 0;
             case 1: /*Wiederholungen*/
                 LOGGER.info("2");
-                return poll.getSeriesCounter() == Integer.parseInt(poll.getRepeatUntil());
+                return poll.getSeriesCounter() >= Integer.parseInt(poll.getRepeatUntil());
             case 2: /*Teilnehmer*/
                 LOGGER.info("3");
                 final int size = pollResultService.getPollResults(poll.getPollId()).size();

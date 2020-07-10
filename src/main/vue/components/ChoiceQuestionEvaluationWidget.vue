@@ -247,6 +247,26 @@ export default {
             console.log(data)
             return data
         },
+        // here we compute the data for the visual diagram, writing it into a format the components can process.
+        // We either give one color or an array of colors
+        chartdataSet() {
+            const c = []
+            for (let i = 0; i < this.chartData.length; i++) {
+                c.push({
+                    label: this.questionTitle,
+                    backgroundColor: this.multipleColors
+                        ? this.chartData.length > 1
+                            ? this.choppedBackgroundColors[i % this.choppedBackgroundColors.length]
+                            : this.choppedBackgroundColors
+                        : this.backgroundColor,
+                    data: this.chartData[i],
+                })
+            }
+            return {
+                labels: this.answerPossibilities,
+                datasets: c,
+            }
+        },
         diagramType() {
             return this.getFormat(this.questionId).diagramType
         },
@@ -272,26 +292,6 @@ export default {
                 h.push({ antwort: this.answerPossibilities[i], abs: this.dataInput[0][i], rel: percentage + '%' })
             }
             return h
-        },
-        // here we compute the data for the visual diagram, writing it into a format the components can process.
-        // We either give one color or an array of colors
-        chartdataSet() {
-            const c = []
-            for (let i = 0; i < this.chartData.length; i++) {
-                c.push({
-                    label: this.questionTitle,
-                    backgroundColor: this.multipleColors
-                        ? this.chartData.length > 1
-                            ? this.choppedBackgroundColors[i % this.choppedBackgroundColors.length]
-                            : this.choppedBackgroundColors
-                        : this.backgroundColor,
-                    data: this.chartData[i],
-                })
-            }
-            return {
-                labels: this.answerPossibilities,
-                datasets: c,
-            }
         },
         /*
 
