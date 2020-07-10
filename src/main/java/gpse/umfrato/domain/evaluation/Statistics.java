@@ -39,8 +39,8 @@ public class Statistics {
     private final boolean showParticipantsOverTime;
     private final boolean participantsOverRelativeTime;
     private final ZoneId timeZone;
+    private final Integer numberOfPastPollsToEvaluate;
     private List<Filter> filters = new ArrayList<>();
-    private Integer numberOfPastPollsToEvaluate = 10;
 
     /**
      * Initializes the Statistic.
