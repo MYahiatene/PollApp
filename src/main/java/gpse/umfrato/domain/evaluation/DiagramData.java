@@ -235,6 +235,15 @@ public class DiagramData {
         private List<List<Integer>> data = new ArrayList<>();
         private List<List<List<SortValues>>> meanOrder = new ArrayList<>();
 
+        /**
+         *
+         * This represents the data of a sortQuestion
+         *
+         * @param questionId id of the question
+         * @param questionMessage title
+         * @param answerPossibilities
+         */
+
         SortData(final long questionId, final String questionMessage, final List<String> answerPossibilities) {
             this.id = questionId;
             this.type = "sort";
@@ -242,6 +251,11 @@ public class DiagramData {
             this.answerPossibilities = answerPossibilities;
             this.meanOrder.add(new ArrayList<>());
         }
+
+        /**
+         * This represents one item of a sortQuestion
+         *
+         */
 
         @Getter
         @Setter
@@ -281,8 +295,16 @@ public class DiagramData {
             LOGGER.info(this.type);
         }
 
+        /**
+         * This function computes the data for SortQuestions
+         *
+         *
+         *
+         */
+
         @Override
         public void statistics() {
+            //check if data is correct
 
             if (data.isEmpty()) {
                 LOGGER.info("Keine Antworten");
