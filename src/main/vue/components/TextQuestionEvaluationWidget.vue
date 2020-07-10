@@ -61,6 +61,11 @@
                                         class="ma-1"
                                         flat
                                     >
+                                        <template>
+                                            <v-toolbar flat>
+                                                <v-toolbar-title>Umfrage {{ thing[0].seriesCounter }}</v-toolbar-title>
+                                            </v-toolbar>
+                                        </template>
                                         <v-data-table
                                             :headers="freqHeaders"
                                             :items="thing"
@@ -131,7 +136,6 @@ export default {
             freqHeaders: [
                 { text: 'Wort', value: 'text', sortable: true },
                 { text: 'Frequenz', value: 'frequency', sortable: true },
-                { text: 'Serie', value: 'seriesCounter', sortable: true },
             ],
             footerProps: {
                 itemsPerPageText: 'Zeilen pro Seite',

@@ -869,7 +869,7 @@ public class DiagramData {
                                     td.addAnswer(pr.getPollResultId(),
                                         a.getGivenAnswerList().get(a.getGivenAnswerList().size() - 1),
                                         df.format(pr.getLastEditAt()),
-                                        poll.getAnonymityStatus().equals("2") ? pr.getPollTaker() : "",
+                                        poll.getAnonymityStatus().equals("3") ? pr.getPollTaker() : "Anonym",
                                         poll.getSeriesCounter());
                                 }
                                 break;
