@@ -596,12 +596,13 @@ class PollServiceImpl implements PollService {
         switch (poll.getStoppingReason()) {
             case 0: /*Datum*/
                 LOGGER.info("1");
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss", Locale.GERMAN).withZone(poll.getActivatedDate().getZone());
+                LOGGER.info("getRepeatUntil: " + poll.getRepeatUntil());
                 ZonedDateTime endTime = ZonedDateTime.parse(poll.getRepeatUntil() + " 23:59:59", formatter);
-                return ZonedDateTime.now().compareTo(endTime) > 0;
+                return poll.getNextSeries().compareTo(endTime) > 0;
             case 1: /*Wiederholungen*/
                 LOGGER.info("2");
-                return poll.getRepeat() > Integer.parseInt(poll.getRepeatUntil());
+                return poll.getSeriesCounter() == Integer.parseInt(poll.getRepeatUntil());
             case 2: /*Teilnehmer*/
                 LOGGER.info("3");
                 final int size = pollResultService.getPollResults(poll.getPollId()).size();
