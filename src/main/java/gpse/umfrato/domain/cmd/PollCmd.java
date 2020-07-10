@@ -81,7 +81,7 @@ public class PollCmd {
 
     private String seriesPollName;
 
-    public Poll getCmdPoll(ZoneOffset userOffset) {
+    public Poll getCmdPoll(final ZoneOffset userOffset) {
         // parses the activationDAte and deactivationDate from a String to a ZonedDateTime
         // System.out.println(this);
         final DateTimeFormatter df = DateTimeFormatter.ofPattern("dd.MM.yyyy&HH:mm");

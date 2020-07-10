@@ -39,7 +39,7 @@ public class SessionServiceImpl implements SessionService {
         sessionRepository.deleteById(session.getSessionId());
     }
 
-    @Override public void deleteAllSessions(long pollId) {
+    @Override public void deleteAllSessions(final long pollId) {
         sessionRepository.deleteAllByPollId(pollId);
     }
 

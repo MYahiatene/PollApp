@@ -587,12 +587,12 @@ class PollServiceImpl implements PollService {
         return next;
     }
 
-    private int getWeekOfMonthWithDay(ZonedDateTime date, int day) {
+    private int getWeekOfMonthWithDay(final ZonedDateTime date, final int day) {
         ZonedDateTime firstOfMonth = date.with(TemporalAdjusters.dayOfWeekInMonth(1, DayOfWeek.of(day)));
         return 1 + date.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR) - firstOfMonth.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR);
     }
 
-    private boolean stoppingReason(Poll poll) {
+    private boolean stoppingReason(final Poll poll) {
         switch (poll.getStoppingReason()) {
             case 0: /*Datum*/
                 LOGGER.info("1");
@@ -663,7 +663,7 @@ class PollServiceImpl implements PollService {
         try {
             return date.withDayOfMonth(day);
         } catch (DateTimeException d) {
-            return saveDayOfMonth(date, day -1);
+            return saveDayOfMonth(date, day - 1);
         }
     }
 }

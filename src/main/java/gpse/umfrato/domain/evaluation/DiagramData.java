@@ -492,7 +492,7 @@ public class DiagramData {
          * @param input Die Eingabeliste an TextAnswers welche zu einer Liste an Strings gemacht werden soll
          * Diese Funktion macht eine Liste an TextAnswers zu einer Liste an Strings um für diese die Frequenz und Tendenz zu berechnen
          * */
-        List<String> getWordList(List<TextAnswer> input) {
+        List<String> getWordList(final List<TextAnswer> input) {
             List<String> stringList = new ArrayList<>();
             for (TextAnswer ta: input) {
                 stringList.addAll(Arrays.asList(ta.text.toLowerCase().split("[ .,;:?\\-_=()/&%$§!#'+*~|<>]+")));
@@ -519,7 +519,7 @@ public class DiagramData {
          * @param ta Die Textantwort für die die Wortfrequenz berechnet werden soll
          * Diese Funktion berechnet die Frequenz eines einzelenen Wortes so wie die Funktion genutzt wird
          * */
-        int getWordFrequency(List<TextAnswer> input, TextAnswer ta) {
+        int getWordFrequency(final List<TextAnswer> input, final  TextAnswer ta) {
             List<String> wordList = getWordList(input);
             return Collections.frequency(wordList, ta.text);
 
@@ -578,7 +578,7 @@ public class DiagramData {
             public String edited;
             public String creator;
 
-            JSObject(final int value, final String text, final int tendency, int frequency, final String edited,
+            JSObject(final int value, final String text, final int tendency, final int frequency, final String edited,
                      final String creator) {
                 this.value = value;
                 this.text = text;
@@ -834,7 +834,7 @@ public class DiagramData {
         return json.toString();
     }
 
-    public void combine(DiagramData other) {
+    public void combine(final DiagramData other) {
         if(showParticipantsOverTime)
         {
             this.participantsOverTime.data.addAll(other.participantsOverTime.getData());

@@ -177,7 +177,7 @@ public class ExportController {
      * @param pollId pollId des neuen Polls
      * Die Funktion macht eine Liste an CategoryCMDs zu einer Liste an Kategorien da es dafür keine Funktion gab
      * */
-    private List<Category> cmdToCategory(List<CategoryCmd> input, Long pollId){
+    private List<Category> cmdToCategory(final List<CategoryCmd> input, final Long pollId){
         List<Category> outputList = new ArrayList<>();
         for(CategoryCmd cmd : input) {
             Category cat = categoryService.createCategory(cmd.getCategoryName(), pollId);
