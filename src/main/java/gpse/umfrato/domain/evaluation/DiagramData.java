@@ -73,6 +73,8 @@ public class DiagramData {
          */
         void statistics();
 
+        void print();
+
         /**
          * prepares the object for transfer.
          * @return json string representing the QuestionData
@@ -136,6 +138,13 @@ public class DiagramData {
         @Override
         public QuestionType questionType() {
             return QuestionType.CHOICE_QUESTION;
+        }
+
+        @Override
+        public void print() {
+            LOGGER.info(String.valueOf(this.id));
+            LOGGER.info(this.title);
+            LOGGER.info(this.type);
         }
 
         @Override
@@ -248,6 +257,13 @@ public class DiagramData {
         @Override
         public QuestionType questionType() {
             return QuestionType.SORT_QUESTION;
+        }
+
+        @Override
+        public void print() {
+            LOGGER.info(String.valueOf(this.id));
+            LOGGER.info(this.title);
+            LOGGER.info(this.type);
         }
 
         @Override
@@ -434,6 +450,13 @@ public class DiagramData {
         @Override
         public QuestionType questionType() {
             return QuestionType.TEXT_QUESTION;
+        }
+
+        @Override
+        public void print() {
+            LOGGER.info(String.valueOf(this.id));
+            LOGGER.info(this.title);
+            LOGGER.info(this.type);
         }
 
         @Override
@@ -806,10 +829,19 @@ public class DiagramData {
     }
 
     public void combine(DiagramData other) {
+        if(showParticipantsOverTime)
+        {
+            this.participantsOverTime.data.addAll(other.participantsOverTime.getData());
+            this.participantsOverTime.calculated.addAll(other.participantsOverTime.calculated);
+        }
         for(int i = 0; i < getQuestionList().size();i++)
         {
             QuestionData qd = this.getQuestionList().get(i);
             QuestionData od = other.getQuestionList().get(i);
+            LOGGER.info("this");
+            qd.print();
+            LOGGER.info("other");
+            od.print();
             switch (qd.questionType()) {
                 case SORT_QUESTION: {
                     SortData tsd = (SortData) qd;
@@ -824,9 +856,7 @@ public class DiagramData {
                     ttd.frequency.addAll(otd.frequency);
                     break;
                 }
-                case CHOICE_QUESTION:
-                case RANGE_QUESTION:
-                case SLIDER_QUESTION: {
+                case CHOICE_QUESTION: {
                     ChoiceData tcd = (ChoiceData) qd;
                     ChoiceData ocd = (ChoiceData) od;
                     tcd.data.addAll(ocd.getData());

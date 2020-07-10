@@ -61,7 +61,7 @@ public class PollResultServiceImpl implements PollResultService {
      */
     @Override
     public List<PollResult> getPollResults(final Long pollId) {
-        LOGGER.info(pollId.toString());
+        LOGGER.info("getPollResults by pollId " + pollId.toString());
         return pollResultRepository.findPollResultsByPollId(pollId);
     }
 

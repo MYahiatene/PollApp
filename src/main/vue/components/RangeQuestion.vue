@@ -47,7 +47,7 @@
 </template>
 
 <script>
-// TODO: Forms vollenden (keine Priorität)
+// TODO: Forms vollenden
 import { mapGetters, mapMutations } from 'vuex'
 
 export default {

@@ -266,15 +266,30 @@ public class QuestionServiceImpl implements QuestionService {
         Question newQuestion = null;
         newQuestion = new Question(question.getQuestionMessage(), new ArrayList<>(),
             question.getNumberOfPossibleAnswers(), question.isUserAnswers(), question.isDropDown());
-        final ListIterator<String> it = question.getAnswerPossibilities().listIterator();
-        while (it.hasNext()) {
-            final String answer = it.next();
+        return copyAnswerPossibilities(question, pollId, newQuestion);
+    }
+
+    /**
+     * Copies a sortQuestion to a category. Needs to adds every answer separately to the new question.
+     * @param question
+     * @param pollId
+     * @return
+     */
+    @Override
+    public Question addSortQuestion(final Question question, final Long pollId) {
+        Question newQuestion = null;
+        newQuestion = new Question(question.getQuestionMessage(), new ArrayList<>());
+        return copyAnswerPossibilities(question, pollId, newQuestion);
+    }
+
+    private Question copyAnswerPossibilities(Question question, Long pollId, Question newQuestion) {
+        for (String answer: question.getAnswerPossibilities()) {
             newQuestion.getAnswerPossibilities().add(answer);
         }
         newQuestion.setCategoryId(pollRepository.findById(pollId)
-            .orElseThrow(EntityNotFoundException::new).getCategoryList().get(0).getCategoryId());
+                .orElseThrow(EntityNotFoundException ::new).getCategoryList().get(0).getCategoryId());
         pollRepository.findById(pollId).orElseThrow(EntityNotFoundException::new)
-            .getCategoryList().get(0).getQuestionList().add(newQuestion);
+                .getCategoryList().get(0).getQuestionList().add(newQuestion);
         questionRepository.save(newQuestion);
 
         return newQuestion;
@@ -313,9 +328,10 @@ public class QuestionServiceImpl implements QuestionService {
             cmd.setQuestionType(question.getQuestionType());
             cmd.setUserAnswers(question.isUserAnswers());
             cmd.setNumberOfPossibleAnswers(question.getNumberOfPossibleAnswers());
-            if (question.getQuestionType().equals(CHOICE_QUESTION)
-                || question.getQuestionType().equals(SORT_QUESTION)) {
+            if (question.getQuestionType().equals(CHOICE_QUESTION)) {
                 newQuestion = addChoiceQuestion(question, pollId);
+            } else if (question.getQuestionType().equals(SORT_QUESTION)) {
+                newQuestion = addSortQuestion(question, pollId);
             } else {
                 newQuestion = addQuestion(cmd);
             }

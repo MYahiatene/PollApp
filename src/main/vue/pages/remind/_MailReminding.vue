@@ -6,6 +6,13 @@
                 <v-container fluid>
                     <v-row>
                         <v-col cols="12" md="6">
+                            <v-combobox
+                                v-model="selectNotify"
+                                :items="toBeNotified"
+                                label="Alle Teilnehmer"
+                                solo
+                                dense
+                            ></v-combobox>
                             <v-sheet elevation="12" class="pa-12">
                                 <v-textarea
                                     v-model="mailSubject"
@@ -69,6 +76,12 @@ export default {
             items: [],
             message: '',
             poll: [],
+            toBeNotified: [
+                { text: 'Alle Teilnehmer', id: 0 },
+                { text: 'Teilnehmer, die Umfrage bereits abgeschlossen haben', id: 1 },
+                { text: 'Teilnehmer, die Umfrage noch nicht abgeschlossen haben', id: 2 },
+            ],
+            selectNotify: '',
 
             autoGrow: true,
             autofocus: true,
@@ -126,9 +139,11 @@ export default {
                 })
         },
         sendRemindEmail() {
+            console.log(this.selectNotify.id)
             console.log('Email Sending test')
             console.log(this.items)
             const obj = {
+                notificateParticipants: this.selectNotify.id,
                 emailSubject: this.mailSubject,
                 emailMessage: this.mailText,
                 pollId: this.poll.pollId,

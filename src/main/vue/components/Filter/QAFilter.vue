@@ -36,7 +36,6 @@
 </template>
 
 <script>
-// TODO: Bug! Füge zwei Filter hinzu fülle einen aus und verschiebe einen. Die Daten werden dubliziert.
 import { mapGetters } from 'vuex'
 export default {
     name: 'QAFilter',
