@@ -55,7 +55,12 @@ public class SessionServiceImpl implements SessionService {
     @Override
     public Session editSession(final SessionCmd sessionCmd) {
         final Session session = sessionRepository.getOne(sessionCmd.getSessionId());
-        cmdToSession(sessionCmd, filterService.updateFilterList(sessionCmd.getFilterList(), session.getFilterList()),
+        while(!session.getFilterList().isEmpty()) {
+            FilterData fd = session.getFilterList().get(0);
+            session.getFilterList().remove(0);
+            filterService.deleteFilterData(fd.getFilterId());
+        }
+        cmdToSession(sessionCmd, filterService.saveFilterList(sessionCmd.getFilterList()),
             session);
         sessionRepository.save(session);
         return session;
@@ -78,7 +83,12 @@ public class SessionServiceImpl implements SessionService {
     private void cmdToSession(final SessionCmd sessionCmd, final List<FilterData> filterList, final Session session) {
         session.setPollId(sessionCmd.getPollId());
         session.setSessionTitle(sessionCmd.getSessionTitle());
-        session.setFilterList(filterList);
+        if (session.getFilterList() != null) {
+            session.getFilterList().addAll(filterList);
+        }
+        else {
+            session.setFilterList(filterList);
+        }
         session.setDiagramFormat(sessionCmd.getDiagramFormat());
         session.setDiagramOptions(sessionCmd.getDiagramOptions());
         session.setLastUsername(sessionCmd.getLastUsername());

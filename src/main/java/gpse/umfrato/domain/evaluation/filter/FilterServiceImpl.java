@@ -25,12 +25,6 @@ public class FilterServiceImpl implements FilterService {
     }
 
     @Override
-    public List<FilterData> updateFilterList(final List<FilterCmd> filterCmds, final List<FilterData> filter) {
-        cmdsToFilters(filterCmds, filter);
-        return filterRepository.saveAll(filter);
-    }
-
-    @Override
     public void deleteFilterData(final Long filterId) {
         filterRepository.deleteById(filterId);
     }

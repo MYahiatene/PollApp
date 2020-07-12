@@ -168,6 +168,10 @@ public class DiagramData {
         }
 
         public void statistics(int index) {
+            while(this.calculated.size() <= index)
+            {
+                this.calculated.add(new Calculation());
+            }
             int size = 0;
             final List<Integer> maxima = new ArrayList<>();
             int max = 0;
