@@ -268,20 +268,6 @@ export default {
         this.answerIndices = this.initialAnswerIndices
 
         this.computeWordsFromIndices()
-
-        // if (this.categoryIndex === -1) {
-        //     this.selectedCategory = ''
-        // }
-        // this.selectedCategory = this.categoryTitles[this.categoryIndex]
-        //
-        // if (this.questionIndex === -1) {
-        //     this.selectedQuestion = ''
-        // }
-        // this.selectedQuestion = this.questionTitles[this.questionIndex]
-        //
-        // for (let i = 0; i < this.answerIndices.length; i++) {
-        //     this.selectedAnswers.push(this.answerTitles[this.answerIndices[i]])
-        // }
     },
     methods: {
         updateCategoryIndex() {
