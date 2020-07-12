@@ -1,6 +1,6 @@
 <template>
     <!--    Here we need the negative margin in order to cancel out the margin applied by the v-cards-->
-    <v-card outlined hover flat :color="color" class="my-n1">
+    <v-card outlined hover flat class="my-n1">
         <v-row no-gutters class="ma-n2 my-n4 pa-4">
             <v-col cols="10">
                 <v-list-item-title>
@@ -76,34 +76,28 @@ export default {
                         return ''
                 }
             },
-
-            // the color is applied to the question when its the one being edited, so the user can see it more easily
-
-            color() {
-                if (this.currentQuestion !== null) {
-                    if (
-                        this.currentQuestion.questionMessage === this.questionMessage &&
-                        this.currentQuestion.categoryId === this.categoryId &&
-                        this.currentQuestion.questionId === this.questionId
-                    ) {
-                        return this.$vuetify.theme.currentTheme.softAccent
-                    } else {
-                        return ''
-                    }
-                }
-
-                return ''
-            },
         },
     },
     methods: {
         showType(questionType) {
             if (questionType === 'ChoiceQuestion') {
                 if (this.question.numberOfPossibleAnswers > 1) {
-                    return 'Multiple Choice Question'
+                    return 'Mehrfache Auswahlfrage'
                 } else {
-                    return 'Single Choice Question'
+                    return 'Einfache Auswahlfrage'
                 }
+            }
+            if (questionType === 'TextQuestion') {
+                return 'Freitextfrage'
+            }
+            if (questionType === 'SortQuestion') {
+                return 'Sortierfrage'
+            }
+            if (questionType === 'SliderQuestion') {
+                return 'Sliderfrage'
+            }
+            if (questionType === 'RangeQuestion') {
+                return 'Reichweitenfrage'
             }
             return questionType
         },
