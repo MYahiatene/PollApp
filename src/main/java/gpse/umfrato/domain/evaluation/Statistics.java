@@ -379,6 +379,8 @@ public class Statistics {
             diagramDataList.get(0).combine(diagramDataList.get(1));
             diagramDataList.remove(1);
         }
+        if(participantsOverRelativeTime)
+            diagramDataList.get(0).generateParticipantsOverTime();
         return diagramDataList.get(0);
     }
 }
