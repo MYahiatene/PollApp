@@ -15,7 +15,7 @@
                 <div v-if="poll">
                     <v-slider
                         class="ml-4 mr-8"
-                        v-if="!isSeriesPoll"
+                        v-if="isSeriesPoll"
                         v-model="seriesPollNumber"
                         min="0"
                         :max="(poll.seriesCounter - 1)"
