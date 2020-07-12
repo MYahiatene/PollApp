@@ -83,8 +83,6 @@ public class DiagramData {
          */
         void statistics();
 
-        void print();
-
         /**
          * prepares the object for transfer.
          *
@@ -137,23 +135,19 @@ public class DiagramData {
         }
 
         public void addAnswer(final double answerPossibility) {
-            final int index = (int) ((answerPossibility - start) / step);
-            try {
-                data.get(0).set(index, data.get(0).get(index) + 1);
-            } catch (IndexOutOfBoundsException e) {
-                data.get(0).add(index, 0);
-                data.get(0).set(index, data.get(0).get(index) + 1);
-            }
+            addAnswerRelative(answerPossibility, 0);
         }
 
         public void addAnswerRelative(final double answerPossibility, int dataIndex) {
-            final int index = (int) ((answerPossibility - start) / step);
-            try {
-                data.get(dataIndex).set(index, data.get(dataIndex).get(index) + 1);
-            } catch (IndexOutOfBoundsException e) {
-                data.get(dataIndex).add(index, 0);
-                data.get(dataIndex).set(index, data.get(dataIndex).get(index) + 1);
+            while(data.size() <= dataIndex) {
+                List<Integer> newList = new ArrayList<>();
+                for (String ignore: this.answerPossibilities) {
+                    newList.add(0);
+                }
+                data.add(newList);
             }
+            final int index = (int) ((answerPossibility - start) / step);
+            data.get(dataIndex).set(index, data.get(dataIndex).get(index) + 1);
         }
 
         public void setModifier(final double start, final double step) {
@@ -166,13 +160,6 @@ public class DiagramData {
         @Override
         public QuestionType questionType() {
             return QuestionType.CHOICE_QUESTION;
-        }
-
-        @Override
-        public void print() {
-            LOGGER.info(String.valueOf(this.id));
-            LOGGER.info(this.title);
-            LOGGER.info(this.type);
         }
 
         @Override
@@ -304,13 +291,6 @@ public class DiagramData {
         @Override
         public QuestionType questionType() {
             return QuestionType.SORT_QUESTION;
-        }
-
-        @Override
-        public void print() {
-            LOGGER.info(String.valueOf(this.id));
-            LOGGER.info(this.title);
-            LOGGER.info(this.type);
         }
 
         /**
@@ -564,13 +544,6 @@ public class DiagramData {
         }
 
         @Override
-        public void print() {
-            LOGGER.info(String.valueOf(this.id));
-            LOGGER.info(this.title);
-            LOGGER.info(this.type);
-        }
-
-        @Override
         public void statistics() {
             this.texts = doWordStuff(this.answers);
             this.frequency = doWordFrequencyStuff(this.answers);
@@ -692,7 +665,7 @@ public class DiagramData {
             public long seriesCounter;
 
             JSObject(final int value, final String text, final int tendency, final int frequency, final String edited,
-                     final String creator, final Long seriesConter) {
+                     final String creator, final Long seriesCounter) {
                 this.value = value;
                 this.text = text;
                 this.tendency = tendency;
@@ -714,6 +687,8 @@ public class DiagramData {
         this.timeZone = timeZone;
         this.showParticipantsOverTime = showParticipantsOverTime;
         this.participantsOverRelativeTime = participantsOverRelativeTime;
+        this.participantTimes = new ArrayList<>();
+        this.participantTimes.add(new ArrayList<>());
         loadData(results);
     }
 
@@ -781,9 +756,13 @@ public class DiagramData {
      *
      */
     protected void generateParticipantsOverTime() {
-        if (participantTimes.get(0).isEmpty()) {
-            showParticipantsOverTime = false;
-        } else {
+        for(List<ZonedDateTime> list:participantTimes) {
+            if (list.isEmpty()) {
+                showParticipantsOverTime = false;
+                break;
+            }
+        }
+        if(showParticipantsOverTime) {
             ZonedDateTime min = participantTimes.get(0).get(0);
             ZonedDateTime max = participantTimes.get(0).get(0);
             for(List<ZonedDateTime> list : participantTimes) {
@@ -823,23 +802,19 @@ public class DiagramData {
                     if (step < 60) {
                         tPlus = deltaString + String.format("%ds", delta.toSeconds());
                     }
-                    /*System.out.println("APLUS: "+tPlus);*/
                     answerPossibilities.add(tPlus);
                 }
-
-                // System.out.println(answerPossibilities);
                 participantsOverTime = new ChoiceData(0, "Teilnahmen über Zeit",
                     answerPossibilities);
-                /*System.out.println(datesList.toString());*/
                 int index = 0;
                 for(List<ZonedDateTime> datesList : participantTimes){
                     for (final ZonedDateTime d : datesList) {
                         final long slot = (d.toEpochSecond() - start) / step;
                         participantsOverTime.addAnswerRelative((double) slot, index);
                     }
+                    participantsOverTime.statistics(index);
                     index++;
                 }
-                participantsOverTime.statistics();
 
             } else {
                 List<ZonedDateTime> timesList = new ArrayList<>();
@@ -861,7 +836,7 @@ public class DiagramData {
                 }
                 final DateTimeFormatter finalDf = DateTimeFormatter.ofPattern(patternString, Locale.GERMAN)
                     .withZone(timeZone);
-                for (ZonedDateTime date = min; date.compareTo(max) <= 0; date = date.plusSeconds(step)) {
+                for (ZonedDateTime date = min; date.compareTo(max.plusSeconds(step)) <= 0; date = date.plusSeconds(step)) {
                     answerPossibilities.add(finalDf.format(date));
                 }
 
@@ -874,10 +849,6 @@ public class DiagramData {
                 participantsOverTime.statistics();
             }
         }
-    }
-
-    private void insertIntoData(ChoiceData input){
-
     }
 
     /**
@@ -925,7 +896,6 @@ public class DiagramData {
             if (showParticipantsOverTime) {
                 if(!participantsOverRelativeTime) { //Absolute Zeit
                     participantTimes.get(0).add(pr.getLastEditAt());
-                    //generateParticipantsOverTime(results, poll.getActivatedDate());
                 }
                 else {
                     participantTimes.get(0).add(pr.getLastEditAt().minus(poll.getActivatedDate().toEpochSecond(), ChronoUnit.SECONDS)); //pr.getLastEditAt().minus(ChronoUnit.poll.getActivatedDate()));
@@ -971,10 +941,6 @@ public class DiagramData {
         for (int i = 0; i < getQuestionList().size(); i++) {
             final QuestionData qd = this.getQuestionList().get(i);
             final QuestionData od = other.getQuestionList().get(i);
-            LOGGER.info("this");
-            qd.print();
-            LOGGER.info("other");
-            od.print();
             switch (qd.questionType()) {
                 case SORT_QUESTION: {
                     final SortData tsd = (SortData) qd;

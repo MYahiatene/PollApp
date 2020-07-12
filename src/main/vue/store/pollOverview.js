@@ -1,8 +1,6 @@
 import Vue from 'vue'
 
 export const state = () => ({
-    status: 0,
-    Poll: {},
     category: {},
     IDsToLoad: {
         pollID: 0,
@@ -12,9 +10,6 @@ export const state = () => ({
 })
 
 export const getters = {
-    getPoll(state) {
-        return state.Poll
-    },
     questionToLoad(state) {
         if (state.IDsToLoad !== undefined && state.IDsToLoad.questionID !== undefined) {
             return state.IDsToLoad.questionID
@@ -57,14 +52,6 @@ export const getters = {
 }
 
 export const mutations = {
-    initializeData(state, data) {
-        console.log(data)
-        state.status = data.status
-        state.Poll = data.data
-        while (state.Poll.categoryList.length > 1) {
-            delete state.Poll.categoryList.pop()
-        }
-    },
     saveStatus(state, status) {
         state.status = state
     },
@@ -185,7 +172,6 @@ export const mutations = {
                 pollId: state.IDsToLoad.pollID,
                 question: state.Poll.categoryList[indices.c].questionList[indices.q],
             }
-            // weiß nicht ob das hier geht, aber solange es kein await braucht...
             this.$axios.post('/poll/' + payload.pollId + '/addquestion', payload).catch()
         }
     },
@@ -261,11 +247,6 @@ export const mutations = {
     },
 }
 export const actions = {
-    async initialize({ state, commit }) {
-        const data = await this.$axios.get('/poll/' + state.IDsToLoad.pollID).catch((reason) => {})
-        commit('resetToLoad')
-        commit('initializeData', data)
-    },
     setCategory({ commit }, data) {
         state.category = data
     },

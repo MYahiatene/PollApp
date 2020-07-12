@@ -63,7 +63,7 @@
                             </v-container>
                         </v-expansion-panel-content>
                     </v-expansion-panel>
-                    <v-expansion-panel v-if="userNames.length != 0">
+                    <v-expansion-panel v-if="userNames.length !== 0">
                         <v-expansion-panel-header>
                             Teilnehmerauswahl
                         </v-expansion-panel-header>
@@ -433,14 +433,14 @@ export default {
                 filterType: 'consistency',
                 minSuccesses: this.minConsistencyValue, // von 0 (aus) bis zur Länge der Konsistenzfragen
             })
-            const u = []
+            const users = []
             for (let i = 0; i < this.selectedUsers.length; i++) {
-                u.push(this.selectedUsers[i])
+                users.push(this.selectedUsers[i])
             }
             filterData.push({
                 filterType: 'user',
                 invertFilter: this.userInverted,
-                userNames: u,
+                userNames: users,
             })
             for (let i = 0; i < this.qafilterList.length; i++) {
                 if (this.qafilterList[i].active) {
@@ -509,11 +509,8 @@ export default {
          */
 
         getPollTakers() {
-            if (this.polls[this.pollIndex].anonymityStatus === 3) {
-                const obj = {
-                    pollId: this.polls[this.pollIndex].pollId,
-                }
-                this.$axios.post('/getPollTakers', obj).then((response) => {
+            if (this.polls[this.pollIndex].anonymityStatus === '3') {
+                this.$axios.get('/getPollTakers/' + this.polls[this.pollIndex].pollId).then((response) => {
                     this.userNames = response.data
                     this.selectedUsers = []
                     for (let i = 0; i < this.userNames.length; i++) {
