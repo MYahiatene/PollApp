@@ -1,6 +1,7 @@
 export const state = () => ({
     buildIndex: 0,
     saveButtonStatus: true,
+    counter: 0,
     question: {
         categoryId: null,
         questionMessage: '',
@@ -22,9 +23,16 @@ export const state = () => ({
         dropDown: false,
         choiceType: '',
         questionId: null,
+        categoryType: 0,
     },
 })
 export const mutations = {
+    increment(state) {
+        state.counter++
+    },
+    setCategoryType(state, value) {
+        state.question.categoryType = value
+    },
     setSaveButtonStatus(state, value) {
         state.saveButtonStatus = value
     },
@@ -104,6 +112,9 @@ export const getters = {
     },
     getSaveButtonStatus(state) {
         return state.saveButtonStatus
+    },
+    getCounter(state) {
+        return state.counter
     },
 }
 export const actions = {

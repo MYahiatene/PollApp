@@ -65,6 +65,7 @@ public class QuestionServiceImpl implements QuestionService {
 
     /**
      * This method adds a question.
+     *
      * @param questionCmd the Cmd which includes the necessary details
      * @return returns the question object
      */
@@ -104,12 +105,13 @@ public class QuestionServiceImpl implements QuestionService {
                 return null;
         }
         question.setCategoryId(pollRepository.getOne(questionCmd.getPollId()).
-            getCategoryList().get(0).getCategoryId());
-        pollRepository.findById(questionCmd.getPollId()).get().getCategoryList().get(0).getQuestionList().
+            getCategoryList().get(questionCmd.getCategoryType()).getCategoryId());
+        pollRepository.findById(questionCmd.getPollId()).get().getCategoryList().get(questionCmd.getCategoryType()).getQuestionList().
             add(question);
         questionRepository.save(question);
         return question;
     }
+
     /**
      * This method adds a question to a category.
      *
@@ -164,15 +166,17 @@ public class QuestionServiceImpl implements QuestionService {
     public List<Question> getAllQuestions(final long categoryId) {
         return questionRepository.findQuestionsByCategoryId(categoryId);
     }
+
     /**
      * This method edits a question.
+     *
      * @param questionCmd the Cmd which includes the necessary details
      * @return returns the edited question object
      */
     @Override
     public Question editQuestion(final QuestionCmd questionCmd) {
         final Question question = questionRepository.
-            findById(questionCmd.getQuestionId()).orElseThrow(EntityNotFoundException::new);
+            findById(questionCmd.getQuestionId()).get();
 
         switch (questionCmd.getQuestionType()) {
             case TEXT_QUESTION:
@@ -215,16 +219,28 @@ public class QuestionServiceImpl implements QuestionService {
             default:
                 return null;
         }
-        questionRepository.save(question);
+        final long oldCategoryId = questionRepository.findById(question.getQuestionId()).orElseThrow(EntityNotFoundException::new)
+            .getCategoryId();
+        final long newCategoryId = pollRepository.findById(questionCmd.getPollId()).get().getCategoryList()
+            .get(questionCmd.getCategoryType()).getCategoryId();
+        final Category oldCategory = categoryRepository.getOne(oldCategoryId);
+        final Category newCategory = categoryRepository.getOne(newCategoryId);
+        oldCategory.getQuestionList().remove(question);
+        question.setCategoryId(newCategoryId);
+        newCategory.getQuestionList().add(question);
+        categoryRepository.save(oldCategory);
+        categoryRepository.save(newCategory);
+        //questionRepository.save(question);
         return question;
 
     }
 
     /**
      * This method changes the category of a question.
-     * @param questionId the id of the question
+     *
+     * @param questionId    the id of the question
      * @param newCategoryId the new category id of the question
-     * @param newIndex the new index in the question list of the question
+     * @param newIndex      the new index in the question list of the question
      * @return returns the question
      */
     @Override
@@ -236,14 +252,33 @@ public class QuestionServiceImpl implements QuestionService {
         final Category newCategory = categoryRepository.getOne(newCategoryId);
         oldCategory.getQuestionList().remove(question);
         question.setCategoryId(newCategoryId);
-        newCategory.getQuestionList().add(question);
+        newCategory.getQuestionList().add(newIndex.intValue(), question);
         categoryRepository.save(oldCategory);
-            categoryRepository.save(newCategory);
+        categoryRepository.save(newCategory);
+        return question;
+    }
+
+    /**
+     * This method changes the category of a question.
+     *
+     * @param questionId    the id of the question
+     * @param newCategoryId the new category id of the question
+     * @param newIndex      the new index in the question list of the question
+     * @return returns the question
+     */
+    @Override
+    public Question changeQuestionIndex(final Long questionId, final Long newCategoryId, final Long newIndex) {
+        final Question question = questionRepository.findById(questionId).get();
+        final Category category = categoryRepository.getOne(newCategoryId);
+        category.getQuestionList().remove(question);
+        category.getQuestionList().add(newIndex.intValue(), question);
+        categoryRepository.save(category);
         return question;
     }
 
     /**
      * Adds a new answerPossibility to the List of answerPossibilities of the given question.
+     *
      * @param question
      * @param answer
      */
@@ -257,6 +292,7 @@ public class QuestionServiceImpl implements QuestionService {
 
     /**
      * Copies a choiceQuestion to a category. Needs to adds every answer separately to the new question.
+     *
      * @param question
      * @param pollId
      * @return
@@ -271,6 +307,7 @@ public class QuestionServiceImpl implements QuestionService {
 
     /**
      * Copies a sortQuestion to a category. Needs to adds every answer separately to the new question.
+     *
      * @param question
      * @param pollId
      * @return
@@ -297,6 +334,7 @@ public class QuestionServiceImpl implements QuestionService {
 
     /**
      * Copies all questions from one category.
+     *
      * @param categoryId
      * @param pollId
      * @param questions

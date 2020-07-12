@@ -49,6 +49,8 @@ public class Question {
 
     private boolean dropDown;
 
+    private int categoryType;
+
     /**
      * This attribute represents an unique id from the object question.
      */
