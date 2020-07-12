@@ -1,12 +1,5 @@
 <template>
-    <!--     This widget allows a user to adjust the visual settings of a choiceQuestionEvaluationWidget
-Once "Anwenden" is clicked a method named updateVisuals is called that can be implemented by the parent component
-it passes the attributes:
- showDiagram (indicates if a visual diagram should be displayed)
- diagramType
- diagramcolor
- showTable (indicates if a data table should be displayed)
--->
+    <!--   this window allows the user to specify the visual settings for choiceQuestion-->
     <v-container class="ma-3">
         <v-row>
             <p v-if="!changeDefault">
@@ -40,6 +33,8 @@ it passes the attributes:
 
         <v-row v-show="showDiagram" no-gutters>
             <v-switch v-model="setMultipleColors" label="Verschiedene Farben pro Antwort" class="mr-8"> </v-switch>
+
+            <!--            these button allow us to quickly genrate a color scheme-->
             <v-btn class="ma-2" v-if="setMultipleColors" @click="loadColors(0)">
                 {{ colorSchemes[0].name }}
             </v-btn>
@@ -50,6 +45,8 @@ it passes the attributes:
             <v-btn class="ma-2" v-if="setMultipleColors" @click="loadRandomColors">
                 Zufall
             </v-btn>
+
+            <!--            here we can specify the length of the colorList, only shown if changeDefault is active-->
 
             <v-checkbox v-model="setRandomLength" v-if="setMultipleColors && changeDefault"> </v-checkbox>
             <v-text-field
@@ -63,6 +60,8 @@ it passes the attributes:
                 @change="validateLengthInput"
             >
             </v-text-field>
+
+            <!--            this opens a dialog that provides a list of configurated color schemes-->
             <v-row justify="center" v-if="setMultipleColors">
                 <v-dialog v-model="colorDialog" width="600px">
                     <template v-slot:activator="{ on, attrs }">
@@ -105,7 +104,7 @@ it passes the attributes:
 
         <v-row v-show="showDiagram && setMultipleColors">
             <v-col v-if="changeDefault">
-                <!--                this is rendered if we are in a settings window for one specific question-->
+                <!--                this is rendered if we are in a settings window for all questions-->
                 <draggable :list="colorList">
                     <div v-for="(color, index) in colorList" :key="index">
                         <!--                        the chip that is currently editable in the color picker is displayed larger-->
@@ -203,7 +202,7 @@ it passes the attributes:
         <p v-if="changeDefault && useOnAll">
             Momentan werden nur die Diagramme verändert, die bisher noch nicht bearbeitet wurden.
         </p>
-        <!-- Button that will send the picked data to the parent component -->
+        <!-- Button that will send save the data to the store-->
         <v-row no-gutters>
             <v-btn color="success" @click="saveDiagramFormat">
                 Anwenden
@@ -232,6 +231,7 @@ export default {
             type: Boolean,
             default: false,
         },
+        // is this a series poll?
         series: {
             type: Boolean,
             default: false,
@@ -249,9 +249,6 @@ export default {
             this.diagramColors.indexOf(this.initialBackgroundColor)
         ]
         this.setChosenDiagramColor = String(this.getFormat(this.questionId).backgroundColor)
-        // for (let i = 0; i < this.colorList.length; i++) {
-        //     this.colorList[i] = this.initialBackgroundColors[i % this.initialBackgroundColors.length]
-        // }
         this.colorList = [...this.initialBackgroundColors]
         this.setMultipleColors = Boolean(this.initialMultipleColors)
     },
@@ -400,6 +397,12 @@ export default {
             setDiagramFormats: 'evaluation/setDiagramFormats',
         }),
 
+        /**
+         *
+         * saves the format to the store
+         * @returns {Promise<void>}
+         */
+
         async saveDiagramFormat() {
             const c = []
             for (let i = 0; i < this.colorList.length; i++) {
@@ -484,6 +487,11 @@ export default {
             this.loadChipColorInPicker()
         },
 
+        /**
+         * loads the colors from a specified colorScheme into the colorList
+         * @param index of the colorArray the user picked
+         */
+
         loadColors(index) {
             console.log('load colors')
             if (this.changeDefault && this.colorList.length < this.defaultColorListLength) {
@@ -500,8 +508,14 @@ export default {
                 console.log(this.colorSchemes[index].colorArray[i % this.colorSchemes[index].colorArray.length])
                 this.colorList[i] = this.colorSchemes[index].colorArray[i % this.colorSchemes[index].colorArray.length]
             }
+            this.loadChipColorInPicker()
             this.$forceUpdate()
         },
+
+        /**
+         *
+         * loads random colors into the colorList
+         */
 
         loadRandomColors() {
             if (this.changeDefault && this.setRandomLength) {
@@ -518,10 +532,13 @@ export default {
                 }
                 this.colorList[i] = colorString
             }
-            console.log('random')
-            console.log(this.colorList)
+            this.loadChipColorInPicker()
             this.$forceUpdate()
         },
+
+        /**
+         * checks if the input a user made into the randomLength textfield was valid (between 0 and the upperLengthLimit)
+         */
 
         validateLengthInput() {
             if (this.randomLength > this.upperLengthLimit) {
@@ -557,52 +574,13 @@ export default {
         initialShowDiagram() {
             return this.getFormat(this.questionId).showDiagram
         },
-        // here we can give a chip an outline to set it apart
-        styleForChosenChip() {
-            return (
-                'border-color:' + this.$vuetify.theme.currentTheme.info + '; border-style: solid; border-width: thick;'
-            )
-        },
+
+        /**
+         * gets all the answerTexts of the question which visuals are edited
+         * @returns {[]} a list of the titles as strings
+         */
         answerTitles() {
-            console.log(this.polls)
-            console.log(this.questionId)
             const a = []
-            /* for (let i = 0; i < this.polls.length; i++) {
-                console.log(i)
-                for (let j = 0; j < this.polls[i].categoryList.length; j++) {
-                    console.log(j)
-                    for (let k = 0; k < this.polls[i].categoryList[j].questionList.length; k++) {
-                        console.log(k)
-                        if (this.polls[i].categoryList[j].questionList[k].questionId === this.questionId) {
-                            console.log('if')
-                            for (
-                                let l = 0;
-                                l < this.polls[i].categoryList[j].questionList[k].answerPossibilities.length;
-                                l++
-                            ) {
-                                if (this.polls[i].categoryList[j].questionList[k].answerPossibilities[l].length < 5) {
-                                    a.push(
-                                        '  ' +
-                                            this.polls[i].categoryList[j].questionList[k].answerPossibilities[l] +
-                                            '  '
-                                    )
-                                } else if (
-                                    this.polls[i].categoryList[j].questionList[k].answerPossibilities[l].length > 30
-                                ) {
-                                    a.push(
-                                        this.polls[i].categoryList[j].questionList[k].answerPossibilities[l].substr(
-                                            0,
-                                            27
-                                        ) + '...'
-                                    )
-                                } else {
-                                    a.push(this.polls[i].categoryList[j].questionList[k].answerPossibilities[l])
-                                }
-                            }
-                        }
-                    }
-                }
-            } */
             console.log(this.diagramData)
             console.log(this.questionId)
             for (let i = 0; i < this.diagramData.length; i++) {

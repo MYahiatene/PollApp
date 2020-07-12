@@ -82,6 +82,7 @@
                                                                         :poll-data="pollData"
                                                                         :category="category"
                                                                         :category-data="categoryData"
+                                                                        :categoryNames="categoryNames"
                                                                         @text-input="disableDraggable"
                                                                     />
                                                                 </v-col>
@@ -99,7 +100,10 @@
 
                     <v-col cols="12" lg="7" md="7" sm="7">
                         <v-card v-show="buildIndex > 0" class="pa-1" :style="frameColor">
-                            <QuestionBuildWidget :category-data="categoryData"></QuestionBuildWidget>
+                            <QuestionBuildWidget
+                                :category-data="categoryData"
+                                :category-names="categoryNames"
+                            ></QuestionBuildWidget>
                         </v-card>
                     </v-col>
                 </v-row>
@@ -141,6 +145,7 @@ export default {
     components: { ControlQuestions, CategoryListElement, QuestionBuildWidget },
     data() {
         return {
+            categoryNameCounter: 0,
             editIndex: false,
             disableDrag: false,
             questionCreationIndex: false,
@@ -190,6 +195,7 @@ export default {
                 pollId: this.$route.params.QuestionOverview,
             },
             categoryDialog: false,
+            categoryNames: [],
         }
     },
     created() {
@@ -202,6 +208,7 @@ export default {
             isAuthenticated: 'login/isAuthenticated',
             getCategories: 'pollOverview/getCategory',
             getBuildIndex: 'questionOverview/getBuildIndex',
+            getCounter: 'questionOverview/getCounter',
             getUsername: 'login/getUsername',
         }),
         pollId() {
@@ -264,17 +271,18 @@ export default {
                 textMaxBool: false,
                 choiceType: '',
                 questionId: null,
+                categoryType: 0,
             })
             this.buildIndex = 1
         },
         editQuestion(question) {
-            // Tot?
             this.$axios.post('/editquestion', {
                 questionId: this.selectedQuestion.questionId,
                 answerPossibilities: this.selectedQuestion.answerPossibilities,
                 numberOfPossibleAnswers: this.selectedQuestion.numberOfPossibleAnswers,
                 questionMessage: this.selectedQuestion.questionMessage,
                 questionType: this.selectedQuestion.questionType,
+                categoryType: this.selectedQuestion.categoryType,
             })
             this.questionIndex = 0
             const obj = {
@@ -328,6 +336,10 @@ export default {
                         obj.categoryName = ele.categoryName
                         obj.questionList = ele.questionList
                         this.categoryData.push(obj)
+                        this.categoryNames.push({
+                            text: ele.categoryName,
+                            value: ele.categoryName,
+                        })
                     })
                     console.log('CategoryData')
                     console.log(this.categoryData)
@@ -368,10 +380,13 @@ export default {
                 })
                 .then((response) => {
                     this.editCategory = response.data
-                    console.log(this.editCategory)
                     this.defaultCategory = Object.assign({}, this.editCategory)
                     this.categoryData.push(this.defaultCategory)
-                    console.log(this.categoryData)
+                    this.categoryNames.push({
+                        text: 'Neue Kategorie',
+                        value: this.getCounter,
+                    })
+                    this.incCounter()
                 })
             const obj = {
                 lastEditFrom: this.getUsername,
@@ -427,6 +442,7 @@ export default {
             setCategory: 'pollOverview/setCategory',
         }),
         ...mapMutations({
+            incCounter: 'questionOverview/increment',
             saveData: 'pollOverview/saveData',
             setPollName: 'pollOverview/setPollName',
             setPollID: 'pollOverview/setPollID',

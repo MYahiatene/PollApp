@@ -26,6 +26,7 @@
         </v-app-bar>
 
         <div v-if="!noAnswers">
+            <!--            if shortView is active we only display a few chips that give an initial idea on how the question was ansered-->
             <v-container fluid v-if="shortView">
                 <v-row justify="center">
                     <v-col cols="12">
@@ -38,7 +39,10 @@
                 </v-row>
             </v-container>
 
+            <!--            else we have a more elaborate analysis-->
+
             <div v-else>
+                <!--                first we display the span with an information box for it-->
                 <v-card-subtitle>
                     <v-btn icon @click="spanExplanation = !spanExplanation"><v-icon>mdi-magnify</v-icon></v-btn>
                     Spannweite:
@@ -59,10 +63,14 @@
                     </p>
                 </v-card>
 
+                <!--                for every position there is a separate v-card-->
+
                 <v-card class="ma-1" dense v-for="(list, index) in meanOrder" :key="index">
                     <v-card-title> Position: {{ index + 1 }} </v-card-title>
 
                     <v-card-subtitle> relative Position: {{ list[0].meanPositionValue }} </v-card-subtitle>
+
+                    <!--                    within we have chips for every answer possibility-->
 
                     <v-card-text>
                         <v-row>
@@ -72,6 +80,8 @@
                                 </v-chip>
                             </div>
                         </v-row>
+
+                        <!--                        if the show attribute is true we provide an entire v-card for the item displaying additional information-->
 
                         <div v-for="(item, id) in list" :key="id">
                             <v-card v-if="item.show" class="pa-2 ma-2">
@@ -138,32 +148,20 @@ export default {
     },
     components: { BarChartView },
     data: () => ({
-        // sortData: {
-        //     answerPossibilities: ['Sympathie', 'Kompetenz', 'Höflichkeit', 'Pünktlichkeit', 'Zuverlässigkeit'],
-        //     answerList: [
-        //         [1, 0, 2, 3, 4],
-        //         [0, 1, 2, 3, 4],
-        //         [1, 0, 3, 2, 4],
-        //         [0, 1, 2, 3, 4],
-        //     ],
-        // },
-
         answerPossibilites: [],
-
-        arrayOfValues: [],
-
+        chartdataSets: [],
         meanOrder: [],
 
         span: 0,
 
+        // indicates if an additional window with an explanation for the meaning of span is displayed
         spanExplanation: false,
+        // indicates if a short overview or a detailed analysis is displayed
         shortView: true,
-
+        // indicates if there were no participants left who answered the question (might be caused by a very restrictive filter)
         noAnswers: false,
 
         // these options are needed to display a visual diagram, they are passed as props into that component
-
-        // bar charts dont have a legend
         barChartOptions: {
             legend: {
                 display: false,
@@ -182,105 +180,19 @@ export default {
             },
         },
 
+        // this number is used to trigger an update in the barcharts
+
         DiagramKey: 0,
 
-        chartdataSets: [],
-
-        chartdataSets1: [
-            {
-                labels: ['g', 'y', 'h'],
-                datasets: [
-                    {
-                        label: 'bla',
-                        backgroundColor: '#344444',
-                        data: [1, 2, 3],
-                    },
-                ],
-            },
-            {
-                labels: ['g', 'y', 'h'],
-                datasets: [
-                    {
-                        label: 'blo',
-                        backgroundColor: '#344444',
-                        data: [1, 2, 3],
-                    },
-                ],
-            },
-            {
-                labels: ['g', 'y', 'h'],
-                datasets: [
-                    {
-                        label: 'blu',
-                        backgroundColor: '#344444',
-                        data: [1, 2, 3],
-                    },
-                ],
-            },
-        ],
         index: 0,
+
+        // data for seriesPolls:
+        // stores the index of the poll that is currently displayed
         currentIndex: 0,
+        // stores if we have a seriesPoll or a regular poll
         seriesPoll: false,
+        // stores the number of polls (would be one for a regular poll)
         numberOfWidgets: 1,
-        diagramDataTest: [
-            {
-                meanOrder: [
-                    [
-                        [
-                            {
-                                itemID: 0,
-                                meanPositionValue: 0,
-                                meanPosition: 0,
-                                itemName: 'a',
-                                variance: 2,
-                                standardDeviation: 2,
-                                show: false,
-                                wasAtPositionNumbers: [2, 0, 0],
-                            },
-                        ],
-                        [
-                            {
-                                itemID: 1,
-                                meanPositionValue: 2,
-                                meanPosition: 2,
-                                itemName: 'b',
-                                variance: 2,
-                                standardDeviation: 2,
-                                show: false,
-                                wasAtPositionNumbers: [0, 0, 2],
-                            },
-                        ],
-                    ],
-                    [
-                        [
-                            {
-                                itemID: 0,
-                                meanPositionValue: 0,
-                                meanPosition: 0,
-                                itemName: 'b',
-                                variance: 2,
-                                standardDeviation: 2,
-                                show: false,
-                                wasAtPositionNumbers: [2, 0, 0],
-                            },
-                        ],
-                        [
-                            {
-                                itemID: 1,
-                                meanPositionValue: 2,
-                                meanPosition: 2,
-                                itemName: 'a',
-                                variance: 2,
-                                standardDeviation: 2,
-                                show: false,
-                                wasAtPositionNumbers: [0, 0, 2],
-                            },
-                        ],
-                    ],
-                ],
-                answerPossibilities: ['a', 'b'],
-            },
-        ],
     }),
 
     computed: {
@@ -294,18 +206,17 @@ export default {
     },
 
     methods: {
+        /**
+         * creates data for the bar charts using the values from wasAtPositionOrder for each answerPossibility
+         */
         createChartData() {
             const items = this.answerPossibilites
-            console.log(this.answerPossibilites)
-            console.log(items)
             for (let i = 0; i < items.length; i++) {
                 this.chartdataSets.push({ labels: [], datasets: [] })
                 for (let j = 0; j < items.length; j++) {
                     this.chartdataSets[i].labels.push('Position ' + (j + 1) + '')
                 }
             }
-            console.log('chartData')
-            console.log(this.chartdataSets)
 
             for (let j = 0; j < this.meanOrder.length; j++) {
                 for (let k = 0; k < this.meanOrder[j].length; k++) {
@@ -320,28 +231,28 @@ export default {
             this.DiagramKey += 1
         },
 
+        /**
+         *
+         * This methods uses an index of a seriesPoll to compute all the needed data that was send in diagramData
+         * @param index of the seriesPoll, if we have a regular poll this will be 0
+         */
+
         computeData(index) {
             this.meanOrder = []
             this.answerPossibilites = []
+            // check if we have a seriesPoll
             if (this.diagramData[this.questionID].meanOrder.length > 1) {
                 this.seriesPoll = true
                 this.numberOfWidgets = this.diagramData[this.questionID].meanOrder.length
             }
-            console.log('computeData')
-            console.log(index)
-            console.log(this.diagramData[this.questionID].meanOrder)
-
+            // check if there were no answers
             if (this.diagramData[this.questionID].meanOrder[index].length === 0) {
                 this.noAnswers = true
             } else {
-                console.log(this.diagramData[this.questionID].meanOrder[index].length)
+                // copy values from store into a front end array
                 for (let i = 0; i < this.diagramData[this.questionID].meanOrder[index].length; i++) {
-                    console.log(this.diagramData[this.questionID].meanOrder[index][i])
                     this.meanOrder.push([])
                     for (let j = 0; j < this.diagramData[this.questionID].meanOrder[index][i].length; j++) {
-                        console.log(i)
-                        console.log(j)
-                        console.log(this.diagramData[this.questionID].meanOrder[index][i][j])
                         this.meanOrder[i].push({
                             itemID: this.diagramData[this.questionID].meanOrder[index][i][j].itemID,
                             meanPositionValue: this.diagramData[this.questionID].meanOrder[index][i][j]
@@ -358,7 +269,6 @@ export default {
                     }
                 }
 
-                console.log(this.meanOrder)
                 this.answerPossibilites = this.diagramData[this.questionID].answerPossibilities
 
                 this.span =
@@ -370,17 +280,31 @@ export default {
             }
         },
 
+        /**
+         *
+         * This method checks if there is a next Widget to load,
+         * so it checks if there is another poll that comes before the current one.
+         * If we have a regular poll, that will never be the case
+         *
+         * if we do have a next Widget though the current index is increased and computeData is called to get the new values
+         */
+
         loadNextWidget() {
-            console.log('loadNext')
             if (!(this.currentIndex === this.numberOfWidgets - 1)) {
-                console.log('true')
                 this.currentIndex++
                 this.computeData(this.currentIndex)
             }
         },
 
+        /**
+         * This method checks if there is a former Widget to load,
+         * so it checks if there is another poll that comes after the current one.
+         * If we have a regular poll, that will never be the case
+         *
+         * if we do have a former Widget though the current index is decreased and computeData is called to get the new values
+         */
+
         loadLastWidget() {
-            console.log('loadLast')
             if (!(this.currentIndex === 0)) {
                 this.currentIndex--
                 this.computeData(this.currentIndex)

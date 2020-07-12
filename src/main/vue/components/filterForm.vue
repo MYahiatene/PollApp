@@ -1,3 +1,5 @@
+<!--This page provides the UI to pick out filters that are used on a survey-->
+
 <template>
     <v-dialog v-model="dialog" overlay-color="background" persistent width="500" overlay-opacity="0.95" fullscreen>
         <template v-slot:activator="{ on }">
@@ -9,8 +11,7 @@
         <v-card class="ma-2 pa-2">
             <v-card-title>Erweiterte Analyse von {{ pollName }}</v-card-title>
             <template>
-                <!--                <v-overflow-btn v-model="chosenPoll" editable prefix="Basisdaten:" :items="pollTitles" dense>-->
-                <!--                </v-overflow-btn>-->
+                <!--                if we have a seriesPoll here the user can pick how many polls of that series he wants to Analyse. He can only include polls that happend before the current poll.-->
                 <div v-if="poll">
                     <v-slider
                         class="ml-4 mr-8"
@@ -18,10 +19,12 @@
                         v-model="seriesPollNumber"
                         min="0"
                         :max="(poll.seriesCounter - 1)"
-                        label="Anzahl der betrachteten vorhergegangenen Serienumfragen"
+                        label="Anzahl der betrachteten vorhergegangenen Serienumfragen:"
                         thumb-label="always"
                     />
                 </div>
+
+                <!--                we have an expansion panel for each type of filter-->
 
                 <v-expansion-panels accordion multiple hover>
                     <v-expansion-panel>
@@ -39,6 +42,7 @@
                                     clearable
                                     :no-data-text="'Keine Fragen ausgewählt'"
                                 >
+                                    <!--                                    if there are too many selectedQuestions we only display a few -->
                                     <template v-slot:selection="{ item, index }">
                                         <v-chip
                                             v-if="index < questionTitlesDisplayedInSelect"
@@ -308,24 +312,9 @@ export default {
 
             filterData: [],
 
-            filterData1: {
-                pollId: 1,
-                chosenQuestions: [11, 12, 32, 4, 50, 8], // these are questionIDs
-                chosenQuestionTypes: ['singleChoice', 'multiChoice', 'range', 'slide', 'sort', 'text'],
-                applyConsistency: false,
-                qafilters: [
-                    {
-                        categoryIndex: 1, // these are the indices, they indicate the position within a poll
-                        questionIndex: 3, // within a category
-                        answers: [2, 3, 5], // or within an answerlist of a question
-                    },
-                ],
-            },
             showTimeDiagram: false,
             relativeTimeDiagram: false,
             consistencyOn: false,
-
-            // userNames: ['Ben', 'Miko', 'Thorsten', 'Benno', 'Mikola', 'Thorstenna'],
             selectedUsers: [],
             userInverted: false,
             userNames: [],
@@ -339,31 +328,37 @@ export default {
             filters: 'evaluation/getFilterList',
         }),
 
+        /**
+         * this method return if the current poll is a series poll
+         * @returns {boolean}
+         */
+
         isSeriesPoll() {
             return this.poll.level !== undefined && this.poll.level !== null && this.poll.level >= 0
         },
 
+        /**
+         * gives a list of all the categories in the current poll
+         * @returns {[]|default.methods.poll.categoryList}
+         */
+
         categories() {
-            return this.polls[this.pollIndex].categoryList
+            return this.poll.categoryList
         },
 
-        // pollTitles() {
-        //     console.log('pollTitles()')
-        //     const pollTitles = []
-        //     for (let i = 0; i < this.polls.length; i++) {
-        //         pollTitles.push(this.polls[i].pollName)
-        //     }
-        //     return pollTitles
-        // },
-
-        // pollIndex() {
-        //     console.log('pollIndex()')
-        //     return this.pollTitles.indexOf(this.chosenPoll)
-        // },
+        /**
+         * gives the poll that should be analysed
+         * @returns {string}
+         */
 
         poll() {
             return this.polls[this.pollIndex]
         },
+
+        /**
+         * computes the ids from the QuestionMessages that are stored in selectedQuestions
+         * @returns {[]}
+         */
 
         chosenQuestionIds() {
             console.log('chosenQuestionIds()')
@@ -381,6 +376,11 @@ export default {
             return questionIds
         },
 
+        /**
+         * gives the titles of all the questions (in all categories) of the poll
+         * @returns {[]|*[]}
+         */
+
         questionTitles() {
             console.log('questionTitle()')
             if (this.pollIndex === -1) {
@@ -397,13 +397,7 @@ export default {
         },
     },
     mounted() {
-        console.log('mounted()')
-        console.log(this.filters)
-        console.log(this.isSeriesPoll)
-        // this.$store.dispatch('participation/loadPollTakers', this.polls[this.pollIndex].pollId)
-        // this.$store.dispatch('participant/loadPollTakers', 0)
-
-        // this.chosenPoll = this.pollTitles[this.initialPollIndex]
+        this.selectedQuestions = []
         for (let i = 0; i < this.questionTitles.length; i++) {
             this.selectedQuestions.push(this.questionTitles[i])
         }
@@ -418,6 +412,11 @@ export default {
             updateData: 'evaluation/updateData',
             getUsers: 'participation/loadPollTakers',
         }),
+
+        /**
+         * Gets all the filters that are currently selected by the user and sends them to the store
+         * @returns {Promise<void>}
+         */
 
         async saveToStore() {
             console.log('saveToStore()')
@@ -486,6 +485,11 @@ export default {
             this.$emit('close-event')
         },
 
+        /**
+         * gets the current number of ConsistencyQuestions so a slider can be shown accordingly
+         * @returns {Promise<void>}
+         */
+
         async updateNumberOfConsistencyQuestions() {
             console.log('updateNumberOfConsistencyQuestions()')
             await this.$axios
@@ -499,10 +503,12 @@ export default {
                 })
         },
 
+        /**
+         * Gets a list with all the userNames of the participants of the survey
+         *
+         */
+
         getPollTakers() {
-            console.log('polls')
-            console.log(this.polls)
-            console.log(this.pollIndex)
             if (this.polls[this.pollIndex].anonymityStatus === 3) {
                 const obj = {
                     pollId: this.polls[this.pollIndex].pollId,
@@ -517,8 +523,12 @@ export default {
             }
         },
 
+        /**
+         * adds a new QAFilter to qafilterList
+         *
+         */
+
         addQAFilter() {
-            console.log('addQAFilter()')
             const id = this.qafilterList.length
             this.qafilterList.push({
                 active: true,
@@ -531,13 +541,27 @@ export default {
             })
         },
 
+        /**
+         * sets a qaFilter to not active, causing it not to be displayed nor be send to the store
+         * @param index of the filter
+         */
+
         deleteQAFilter(index) {
-            console.log('deleteQAFilter()')
             this.qafilterList[index].active = false
         },
 
+        /**
+         * updates the qa Filter with the specified filterId by setting all its attributes with the passed attributes
+         * @param filterId
+         * @param categoryIndex
+         * @param questionIndex
+         * @param questionId
+         * @param answerIndices
+         * @param isSlider
+         * @param invertFilter
+         */
+
         updateQaFilter([filterId, categoryIndex, questionIndex, questionId, answerIndices, isSlider, invertFilter]) {
-            console.log('updateQAFilter()')
             this.qafilterList[filterId].categoryIndex = categoryIndex
             this.qafilterList[filterId].questionIndex = questionIndex
             this.qafilterList[filterId].questionId = questionId
@@ -547,8 +571,11 @@ export default {
             console.log(this.qafilterList[filterId])
         },
 
+        /**
+         * adds a new dateFilter to dateFilterList
+         */
+
         addDateFilter() {
-            console.log('addDateFilter()')
             const id = this.dateFilterList.length
             this.dateFilterList.push({
                 active: true,
@@ -560,11 +587,23 @@ export default {
             })
         },
 
+        /**
+         * sets a dateFilter to not active, causing it not to be displayed nor be send to the store
+         * @param index of the filter
+         */
+
         deleteDateFilter(index) {
-            console.log('deleteDateFilter()')
             this.dateFilterList[index].active = false
             this.$forceUpdate()
         },
+
+        /**
+         * updates the date Filter with the specified filterId by setting all its attributes with the passed attributes
+         * @param filterIndex
+         * @param startDate
+         * @param endDate
+         * @param invertFilter
+         */
 
         updateDateFilter([filterIndex, startDate, endDate, invertFilter]) {
             console.log('updateDateFilter()')
@@ -574,9 +613,18 @@ export default {
             this.dateFilterList[filterIndex].invertFilter = invertFilter
             console.log(this.dateFilterList)
         },
+
+        /**
+         * consistencyOn must always be true when the minConsistencyValue is not 0
+         */
         updateConsistencyOn() {
             this.consistencyOn = !(this.minConsistencyValue === 0)
         },
+
+        /**
+         * updates all the data structures to display the filters that have been send from the store
+         *
+         */
 
         getFilters() {
             console.log('getFilters')
@@ -688,6 +736,10 @@ export default {
             }
         },
 
+        /**
+         * sets all filters t their default values
+         */
+
         clearFilter() {
             this.selectedQuestions = []
             for (let i = 0; i < this.questionTitles.length; i++) {
@@ -709,10 +761,20 @@ export default {
             this.saveToStore()
         },
 
+        /**
+         * forces date and qa filter to be displayed again
+         */
+
         updateFilter() {
             this.qaKey += 1
             this.dateKey += 1
         },
+
+        /**
+         * computed the index of the category a question is in, as well as the index that question has within that category
+         * @param questionId of the question
+         * @returns {{questionIndex: number, categoryIndex: number}|null}
+         */
 
         getCategoryIndexAndQuestionIndexFromQuestionId(questionId) {
             console.log('bin in getCat...')

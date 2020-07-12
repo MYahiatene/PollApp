@@ -25,6 +25,7 @@ public interface QuestionService {
 
     /**
      * This method adds a question.
+     *
      * @param questionCmd the Cmd which includes the necessary details
      * @return returns the question object
      */
@@ -44,6 +45,7 @@ public interface QuestionService {
 
     /**
      * This method edits a question.
+     *
      * @param questionCmd the Cmd which includes the necessary details
      * @return returns the edited question object
      */
@@ -51,15 +53,17 @@ public interface QuestionService {
 
     /**
      * This method changes the category of a question.
-     * @param questionId the id of the question
+     *
+     * @param questionId    the id of the question
      * @param newCategoryId the new category id of the question
-     * @param newIndex the new index in the question list of the question
+     * @param newIndex      the new index in the question list of the question
      * @return returns the question
      */
     Question changeCategory(final Long questionId, final Long newCategoryId, final Long newIndex);
 
     /**
      * Adds a new answerPossibility to the List of answerPossibilities of the given question.
+     *
      * @param question
      * @param answer
      */
@@ -67,6 +71,7 @@ public interface QuestionService {
 
     /**
      * Copies a choiceQuestion to a category. Needs to adds every answer separately to the new question.
+     *
      * @param question
      * @param pollId
      * @return
@@ -75,6 +80,7 @@ public interface QuestionService {
 
     /**
      * Copies a sortQuestion to a category. Needs to adds every answer separately to the new question.
+     *
      * @param question
      * @param pollId
      * @return
@@ -83,10 +89,20 @@ public interface QuestionService {
 
     /**
      * Copies all questions from one category.
+     *
      * @param categoryId
      * @param pollId
      * @param questions
      */
     void copyQuestions(final Long categoryId, final Long pollId, final List<Question> questions);
 
+    /**
+     * This method changes the category of a question.
+     *
+     * @param questionId    the id of the question
+     * @param newCategoryId the new category id of the question
+     * @param newIndex      the new index in the question list of the question
+     * @return returns the question
+     */
+    public Question changeQuestionIndex(final Long questionId, final Long newCategoryId, final Long newIndex);
 }

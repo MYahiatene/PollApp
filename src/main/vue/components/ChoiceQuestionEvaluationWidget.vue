@@ -6,8 +6,8 @@
             <v-toolbar-title> {{ questionTitle }} </v-toolbar-title>
 
             <v-spacer></v-spacer>
-            <!--            this button leads to the settings page for this specific question-->
 
+            <!--this is displayed if there were no ansers for this question-->
             <div v-if="(calculated[0].relative[0] === 'NaN')">
                 Keine Antworten
             </div>
@@ -15,6 +15,7 @@
             <div v-if="!(calculated[0].relative[0] === 'NaN')">
                 <v-tooltip bottom>
                     <template v-slot:activator="{ on, attrs }">
+                        <!--                        buttin for percentages in diagram-->
                         <v-btn
                             icon
                             :color="relativ ? 'accent' : 'primary'"
@@ -31,6 +32,7 @@
                 </v-tooltip>
                 <v-tooltip bottom>
                     <template v-slot:activator="{ on, attrs }">
+                        <!--                        button for cummulated values in diagram-->
                         <v-btn
                             icon
                             :color="cumulated ? 'accent' : 'primary'"
@@ -45,6 +47,7 @@
                 </v-tooltip>
                 <v-tooltip bottom>
                     <template v-slot:activator="{ on, attrs }">
+                        <!--            this button leads to the settings page for this specific question-->
                         <v-btn icon color="primary" v-bind="attrs" v-on="on" @click="visualSettings = !visualSettings">
                             <v-icon> mdi-brush </v-icon>
                         </v-btn>
@@ -59,7 +62,6 @@
                 <v-row v-if="visualSettings">
                     <v-col cols="12" lg="12">
                         <v-card>
-                            <!--                    the visual settings the widget gets the current settings passed as props-->
                             <visual-evaluation-settings
                                 :question-id="questionId"
                                 :change-default="false"
@@ -92,8 +94,8 @@
                     </v-col>
                 </v-row>
                 <v-row> </v-row>
-                <!-- here we display a table with the data-->
 
+                <!--here we display the median and the mode-->
                 <v-row>
                     <v-col cols="3">
                         <v-chip :key="medianKey" :color="this.$vuetify.theme.currentTheme.info"
@@ -106,6 +108,8 @@
                         >
                     </v-col>
                 </v-row>
+
+                <!-- here we display a table with the data-->
                 <v-row>
                     <v-col cols="12" lg="12">
                         <div v-if="showTable">
@@ -150,7 +154,7 @@ export default {
         // key that forces the diagram to update
         // (value is set on the color of the diagram and update whenever updateVisuals is called)
         diagramKey: 0,
-        // these options are needed to display a visual diagram, they are passed as props into that component
+        // these props are needed for the footer
         footerProps: {
             itemsPerPageText: 'Zeilen pro Seite',
             itemsPerPageOptions: [10, 20, 50, -1],
@@ -196,6 +200,8 @@ export default {
             getFormat: 'evaluation/getDiagramFormat',
             getDiagramOption: 'evaluation/getDiagramOption',
         }),
+
+        // when cumulated is set we immediatly change the diagramOptions
         cumulated: {
             get() {
                 return this.getDiagramOption(this.questionId).cumulated
@@ -208,6 +214,8 @@ export default {
                 })
             },
         },
+
+        // when relative is set we immediatly change the diagramOptions
         relativ: {
             get() {
                 return this.getDiagramOption(this.questionId).relativ
@@ -222,9 +230,6 @@ export default {
         },
         chartData() {
             let baseData = []
-            console.log('calculated:')
-
-            console.log(this.calculated)
             if (this.relativ) {
                 for (let i = 0; i < this.calculated.length; i++) {
                     baseData.push([])
@@ -242,13 +247,12 @@ export default {
                     data[i].push(baseData[i][j] + (this.cumulated ? data[i][j - 1] : 0))
                 }
             }
-            console.log(this.questionTitle)
-            console.log('data')
-            console.log(data)
             return data
         },
         // here we compute the data for the visual diagram, writing it into a format the components can process.
         // We either give one color or an array of colors
+        // We also distinguish if we have a series poll, if we do we only pass one color,
+        // even if multiple colors are set, so that each dataset has its own color, rather than each answer
         chartdataSet() {
             const c = []
             for (let i = 0; i < this.chartData.length; i++) {
@@ -285,6 +289,8 @@ export default {
         showDiagram() {
             return this.getFormat(this.questionId).showDiagram
         },
+
+        // computed the items for the table, adding percentages
         items() {
             const h = []
             for (let i = 0; i < this.answerPossibilities.length; i++) {
@@ -296,6 +302,7 @@ export default {
         /*
 
         This method creates an array of color, which length is the one of answers for this question
+        or if we have a series poll we use the length of chartData (telling us the number of polls) instead
        */
 
         choppedBackgroundColors() {
@@ -314,6 +321,8 @@ export default {
         },
 
         // pie charts dont have a grid in the background
+        // in order to make sure we don't get an annoying white frame around the diargams in dark mode
+        // we compute the pieChartOptions setting the frame according to the mode
 
         pieChartOptions() {
             return {
@@ -339,18 +348,18 @@ export default {
         ...mapMutations({
             setDiagramOption: 'evaluation/setDiagramOption',
         }),
-        arrayTransposed(array) {
-            console.log(array)
-            const newArray = []
-            for (let j = 0; j < array[0].length; j++) {
-                newArray.push([])
-                for (let i = 0; i < array.length; i++) {
-                    newArray[j].push(array[i][j])
-                }
-            }
-            console.log(newArray)
-            return newArray
-        },
+        // arrayTransposed(array) {
+        //     console.log(array)
+        //     const newArray = []
+        //     for (let j = 0; j < array[0].length; j++) {
+        //         newArray.push([])
+        //         for (let i = 0; i < array.length; i++) {
+        //             newArray[j].push(array[i][j])
+        //         }
+        //     }
+        //     console.log(newArray)
+        //     return newArray
+        // },
     },
 }
 </script>

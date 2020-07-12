@@ -1,4 +1,5 @@
 <template>
+    <!--    Here the user can create consistency relationships between two questions of a poll-->
     <v-dialog v-model="dialog" overlay-color="background" persistent width="500" overlay-opacity="0.95" fullscreen>
         <template v-slot:activator="{ on }">
             <v-btn v-if="useEvaluationStore" v-on="on">
@@ -16,10 +17,18 @@
             </v-tooltip>
         </template>
         <v-card class="ma-1 pa-5">
-            <h2>Konsistenzfragen von Umfrage: "{{ pollName }}"</h2>
-            <v-btn color="primary" @click=";(dialog = false), $emit('close-event')">
-                Fertig
-            </v-btn>
+            <v-row>
+                <v-col cols="12" lg="11">
+                    <h2>Konsistenzfragen von Umfrage: "{{ pollName }}"</h2>
+                </v-col>
+                <v-col cols="12" lg="1">
+                    <v-btn color="primary" @click=";(dialog = false), $emit('close-event')">
+                        Fertig
+                    </v-btn>
+                </v-col>
+            </v-row>
+
+            <!--        This provides the user with an explanation of how the consistency Questions work -->
             <v-expansion-panels v-model="panel" flat>
                 <v-expansion-panel>
                     <v-expansion-panel-header>
@@ -68,11 +77,14 @@
                 </v-expansion-panel>
             </v-expansion-panels>
 
+            <!--        The contend consists of two basically identical side, one to specify the first question and one for the second-->
+
             <v-card class="ma-1 pa-1" :style="frameColor">
                 <v-row>
                     <v-col cols="12" lg="6" md="6" sm="12">
                         <p>Verknüpfung zwischen:</p>
                         <v-card flat class="pa-2">
+                            <!--                        pick category for first question-->
                             <v-overflow-btn
                                 v-if="!askForCategory()"
                                 v-model="selectedCategory"
@@ -85,6 +97,7 @@
                             </v-overflow-btn>
                             <p v-else>Kategorie: "{{ selectedCategory }}"</p>
                             <v-spacer></v-spacer>
+                            <!--                            pick question for first question-->
                             <v-overflow-btn
                                 v-model="selectedQuestion"
                                 prefix="Frage: "
@@ -101,6 +114,8 @@
                             >
                             </v-overflow-btn>
 
+                            <!--                            pick answer for first answer-->
+
                             <v-select
                                 v-if="
                                     questions[questionIndex] &&
@@ -113,6 +128,7 @@
                                 :no-data-text="'Keine Fragen ausgewählt'"
                                 @change="updateAnswerIndices()"
                             >
+                                <!--                            if there are a lot of selected answers only some are displayed-->
                                 <template v-slot:selection="{ item, index }">
                                     <v-chip
                                         v-if="index < answerTitlesDisplayedInSelect"
@@ -128,6 +144,8 @@
                                     </span>
                                 </template>
                             </v-select>
+
+                            <!--                            if we have a slider question-->
                             <div
                                 v-if="
                                     questions[questionIndex] &&
@@ -172,6 +190,7 @@
                     <v-col cols="12" lg="6" md="6" sm="12">
                         <p>Und:</p>
                         <v-card flat class="pa-2">
+                            <!--                            pick category for second question-->
                             <v-overflow-btn
                                 v-if="!askForCategory()"
                                 v-model="selectedCategory2"
@@ -184,6 +203,7 @@
                             </v-overflow-btn>
                             <p v-else>Kategorie: "{{ selectedCategory }}"</p>
                             <v-spacer></v-spacer>
+                            <!--                            pick question for second question-->
                             <v-overflow-btn
                                 v-model="selectedQuestion2"
                                 prefix="Frage: "
@@ -199,6 +219,7 @@
                                 @input="updateQuestionIndex2()"
                             >
                             </v-overflow-btn>
+                            <!--                            pick answers for second questions-->
                             <v-select
                                 v-if="
                                     questions2[questionIndex2] &&
@@ -211,6 +232,7 @@
                                 :no-data-text="'Keine Fragen ausgewählt'"
                                 @change="updateAnswerIndices2()"
                             >
+                                <!--                                if there are too many answers only a few are displayed-->
                                 <template v-slot:selection="{ item, index }">
                                     <v-chip
                                         v-if="index < answerTitlesDisplayedInSelect"
@@ -232,6 +254,7 @@
                                     questions2[questionIndex2].questionType === 'SliderQuestion'
                                 "
                             >
+                                <!--                                if a slider question is picked-->
                                 Antwort-Bereich:
                                 <v-range-slider
                                     v-model="range2"
@@ -269,6 +292,8 @@
                 </v-row>
             </v-card>
 
+            <!--            buttons for saving or discarding changes-->
+
             <v-card-actions>
                 <!--            margin so the text doesn't touch the buttons -->
                 <v-btn class="mr-2" color="primary" @click="addControlQuestion">
@@ -279,6 +304,8 @@
                     Änderungen verwerfen
                 </v-btn>
             </v-card-actions>
+
+            <!--        the dialog is opened to confirm that the question should be deleted-->
 
             <v-dialog v-model="deleteDialog" max-width="290">
                 <v-card>
@@ -301,6 +328,8 @@
                     </v-card-actions>
                 </v-card>
             </v-dialog>
+
+            <!--        in this v-card the consistency relationships that are already created are listed-->
 
             <v-card class="ma-1 pa-4">
                 <h3>
@@ -392,6 +421,11 @@ export default {
             pollsFromEval: 'evaluation/getPolls',
         }),
 
+        /**
+         * gives a list of polls
+         * @returns {string|*[]}
+         */
+
         polls() {
             if (this.useEvaluationStore) {
                 return this.pollsFromEval
@@ -399,17 +433,19 @@ export default {
                 return this.pollsProp
             }
         },
+
+        /**
+         * gives the name of the poll
+         * @returns {any}
+         */
         pollName() {
             return this.polls[this.pollIndex].pollName
         },
 
-        pollTitles() {
-            const pollTitles = Object.assign([{}], this.polls)
-            for (let i = 0; i < pollTitles.length; i++) {
-                pollTitles[i] = this.polls[i].pollName
-            }
-            return pollTitles
-        },
+        /**
+         * gives the name of all the categories
+         * @returns {[]}
+         */
 
         categoryTitles() {
             const l = []
@@ -419,9 +455,20 @@ export default {
             return l
         },
 
+        /**
+         * gives a list of all the categories
+         * @returns {[]|default.methods.poll.categoryList}
+         */
+
         categories() {
             return this.polls[this.pollIndex].categoryList
         },
+
+        /**
+         *
+         * gives a list of all the questionTitles in the first selected category
+         * @returns {[]|*[]}
+         */
 
         questionTitles() {
             if (this.categoryIndex === -1) {
@@ -435,6 +482,12 @@ export default {
             }
         },
 
+        /**
+         *
+         * gives a list of all the questionTitles in the second selected category
+         * @returns {[]|*[]}
+         */
+
         questionTitles2() {
             if (this.categoryIndex2 === -1) {
                 return []
@@ -446,6 +499,11 @@ export default {
                 return l
             }
         },
+
+        /**
+         * gives a list of all the questions in the first selected category
+         * @returns {[]|*[]}
+         */
 
         questions() {
             if (this.categoryIndex === -1) {
@@ -464,6 +522,11 @@ export default {
             }
         },
 
+        /**
+         * gives a list of all the questions in the second selected category
+         * @returns {[]|*[]}
+         */
+
         questions2() {
             if (this.categoryIndex2 === -1) {
                 return []
@@ -480,6 +543,11 @@ export default {
                 return c
             }
         },
+
+        /**
+         * gives a list of all the answerTitles in the first selected category
+         * @returns {[]|*[]}
+         */
 
         answerTitles() {
             if (this.questionIndex === -1) {
@@ -508,6 +576,11 @@ export default {
             }
         },
 
+        /**
+         * gives a list of all the answerTitles in the second selected category
+         * @returns {[]|*[]}
+         */
+
         answerTitles2() {
             if (this.questionIndex2 === -1) {
                 return []
@@ -533,6 +606,12 @@ export default {
         },
 
         // this needs to be computed, so we can get it from the nuxt Config
+
+        /**
+         * gives a string you can put into a style prop that sets the background
+         * to the background color of the current theme
+         * @returns {string}
+         */
 
         frameColor() {
             return 'background-color:' + this.$vuetify.theme.currentTheme.background2 + ';'
@@ -582,22 +661,9 @@ export default {
             .catch((reason) => {
                 console.log(reason)
             })
-
-        // if (this.categoryIndex === -1) {
-        //     this.selectedCategory = ''
-        // }
-        // this.selectedCategory = this.categoryTitles[this.categoryIndex]
-        //
-        // if (this.questionIndex === -1) {
-        //     this.selectedQuestion = ''
-        // }
-        // this.selectedQuestion = this.questionTitles[this.questionIndex]
-        //
-        // for (let i = 0; i < this.answerIndices.length; i++) {
-        //     this.selectedAnswers.push(this.answerTitles[this.answerIndices[i]])
-        // }
     },
     methods: {
+        // All these methods update the indices of values according to the strings that were set for them
         updateCategoryIndex() {
             this.categoryIndex = this.categoryTitles.indexOf(this.selectedCategory)
         },
@@ -633,15 +699,34 @@ export default {
             }
         },
 
+        /**
+         * resets answers for the first question
+         * has to do range as well as answerIndices in case it was a choice or slider question
+         *
+         * **/
+
         resetAnswers() {
             this.range = [0, 0]
             this.answerIndices = []
         },
 
+        /**
+         * resets answers for the second question
+         * has to do range as well as answerIndices in case it was a choice or slider question
+         *
+         * **/
+
         resetAnswers2() {
             this.range2 = [0, 0]
             this.answerIndices2 = []
         },
+
+        /**
+         * This method queries if there is more than one category or not
+         * if there is only one category it automatically sets the chosen category to the first and only one available
+         *
+         * @returns {boolean} true if there was only one category
+         */
 
         askForCategory() {
             const OnlyOneCategory = this.categories.length === 1
@@ -653,6 +738,12 @@ export default {
             }
             return OnlyOneCategory
         },
+
+        /**
+         * adds the information that is currently edited to the list of CQs
+         * send that informatio to the store
+         *
+         * **/
         addControlQuestion() {
             this.updateAnswerIndices()
             this.updateAnswerIndices2()
@@ -770,8 +861,11 @@ export default {
             }
         },
 
+        /**
+         *  deletes the CQ that is currently edited from the editors window, but still keeps its former version.
+         * **/
+
         discardControlQuestion() {
-            // deletes the CQ that is currently edited from the editors window, but still keeps its former version.
             this.buttonInfo = ''
             this.currentId = -1
             this.currentServerId = -1
@@ -785,6 +879,10 @@ export default {
             this.range2 = [0, 0]
             this.computeWordsFromIndices()
         },
+
+        /**
+         * deletes a controlQuestion with a specific index
+         * **/
 
         deleteControlQuestion(index) {
             // the question is added here, so its no longer visible in the editing component
@@ -803,6 +901,11 @@ export default {
                 console.log(index)
             }
         },
+
+        /**
+         *
+         * load the data of an CQ Question with a specific index into the editing window
+         * **/
 
         openCq(index) {
             console.log('open')
@@ -857,6 +960,11 @@ export default {
             this.computeWordsFromIndices()
         },
 
+        /**
+         * sets the selected attributes using the information from the indices
+         *
+         * **/
+
         computeWordsFromIndices() {
             this.selectedCategory = this.categoryTitles[this.categoryIndex]
             this.selectedQuestion = this.questionTitles[this.questionIndex]
@@ -875,13 +983,31 @@ export default {
             this.$forceUpdate()
         },
 
+        /**
+         * sets variable that indicates that a question was just copied
+         *
+         *
+         **/
+
         copyQcQuestion() {
             this.questionWasCopied = true
         },
 
+        /**
+         * sets deleteDialog false
+         *
+         *
+         **/
+
         closeDeleteDialog() {
             this.deleteDialog = false
         },
+
+        /**
+         * computes the index of the category a question is in, as well as the index that question has within that category
+         * @param questionId of the question
+         * @returns {{questionIndex: number, categoryIndex: number}|null}
+         */
 
         getCategoryIndexAndQuestionIndexFromQuestionId(questionId) {
             console.log('bin in getCat...')
