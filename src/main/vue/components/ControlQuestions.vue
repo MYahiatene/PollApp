@@ -7,7 +7,7 @@
             </v-btn>
             <v-tooltip v-else bottom>
                 <template v-slot:activator="{ attrs }">
-                    <v-btn class="mr-n5" icon v-bind="attrs" v-on="on">
+                    <v-btn class="mr-n5" icon v-bind="attrs" v-on="on" @click="initialize">
                         <v-icon large color="primary">
                             mdi-lock-pattern
                         </v-icon>
@@ -360,6 +360,10 @@ import { mapGetters } from 'vuex'
 export default {
     name: 'ControlQuestions',
     props: {
+        initialPollId: {
+            type: Number,
+            default: -1,
+        },
         pollIndex: {
             type: Number,
             default: 0,
@@ -384,10 +388,10 @@ export default {
             type: Boolean,
             default: true,
         },
-        pollsProp: {
-            default: () => [],
-            type: Array,
-        },
+        // pollsProp: {
+        //     default: () => [],
+        //     type: Array,
+        // },
     },
     data() {
         return {
@@ -414,7 +418,17 @@ export default {
             deleteDialog: false,
             panel: false,
             dialog: false,
+            pollsProp: [],
         }
+    },
+
+    created() {
+        // this.categoryIndex = this.initialCategoryIndex
+        // this.questionIndex = this.initialQuestionIndex
+        // this.answerIndices = this.initialAnswerIndices
+        console.log('create')
+
+        this.initialize()
     },
     computed: {
         ...mapGetters({
@@ -617,52 +631,67 @@ export default {
             return 'background-color:' + this.$vuetify.theme.currentTheme.background2 + ';'
         },
     },
-    mounted() {
-        this.categoryIndex = this.initialCategoryIndex
-        this.questionIndex = this.initialQuestionIndex
-        this.answerIndices = this.initialAnswerIndices
 
-        this.computeWordsFromIndices()
-        console.log('mount')
-
-        this.$axios
-            .get('/poll/' + this.polls[this.pollIndex].pollId + '/consistencyquestions')
-            .then((response) => {
-                const list = response.data
-                console.log(response.data)
-
-                for (let i = 0; i < list.length; i++) {
-                    console.log(i)
-
-                    const a1 = []
-                    for (let j = 0; j < list[i].answer1Indices.length; j++) {
-                        a1.push(parseFloat(list[i].answer1Indices[j]))
-                    }
-
-                    const a2 = []
-                    for (let j = 0; j < list[i].answer2Indices.length; j++) {
-                        a2.push(parseFloat(list[i].answer2Indices[j]))
-                    }
-
-                    this.listOfControlQuestions.push({
-                        c1: this.getCategoryIndexAndQuestionIndexFromQuestionId(list[i].question1Id).categoryIndex,
-                        q1: this.getCategoryIndexAndQuestionIndexFromQuestionId(list[i].question1Id).questionIndex,
-                        a1,
-                        s1: list[i].question1Slider,
-                        c2: this.getCategoryIndexAndQuestionIndexFromQuestionId(list[i].question2Id).categoryIndex,
-                        q2: this.getCategoryIndexAndQuestionIndexFromQuestionId(list[i].question2Id).questionIndex,
-                        a2,
-                        s2: list[i].question2Slider,
-                        serverId: list[i].consistencyQuestionId,
-                    })
-                }
-                console.log(this.listOfControlQuestions)
-            })
-            .catch((reason) => {
-                console.log(reason)
-            })
-    },
     methods: {
+        async initialize() {
+            console.log('getOnePoll')
+
+            await this.$axios
+                .get('/getonepoll', {
+                    params: {
+                        pollId: this.initialPollId,
+                    },
+                })
+                .then((response) => {
+                    this.pollsProp = response.data
+                    console.log('pollData')
+                    console.log(this.pollsProp)
+                })
+                .catch((error) => {
+                    console.log(error)
+                })
+
+            console.log('wert')
+
+            // this.computeWordsFromIndices()
+
+            await this.$axios
+                .get('/poll/' + this.polls[this.pollIndex].pollId + '/consistencyquestions')
+                .then((response) => {
+                    const list = response.data
+                    console.log(response.data)
+
+                    for (let i = 0; i < list.length; i++) {
+                        console.log(i)
+
+                        const a1 = []
+                        for (let j = 0; j < list[i].answer1Indices.length; j++) {
+                            a1.push(parseFloat(list[i].answer1Indices[j]))
+                        }
+
+                        const a2 = []
+                        for (let j = 0; j < list[i].answer2Indices.length; j++) {
+                            a2.push(parseFloat(list[i].answer2Indices[j]))
+                        }
+
+                        this.listOfControlQuestions.push({
+                            c1: this.getCategoryIndexAndQuestionIndexFromQuestionId(list[i].question1Id).categoryIndex,
+                            q1: this.getCategoryIndexAndQuestionIndexFromQuestionId(list[i].question1Id).questionIndex,
+                            a1,
+                            s1: list[i].question1Slider,
+                            c2: this.getCategoryIndexAndQuestionIndexFromQuestionId(list[i].question2Id).categoryIndex,
+                            q2: this.getCategoryIndexAndQuestionIndexFromQuestionId(list[i].question2Id).questionIndex,
+                            a2,
+                            s2: list[i].question2Slider,
+                            serverId: list[i].consistencyQuestionId,
+                        })
+                    }
+                    console.log(this.listOfControlQuestions)
+                })
+                .catch((reason) => {
+                    console.log(reason)
+                })
+        },
         // All these methods update the indices of values according to the strings that were set for them
         updateCategoryIndex() {
             this.categoryIndex = this.categoryTitles.indexOf(this.selectedCategory)

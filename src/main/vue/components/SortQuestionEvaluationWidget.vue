@@ -253,6 +253,14 @@ export default {
                 for (let i = 0; i < this.diagramData[this.questionID].meanOrder[index].length; i++) {
                     this.meanOrder.push([])
                     for (let j = 0; j < this.diagramData[this.questionID].meanOrder[index][i].length; j++) {
+                        const p = []
+                        for (
+                            let k = 0;
+                            k < this.diagramData[this.questionID].meanOrder[index][i][j].wasAtPositionNumbers.length;
+                            k++
+                        ) {
+                            p.push(this.diagramData[this.questionID].meanOrder[index][i][j].wasAtPositionNumbers[k])
+                        }
                         this.meanOrder[i].push({
                             itemID: this.diagramData[this.questionID].meanOrder[index][i][j].itemID,
                             meanPositionValue: this.diagramData[this.questionID].meanOrder[index][i][j]
@@ -263,8 +271,7 @@ export default {
                             standardDeviation: this.diagramData[this.questionID].meanOrder[index][i][j]
                                 .standardDeviation,
                             show: false,
-                            wasAtPositionNumbers: this.diagramData[this.questionID].meanOrder[index][i][j]
-                                .wasAtPositionNumbers,
+                            wasAtPositionNumbers: p,
                         })
                     }
                 }

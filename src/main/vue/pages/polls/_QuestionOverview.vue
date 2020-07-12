@@ -22,6 +22,7 @@
                                             </h2>
                                             <v-spacer />
                                             <ControlQuestions
+                                                :initial-poll-id="parseInt($route.params.QuestionOverview)"
                                                 :poll-index="0"
                                                 :use-evaluation-store="false"
                                                 :polls-prop="[pollData]"
