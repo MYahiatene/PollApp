@@ -92,8 +92,8 @@ public class QuestionController {
      * @return returns the specific question.
      */
     @PreAuthorize("hasAnyAuthority('Admin','Creator', 'Editor')")
-    @PostMapping("/changequestioncategory")
-    public Question changeQuestionCategory(final @RequestBody QuestionCategoryChangeCmd questionCategoryChangeCmd) {
+    @PostMapping("/changeQuestionIndex")
+    public Question changeQuestionIndex(final @RequestBody QuestionCategoryChangeCmd questionCategoryChangeCmd) {
         return questionService.changeCategory(Long.parseLong(questionCategoryChangeCmd.getQuestionId()),
             Long.parseLong(questionCategoryChangeCmd.getNewCategoryId()),
             Long.parseLong(questionCategoryChangeCmd.getNewIndex()));

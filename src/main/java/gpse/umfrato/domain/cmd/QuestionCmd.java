@@ -51,4 +51,6 @@ public class QuestionCmd {
     private boolean userAnswers;
 
     private int numberOfPossibleAnswers;
+
+    private int categoryType;
 }

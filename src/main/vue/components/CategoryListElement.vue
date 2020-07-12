@@ -108,6 +108,9 @@ export default {
         },
         buildIndex: { type: Number },
         category: { type: Object },
+        categoryNames: {
+            type: Array,
+        },
     },
     data() {
         return {
@@ -135,6 +138,7 @@ export default {
             console.log(this.draggedQuestionId)
         },
         onEnd(evt) {
+            const oldIndex2 = evt.oldIndex
             const newIndex2 = evt.newIndex
             let newCategoryId2 = null
             this.categoryData.forEach((c) => {
@@ -144,11 +148,12 @@ export default {
                     }
                 })
             })
+            console.log('oldIndex: ' + oldIndex2)
             console.log('newIndex: ' + newIndex2)
             console.log('newCategoryId2: ' + newCategoryId2)
             console.log('QuestionId: ' + this.draggedQuestionId)
 
-            this.$axios.post('/changequestioncategory', {
+            this.$axios.post('/changeQuestionIndex', {
                 newIndex: newIndex2,
                 newCategoryId: newCategoryId2,
                 questionId: this.draggedQuestionId,
@@ -165,6 +170,8 @@ export default {
                 categoryName: category.categoryName,
             })
             this.$emit('text-input', false)
+            const index = this.categoryData.indexOf(category)
+            this.categoryNames[index].text = category.categoryName
         },
         deleteCategory(category) {
             const index = this.categoryData.indexOf(category)
@@ -174,6 +181,7 @@ export default {
                 console.log('DeleteIndexSetted')
                 console.log(this.deleteIndex)
                 this.categoryData.splice(index, 1)
+                this.categoryNames.splice(index, 1)
                 this.$axios
                     .put('/deletecategory', {
                         categoryId: category.categoryId,

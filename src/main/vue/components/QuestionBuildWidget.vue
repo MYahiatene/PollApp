@@ -20,6 +20,13 @@
                         </v-textarea>
                     </v-row>
                     <v-row no-gutters>
+                        <v-select
+                            v-model="categoryType"
+                            :items="categoryNames"
+                            label="Zu welcher Kategorie soll die Frage hinzugefügt werden?"
+                        ></v-select>
+                    </v-row>
+                    <v-row no-gutters>
                         <v-select v-model="questionType" :items="questionWidgets" label="Fragenart"></v-select>
                     </v-row>
                     <v-row>
@@ -28,6 +35,7 @@
                             :is="questionType"
                             :categoryData="categoryData"
                             :buildIndex:="buildIndex"
+                            :categoryType="categoryType"
                         ></component>
                     </v-row>
                     <v-row>
@@ -60,9 +68,13 @@ export default {
     components: { ChoiceQuestion, TextQuestion, SortQuestion, RangeQuestion, SliderQuestion },
     props: {
         categoryData: { type: Array },
+        categoryNames: {
+            type: Array,
+        },
     },
     data() {
         return {
+            categories: [],
             questionData: { questionTypeChoice: this.questionTypeChoice },
             questionWidgets: [
                 {
@@ -95,6 +107,7 @@ export default {
             getQuestionMessage: 'questionOverview/getQuestionMessage',
             getBuildIndex: 'questionOverview/getBuildIndex',
             getSaveButtonStatus: 'questionOverview/getSaveButtonStatus',
+            getCategoryType: 'questionOverview/getCategoryType',
             getUsername: 'login/getUsername',
         }),
         questionMessageBool: {
@@ -142,6 +155,20 @@ export default {
                 this.setQuestionType(value)
             },
         },
+        categoryType: {
+            get() {
+                return this.categoryNames[this.getQuestion.categoryType]
+            },
+            set(value) {
+                this.categoryNames.forEach((category) => {
+                    if (category.value === value) {
+                        const index = this.categoryNames.indexOf(category)
+                        console.log(index)
+                        this.setCategoryType(index)
+                    }
+                })
+            },
+        },
     },
     methods: {
         createQuestion() {
@@ -166,9 +193,10 @@ export default {
                         aboveMessage: this.getQuestion.aboveMessage,
                         hideValues: this.getQuestion.hideValues,
                         dropDown: this.getQuestion.dropDown,
+                        categoryType: this.getQuestion.categoryType,
                     })
                     .then((response) => {
-                        this.categoryData[0].questionList.push(response.data)
+                        this.categoryData[this.getQuestion.categoryType].questionList.push(response.data)
                     })
                 const obj = {
                     lastEditFrom: this.getUsername,
@@ -176,36 +204,49 @@ export default {
                 }
                 this.$axios.post('/newLastEdit', obj)
             } else {
-                this.$axios.put('/editquestion', {
-                    pollId: this.$route.params.QuestionOverview,
-                    questionType: this.getQuestion.questionType,
-                    questionMessage: this.getQuestion.questionMessage,
-                    answerPossibilities: this.getQuestion.answerPossibilities,
-                    numberOfPossibleAnswers: this.getQuestion.numberOfPossibleAnswers,
-                    userAnswers: this.getQuestion.userAnswers,
-                    questionId: this.getQuestion.questionId,
-                    textMultiline: this.getQuestion.textMultiline,
-                    textMinimum: this.getQuestion.textMinimum,
-                    textMinBool: this.getQuestion.textMinBool,
-                    textMaximum: this.getQuestion.textMaximum,
-                    textMaxBool: this.getQuestion.textMaxBool,
-                    endValue: this.getQuestion.endValue,
-                    startValue: this.getQuestion.startValue,
-                    stepSize: this.getQuestion.stepSize,
-                    belowMessage: this.getQuestion.belowMessage,
-                    aboveMessage: this.getQuestion.aboveMessage,
-                    hideValues: this.getQuestion.hideValues,
-                    dropDown: this.getQuestion.dropDown,
-                })
+                this.$axios
+                    .put('/editquestion', {
+                        pollId: this.$route.params.QuestionOverview,
+                        questionType: this.getQuestion.questionType,
+                        questionMessage: this.getQuestion.questionMessage,
+                        answerPossibilities: this.getQuestion.answerPossibilities,
+                        numberOfPossibleAnswers: this.getQuestion.numberOfPossibleAnswers,
+                        userAnswers: this.getQuestion.userAnswers,
+                        questionId: this.getQuestion.questionId,
+                        textMultiline: this.getQuestion.textMultiline,
+                        textMinimum: this.getQuestion.textMinimum,
+                        textMinBool: this.getQuestion.textMinBool,
+                        textMaximum: this.getQuestion.textMaximum,
+                        textMaxBool: this.getQuestion.textMaxBool,
+                        endValue: this.getQuestion.endValue,
+                        startValue: this.getQuestion.startValue,
+                        stepSize: this.getQuestion.stepSize,
+                        belowMessage: this.getQuestion.belowMessage,
+                        aboveMessage: this.getQuestion.aboveMessage,
+                        hideValues: this.getQuestion.hideValues,
+                        dropDown: this.getQuestion.dropDown,
+                        categoryType: this.getQuestion.categoryType,
+                    })
+                    .then((response) => {
+                        this.categoryData[this.getQuestion.categoryType].questionList.push(response.data)
+                    })
                 const obj = {
                     lastEditFrom: this.getUsername,
                     pollId: this.$route.params.QuestionOverview,
                 }
                 this.$axios.post('/newLastEdit', obj)
             }
+            this.categoryData.forEach((category) =>
+                category.questionList.forEach((question) => {
+                    if (question.questionId === this.getQuestion.questionId) {
+                        category.questionList.splice(category.questionList.indexOf(question), 1)
+                    }
+                })
+            )
             this.setBuildIndex(0)
         },
         ...mapMutations({
+            setCategoryType: 'questionOverview/setCategoryType',
             setSaveButtonStatus: 'questionOverview/setSaveButtonStatus',
             setQuestionMessage: 'pollOverview/setQuestionMessage',
             setQuestionType: 'questionOverview/setQuestionType',
