@@ -376,6 +376,7 @@ public class QuestionServiceImpl implements QuestionService {
             cmd.setQuestionType(question.getQuestionType());
             cmd.setUserAnswers(question.isUserAnswers());
             cmd.setNumberOfPossibleAnswers(question.getNumberOfPossibleAnswers());
+            cmd.setCategoryType(question.getCategoryId());
             if (question.getQuestionType().equals(CHOICE_QUESTION)) {
                 newQuestion = addChoiceQuestion(question, pollId);
             } else if (question.getQuestionType().equals(SORT_QUESTION)) {

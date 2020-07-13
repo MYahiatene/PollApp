@@ -189,7 +189,7 @@ class PollServiceImpl implements PollService {
                         poll.setLevel(-1);
                     }
                 }
-                poll.setActivated(true);
+                poll.setDeactivated(true);
                 poll.setDeactivatedDate(ZonedDateTime.now());
                 break;
             default:

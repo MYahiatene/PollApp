@@ -56,7 +56,7 @@
                                         width="800"
                                         overlay-opacity="0.75"
                                     >
-                                        <exportWidget :exportResult="false" @done="exportWidgetDialog = false" />
+                                        <exportWidget :export-result="false" @done="exportWidgetDialog = false" />
                                     </v-dialog>
                                 </template>
                                 <template>
@@ -718,8 +718,279 @@ export default {
             this.progressColorA = '#006eff'
             this.initialize()
         },
-
         async answerPoll() {
+            const polls = this.prepareItems
+            const targetPollId = polls[polls.length - 1].pollId
+            const response = await this.$axios.get('/getonepoll', {
+                params: {
+                    pollId: targetPollId,
+                },
+            })
+            const pollData = response.data
+            console.log('Beantworte poll: ' + targetPollId)
+            console.log(pollData)
+            for (let j = 0; j < 10; j++) {
+                if (j < 200) {
+                    this.progressColorB = '#006eff'
+                } else if (j < 175) {
+                    this.progressColorB = '#00d5ff'
+                } else if (j < 150) {
+                    this.progressColorB = '#00ff84'
+                } else if (j < 125) {
+                    this.progressColorB = '#5eff00'
+                } else if (j < 100) {
+                    this.progressColorB = '#aaff00'
+                } else if (j < 75) {
+                    this.progressColorB = '#fbff00'
+                } else if (j < 50) {
+                    this.progressColorB = '#ff4d00'
+                } else if (j < 25) {
+                    this.progressColorB = '#ff0000'
+                }
+                const i = this.participantNr
+                this.participantNr += 2
+                // multiple choice
+                await this.$store.dispatch('participant/saveAnswer', {
+                    username: '' + i,
+                    pollId: targetPollId,
+                    questionId: pollData.categoryList[0].questionList[0].questionId,
+                    answerList: ['' + Math.floor(Math.random() * 20), '' + Math.floor(Math.random() * 10)],
+                })
+                await this.$store.dispatch('participant/saveAnswer', {
+                    username: '' + i,
+                    pollId: targetPollId,
+                    questionId: pollData.categoryList[1].questionList[0].questionId,
+                    answerList: ['' + Math.floor(Math.random() * 5), '' + Math.floor(Math.random() * 6)],
+                })
+                // Freitext
+                const p2 = ['Gut', 'Ambivalent', 'Ich möchte darauf nicht antworten.']
+                await this.$store.dispatch('participant/saveAnswer', {
+                    username: '' + i,
+                    pollId: targetPollId,
+                    questionId: pollData.categoryList[0].questionList[1].questionId,
+                    answerList: [p2[Math.floor(Math.random() * 3)]],
+                })
+                // Sortierfrage
+                const array = ['0', '1', '2', '3', '4']
+                let a, b
+                for (let k = array.length - 1; k > 0; k--) {
+                    a = Math.floor(Math.random() * (k + 1))
+                    b = array[k]
+                    array[k] = array[a]
+                    array[a] = b
+                }
+                await this.$store.dispatch('participant/saveAnswer', {
+                    username: '' + i,
+                    pollId: targetPollId,
+                    questionId: pollData.categoryList[1].questionList[1].questionId,
+                    answerList: array,
+                })
+                // Slider
+                for (let k = 0; k < 30; k++) {
+                    await this.$store.dispatch('participant/saveAnswer', {
+                        username: '' + i,
+                        pollId: targetPollId,
+                        questionId: pollData.categoryList[2].questionList[k].questionId,
+                        answerList: [Math.floor(Math.random() * 10)],
+                    })
+                }
+            }
+            // polltaker 1
+            const i = this.participantNr
+            this.participantNr += 2
+            // multiple choice
+            await this.$store.dispatch('participant/saveAnswer', {
+                username: '' + i,
+                pollId: targetPollId,
+                questionId: pollData.categoryList[0].questionList[0].questionId,
+                answerList: ['' + Math.floor(Math.random() * 20), '' + Math.floor(Math.random() * 10)],
+            })
+            await this.$store.dispatch('participant/saveAnswer', {
+                username: '' + i,
+                pollId: targetPollId,
+                questionId: pollData.categoryList[1].questionList[0].questionId,
+                answerList: ['' + Math.floor(Math.random() * 5), '' + Math.floor(Math.random() * 6)],
+            })
+            // Freitext
+            await this.$store.dispatch('participant/saveAnswer', {
+                username: '' + i,
+                pollId: targetPollId,
+                questionId: pollData.categoryList[0].questionList[1].questionId,
+                answerList: [
+                    'Ich finde das Unternehmen wirklich genial! Das Klima ist offen und belebend. Ich bin immer' +
+                        'fröhlich, wenn morgens alle Mitarbeiter frisch und und froh zur Arbeit erscheinen.',
+                ],
+            })
+            // Sortierfrage
+            const array = ['0', '1', '2', '3', '4']
+            let a, b
+            for (let k = array.length - 1; k > 0; k--) {
+                a = Math.floor(Math.random() * (k + 1))
+                b = array[k]
+                array[k] = array[a]
+                array[a] = b
+            }
+            await this.$store.dispatch('participant/saveAnswer', {
+                username: '' + i,
+                pollId: targetPollId,
+                questionId: pollData.categoryList[1].questionList[1].questionId,
+                answerList: array,
+            })
+            // Slider
+            for (let k = 0; k < 30; k++) {
+                await this.$store.dispatch('participant/saveAnswer', {
+                    username: '' + i,
+                    pollId: targetPollId,
+                    questionId: pollData.categoryList[2].questionList[k].questionId,
+                    answerList: [Math.floor(Math.random() * 3) + 8],
+                })
+            }
+            // polltaker 2
+            const j = this.participantNr
+            this.participantNr += 2
+            // multiple choice
+            await this.$store.dispatch('participant/saveAnswer', {
+                username: '' + j,
+                pollId: targetPollId,
+                questionId: pollData.categoryList[0].questionList[0].questionId,
+                answerList: ['' + Math.floor(Math.random() * 20), '' + Math.floor(Math.random() * 10)],
+            })
+            await this.$store.dispatch('participant/saveAnswer', {
+                username: '' + j,
+                pollId: targetPollId,
+                questionId: pollData.categoryList[1].questionList[0].questionId,
+                answerList: ['' + Math.floor(Math.random() * 5), '' + Math.floor(Math.random() * 6)],
+            })
+            // Freitext
+            await this.$store.dispatch('participant/saveAnswer', {
+                username: '' + j,
+                pollId: targetPollId,
+                questionId: pollData.categoryList[0].questionList[1].questionId,
+                answerList: [
+                    'Meine Erfahrung mit Reply ist herausragend. Jede Interaktion war probelmlos und überzeugend. Nur' +
+                        'das Catering war manchmal enttäuschend. ',
+                ],
+            })
+            // Sortierfrage
+            const array2 = ['0', '1', '2', '3', '4']
+            let a2, b2
+            for (let k = array2.length - 1; k > 0; k--) {
+                a2 = Math.floor(Math.random() * (k + 1))
+                b2 = array2[k]
+                array2[k] = array2[a2]
+                array2[a] = b2
+            }
+            await this.$store.dispatch('participant/saveAnswer', {
+                username: '' + j,
+                pollId: targetPollId,
+                questionId: pollData.categoryList[1].questionList[1].questionId,
+                answerList: array2,
+            })
+            // Slider
+            for (let k = 0; k < 30; k++) {
+                await this.$store.dispatch('participant/saveAnswer', {
+                    username: '' + j,
+                    pollId: targetPollId,
+                    questionId: pollData.categoryList[2].questionList[k].questionId,
+                    answerList: [Math.floor(Math.random() * 3) + 8],
+                })
+            }
+            // polltaker 3
+            const l = this.participantNr
+            this.participantNr += 2
+            // multiple choice
+            await this.$store.dispatch('participant/saveAnswer', {
+                username: '' + l,
+                pollId: targetPollId,
+                questionId: pollData.categoryList[0].questionList[0].questionId,
+                answerList: ['' + Math.floor(Math.random() * 20), '' + Math.floor(Math.random() * 10)],
+            })
+            await this.$store.dispatch('participant/saveAnswer', {
+                username: '' + l,
+                pollId: targetPollId,
+                questionId: pollData.categoryList[1].questionList[0].questionId,
+                answerList: ['' + Math.floor(Math.random() * 5), '' + Math.floor(Math.random() * 6)],
+            })
+            // Freitext
+            await this.$store.dispatch('participant/saveAnswer', {
+                username: '' + l,
+                pollId: targetPollId,
+                questionId: pollData.categoryList[0].questionList[1].questionId,
+                answerList: ['Es war langweilig.'],
+            })
+            // Sortierfrage
+            const array3 = ['0', '1', '2', '3', '4']
+            let a3, b3
+            for (let k = array3.length - 1; k > 0; k--) {
+                a3 = Math.floor(Math.random() * (k + 1))
+                b3 = array3[k]
+                array3[k] = array3[a3]
+                array3[a] = b3
+            }
+            await this.$store.dispatch('participant/saveAnswer', {
+                username: '' + l,
+                pollId: targetPollId,
+                questionId: pollData.categoryList[1].questionList[1].questionId,
+                answerList: array3,
+            })
+            // Slider
+            for (let k = 0; k < 30; k++) {
+                await this.$store.dispatch('participant/saveAnswer', {
+                    username: '' + j,
+                    pollId: targetPollId,
+                    questionId: pollData.categoryList[2].questionList[k].questionId,
+                    answerList: [Math.floor(Math.random() * 4)],
+                })
+            }
+            // polltaker 4
+            const m = this.participantNr
+            this.participantNr += 2
+            // multiple choice
+            await this.$store.dispatch('participant/saveAnswer', {
+                username: '' + m,
+                pollId: targetPollId,
+                questionId: pollData.categoryList[0].questionList[0].questionId,
+                answerList: ['' + Math.floor(Math.random() * 20), '' + Math.floor(Math.random() * 10)],
+            })
+            await this.$store.dispatch('participant/saveAnswer', {
+                username: '' + m,
+                pollId: targetPollId,
+                questionId: pollData.categoryList[1].questionList[0].questionId,
+                answerList: ['' + Math.floor(Math.random() * 5), '' + Math.floor(Math.random() * 6)],
+            })
+            // Freitext
+            await this.$store.dispatch('participant/saveAnswer', {
+                username: '' + m,
+                pollId: targetPollId,
+                questionId: pollData.categoryList[0].questionList[1].questionId,
+                answerList: ['Die Auswahl der Themen wirkte oft willkürlich und die Begrüßung fand ich enttäuschend.'],
+            })
+            // Sortierfrage
+            const array4 = ['0', '1', '2', '3', '4']
+            let a4, b4
+            for (let k = array4.length - 1; k > 0; k--) {
+                a4 = Math.floor(Math.random() * (k + 1))
+                b4 = array4[k]
+                array4[k] = array4[a4]
+                array4[a] = b4
+            }
+            await this.$store.dispatch('participant/saveAnswer', {
+                username: '' + m,
+                pollId: targetPollId,
+                questionId: pollData.categoryList[1].questionList[1].questionId,
+                answerList: array4,
+            })
+            // Slider
+            for (let k = 0; k < 30; k++) {
+                await this.$store.dispatch('participant/saveAnswer', {
+                    username: '' + m,
+                    pollId: targetPollId,
+                    questionId: pollData.categoryList[2].questionList[k].questionId,
+                    answerList: [Math.floor(Math.random() * 4)],
+                })
+            }
+        },
+        async answerOldPoll() {
             const polls = this.prepareItems
             const targetPollId = polls[polls.length - 1].pollId
             const response = await this.$axios.get('/getonepoll', {
