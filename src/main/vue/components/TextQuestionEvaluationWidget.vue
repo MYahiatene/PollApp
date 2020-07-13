@@ -191,10 +191,15 @@ export default {
                 console.log('SeriesList: ', seriesList)
                 for (const key in seriesList) {
                     console.log('Key: ', seriesList[key])
+                    // if (seriesList[key].seriesCounter - 1 < 0) seriesList[key].seriesCounter = 1
                     while (outputList.length <= seriesList[key].seriesCounter - 1) {
                         outputList.push([])
                     }
-                    outputList[seriesList[key].seriesCounter - 1].push(seriesList[key])
+                    console.log('SERIES LIST SERIES COUTER -1 ', seriesList[key].seriesCounter - 1)
+                    console.log('SERIES LIST KEY ', seriesList[key])
+                    if (seriesList[key].seriesCounter - 1 >= 0)
+                        outputList[seriesList[key].seriesCounter - 1].push(seriesList[key])
+                    else outputList[seriesList[key].seriesCounter].push(seriesList[key])
                 }
                 console.log('OutputList: ', outputList)
                 return outputList

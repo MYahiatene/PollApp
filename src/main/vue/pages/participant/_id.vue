@@ -622,6 +622,7 @@ export default {
                     console.log(this.givenAnswers[i + index])
                     if (this.givenAnswers[i + index] != null) {
                         console.log('!= null')
+                        console.log('GIVENANSWERS PARTICIPANT: ', this.givenAnswers)
                         // for RadioButtons we need answer text and given back are the indizes
                         if (
                             (type === 'ChoiceQuestion' &&
