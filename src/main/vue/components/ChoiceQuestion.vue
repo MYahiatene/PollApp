@@ -66,6 +66,7 @@ export default {
                 (v) => {
                     if (parseFloat(v) >= 1 && parseFloat(v) <= this.getQuestion.answerPossibilities.length) {
                         this.setSaveButtonStatus(true)
+                        return ''
                     } else {
                         this.setSaveButtonStatus(false)
                         return (

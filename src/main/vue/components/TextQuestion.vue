@@ -3,7 +3,7 @@
     <v-container>
         <v-form v-model="valid">
             <v-row no-gutters>
-                <v-switch label="Mehrzeilige Antworten erlauben"></v-switch>
+                <v-switch v-model="newline" label="Mehrzeilige Antworten erlauben"></v-switch>
             </v-row>
             <v-row no-gutters>
                 <v-switch
@@ -67,6 +67,7 @@ export default {
                 (v) => {
                     if (v <= this.maximum && v > 0) {
                         this.setSaveButtonStatus(true)
+                        return ''
                     } else if (v < 1) {
                         this.setSaveButtonStatus(false)
                         return 'Die Zahl muss größer als 0 sein!'
@@ -80,6 +81,7 @@ export default {
                 (v) => {
                     if (v >= this.minimum && v > 0) {
                         this.setSaveButtonStatus(true)
+                        return ''
                     } else if (v < 1) {
                         this.setSaveButtonStatus(false)
                         return 'Die Zahl muss größer als 0 sein!'
