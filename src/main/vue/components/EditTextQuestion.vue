@@ -97,7 +97,7 @@ export default {
         },
     },
     computed: {
-        ...mapGetters({ getQuestion: 'pollOverview/getQuestion' }),
+        ...mapGetters({ getQuestion: 'questionOverview/getQuestion' }),
         newline: {
             get() {
                 return this.getQuestion.textMultiline

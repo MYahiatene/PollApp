@@ -98,14 +98,14 @@
                 <!--here we display the median and the mode-->
                 <v-row>
                     <v-col cols="3">
-                        <v-chip :key="medianKey" :color="this.$vuetify.theme.currentTheme.info"
-                            >Median: {{ calculated[0].median }}</v-chip
-                        >
+                        <v-chip :color="this.$vuetify.theme.currentTheme.info">
+                            Median: {{ calculated[0].median }}
+                        </v-chip>
                     </v-col>
                     <v-col cols="3">
-                        <v-chip :key="medianKey" :color="this.$vuetify.theme.currentTheme.info"
-                            >Modus: {{ calculated[0].mode }}</v-chip
-                        >
+                        <v-chip :color="this.$vuetify.theme.currentTheme.info">
+                            Modus: {{ calculated[0].mode }}
+                        </v-chip>
                     </v-col>
                 </v-row>
 

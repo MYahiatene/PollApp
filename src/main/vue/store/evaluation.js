@@ -43,7 +43,6 @@ function formatToString(format) {
 }
 
 function stringToFormat(string) {
-    console.log('hi')
     console.log(string)
     const short = JSON.parse(string)
     console.log(short)
@@ -287,19 +286,22 @@ export const actions = {
             })
     },
     async loadSession({ state, commit }, sessionId) {
+        commit('setCurrentSession', sessionId)
         console.log('loadSession(' + sessionId + ')')
-        await this.$axios
-            .get('/evaluation/loadSession/' + sessionId)
-            .then((response) => {
-                console.log(response)
-                commit('setCurrentSession', sessionId)
-                commit('saveFilter', response.data.filterList)
-                commit('setDiagramFormatsFromServer', response.data.diagramFormat)
-                commit('setDiagramOptionsFromServer', response.data.diagramOptions)
-            })
-            .catch((reason) => {
-                console.log(reason)
-            })
+        if (sessionId !== -1) {
+            await this.$axios
+                .get('/evaluation/loadSession/' + sessionId)
+                .then((response) => {
+                    console.log(response)
+                    commit('setCurrentSession', sessionId)
+                    commit('saveFilter', response.data.filterList)
+                    commit('setDiagramFormatsFromServer', response.data.diagramFormat)
+                    commit('setDiagramOptionsFromServer', response.data.diagramOptions)
+                })
+                .catch((reason) => {
+                    console.log(reason)
+                })
+        }
     },
     async deleteSession({ state, commit }, sessionId) {
         console.log('loadSession(' + sessionId + ')')
@@ -308,7 +310,16 @@ export const actions = {
             .then((response) => {
                 if (sessionId === state.currentSession) {
                     commit('setCurrentSession', -1)
-                    commit('saveFilter', [])
+                    commit('saveFilter', [
+                        {
+                            filterType: 'dataFilter',
+                            basePollId: state.pollId,
+                            baseQuestionIds: [-1],
+                            timeDiagram: false,
+                            timeDiagramRelative: false,
+                            numberOfEvaluatedSeriesPolls: -1,
+                        },
+                    ])
                     commit('setDiagramFormatsFromServer', [
                         {
                             questionId: -1,
@@ -347,7 +358,6 @@ export const actions = {
         console.log('response: ', response)
         return response.data
     },
-
     async exportResults({ state, commit }, { pollId, sessionID, formatString, customSeparator, dereference }) {
         console.log('export start!')
         console.log('/api/export/PollResult/{pollId:' + pollId + '}')

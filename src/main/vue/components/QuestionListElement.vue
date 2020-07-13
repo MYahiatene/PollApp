@@ -4,10 +4,10 @@
         <v-row no-gutters class="ma-n2 my-n4 pa-4">
             <v-col cols="10">
                 <v-list-item-title>
-                    {{ question.questionMessage }}
+                    {{ choppedTitle }}
                 </v-list-item-title>
                 <v-list-item-subtitle>
-                    {{ showType(question.questionType) }}
+                    {{ translatedQuestionType }}
                 </v-list-item-subtitle>
             </v-col>
             <v-col cols="1">
@@ -53,54 +53,57 @@ export default {
             set(value) {
                 this.setBuildIndex(value)
             },
-            ...mapGetters({
-                currentQuestion: 'pollOverview/getQuestion',
-                getBuildIndex: 'questionOverview/getBuildIndex',
-            }),
-            choppedTitle() {
-                if (this.question.questionMessage.length > 30) {
-                    return this.question.questionMessage.substr(0, 25) + '...?'
+        },
+        ...mapGetters({
+            currentQuestion: 'pollOverview/getQuestion',
+            getBuildIndex: 'questionOverview/getBuildIndex',
+        }),
+        choppedTitle() {
+            if (this.question.questionMessage.length > 30) {
+                return this.question.questionMessage.substr(0, 25) + '...?'
+            } else {
+                return this.question.questionMessage
+            }
+        },
+        translatedQuestionType() {
+            switch (this.question.questionType) {
+                case 'ChoiceQuestion':
+                    if (this.question.numberOfPossibleAnswers > 1) {
+                        return 'Mehrfache Auswahlfrage'
+                    } else {
+                        return 'Einfache Auswahlfrage'
+                    }
+                case 'TextQuestion':
+                    return 'Freitextfrage'
+                case 'RangeQuestion':
+                    return 'Reichweitenfrage'
+                case 'SortQuestion':
+                    return 'Sortierfrage'
+                case 'SliderQuestion':
+                    return 'Schieberfrage'
+                default:
+                    return ''
+            }
+        },
+
+        // the color is applied to the question when its the one being edited, so the user can see it more easily
+
+        color() {
+            if (this.currentQuestion !== null) {
+                if (
+                    this.currentQuestion.categoryId === this.categoryId &&
+                    this.currentQuestion.questionId === this.questionId
+                ) {
+                    return this.$vuetify.theme.currentTheme.softAccent
                 } else {
-                    return this.question.questionMessage
+                    return ''
                 }
-            },
-            translatedQuestionType() {
-                switch (this.question.questionType) {
-                    case 'ChoiceQuestion':
-                        return 'Auswahlfrage'
-                    case 'TextQuestion':
-                        return 'Freitextfrage'
-                    case 'RangeQuestion':
-                        return 'Intervallfrage'
-                    default:
-                        return ''
-                }
-            },
+            }
+
+            return ''
         },
     },
     methods: {
-        showType(questionType) {
-            if (questionType === 'ChoiceQuestion') {
-                if (this.question.numberOfPossibleAnswers > 1) {
-                    return 'Mehrfache Auswahlfrage'
-                } else {
-                    return 'Einfache Auswahlfrage'
-                }
-            }
-            if (questionType === 'TextQuestion') {
-                return 'Freitextfrage'
-            }
-            if (questionType === 'SortQuestion') {
-                return 'Sortierfrage'
-            }
-            if (questionType === 'SliderQuestion') {
-                return 'Sliderfrage'
-            }
-            if (questionType === 'RangeQuestion') {
-                return 'Reichweitenfrage'
-            }
-            return questionType
-        },
         editQuestion(question) {
             this.setQuestion(question)
             this.buildIndex = 2

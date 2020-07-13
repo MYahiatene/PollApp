@@ -44,6 +44,7 @@
                             :error-messages="titleErrorMessage"
                             :rules="sessionTitleRule"
                             @input="titleErrorMessage = ''"
+                            @keypress.enter="saveThisSession"
                         ></v-text-field>
                         <v-spacer />
                         <v-btn color="primary" @click="saveThisSession">
@@ -120,6 +121,7 @@ export default {
         sessions() {
             const sessions = []
             const data = this.getSessions
+            console.log(data)
             for (let i = 0; i < data.length; i++) {
                 sessions.push({
                     sessionId: data[i].sessionId,
@@ -190,8 +192,13 @@ export default {
         async deleteOneSession(item) {
             console.log('deleteOneSession()')
             await this.deleteSession(item.sessionId)
+            if (item.sessionId === this.currentSession) {
+                await this.loadSession(-1)
+            }
             await this.loadSessions()
-            await this.updateData()
+            if (this.currentSession !== -1) {
+                await this.updateData()
+            }
         },
 
         filterOnlyCapsText(value, search, item) {

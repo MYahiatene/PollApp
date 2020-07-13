@@ -11,17 +11,7 @@
                             obj.index = index
                         }
                     "
-                ></v-text-field> </v-row
-            ><v-row>
-                <v-col cols="8"></v-col>
-                <v-col cols="2">
-                    <v-btn @click="addAnswer">
-                        <v-icon color="primary" left>
-                            mdi-plus
-                        </v-icon>
-                        Antwort
-                    </v-btn>
-                </v-col>
+                ></v-text-field>
             </v-row>
         </v-form>
     </v-container>
@@ -48,7 +38,7 @@ export default {
         },
         answerPossibilities: {
             get() {
-                return this.getQuestion.answerPossibilities
+                return [...this.getQuestion.answerPossibilities, '']
             },
             set() {
                 this.setAnswerPossibility(this.obj)

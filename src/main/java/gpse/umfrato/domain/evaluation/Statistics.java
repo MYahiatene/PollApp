@@ -121,7 +121,7 @@ public class Statistics {
                     filter = new DateFilter(cmd.getStartDate(), cmd.getEndDate(), cmd.getInvertFilter());
                     break;
                 case "user":
-                    if (pollService.getPoll(pollId).getAnonymityStatus().equals("2")) {
+                    if (pollService.getPoll(pollId).getAnonymityStatus().equals("3")) {
                         filter = new UserFilter(cmd.getUserNames(), cmd.getInvertFilter());
                     }
                     break;
@@ -378,6 +378,9 @@ public class Statistics {
         while (diagramDataList.size() > 1) {
             diagramDataList.get(0).combine(diagramDataList.get(1));
             diagramDataList.remove(1);
+        }
+        if(showParticipantsOverTime) {
+            diagramDataList.get(0).generateParticipantsOverTime();
         }
         return diagramDataList.get(0);
     }

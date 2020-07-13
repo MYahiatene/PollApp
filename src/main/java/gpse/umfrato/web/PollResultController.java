@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.constraints.Past;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -68,11 +69,9 @@ public class PollResultController {
      * @param pollCmd an object that carries the poll
      */
 
-    @PostMapping("/getPollTakers")
-    public List<String> getPollTakers(final @RequestBody PollCmd pollCmd) {
-
-        return pollResultService.getPollTakers(pollCmd.getPollId());
-
+    @PostMapping("/getPollTakers/{pollId:\\d+}")
+    public List<String> getPollTakers(final @PathVariable Long pollId) {
+        return pollResultService.getPollTakers(pollId);
     }
 
     /**

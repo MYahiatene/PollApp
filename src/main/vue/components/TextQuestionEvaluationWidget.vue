@@ -167,7 +167,10 @@ export default {
                 console.log('SeriesList: ', seriesList)
                 for (const key in seriesList) {
                     console.log('Key: ', seriesList[key])
-                    outputList[seriesList[key].seriesCounter].push(seriesList[key])
+                    while (outputList.length <= seriesList[key].seriesCounter - 1) {
+                        outputList.push([])
+                    }
+                    outputList[seriesList[key].seriesCounter - 1].push(seriesList[key])
                 }
                 console.log('OutputList: ', outputList)
                 return outputList

@@ -81,11 +81,14 @@ export const mutations = {
     setUserAnswers(state, userAnswers) {
         state.question.userAnswers = userAnswers
     },
-    addAnswer(state) {
-        state.question.answerPossibilities.push('')
-    },
     setAnswerP(state, obj) {
+        while (obj.index >= state.question.answerPossibilities.length) {
+            state.question.answerPossibilities.push('')
+        }
         state.question.answerPossibilities[obj.index] = obj.answer
+        while (state.question.answerPossibilities[state.question.answerPossibilities.length - 1] === '') {
+            state.question.answerPossibilities.pop()
+        }
     },
     setNumberOfPossibleAnswers(state, NumberOfPossibleAnswers) {
         state.question.numberOfPossibleAnswers = NumberOfPossibleAnswers
