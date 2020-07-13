@@ -1,3 +1,42 @@
-PollTaker;LastEdit;Kat1F1;Kat1F2;Kat3F1;Kat2F1;Kat3F2
+Name;PollCreator;Anonymitätsstatus
+Mitarbeiterbefragung 7 / 2020;tbettmann;Teilanonym
 
-2;09/07/2020 - 09:24:13 CEST;1 ;fgse ;e2 ;0 ;1 ;
+"Identifikation mit dem Unternehmen und Beurteilung des Unternehmens im Markt";Antwortoptionen
+"In welchen Themen ist die Reply gut und stark vertreten?"; Architektur Künstliche Intelligenz und maschinelles Lernen Augmentierte und virtuelle Realität Big Data und Analyse Blockchain Cloud Computing Kundenbeziehungsmanagement Digitale Erfahrung Digitaler Arbeitsplatz E-Commerce Spieltheorie und Gamification Industrie 4.0 Internet der Dinge Mobile Endgeräte Quanten-Computing Risikoregulierung und -Rückmeldung Sicherheit Soziale Netzwerke und Crowd-Sourcing Leitung der Lieferkette Video
+"Beschreiben Sie Ihre persönliche Einstellung zum Unternehmen.";
+
+"Zufriedenheit mit der eigenen Arbeitssituation";Antwortoptionen
+""Bitte geben Sie an, welche Aussagen auf Sie zutreffen.""; Mir ist wichtig, selbst zu bestimmen, zu welchen Zeiten ich arbeite (soweit es der Kunde zulässt). Mir ist wichtig, in bestimmten Abständen mit völlig neuen Aufgabenstellungen konfrontiert zu werden (Neuer Kunde, Neue Technologien, …). Mir ist wichtig, dass mein Arbeitsablauf und mein Projektalltag weitgehend stabil und planbar sind. Mir ist wichtig, dass ich bei meiner Arbeit laufend neue Ideen oder Lösungen entwickeln kann. Eine spannende Aufgabe, die mich fordert, ist mir wichtiger als ein hohes Gehalt. Für mich ist es wichtig, meine Arbeit frei und selbst zu gestalten. Ich habe Interesse daran, mich weiterzubilden.
+"Was ist Ihnen am Arbeitsklima wichtig?"; Freundliche Mitarbeiter Gute Atmosphäre Eine Kaffeemaschine Supervision Klare Aufgaben
+
+"Generelle Fragen";Antwortoptionen
+""Ich kann selbstständig Entscheidungen treffen, wie ich meine Aufgaben bestmöglich ausführe."";0.0..10.0 in Inkrementen von 1.0
+""In meiner Unit erhalte ich Informationen, die ich benötige, effektiv und schnell bekommen."";0.0..10.0 in Inkrementen von 1.0
+""Ich kann mich immer auf die Hilfe und die Unterstützung meiner Kollegen verlassen, wenn ich sie benötige."";0.0..10.0 in Inkrementen von 1.0
+"Meinen Freunden und Bekannten gegenüber spreche ich positiv über Reply und empfehle die Firma als Arbeitgeber";0.0..10.0 in Inkrementen von 1.0
+"Meine Unit erkennt kompetente Mitarbeiter an und schätzt diese.";0.0..10.0 in Inkrementen von 1.0
+""Der Austausch von Informationen, Meinungen und Ideen wird in meiner Unit gefördert."";0.0..10.0 in Inkrementen von 1.0
+""Ich bin ausreichend über die Strategien, Ziele und Ergebnisse meiner Unit informiert."";0.0..10.0 in Inkrementen von 1.0
+""Falls erforderlich, kann ich mich bei der Erfüllung meiner individuellen Ziele auf die Unterstützung meiner Kollegen verlassen."";0.0..10.0 in Inkrementen von 1.0
+"Im Vergleich zu anderen Firmen der Branche bietet Reply bessere Chancen zur beruflichen Weiterentwicklung.";0.0..10.0 in Inkrementen von 1.0
+""Reply ist jederzeit in der Lage, Kunden neue Technologien zu empfehlen."";0.0..10.0 in Inkrementen von 1.0
+"Ich weiß das kooperative Verhalten meiner Kollegen zu schätzen";0.0..10.0 in Inkrementen von 1.0
+"Meines Erachtens erhalten die Angestellten bei Reply eine leistungsgerechte Vergütung.";0.0..10.0 in Inkrementen von 1.0
+""Reply ermöglicht es mir, mich bezüglich innovativer Technologien weiterzubilden."";0.0..10.0 in Inkrementen von 1.0
+""Ich erhalte regelmäßig konstruktives Feedback, welches für meine berufliche Entwicklung förderlich ist."";0.0..10.0 in Inkrementen von 1.0
+""Reply ist der richtige Arbeitgeber für Personen, die Spitzenleistungen in ihrem Beruf erbringen wollen."";0.0..10.0 in Inkrementen von 1.0
+"Meine Unit fördert die Entwicklung meiner beruflichen Fähigkeiten und Kompetenzen.";0.0..10.0 in Inkrementen von 1.0
+"Gerne trage ich durch ein überdurchschnittliches Engagement zum Erfolg von Reply bei.";0.0..10.0 in Inkrementen von 1.0
+"Meines Erachtens werden die Boni und Zielerreichungen in meiner Unit fair und gerecht ermittelt.";0.0..10.0 in Inkrementen von 1.0
+""Ich habe die Absicht, langfristig bei Reply zu bleiben."";0.0..10.0 in Inkrementen von 1.0
+"Bei Reply wird der Erfolg eines Projekts hauptsächlich an der Kundenzufriedenheit gemessen.";0.0..10.0 in Inkrementen von 1.0
+""Reply bietet Gehälter, die dem Marktniveau entsprechen."";0.0..10.0 in Inkrementen von 1.0
+"Meines Erachtens entspricht mein Verantwortungsbereich meiner beruflichen Qualifikation.";0.0..10.0 in Inkrementen von 1.0
+"In meiner Unit werden Aufgaben an Mitarbeiter unter Berücksichtigung ihrer Neigungen und Fähigkeiten übertragen.";0.0..10.0 in Inkrementen von 1.0
+""In meiner Unit wird mir die Möglichkeit geboten, mir berufliche Kompetenzen anzueignen, die meinen Erwartungen entsprechen."";0.0..10.0 in Inkrementen von 1.0
+"Die Kommunikation bei Reply ist offen und transparent.";0.0..10.0 in Inkrementen von 1.0
+""Ich bin hinreichend über den Prozess, die Ziele und die Zielerreichung meiner jährlichen Bonuszahlungen informiert."";0.0..10.0 in Inkrementen von 1.0
+"Ich bin mit meiner Gesamtvergütung zufrieden.";0.0..10.0 in Inkrementen von 1.0
+"Ich bin insgesamt mit meiner Arbeit zufrieden.";0.0..10.0 in Inkrementen von 1.0
+""Reply-Mitarbeiter sind immer offen, neue Ideen zu diskutieren."";0.0..10.0 in Inkrementen von 1.0
+"Ich bin mit meiner bisherigen beruflichen Entwicklung zufrieden.";0.0..10.0 in Inkrementen von 1.0
