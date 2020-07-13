@@ -20,7 +20,7 @@
                         min="0"
                         :max="(poll.seriesCounter - 1)"
                         label="Anzahl der betrachteten vorhergegangenen Serienumfragen:"
-                        thumb-label="always"
+                        :thumb-label="true"
                     />
                 </div>
 
@@ -334,7 +334,11 @@ export default {
          */
 
         isSeriesPoll() {
-            return this.poll.level !== undefined && this.poll.level !== null && this.poll.level >= 0
+            console.log('poll')
+            console.log(this.poll)
+            return (
+                this.poll.prevInSeries !== undefined && this.poll.prevInSeries !== null && this.poll.prevInSeries >= 0
+            )
         },
 
         /**

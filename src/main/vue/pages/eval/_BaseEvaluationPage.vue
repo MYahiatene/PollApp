@@ -263,7 +263,7 @@ export default {
     data() {
         return {
             // keys that force the diagrams to update
-
+            visualSettings: false,
             widgetKey: '',
             sortWidgetKey: '',
             // the dialog (setting window) is closed by default

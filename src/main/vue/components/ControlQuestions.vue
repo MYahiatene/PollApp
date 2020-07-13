@@ -1,13 +1,13 @@
 <template>
     <!--    Here the user can create consistency relationships between two questions of a poll-->
     <v-dialog v-model="dialog" overlay-color="background" persistent width="500" overlay-opacity="0.95" fullscreen>
-        <template v-slot:activator="{ on }">
-            <v-btn v-if="useEvaluationStore" v-on="on">
+        <template #activator="{ on: dialog }">
+            <v-btn v-if="useEvaluationStore" v-on="{ ...dialog }">
                 Konsistenzfragen bearbeiten
             </v-btn>
             <v-tooltip v-else bottom>
-                <template v-slot:activator="{ attrs }">
-                    <v-btn class="mr-n5" icon v-bind="attrs" v-on="on" @click="initialize">
+                <template #activator="{ on: tooltip }">
+                    <v-btn class="mr-n5" icon v-on="{ ...tooltip, ...dialog }" @click="initialize">
                         <v-icon large color="primary">
                             mdi-lock-pattern
                         </v-icon>

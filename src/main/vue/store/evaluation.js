@@ -321,7 +321,7 @@ export const actions = {
                         },
                     ])
                     commit('setDiagramFormatsFromServer', [
-                        {
+                        formatToString({
                             questionId: -1,
                             backgroundColors: ['#aaaaaa'],
                             backgroundColor: '#aaaaaa',
@@ -329,7 +329,7 @@ export const actions = {
                             diagramType: 'bar',
                             showDiagram: true,
                             showTable: true,
-                        },
+                        }),
                     ])
                 }
             })
