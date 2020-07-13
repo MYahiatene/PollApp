@@ -3,7 +3,7 @@
         <v-app-bar dense flat>
             <!--            the title includes the Question and its id-->
             <v-toolbar-title>
-                {{ questionTitle }} {{ seriesPoll ? '(Umfrage : ' + currentIndex + ')' : '' }}</v-toolbar-title
+                {{ questionTitle }} {{ seriesPoll ? '(Umfrage: ' + (currentIndex + 1) + ')' : '' }}</v-toolbar-title
             >
             <v-spacer></v-spacer>
             <div v-if="seriesPoll">
@@ -211,6 +211,7 @@ export default {
          */
         createChartData() {
             const items = this.answerPossibilites
+            this.chartdataSets = []
             for (let i = 0; i < items.length; i++) {
                 this.chartdataSets.push({ labels: [], datasets: [] })
                 for (let j = 0; j < items.length; j++) {
@@ -220,7 +221,9 @@ export default {
 
             for (let j = 0; j < this.meanOrder.length; j++) {
                 for (let k = 0; k < this.meanOrder[j].length; k++) {
+                    console.log('data')
                     console.log(this.meanOrder[j][k].itemID)
+                    console.log(this.meanOrder[j][k].wasAtPositionNumbers)
                     this.chartdataSets[this.meanOrder[j][k].itemID].datasets.push({
                         label: this.meanOrder[j][k].itemName,
                         backgroundColor: this.$vuetify.theme.currentTheme.primary,
@@ -238,6 +241,8 @@ export default {
          */
 
         computeData(index) {
+            console.log('compData')
+            console.log(this.diagramData)
             this.meanOrder = []
             this.answerPossibilites = []
             // check if we have a seriesPoll
