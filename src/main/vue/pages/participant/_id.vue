@@ -269,16 +269,11 @@
                                                 >
                                             </div>
                                         </draggable>
-                                        <v-btn
-                                            :color="backgroundColor"
-                                            class="ma-2"
-                                            @click="restoreAP(index, question)"
-                                        >
+                                        <v-btn class="ma-2" @click="restoreAP(index, question)">
                                             Zurücksetzen
                                         </v-btn>
                                         <v-btn
                                             v-if="!sqWasAnsweredList[index]"
-                                            :color="backgroundColor"
                                             class="ma-2"
                                             @click="saveAnswerSortQuestion(index, question)"
                                         >
@@ -302,10 +297,10 @@
                                     >Nächste Seite</v-btn
                                 >
                                 <!--nuxt to="/AfterParticipated"-->
-                                <v-btn class="float-right" :color="fontColor" @click="saveParticipatedPoll()">
+                                <v-btn class="ma-1" :color="fontColor" @click="saveParticipatedPoll()">
                                     Absenden
                                 </v-btn>
-                                <v-btn class="float-right" :color="fontColor" nuxt to="/AfterSaved">
+                                <v-btn class="ma-1" :color="fontColor" nuxt to="/AfterSaved">
                                     Speichern
                                 </v-btn>
                             </div>
