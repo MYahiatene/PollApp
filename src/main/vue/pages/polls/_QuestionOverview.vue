@@ -307,6 +307,7 @@ export default {
         pollName() {
             return this.pollData.pollName
         },
+
         async loadPoll() {
             await this.$axios
                 .get('/getonepoll', {

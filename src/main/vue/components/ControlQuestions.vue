@@ -16,7 +16,7 @@
                 <span>Konsistenzfragen bearbeiten</span>
             </v-tooltip>
         </template>
-        <v-card class="ma-1 pa-5">
+        <v-card class="ma-1 pa-5" v-if="polls">
             <v-row>
                 <v-col cols="12" lg="11">
                     <h2>Konsistenzfragen von Umfrage: "{{ pollName }}"</h2>
@@ -339,8 +339,9 @@
                 <div v-for="(cq, index) in listOfControlQuestions" :key="index">
                     <v-row>
                         <v-chip class="ma-1" :outlined="index === currentId" @click="openCq(index)">
-                            {{ index }}: {{ cq.serverId }}: Frage {{ cq.q1 }} :
-                            {{(cq.s1? "Intervall" :  cq.a1.length + " Antwort(en) ")}} mit Frage {{ cq.q2 }} :
+                            {{ index }}: Kat {{ cq.c1 + 1 }} / Frage {{ cq.q1 + 1 }}:
+                            {{(cq.s1? "Intervall" :  cq.a1.length + " Antwort(en) ")}} mit Kat {{ cq.c2 + 1 }} / Frage
+                            {{ cq.q2 + 1 }}:
                             {{(cq.s2? "Intervall" :  cq.a2.length + " Antwort(en)" )}}
 
                             <v-icon class="ml-1" @click="copyQcQuestion(index)"> mdi-content-duplicate</v-icon>
@@ -388,10 +389,10 @@ export default {
             type: Boolean,
             default: true,
         },
-        // pollsProp: {
-        //     default: () => [],
-        //     type: Array,
-        // },
+        pollsProp: {
+            default: () => [],
+            type: Array,
+        },
     },
     data() {
         return {
@@ -418,7 +419,7 @@ export default {
             deleteDialog: false,
             panel: false,
             dialog: false,
-            pollsProp: [],
+            // pollsProp: [],
         }
     },
 
@@ -636,20 +637,20 @@ export default {
         async initialize() {
             console.log('getOnePoll')
 
-            await this.$axios
-                .get('/getonepoll', {
-                    params: {
-                        pollId: this.initialPollId,
-                    },
-                })
-                .then((response) => {
-                    this.pollsProp = response.data
-                    console.log('pollData')
-                    console.log(this.pollsProp)
-                })
-                .catch((error) => {
-                    console.log(error)
-                })
+            // await this.$axios
+            //     .get('/getonepoll', {
+            //         params: {
+            //             pollId: this.initialPollId,
+            //         },
+            //     })
+            //     .then((response) => {
+            //         this.pollsProp = response.data
+            //         console.log('pollData')
+            //         console.log(this.pollsProp)
+            //     })
+            //     .catch((error) => {
+            //         console.log(error)
+            //     })
 
             console.log('wert')
 
