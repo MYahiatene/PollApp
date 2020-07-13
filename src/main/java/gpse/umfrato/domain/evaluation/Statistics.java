@@ -201,12 +201,9 @@ public class Statistics {
             if(poll.getPollId().equals(pollId)) {
                 participantCountFiltered = prs.size();
             }
-            if (prs.size() > 0)
-            {
-                final DiagramData dd = new DiagramData(poll, prs, showParticipantsOverTime,
-                    participantsOverRelativeTime, questionIds, timeZone, categoryService, questionService);
-                diagramDataList.add(dd);
-            }
+            final DiagramData dd = new DiagramData(poll, prs, showParticipantsOverTime, participantsOverRelativeTime,
+                    questionIds, timeZone, categoryService, questionService);
+            diagramDataList.add(dd);
             Poll nextPoll;
             try {
                 nextPoll = pollService.getPoll(poll.getPrevInSeries());

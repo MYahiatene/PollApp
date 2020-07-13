@@ -482,7 +482,7 @@ export default {
             const poll = {
                 pollCreator: 'Jan',
                 anonymityStatus: '1',
-                pollName: 'Beispielumfrage',
+                pollName: 'Beispielumfrage :nr:',
                 activated: false,
                 deactivated: false,
                 creationDate: dd + '.' + mm + '.' + yyyy + '&' + time,

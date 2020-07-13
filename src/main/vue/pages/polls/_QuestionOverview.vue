@@ -1,12 +1,10 @@
 <template>
     <div v-if="this.pollData.pollStatus === 0">
-        <AuthGate v-if="isAuthenticated !== true"></AuthGate>
-
+        <AuthGate v-if="isAuthenticated !== true" />
         <v-container v-else-if="storeValid">
             <v-card class="pa-2 ma-0">
                 <v-text-field v-model="pollData.pollName" class="display-1" @focusout="editPollName(pollData)" />
             </v-card>
-
             <v-container>
                 <v-row>
                     <v-col cols="12" lg="5" md="5" sm="5">
@@ -14,9 +12,8 @@
                             <v-card class="ma-0" min-width="400" max-width="500">
                                 <v-row>
                                     <v-spacer></v-spacer>
-
-                                    <v-col cols="10"
-                                        ><v-card-title>
+                                    <v-col cols="10">
+                                        <v-card-title>
                                             <h2 style="font-weight: normal; text-align: center;" class="ma-0">
                                                 Kategorien
                                             </h2>
@@ -29,39 +26,31 @@
                                             />
                                         </v-card-title>
                                     </v-col>
-
                                     <v-spacer />
                                 </v-row>
-
                                 <v-row>
                                     <v-col cols="6">
                                         <v-btn class="ml-10" @click="createCategory()">
                                             <v-icon color="primary">
                                                 mdi-plus
                                             </v-icon>
-
                                             Kategorie
                                         </v-btn>
                                     </v-col>
-
                                     <v-col cols="6">
                                         <v-btn @click="addQuestion()">
                                             <v-icon color="primary" left>mdi-plus</v-icon>
-
                                             Frage
                                         </v-btn>
                                     </v-col>
                                 </v-row>
-
-                                <v-divider></v-divider>
-
+                                <v-divider />
                                 <v-container>
                                     <v-row>
                                         <v-col cols="12">
                                             <v-card-text>
                                                 <v-row>
-                                                    <!--                                        negative margin in order to cancel out the prior waste of space-->
-
+                                                    <!--negative margin in order to cancel out the prior waste of space-->
                                                     <v-col cols="12" lg="12" md="12" sm="12">
                                                         <v-expansion-panels
                                                             tile
@@ -98,36 +87,27 @@
                             </v-card>
                         </v-row>
                     </v-col>
-
                     <v-col cols="12" lg="7" md="7" sm="7">
                         <v-card v-show="buildIndex > 0" class="pa-1" :style="frameColor">
-                            <QuestionBuildWidget
-                                :category-data="categoryData"
-                                :category-names="categoryNames"
-                            ></QuestionBuildWidget>
+                            <QuestionBuildWidget :category-data="categoryData" :category-names="categoryNames" />
                         </v-card>
                     </v-col>
                 </v-row>
             </v-container>
         </v-container>
-
         <v-container v-else>
             <v-card>
                 <v-card-title>
                     <v-spacer />
-
                     <v-icon>
                         mdi-sync-alert
                     </v-icon>
-
                     Der Umfrato-Server hat noch nicht geantwortet
-
                     <v-spacer />
                 </v-card-title>
             </v-card>
         </v-container>
     </div>
-
     <div v-else>
         <v-card>
             <v-card-title>Die Umfrage ist aktiv und daher nicht bearbeitbar</v-card-title>
@@ -140,10 +120,11 @@ import { mapActions, mapGetters, mapMutations } from 'vuex'
 import CategoryListElement from '../../components/CategoryListElement'
 import QuestionBuildWidget from '../../components/QuestionBuildWidget'
 import ControlQuestions from '../../components/ControlQuestions'
+import AuthGate from '../../components/AuthGate'
 
 export default {
     name: 'QuestionOverview',
-    components: { ControlQuestions, CategoryListElement, QuestionBuildWidget },
+    components: { AuthGate, ControlQuestions, CategoryListElement, QuestionBuildWidget },
     data() {
         return {
             categoryNameCounter: 0,
