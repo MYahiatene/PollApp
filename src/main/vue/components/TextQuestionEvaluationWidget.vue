@@ -1,5 +1,5 @@
 <template>
-    <v-card>
+    <v-card v-if="answers !== undefined">
         <v-card-title>{{ questionTitle }}</v-card-title>
         <v-container grid-list-md text-xs-center>
             <v-layout row wrap>
