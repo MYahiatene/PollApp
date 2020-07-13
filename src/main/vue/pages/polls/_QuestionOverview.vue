@@ -127,7 +127,6 @@ export default {
     components: { AuthGate, ControlQuestions, CategoryListElement, QuestionBuildWidget },
     data() {
         return {
-            categoryNameCounter: 0,
             editIndex: false,
             disableDrag: false,
             questionCreationIndex: false,
@@ -190,7 +189,6 @@ export default {
             isAuthenticated: 'login/isAuthenticated',
             getCategories: 'pollOverview/getCategory',
             getBuildIndex: 'questionOverview/getBuildIndex',
-            getCounter: 'questionOverview/getCounter',
             getUsername: 'login/getUsername',
         }),
         pollId() {
@@ -321,7 +319,7 @@ export default {
                         this.categoryData.push(obj)
                         this.categoryNames.push({
                             text: ele.categoryName,
-                            value: ele.categoryName,
+                            value: ele.categoryId,
                         })
                     })
                     console.log('CategoryData')
@@ -367,9 +365,8 @@ export default {
                     this.categoryData.push(this.defaultCategory)
                     this.categoryNames.push({
                         text: 'Neue Kategorie',
-                        value: this.getCounter,
+                        value: response.data.categoryId,
                     })
-                    this.incCounter()
                 })
             const obj = {
                 lastEditFrom: this.getUsername,
@@ -425,7 +422,6 @@ export default {
             setCategory: 'pollOverview/setCategory',
         }),
         ...mapMutations({
-            incCounter: 'questionOverview/increment',
             saveData: 'pollOverview/saveData',
             setPollName: 'pollOverview/setPollName',
             setPollID: 'pollOverview/setPollID',

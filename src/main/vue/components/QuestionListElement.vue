@@ -1,6 +1,6 @@
 <template>
     <!--Here we need the negative margin in order to cancel out the margin applied by the v-cards-->
-    <v-card outlined hover flat :color="color" class="my-n1">
+    <v-card outlined hover flat class="my-n1">
         <v-row no-gutters class="ma-n2 my-n4 pa-4">
             <v-col cols="10">
                 <v-list-item-title>

@@ -567,11 +567,18 @@ export default {
                 .catch((reason) => {
                     console.log(reason)
                 })
+            const response = await this.$axios.get('/getonepoll', {
+                params: {
+                    pollId: newPollId,
+                },
+            })
+            const pollData = response.data
             console.log(newPollId)
             this.progressColorA = '#ff4d00'
             await this.$axios
                 .post('/addquestion', {
                     pollId: newPollId,
+                    categoryType: pollData.categoryList[0].categoryId,
                     questionType: 'ChoiceQuestion',
                     questionMessage: 'Radiobuttons',
                     answerPossibilities: ['1', '2', '3', '4'],
@@ -588,6 +595,7 @@ export default {
             await this.$axios
                 .post('/addquestion', {
                     pollId: newPollId,
+                    categoryType: pollData.categoryList[0].categoryId,
                     questionType: 'ChoiceQuestion',
                     questionMessage: 'Checkboxen',
                     answerPossibilities: ['A', 'B', 'C', 'D', 'E'],
@@ -604,6 +612,7 @@ export default {
             await this.$axios
                 .post('/addquestion', {
                     pollId: newPollId,
+                    categoryType: pollData.categoryList[0].categoryId,
                     questionMessage: 'Textfrage Single Line',
                     questionType: 'TextQuestion',
                     textMultiline: false,
@@ -620,6 +629,7 @@ export default {
             await this.$axios
                 .post('/addquestion', {
                     pollId: newPollId,
+                    categoryType: pollData.categoryList[0].categoryId,
                     questionMessage: 'Textfrage Multiline',
                     questionType: 'TextQuestion',
                     textMultiline: true,
@@ -636,6 +646,7 @@ export default {
             await this.$axios
                 .post('/addquestion', {
                     pollId: newPollId,
+                    categoryType: pollData.categoryList[0].categoryId,
                     questionMessage: 'Rangefrage',
                     questionType: 'RangeQuestion',
                     startValue: 20,
@@ -654,6 +665,7 @@ export default {
             await this.$axios
                 .post('/addquestion', {
                     pollId: newPollId,
+                    categoryType: pollData.categoryList[0].categoryId,
                     questionMessage: 'Sliderfrage nach Gefühl',
                     questionType: 'SliderQuestion',
                     startValue: 0.0,
@@ -673,6 +685,7 @@ export default {
             await this.$axios
                 .post('/addquestion', {
                     pollId: newPollId,
+                    categoryType: pollData.categoryList[0].categoryId,
                     questionType: 'SliderQuestion',
                     questionMessage: 'Sliderfrage nach Wert',
                     startValue: 0,
@@ -691,6 +704,7 @@ export default {
             await this.$axios
                 .post('/addquestion', {
                     pollId: newPollId,
+                    categoryType: pollData.categoryList[0].categoryId,
                     questionType: 'SortQuestion',
                     questionMessage: 'Sortierfrage',
                     answerPossibilities: ['A', 'B', 'C', 'D', 'E'],
