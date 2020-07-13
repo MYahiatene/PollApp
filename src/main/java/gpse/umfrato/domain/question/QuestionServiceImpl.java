@@ -72,6 +72,7 @@ public class QuestionServiceImpl implements QuestionService {
     @Override
     public Question addQuestion(final QuestionCmd questionCmd) {
         Question question = null;
+        System.out.println(questionCmd.toString());
         switch (questionCmd.getQuestionType()) {
             case TEXT_QUESTION:
                 question = new Question(questionCmd.getQuestionMessage(), questionCmd.isTextMultiline(),
@@ -104,10 +105,8 @@ public class QuestionServiceImpl implements QuestionService {
             default:
                 return null;
         }
-        question.setCategoryId(pollRepository.getOne(questionCmd.getPollId()).
-            getCategoryList().get(questionCmd.getCategoryType()).getCategoryId());
-        pollRepository.findById(questionCmd.getPollId()).get().getCategoryList().get(questionCmd.getCategoryType()).getQuestionList().
-            add(question);
+        question.setCategoryId(questionCmd.getCategoryType());
+        categoryRepository.findById(questionCmd.getCategoryType()).get().getQuestionList().add(question);
         questionRepository.save(question);
         return question;
     }
@@ -225,19 +224,18 @@ public class QuestionServiceImpl implements QuestionService {
         }
         final long oldCategoryId = questionRepository.findById(question.getQuestionId()).orElseThrow(EntityNotFoundException::new)
             .getCategoryId();
-        final long newCategoryId = pollRepository.findById(questionCmd.getPollId()).get().getCategoryList()
-            .get(questionCmd.getCategoryType()).getCategoryId();
+        final long newCategoryId = questionCmd.getCategoryType();
         if(oldCategoryId != newCategoryId) {
             final Category oldCategory = categoryRepository.getOne(oldCategoryId);
+            System.out.println(newCategoryId);
             final Category newCategory = categoryRepository.getOne(newCategoryId);
             oldCategory.getQuestionList().remove(question);
+            categoryRepository.save(oldCategory);
             question.setCategoryId(newCategoryId);
             newCategory.getQuestionList().add(question);
-            categoryRepository.save(oldCategory);
             categoryRepository.save(newCategory);
         } else {
             questionRepository.save(question);
-            final Category oldCategory = categoryRepository.getOne(oldCategoryId);
         }
         return question;
     }

@@ -296,10 +296,10 @@
                                     >Nächste Seite</v-btn
                                 >
                                 <!--nuxt to="/AfterParticipated"-->
-                                <v-btn class="ma-1" :color="fontColor" @click="saveParticipatedPoll()">
+                                <v-btn class="ma-1 float-right" :color="fontColor" @click="saveParticipatedPoll()">
                                     Absenden
                                 </v-btn>
-                                <v-btn class="ma-1" :color="fontColor" nuxt to="/AfterSaved">
+                                <v-btn class="ma-1 float-right" :color="fontColor" nuxt to="/AfterSaved">
                                     Speichern
                                 </v-btn>
                             </div>

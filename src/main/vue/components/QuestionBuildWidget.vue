@@ -156,23 +156,23 @@ export default {
         },
         categoryType: {
             get() {
-                return this.categoryNames[this.getQuestion.categoryType]
-            },
-            set(value) {
+                let returnValue = null
                 this.categoryNames.forEach((category) => {
-                    if (category.value === value) {
-                        const index = this.categoryNames.indexOf(category)
-                        console.log(index)
-                        this.setCategoryType(index)
+                    if (category.value === this.getQuestion.categoryId) {
+                        returnValue = category
                     }
                 })
+                return returnValue
+            },
+            set(value) {
+                this.setCategoryType(value)
             },
         },
     },
     methods: {
-        createQuestion() {
+        async createQuestion() {
             if (this.buildIndex === 1) {
-                this.$axios
+                await this.$axios
                     .post('/addquestion', {
                         pollId: this.$route.params.QuestionOverview,
                         questionType: this.getQuestion.questionType,
@@ -195,15 +195,21 @@ export default {
                         categoryType: this.getQuestion.categoryType,
                     })
                     .then((response) => {
-                        this.categoryData[this.getQuestion.categoryType].questionList.push(response.data)
+                        this.categoryData.forEach((category) => {
+                            if (category.categoryId === response.data.categoryId) {
+                                category.questionList.push(response.data)
+                            }
+                        })
                     })
                 const obj = {
                     lastEditFrom: this.getUsername,
                     pollId: this.$route.params.QuestionOverview,
                 }
-                this.$axios.post('/newLastEdit', obj)
+                await this.$axios.post('/newLastEdit', obj)
             } else {
-                this.$axios
+                console.log(this.getQuestion)
+                console.log(this.getQuestion.categoryType)
+                await this.$axios
                     .put('/editquestion', {
                         pollId: this.$route.params.QuestionOverview,
                         questionType: this.getQuestion.questionType,
@@ -227,21 +233,40 @@ export default {
                         categoryType: this.getQuestion.categoryType,
                     })
                     .then((response) => {
-                        this.categoryData[this.getQuestion.categoryType].questionList.push(response.data)
+                        let questionExists = false
+                        console.log('suche frage')
+                        this.categoryData.forEach((category) => {
+                            if (category.categoryId === response.data.categoryId) {
+                                category.questionList.forEach((question) => {
+                                    if (question.questionId === response.data.questionId) {
+                                        console.log('id gefunden')
+                                        questionExists = true
+                                    }
+                                })
+                            }
+                        })
+                        if (!questionExists) {
+                            this.categoryData.forEach((category) =>
+                                category.questionList.forEach((question) => {
+                                    if (question.questionId === this.getQuestion.questionId) {
+                                        console.log('lösche frage')
+                                        category.questionList.splice(category.questionList.indexOf(question), 1)
+                                    }
+                                })
+                            )
+                            this.categoryData.forEach((category) => {
+                                if (category.categoryId === response.data.categoryId) {
+                                    category.questionList.push(response.data)
+                                }
+                            })
+                        }
                     })
                 const obj = {
                     lastEditFrom: this.getUsername,
                     pollId: this.$route.params.QuestionOverview,
                 }
-                this.$axios.post('/newLastEdit', obj)
+                await this.$axios.post('/newLastEdit', obj)
             }
-            this.categoryData.forEach((category) =>
-                category.questionList.forEach((question) => {
-                    if (question.questionId === this.getQuestion.questionId) {
-                        category.questionList.splice(category.questionList.indexOf(question), 1)
-                    }
-                })
-            )
             this.setBuildIndex(0)
         },
         ...mapMutations({

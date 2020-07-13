@@ -137,7 +137,7 @@ export default {
             this.draggedQuestionId = evt.draggedContext.element.questionId
             console.log(this.draggedQuestionId)
         },
-        onEnd(evt) {
+        async onEnd(evt) {
             const oldIndex2 = evt.oldIndex
             const newIndex2 = evt.newIndex
             let newCategoryId2 = null
@@ -153,11 +153,21 @@ export default {
             console.log('newCategoryId2: ' + newCategoryId2)
             console.log('QuestionId: ' + this.draggedQuestionId)
 
-            this.$axios.post('/changeQuestionIndex', {
-                newIndex: newIndex2,
-                newCategoryId: newCategoryId2,
-                questionId: this.draggedQuestionId,
-            })
+            await this.$axios
+                .post('/changeQuestionIndex', {
+                    newIndex: newIndex2,
+                    newCategoryId: newCategoryId2,
+                    questionId: this.draggedQuestionId,
+                })
+                .then((response) => {
+                    this.categoryData.forEach((category) =>
+                        category.questionList.forEach((question) => {
+                            if (question.questionId === response.data.questionId) {
+                                question.categoryType = response.data.categoryId
+                            }
+                        })
+                    )
+                })
         },
         setDeleteIndex(category, deleteIndex) {
             this.deleteIndex = deleteIndex
