@@ -70,10 +70,10 @@
                                                         v-model="valueList[index]"
                                                         class="my-2"
                                                         :items="question.answerPossibilities"
-                                                        :value="answer"
+                                                        :value="valueList[index]"
                                                         :color="fontColor"
                                                         label="Auswahl"
-                                                        @change="saveAnswerRadioButton(question, answer)"
+                                                        @change="saveAnswerRadioButton(question, valueList[index])"
                                                     ></v-overflow-btn>
                                                 </v-card-text>
                                             </div>
@@ -103,8 +103,7 @@
                                             </div>
                                         </div>
                                         <div v-else>
-                                            <!--Checkboxes, so that multiple answers are technically allowed,
-                                        not able to save them yet-->
+                                            <!--Checkboxes, so that multiple answers are allowed-->
                                             <div v-if="question.dropDown">
                                                 <v-card-text>
                                                     <v-select
@@ -597,8 +596,10 @@ export default {
          * already given answers by the user, or nothing at all, if there are no previously given answers.
          */
         valuesForQuestions() {
+            this.createListOfAnswerPossibilitiesForSortQuestions()
             this.valueList = []
             console.log('givenAnswers', this.givenAnswers)
+            console.log('computedQuestionList', this.givenAnswers)
             let index = 0
             for (let m = 0; m < this.getPoll[1].data.categoryList.length; m++) {
                 if (this.getCategory.categoryId > this.getPoll[1].data.categoryList[m].categoryId) {
@@ -614,10 +615,8 @@ export default {
                 console.log('type', type)
                 if (this.givenAnswers !== []) {
                     console.log('!== []')
-                    console.log(this.givenAnswers[i + index])
                     if (this.givenAnswers[i + index] != null) {
                         console.log('!= null')
-                        console.log('GIVENANSWERS PARTICIPANT: ', this.givenAnswers)
                         // for RadioButtons we need answer text and given back are the indizes
                         if (
                             (type === 'ChoiceQuestion' &&
