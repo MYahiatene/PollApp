@@ -166,7 +166,6 @@ class PollServiceImpl implements PollService {
      */
     @Override
     public Integer increasePollStatus(final Long pollId) {
-        LOGGER.info("increasePollStatus");
         final Poll poll = pollRepository.getOne(pollId);
         switch (poll.getPollStatus()) {
             case 0:
@@ -175,26 +174,22 @@ class PollServiceImpl implements PollService {
             case 1:
                 poll.setPollStatus(2);
                 if (poll.getLevel() == -1) {
-                    LOGGER.info("hier");
+                    poll.setActivated(true);
                     poll.setActivatedDate(ZonedDateTime.now());
                 }
                 break;
             case 2:
-                LOGGER.info("increase to deactivation");
-                LOGGER.info("poll: " + poll.toString());
                 poll.setPollStatus(3);
                 if (poll.getLevel() != -1) {
-                    LOGGER.info("poll level: " + poll.getLevel());
                     if (!stoppingReason(poll)) {
-                        LOGGER.info("create next series Poll");
                         createNextSeriesPoll(poll);
                         poll.setLevel(-1);
                         pollRepository.save(poll);
                     } else {
-                        LOGGER.info("end series");
                         poll.setLevel(-1);
                     }
                 }
+                poll.setActivated(true);
                 poll.setDeactivatedDate(ZonedDateTime.now());
                 break;
             default:
@@ -277,19 +272,15 @@ class PollServiceImpl implements PollService {
      */
     @Override
     public Poll checkActivationAndDeactivation(final Poll poll) {
-        LOGGER.info("check");
         final ZonedDateTime now = ZonedDateTime.now();
         if ((poll.isActivated() || poll.getLevel() != -1)
             && poll.getPollStatus() == 1 && poll.getActivatedDate().isBefore(now)) {
-            LOGGER.info("activate");
             increasePollStatus(poll.getPollId());
         }
         if (poll.getPollStatus() == 2 && poll.getDeactivatedDate().isBefore(now)) {
             if (poll.isDeactivated()) {
-                LOGGER.info("deactivate1");
                 increasePollStatus(poll.getPollId());
             } else if (poll.getLevel() != -1) {
-                LOGGER.info("deactivate2");
                 increasePollStatus(poll.getPollId());
             }
         }
@@ -335,8 +326,6 @@ class PollServiceImpl implements PollService {
      */
     @Override
     public ZonedDateTime calculateNextDate(final Poll poll) {
-        LOGGER.info("Start calculateNextDate");
-        // TODO: ähnliche if schleifen zu Methoden extrahieren für bessere übersichtlichkeit
         final int repeat = poll.getRepeat();
         final List<Integer> day = poll.getDay();
         final List<Integer> week = poll.getWeek();
@@ -345,13 +334,6 @@ class PollServiceImpl implements PollService {
         final ZonedDateTime prev = poll.getActivatedDate();
         final boolean checkLeapYear = poll.getCheckLeapYear();
         ZonedDateTime next = prev;
-        LOGGER.info("given");
-        LOGGER.info("repeat: " + repeat);
-        LOGGER.info("day: " + day.toString());
-        LOGGER.info("week: " + week.toString());
-        LOGGER.info("month: " + month.toString());
-        LOGGER.info("level: " + level);
-        LOGGER.info("prev: " + prev.toString());
         if (level == 0) {
             // adds the number of days, which represent the repetition, to the current date
             next = next.plusDays(repeat);
@@ -372,7 +354,6 @@ class PollServiceImpl implements PollService {
             return next;
         } else if (level == 2) {
             if (week.size() == 0) {
-                LOGGER.info("no week given");
                 // days per x months given
                 // if there are later days within the cycle, the next activation date will be the next day in days[]
                 for (int i = 0; i < day.size() - 1; i++) {
@@ -387,24 +368,17 @@ class PollServiceImpl implements PollService {
                 next = saveDayOfMonth(next, day.get(0));
                 return next;
             } else {
-                LOGGER.info("day, week and month given");
-                LOGGER.info("day of the week: " + prev.getDayOfWeek().getValue());
-                LOGGER.info("week of the month: " + getWeekOfMonthWithDay(prev, 1));
                 // days in weeks per months
                 // more than one week and more than one day per week given
                 for (int i = 0; i < week.size() - 1; i++) {
-                    LOGGER.info("hier");
                     for (int j = 0; j < day.size() - 1; j++) {
-                        LOGGER.info("hier rein");
                         if (prev.getDayOfWeek().getValue() < day.get(j + 1) && getWeekOfMonthWithDay(prev, day.get(0))
                             <= week.get((i + 1) % week.size())) {
-                            LOGGER.info("next day in week");
                             next = next.with(TemporalAdjusters.next(DayOfWeek.of(day.get(j + 1))));
                             return next;
                         }
                     }
                     if (getWeekOfMonthWithDay(prev, day.get(0)) == week.get(i)) {
-                        LOGGER.info("last day in week");
                         next = next.with(TemporalAdjusters.dayOfWeekInMonth(week.get(i + 1), DayOfWeek.of(day.get(0))));
                         return next;
                     }
@@ -413,21 +387,17 @@ class PollServiceImpl implements PollService {
                 for (int j = 0; j < day.size() - 1; j++) {
                     if (prev.getDayOfWeek().getValue() < day.get(j + 1) && getWeekOfMonthWithDay(prev, day.get(0))
                         == week.get(0)) {
-                        LOGGER.info("only days, adds day");
                         next = next.with(TemporalAdjusters.next(DayOfWeek.of(day.get(j + 1))));
                         return next;
                     }
                 }
                 // last day of cycle reached, calculates the first day of the new one
-                LOGGER.info("next month");
                 next = next.plusMonths(repeat);
                 next = next.with(TemporalAdjusters.dayOfWeekInMonth(week.get(0), DayOfWeek.of(day.get(0))));
                 return next;
             }
         } else if (level == 3) {
             // days per year given
-            LOGGER.info("day of the year" + prev.getDayOfYear());
-            LOGGER.info("week of the year" + prev.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR));
             if (week.size() == 0 && month.size() == 0) {
                 for (int i = 0; i < day.size() - 1; i++) {
                     if (prev.getDayOfYear() == day.get(i)) {
@@ -521,9 +491,6 @@ class PollServiceImpl implements PollService {
                 return next;
             } else {
                 final int prevMonth = prev.getMonthValue();
-                LOGGER.info("day of week: " + prev.getDayOfWeek().getValue());
-                LOGGER.info("week of month: " + getWeekOfMonthWithDay(prev, 1));
-                LOGGER.info("month: " + prevMonth);
                 // days per weeks per months per years
                 // more than one day, more than one week and more than one month given
                 for (int i = 0; i < month.size() - 1; i++) {
@@ -654,19 +621,14 @@ class PollServiceImpl implements PollService {
     private boolean stoppingReason(final Poll poll) {
         switch (poll.getStoppingReason()) {
             case 0: /*Datum*/
-                LOGGER.info("1");
                 final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss",
                     Locale.GERMAN).withZone(poll.getActivatedDate().getZone());
-                LOGGER.info("getRepeatUntil: " + poll.getRepeatUntil());
                 final ZonedDateTime endTime = ZonedDateTime.parse(poll.getRepeatUntil() + " 23:59:59", formatter);
                 return poll.getNextSeries().compareTo(endTime) > 0;
             case 1: /*Wiederholungen*/
-                LOGGER.info("2");
                 return poll.getSeriesCounter() >= Integer.parseInt(poll.getRepeatUntil());
             case 2: /*Teilnehmer*/
-                LOGGER.info("3");
                 final int size = pollResultService.getPollResults(poll.getPollId()).size();
-                LOGGER.info("size of pollresults: " + size);
                 return size < Integer.parseInt(poll.getRepeatUntil());
             default:
                 return false;
@@ -680,11 +642,7 @@ class PollServiceImpl implements PollService {
      * @return deactivation date
      */
     private ZonedDateTime calculateNewDeactivation (final Poll oldPoll, final Poll newPoll) {
-        LOGGER.info("calculateNewDeactivation");
-        LOGGER.info("oldPoll: " + oldPoll);
-        LOGGER.info("newPoll: " + newPoll);
         Period period = Period.between(oldPoll.getActivatedDate().toLocalDate(), oldPoll.getDeactivatedDate().toLocalDate());
-        LOGGER.info("period: " + period.getDays());
         ZonedDateTime newDeactivation = newPoll.getActivatedDate().plusDays(period.getDays());
         newDeactivation = newDeactivation.withHour(newPoll.getDeactivatedDate().getHour());
         newDeactivation = newDeactivation.withMinute(newPoll.getDeactivatedDate().getMinute());
@@ -698,8 +656,6 @@ class PollServiceImpl implements PollService {
      */
     private void createNextSeriesPoll(final Poll poll) {
         // TODO: lastEditFrom = null -> schlimm?
-        LOGGER.info("createNextSeriesPoll start");
-        LOGGER.info("old poll: " + poll);
         final Poll nextSeriesPoll = new Poll(poll.getPollCreator(), poll.getAnonymityStatus(), poll.getSeriesPollName(),
             poll.getCreationDate(), poll.getNextSeries(), poll.getDeactivatedDate(), 1,
             poll.getBackgroundColor(), poll.getFontColor(), poll.getLogo(), poll.isVisibility(),
@@ -730,7 +686,6 @@ class PollServiceImpl implements PollService {
         nextSeriesPoll.setDeactivatedDate(calculateNewDeactivation(poll, nextSeriesPoll));
         participationLinkService.updateLinks(poll.getPollId(), nextSeriesPoll.getPollId());
         pollRepository.save(nextSeriesPoll);
-        LOGGER.info("new series poll: " + nextSeriesPoll);
     }
 
     /**
