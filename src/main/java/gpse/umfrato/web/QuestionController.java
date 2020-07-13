@@ -83,6 +83,7 @@ public class QuestionController {
     @PreAuthorize("hasAnyAuthority('Admin','Creator', 'Editor')")
     @PutMapping("/editquestion")
     public Question editQuestion(final @RequestBody QuestionCmd questionCmd) {
+        System.out.println(questionCmd);
         return questionService.editQuestion(questionCmd);
     }
 

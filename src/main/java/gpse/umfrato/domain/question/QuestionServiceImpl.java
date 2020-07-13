@@ -177,9 +177,9 @@ public class QuestionServiceImpl implements QuestionService {
     public Question editQuestion(final QuestionCmd questionCmd) {
         final Question question = questionRepository.
             findById(questionCmd.getQuestionId()).get();
-
         switch (questionCmd.getQuestionType()) {
             case TEXT_QUESTION:
+                question.setQuestionType(questionCmd.getQuestionType());
                 question.setQuestionMessage(questionCmd.getQuestionMessage());
                 question.setTextMultiline(questionCmd.isTextMultiline());
                 question.setTextMinBool(questionCmd.isTextMinBool());
@@ -188,10 +188,12 @@ public class QuestionServiceImpl implements QuestionService {
                 question.setTextMaximum(questionCmd.getTextMaximum());
                 break;
             case SORT_QUESTION:
+                question.setQuestionType(questionCmd.getQuestionType());
                 question.setQuestionMessage(questionCmd.getQuestionMessage());
                 question.setAnswerPossibilities(questionCmd.getAnswerPossibilities());
                 break;
             case RANGE_QUESTION:
+                question.setQuestionType(questionCmd.getQuestionType());
                 question.setQuestionMessage(questionCmd.getQuestionMessage());
                 question.setAboveMessage(questionCmd.getAboveMessage());
                 question.setBelowMessage(questionCmd.getBelowMessage());
@@ -200,6 +202,7 @@ public class QuestionServiceImpl implements QuestionService {
                 question.setEndValue(questionCmd.getEndValue());
                 break;
             case SLIDER_QUESTION:
+                question.setQuestionType(questionCmd.getQuestionType());
                 question.setQuestionMessage(questionCmd.getQuestionMessage());
                 question.setAboveMessage(questionCmd.getAboveMessage());
                 question.setBelowMessage(questionCmd.getBelowMessage());
@@ -209,6 +212,7 @@ public class QuestionServiceImpl implements QuestionService {
                 question.setHideValues(questionCmd.isHideValues());
                 break;
             case CHOICE_QUESTION:
+                question.setQuestionType(questionCmd.getQuestionType());
                 question.setAnswerPossibilities(questionCmd.getAnswerPossibilities());
                 question.setNumberOfPossibleAnswers(questionCmd.getNumberOfPossibleAnswers());
                 question.setQuestionMessage(questionCmd.getQuestionMessage());
@@ -223,16 +227,19 @@ public class QuestionServiceImpl implements QuestionService {
             .getCategoryId();
         final long newCategoryId = pollRepository.findById(questionCmd.getPollId()).get().getCategoryList()
             .get(questionCmd.getCategoryType()).getCategoryId();
-        final Category oldCategory = categoryRepository.getOne(oldCategoryId);
-        final Category newCategory = categoryRepository.getOne(newCategoryId);
-        oldCategory.getQuestionList().remove(question);
-        question.setCategoryId(newCategoryId);
-        newCategory.getQuestionList().add(question);
-        categoryRepository.save(oldCategory);
-        categoryRepository.save(newCategory);
-        //questionRepository.save(question);
+        if(oldCategoryId != newCategoryId) {
+            final Category oldCategory = categoryRepository.getOne(oldCategoryId);
+            final Category newCategory = categoryRepository.getOne(newCategoryId);
+            oldCategory.getQuestionList().remove(question);
+            question.setCategoryId(newCategoryId);
+            newCategory.getQuestionList().add(question);
+            categoryRepository.save(oldCategory);
+            categoryRepository.save(newCategory);
+        } else {
+            questionRepository.save(question);
+            final Category oldCategory = categoryRepository.getOne(oldCategoryId);
+        }
         return question;
-
     }
 
     /**

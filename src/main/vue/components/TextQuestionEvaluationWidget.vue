@@ -61,22 +61,46 @@
                                         class="ma-1"
                                         flat
                                     >
-                                        <template>
-                                            <v-toolbar flat>
-                                                <v-toolbar-title>Umfrage {{ thing[0].seriesCounter }}</v-toolbar-title>
-                                            </v-toolbar>
-                                        </template>
-                                        <v-data-table
-                                            :headers="freqHeaders"
-                                            :items="thing"
-                                            :search="search"
-                                            :custom-filter="filterOnlyCapsText"
-                                            class="elevation-1"
-                                            dense
-                                            :footer-props="footerProps"
-                                            multi-sort
-                                        >
-                                        </v-data-table>
+                                        <div v-if="thing[0]">
+                                            <template>
+                                                <v-toolbar flat>
+                                                    <v-toolbar-title
+                                                        >Umfrage {{ thing[0].seriesCounter }}</v-toolbar-title
+                                                    >
+                                                </v-toolbar>
+                                            </template>
+                                            <v-data-table
+                                                :headers="freqHeaders"
+                                                :items="thing"
+                                                :search="search"
+                                                :custom-filter="filterOnlyCapsText"
+                                                class="elevation-1"
+                                                dense
+                                                :footer-props="footerProps"
+                                                multi-sort
+                                                no-data-text="Keine Daten"
+                                                no-results-text="Keine Ergebnisse"
+                                            />
+                                        </div>
+                                        <div v-else>
+                                            <template>
+                                                <v-toolbar flat>
+                                                    <v-toolbar-title>Keine Daten in dieser Umfrage</v-toolbar-title>
+                                                </v-toolbar>
+                                            </template>
+                                            <v-data-table
+                                                :headers="freqHeaders"
+                                                :items="thing"
+                                                :search="search"
+                                                :custom-filter="filterOnlyCapsText"
+                                                class="elevation-1"
+                                                dense
+                                                :footer-props="footerProps"
+                                                multi-sort
+                                                no-data-text="Keine Daten"
+                                                no-results-text="Keine Ergebnisse"
+                                            />
+                                        </div>
                                     </v-card>
                                 </v-col>
                             </v-row>

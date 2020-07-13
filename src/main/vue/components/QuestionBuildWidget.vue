@@ -16,18 +16,17 @@
                             label="Fragentext"
                             hint="Was soll den Umfrageteilnehmer gefragt werden?"
                             rows="1"
-                        >
-                        </v-textarea>
+                        />
                     </v-row>
                     <v-row no-gutters>
                         <v-select
                             v-model="categoryType"
                             :items="categoryNames"
                             label="Zu welcher Kategorie soll die Frage hinzugefügt werden?"
-                        ></v-select>
+                        />
                     </v-row>
                     <v-row no-gutters>
-                        <v-select v-model="questionType" :items="questionWidgets" label="Fragenart"></v-select>
+                        <v-select v-model="questionType" :items="questionWidgets" label="Fragenart" />
                     </v-row>
                     <v-row>
                         <component
@@ -36,10 +35,10 @@
                             :categoryData="categoryData"
                             :buildIndex:="buildIndex"
                             :categoryType="categoryType"
-                        ></component>
+                        />
                     </v-row>
                     <v-row>
-                        <v-col cols="8"></v-col>
+                        <v-col cols="8" />
                         <v-col>
                             <v-btn :disabled="questionMessageBool" @click="createQuestion">
                                 <v-icon color="primary" left>
