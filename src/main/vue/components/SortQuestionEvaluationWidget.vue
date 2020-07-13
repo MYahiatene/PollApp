@@ -3,7 +3,8 @@
         <v-app-bar dense flat>
             <!--            the title includes the Question and its id-->
             <v-toolbar-title>
-                {{ questionTitle }} {{ seriesPoll ? '(Umfrage: ' + (currentIndex + 1) + ')' : '' }}</v-toolbar-title
+                {{ questionTitle }}
+                {{ seriesPoll ? '(Umfrage: ' + (numberOfWidgets - currentIndex) + ')' : '' }}</v-toolbar-title
             >
             <v-spacer></v-spacer>
             <div v-if="seriesPoll">
@@ -202,6 +203,11 @@ export default {
     },
 
     mounted() {
+        // check if we have a seriesPoll
+        if (this.diagramData[this.questionID].meanOrder.length > 1) {
+            this.seriesPoll = true
+            this.numberOfWidgets = this.diagramData[this.questionID].meanOrder.length
+        }
         this.computeData(0)
     },
 
@@ -221,9 +227,6 @@ export default {
 
             for (let j = 0; j < this.meanOrder.length; j++) {
                 for (let k = 0; k < this.meanOrder[j].length; k++) {
-                    console.log('data')
-                    console.log(this.meanOrder[j][k].itemID)
-                    console.log(this.meanOrder[j][k].wasAtPositionNumbers)
                     this.chartdataSets[this.meanOrder[j][k].itemID].datasets.push({
                         label: this.meanOrder[j][k].itemName,
                         backgroundColor: this.$vuetify.theme.currentTheme.primary,
@@ -241,19 +244,14 @@ export default {
          */
 
         computeData(index) {
-            console.log('compData')
-            console.log(this.diagramData)
             this.meanOrder = []
             this.answerPossibilites = []
-            // check if we have a seriesPoll
-            if (this.diagramData[this.questionID].meanOrder.length > 1) {
-                this.seriesPoll = true
-                this.numberOfWidgets = this.diagramData[this.questionID].meanOrder.length
-            }
+
             // check if there were no answers
             if (this.diagramData[this.questionID].meanOrder[index].length === 0) {
                 this.noAnswers = true
             } else {
+                this.noAnswers = false
                 // copy values from store into a front end array
                 for (let i = 0; i < this.diagramData[this.questionID].meanOrder[index].length; i++) {
                     this.meanOrder.push([])
@@ -301,9 +299,13 @@ export default {
          * if we do have a next Widget though the current index is increased and computeData is called to get the new values
          */
 
-        loadNextWidget() {
-            if (!(this.currentIndex === this.numberOfWidgets - 1)) {
-                this.currentIndex++
+        loadLastWidget() {
+            console.log('next')
+            if (!(this.currentIndex === 0)) {
+                console.log(this.currentIndex)
+                this.currentIndex--
+                console.log(this.currentIndex)
+                this.$forceUpdate()
                 this.computeData(this.currentIndex)
             }
         },
@@ -316,9 +318,11 @@ export default {
          * if we do have a former Widget though the current index is decreased and computeData is called to get the new values
          */
 
-        loadLastWidget() {
-            if (!(this.currentIndex === 0)) {
-                this.currentIndex--
+        loadNextWidget() {
+            console.log('last')
+            if (!(this.currentIndex === this.numberOfWidgets - 1)) {
+                console.log(this.currentIndex)
+                this.currentIndex++
                 this.computeData(this.currentIndex)
             }
         },

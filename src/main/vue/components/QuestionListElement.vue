@@ -1,6 +1,6 @@
 <template>
     <!--Here we need the negative margin in order to cancel out the margin applied by the v-cards-->
-    <v-card outlined hover flat class="my-n1">
+    <v-card outlined hover flat :color="color" class="my-n1">
         <v-row no-gutters class="ma-n2 my-n4 pa-4">
             <v-col cols="10">
                 <v-list-item-title>
@@ -90,17 +90,20 @@ export default {
 
         color() {
             if (this.currentQuestion !== null) {
+                console.log('question')
+                console.log(this.question.categoryId)
+                console.log(this.question.questionId)
                 if (
-                    this.currentQuestion.categoryId === this.categoryId &&
-                    this.currentQuestion.questionId === this.questionId
+                    this.currentQuestion.categoryId === this.question.categoryId &&
+                    this.currentQuestion.questionId === this.question.questionId
                 ) {
-                    return this.$vuetify.theme.currentTheme.softAccent
+                    return '#456789'
                 } else {
-                    return ''
+                    return '#22aaaa'
                 }
             }
 
-            return ''
+            return '#aaeeee'
         },
     },
     methods: {
