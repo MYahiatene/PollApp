@@ -105,6 +105,10 @@ public class QuestionServiceImpl implements QuestionService {
             default:
                 return null;
         }
+        if(questionCmd.getCategoryType() == null) {
+            questionCmd.setCategoryType(questionCmd.getCategoryId());
+            questionCmd.setCategoryId(pollRepository.getOne(questionCmd.getPollId()).getCategoryList().get(0).getCategoryId());
+        }
         question.setCategoryId(questionCmd.getCategoryType());
         categoryRepository.findById(questionCmd.getCategoryType()).get().getQuestionList().add(question);
         questionRepository.save(question);

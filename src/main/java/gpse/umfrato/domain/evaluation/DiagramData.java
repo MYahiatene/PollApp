@@ -147,7 +147,11 @@ public class DiagramData {
                 data.add(newList);
             }
             final int index = (int) ((answerPossibility - start) / step);
+            try{
             data.get(dataIndex).set(index, data.get(dataIndex).get(index) + 1);
+            }
+            catch (IndexOutOfBoundsException ignored)
+            {}
         }
 
         public void setModifier(final double start, final double step) {

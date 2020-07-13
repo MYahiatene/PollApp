@@ -63,6 +63,7 @@ export default {
                 (v) => {
                     if (parseFloat(v) > this.startValue) {
                         this.setSaveButtonStatus(true)
+                        return ''
                     } else {
                         this.setSaveButtonStatus(false)
                         return 'Die Zahl muss größer als der Endwert sein!'
@@ -77,6 +78,7 @@ export default {
                         (this.endValue - this.startValue) % parseFloat(v) === 0
                     ) {
                         this.setSaveButtonStatus(true)
+                        return ''
                     } else if (parseFloat(v) > this.endValue - this.startValue) {
                         this.setSaveButtonStatus(false)
                         return 'Die Schrittweite muss kleiner als die Reichweite sein!'

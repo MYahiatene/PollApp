@@ -52,5 +52,5 @@ public class QuestionCmd {
 
     private int numberOfPossibleAnswers;
 
-    private long categoryType;
+    private Long categoryType;
 }
