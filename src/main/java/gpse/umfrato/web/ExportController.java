@@ -193,6 +193,7 @@ public class ExportController {
             Long indexCounter = 0L;
             for (final QuestionCmd q : cmd.getQuestionList()) {
                 q.setCategoryId(cat.getCategoryId());
+                q.setCategoryType(cat.getCategoryId());
                 q.setPollId(pollId);
                 questionService.changeCategory(questionService.addQuestion(q).getQuestionId(), cat.getCategoryId(),
                     indexCounter);

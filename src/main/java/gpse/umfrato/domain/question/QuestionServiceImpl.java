@@ -113,6 +113,7 @@ public class QuestionServiceImpl implements QuestionService {
         categoryRepository.findById(questionCmd.getCategoryType()).get().getQuestionList().add(question);
         questionRepository.save(question);
         return question;
+
     }
 
     /**

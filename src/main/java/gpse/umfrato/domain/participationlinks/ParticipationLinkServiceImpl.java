@@ -3,7 +3,6 @@ package gpse.umfrato.domain.participationlinks;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
-import javax.transaction.Transactional;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
@@ -77,7 +76,6 @@ public class ParticipationLinkServiceImpl implements ParticipationLinkService {
     }
 
     @Override
-    @Transactional
     public void deleteAllLinks(final Long pollId) {
         participationLinkRepository.deleteAllByPollId(pollId);
     }
