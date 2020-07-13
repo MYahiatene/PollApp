@@ -101,6 +101,8 @@
         </v-row>
 
         <!--        This allows us to assemble an array of colors using draggable chips and a color picker -->
+        <!--        If you want to copy the ColorList-->
+        <!--        <v-row> {{ colorList }}</v-row>-->
 
         <v-row v-show="showDiagram && setMultipleColors">
             <v-col v-if="changeDefault">
@@ -294,8 +296,21 @@ export default {
                 },
                 {
                     name: 'Durchscheinend',
-                    colorArray: ['#11495588', '#8ec13666', '#55104444', '#09214022'],
+                    colorArray: [
+                        '#26C14155',
+                        '#23B29055',
+                        '#2685A755',
+                        '#25339A55',
+                        '#5225A155',
+                        '#9020AB55',
+                        '#A5208655',
+                    ],
                 },
+                {
+                    name: 'Regenbogen',
+                    colorArray: ['#26C141', '#23B290', '#2685A7', '#25339A', '#5225A1', '#9020AB', '#A52086'],
+                },
+
                 {
                     name: 'Blau-Stufen',
                     colorArray: ['#0A1647', '#1A76A1', '#260B87', '#3162CB', '#131D5E'],
@@ -305,84 +320,12 @@ export default {
                     colorArray: ['#1D516A', '#A46262', '#32BE89', '#9F7A5A', '#5DA9BA', '#7E9345'],
                 },
                 {
-                    name: 'Design 1',
-                    colorArray: ['#114955', '#8ec136', '#551044', '#092140', '#26A599'],
+                    name: 'Gold',
+                    colorArray: ['#87401A', '#966209', '#A17B10', '#E8A91D', '#F2EC5A'],
                 },
                 {
-                    name: 'Design 2',
-                    colorArray: ['#111111', '#222222', '#333333', '#444444', '#555555'],
-                },
-                {
-                    name: 'Design 3',
-                    colorArray: ['#11495588', '#8ec13666', '#55104444', '#09214022'],
-                },
-                {
-                    name: 'Design 4',
-                    colorArray: ['#0A1647', '#1A76A1', '#260B87', '#3162CB', '#131D5E'],
-                },
-                {
-                    name: 'Design 5',
-                    colorArray: ['#1D516A', '#A46262', '#32BE89', '#9F7A5A', '#5DA9BA', '#7E9345'],
-                },
-                {
-                    name: 'Design 6',
-                    colorArray: ['#114955', '#8ec136', '#551044', '#092140', '#26A599'],
-                },
-                {
-                    name: 'Design 7',
-                    colorArray: ['#111111', '#222222', '#333333', '#444444', '#555555'],
-                },
-                {
-                    name: 'Design 8',
-                    colorArray: ['#11495588', '#8ec13666', '#55104444', '#09214022'],
-                },
-                {
-                    name: 'Design 9',
-                    colorArray: ['#0A1647', '#1A76A1', '#260B87', '#3162CB', '#131D5E'],
-                },
-                {
-                    name: 'Design 10',
-                    colorArray: ['#114955', '#8ec136', '#551044', '#092140', '#26A599'],
-                },
-                {
-                    name: 'Design 11',
-                    colorArray: ['#114955', '#8ec136', '#551044', '#092140', '#26A599'],
-                },
-                {
-                    name: 'Design 12',
-                    colorArray: ['#111111', '#222222', '#333333', '#444444', '#555555'],
-                },
-                {
-                    name: 'Design 13',
-                    colorArray: ['#11495588', '#8ec13666', '#55104444', '#09214022'],
-                },
-                {
-                    name: 'Design 14',
-                    colorArray: ['#0A1647', '#1A76A1', '#260B87', '#3162CB', '#131D5E'],
-                },
-                {
-                    name: 'Design 15',
-                    colorArray: ['#1D516A', '#A46262', '#32BE89', '#9F7A5A', '#5DA9BA', '#7E9345'],
-                },
-                {
-                    name: 'Design 16',
-                    colorArray: ['#114955', '#8ec136', '#551044', '#092140', '#26A599'],
-                },
-                {
-                    name: 'Design 17',
-                    colorArray: ['#111122', '#222222', '#333322', '#444422', '#555522'],
-                },
-                {
-                    name: 'Design 18',
-                    colorArray: ['#111100', '#222200', '#333300', '#444400', '#555500'],
-                },
-                {
-                    name: 'Design 19',
-                    colorArray: ['#0A1647', '#1A76A1', '#260B87', '#3162CB', '#131D5E'],
-                },
-                {
-                    name: 'Design 20',
-                    colorArray: ['#0A1647', '#1A76A1', '#260B87', '#3162CB', '#131D5E'],
+                    name: 'Lila',
+                    colorArray: ['#863FA6', '#648293', '#a88eea', '#35d3d8', '#843971'],
                 },
             ],
             setRandomLength: false,
