@@ -23,7 +23,6 @@
                                     </template>
                                     <span> Aktualisieren</span>
                                 </v-tooltip>
-                                <v-spacer />
                                 <v-text-field
                                     v-model="search"
                                     clearable

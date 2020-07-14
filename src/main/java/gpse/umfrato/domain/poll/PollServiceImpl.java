@@ -142,9 +142,9 @@ class PollServiceImpl implements PollService {
         final Poll poll = pollRepository.findById(pollId).orElseThrow(EntityNotFoundException::new);
         // final ZonedDateTime lastEditAtZone = LocalDateTime.parse(lastEditAt, df).atZone(timeZone);
         poll.setLastEditAt(lastEditAt);
-        LOGGER.info("lastEditedAt" + lastEditAt);
+        // LOGGER.info("lastEditedAt" + lastEditAt);
         poll.setLastEditFrom(lastEditFrom);
-        LOGGER.info("lastEditedFrom" + lastEditFrom);
+        // LOGGER.info("lastEditedFrom" + lastEditFrom);
         pollRepository.save(poll);
     }
 
@@ -672,13 +672,11 @@ class PollServiceImpl implements PollService {
         nextSeriesPoll.setWeek(createElementCollectionCopies(poll.getWeek()));
         nextSeriesPoll.setMonth(createElementCollectionCopies(poll.getMonth()));
         pollRepository.save(nextSeriesPoll);
-        LOGGER.info("newPoll: " + nextSeriesPoll);
+        // LOGGER.info("newPoll: " + nextSeriesPoll);
         nextSeriesPoll.setLastEditAt(ZonedDateTime.now());
         final List<Category> categories = categoryService.getAllCategories(poll.getPollId());
         for (final Category category : categories) {
-            LOGGER.info(category.toString());
             final Category newCategory = categoryService.createCategory(category.getCategoryName(), nextSeriesPoll.getPollId());
-            LOGGER.info(category.toString());
             questionService.copyQuestions(newCategory.getCategoryId(), nextSeriesPoll.getPollId(), category.getQuestionList());
         }
         nextSeriesPoll.setLastEditFrom(poll.getLastEditFrom());

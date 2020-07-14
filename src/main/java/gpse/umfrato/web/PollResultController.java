@@ -43,8 +43,6 @@ public class PollResultController {
     @PreAuthorize("hasAnyAuthority('Admin','Creator')")
     @RequestMapping(value = "/getPollResult", method = RequestMethod.POST) //"/pollResult/{usernameId:\\d+}"
     public PollResult pollResultByUsername(final @RequestBody AnswerCmd answerCmd) {
-        LOGGER.info("Hi from the PollResultController");
-        LOGGER.info(answerCmd.toString());
         return pollResultService.getPollResult(answerCmd.getPollId(), answerCmd.getUsername());
     }
 
@@ -55,7 +53,6 @@ public class PollResultController {
      */
     @PostMapping("/participationToPollResult")
     public void participationToPollResult(final @RequestBody PollResultCmd pollResultCmd) {
-        LOGGER.info("PollResultCmd " + pollResultCmd.getPollTaker() + pollResultCmd.getPollId());
         try {
             pollResultService.addParticipatedToPollResult(pollResultCmd.getPollTaker(), pollResultCmd.getPollId());
         } catch (NullPointerException e) {
@@ -81,8 +78,6 @@ public class PollResultController {
      */
     @PostMapping("/participated")
     public Boolean participated(final @RequestBody PollResultCmd pollResultCmd) {
-        LOGGER.info(pollResultCmd.getPollTaker());
-        LOGGER.info(pollResultCmd.getPollId().toString());
         final Boolean participated = pollResultService.getParticipated(pollResultCmd.getPollTaker(),
             pollResultCmd.getPollId());
         return participated;

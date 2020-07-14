@@ -61,7 +61,7 @@ public class PollResultServiceImpl implements PollResultService {
      */
     @Override
     public List<PollResult> getPollResults(final Long pollId) {
-        LOGGER.info("getPollResults by pollId " + pollId.toString());
+        // LOGGER.info("getPollResults by pollId " + pollId.toString());
         return pollResultRepository.findPollResultsByPollId(pollId);
     }
 
@@ -72,7 +72,7 @@ public class PollResultServiceImpl implements PollResultService {
      */
     @Override
     public List<String> getPollTakers(final Long pollId) {
-        LOGGER.info("Get polltakers: " + pollId.toString());
+        // LOGGER.info("Get polltakers: " + pollId.toString());
         final List<PollResult> pollResults = pollResultRepository.findPollResultsByPollId(pollId);
         final List<String> takerList = new ArrayList<>();
         for (PollResult pollResult: pollResults) {
@@ -90,7 +90,7 @@ public class PollResultServiceImpl implements PollResultService {
     @Override
     public PollResult getPollResult(final Long pollId, final String pollTaker) {
         // Das funktioniert!
-        LOGGER.info(pollId + pollTaker);
+        // LOGGER.info(pollId + pollTaker);
         // LOGGER.info(pollResultRepository.findPollResultByPollIdAndPollTaker(pollId, pollTaker).toString());
         try {
             return pollResultRepository.findPollResultByPollIdAndPollTaker(pollId, pollTaker);
@@ -107,15 +107,15 @@ public class PollResultServiceImpl implements PollResultService {
      */
     @Override
     public void addParticipatedToPollResult(final String pollTaker, final Long pollId) {
-        LOGGER.info("I'm in PollResultServiceImpl!");
+        // LOGGER.info("I'm in PollResultServiceImpl!");
         try {
             final PollResult pollResult = pollResultRepository.findPollResultByPollIdAndPollTaker(pollId, pollTaker);
             pollResult.setParticipatedPoll(true);
-            LOGGER.info("participated" + pollResult.getParticipatedPoll().toString());
+            // LOGGER.info("participated" + pollResult.getParticipatedPoll().toString());
             pollResultRepository.save(pollResult);
 
             final PollResult pollResult1 = pollResultRepository.findPollResultByPollIdAndPollTaker(pollId, pollTaker);
-            LOGGER.info("participatedReally?" + pollResult1.getParticipatedPoll().toString());
+            // LOGGER.info("participatedReally?" + pollResult1.getParticipatedPoll().toString());
         } catch (BadRequestException e) {
             LOGGER.info("Bad Request! ");
         }
@@ -129,11 +129,11 @@ public class PollResultServiceImpl implements PollResultService {
      */
     @Override
     public Boolean getParticipated(final String pollTaker, final Long pollId) {
-        LOGGER.info(pollTaker);
-        LOGGER.info(String.valueOf(pollId));
+        // LOGGER.info(pollTaker);
+        // LOGGER.info(String.valueOf(pollId));
         try {
             final PollResult pollResult = pollResultRepository.findPollResultByPollIdAndPollTaker(pollId, pollTaker);
-            LOGGER.info(pollResult.toString());
+            // LOGGER.info(pollResult.toString());
             return pollResult.getParticipatedPoll();
         } catch (BadRequestException e) {
             LOGGER.info("Bad Request!");
