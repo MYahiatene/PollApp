@@ -93,7 +93,7 @@ export default {
         },
         async requestToken() {
             await this.$store.dispatch('login/requestToken', this.auth).catch((reason) => {
-                console.log(reason)
+                // console.log(reason)
             })
             if (this.authenticated) {
                 await this.$router.push('/')

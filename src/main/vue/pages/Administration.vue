@@ -187,7 +187,7 @@ export default {
                     ele.role = ele.authorities[0].authority
                 })
             })
-            console.log('users', this.users)
+            // console.log('users', this.users)
         },
         editUser(item) {
             this.editedIndex = this.users.indexOf(item)
@@ -195,8 +195,8 @@ export default {
             this.dialog = true
         },
         deleteUser(item) {
-            console.log(this.isAuthenticated)
-            console.log(this.authenticate)
+            // console.log(this.isAuthenticated)
+            // console.log(this.authenticate)
             const index = this.users.indexOf(item)
 
             const instance = this.$axios.create({

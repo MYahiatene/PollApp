@@ -132,16 +132,16 @@ export default {
                 })
                 .then((response) => {
                     this.poll = response.data
-                    console.log(this.poll)
+                    // console.log(this.poll)
                 })
                 .catch((error) => {
                     console.log(error)
                 })
         },
         sendRemindEmail() {
-            console.log(this.selectNotify.id)
-            console.log('Email Sending test')
-            console.log(this.items)
+            // console.log(this.selectNotify.id)
+            // console.log('Email Sending test')
+            // console.log(this.items)
             const obj = {
                 notificateParticipants: this.selectNotify.id,
                 emailSubject: this.mailSubject,
@@ -151,7 +151,7 @@ export default {
             this.$axios
                 .post('/sendRemindEmail', obj)
                 .then(function () {
-                    console.log('Email sending succedeed.')
+                    // console.log('Email sending succedeed.')
                 })
                 .catch((error) => console.log(error))
             this.$router.push('/polls')

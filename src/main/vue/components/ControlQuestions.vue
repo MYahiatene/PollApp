@@ -427,7 +427,7 @@ export default {
         // this.categoryIndex = this.initialCategoryIndex
         // this.questionIndex = this.initialQuestionIndex
         // this.answerIndices = this.initialAnswerIndices
-        console.log('create')
+        // console.log('create')
 
         this.initialize()
     },
@@ -442,12 +442,12 @@ export default {
          */
 
         polls() {
-            console.log('polls comp')
-            console.log(this.pollsProp)
+            // console.log('polls comp')
+            // console.log(this.pollsProp)
             if (this.useEvaluationStore) {
                 return this.pollsFromEval
             } else if (this.pollsProp !== undefined && this.pollsProp.length !== 0) {
-                console.log('returned the wrong')
+                // console.log('returned the wrong')
                 return [this.pollsProp]
             } else {
                 return [{ pollName: '' }]
@@ -459,8 +459,8 @@ export default {
          * @returns {any}
          */
         pollName() {
-            console.log('pollName')
-            console.log(this.polls, this.pollIndex)
+            // console.log('pollName')
+            // console.log(this.polls, this.pollIndex)
             return this.polls[this.pollIndex].pollName
         },
 
@@ -576,9 +576,9 @@ export default {
                 return []
             } else {
                 const l = []
-                console.log('answerTitles')
-                console.log(this.questionIndex)
-                console.log(this.questions)
+                // console.log('answerTitles')
+                // console.log(this.questionIndex)
+                // console.log(this.questions)
                 if (this.questions[this.questionIndex].questionType === 'RangeQuestion') {
                     l.push(this.questions[this.questionIndex].belowMessage)
                     for (
@@ -642,7 +642,7 @@ export default {
 
     methods: {
         async initialize() {
-            console.log('getOnePoll')
+            // console.log('getOnePoll')
 
             await this.$axios
                 .get('/getonepoll', {
@@ -652,14 +652,14 @@ export default {
                 })
                 .then((response) => {
                     this.pollsProp = response.data
-                    console.log('pollData')
-                    console.log(this.pollsProp)
+                    // console.log('pollData')
+                    // console.log(this.pollsProp)
                 })
                 .catch((error) => {
                     console.log(error)
                 })
 
-            console.log('wert')
+            // console.log('wert')
 
             // this.computeWordsFromIndices()
 
@@ -667,11 +667,11 @@ export default {
                 .get('/poll/' + this.polls[this.pollIndex].pollId + '/consistencyquestions')
                 .then((response) => {
                     const list = response.data
-                    console.log(response.data)
+                    // console.log(response.data)
                     this.listOfControlQuestions = []
 
                     for (let i = 0; i < list.length; i++) {
-                        console.log(i)
+                        // console.log(i)
 
                         const a1 = []
                         for (let j = 0; j < list[i].answer1Indices.length; j++) {
@@ -695,10 +695,10 @@ export default {
                             serverId: list[i].consistencyQuestionId,
                         })
                     }
-                    console.log(this.listOfControlQuestions)
+                    // console.log(this.listOfControlQuestions)
                 })
                 .catch((reason) => {
-                    console.log(reason)
+                    // console.log(reason)
                 })
         },
         // All these methods update the indices of values according to the strings that were set for them
@@ -721,7 +721,7 @@ export default {
         },
 
         updateAnswerIndices() {
-            console.log('update Answers ')
+            // console.log('update Answers ')
 
             this.answerIndices = []
             for (let i = 0; i < this.selectedAnswers.length; i++) {
@@ -730,7 +730,7 @@ export default {
         },
 
         updateAnswerIndices2() {
-            console.log('update Answers 2 ')
+            // console.log('update Answers 2 ')
             this.answerIndices2 = []
             for (let i = 0; i < this.selectedAnswers2.length; i++) {
                 this.answerIndices2[i] = this.answerTitles2.indexOf(this.selectedAnswers2[i])
@@ -785,7 +785,7 @@ export default {
         addControlQuestion() {
             this.updateAnswerIndices()
             this.updateAnswerIndices2()
-            console.log('add')
+            // console.log('add')
             if (
                 this.categoryIndex === -1 ||
                 this.questionIndex === -1 ||
@@ -806,7 +806,7 @@ export default {
                 if (this.questions[this.questionIndex].questionType === 'SliderQuestion') {
                     if (this.range[0] === this.range[1]) {
                         this.buttonInfo = 'Bitte geben Sie bei der ersten Frage ein echtes Intervall an'
-                        console.log('no add')
+                        // console.log('no add')
                         return
                     } else {
                         slide = true
@@ -845,7 +845,7 @@ export default {
                     s2: slide2,
                     serverId: this.currentServerId,
                 }
-                console.log(cq)
+                // console.log(cq)
 
                 const consistencyQuestion = {
                     consistencyQuestionId: null,
@@ -862,19 +862,19 @@ export default {
                     consistencyQuestion.consistencyQuestionId = this.currentServerId
 
                     this.$axios.post('/poll/editcq/' + this.currentServerId, consistencyQuestion).catch((reason) => {
-                        console.log(reason + ' in edit')
+                        // console.log(reason + ' in edit')
                     })
                 } else {
                     this.$axios
                         .post('/poll/' + this.polls[this.pollIndex].pollId + '/addcq', consistencyQuestion)
                         .then((response) => {
                             cq.serverId = response.data.consistencyQuestionId
-                            console.log('id')
-                            console.log(response.data.consistencyQuestionId)
-                            console.log(cq.serverId)
+                            // console.log('id')
+                            // console.log(response.data.consistencyQuestionId)
+                            // console.log(cq.serverId)
                         })
                         .catch((reason) => {
-                            console.log(reason + ' auch in edit')
+                            // console.log(reason + ' auch in edit')
                         })
                 }
 
@@ -883,8 +883,8 @@ export default {
                 } else {
                     this.listOfControlQuestions[this.currentId] = cq
                 }
-                console.log('bin hier')
-                console.log(cq)
+                // console.log('bin hier')
+                // console.log(cq)
 
                 this.buttonInfo = ''
                 this.currentId = -1
@@ -929,14 +929,14 @@ export default {
                 this.addControlQuestion(index)
             }
 
-            console.log('delete')
+            // console.log('delete')
             if (index > -1) {
                 this.$axios.post('/poll/delcq/' + this.listOfControlQuestions[index].serverId).catch((reason) => {
-                    console.log(reason + ' in delete')
+                    // console.log(reason + ' in delete')
                 })
                 this.listOfControlQuestions.splice(index, 1)
-                console.log(this.listOfControlQuestions)
-                console.log(index)
+                // console.log(this.listOfControlQuestions)
+                // console.log(index)
             }
         },
 
@@ -946,8 +946,8 @@ export default {
          * **/
 
         openCq(index) {
-            console.log('open')
-            console.log(this.listOfControlQuestions[index])
+            // console.log('open')
+            // console.log(this.listOfControlQuestions[index])
             if (this.questionWasCopied) {
                 this.currentId = -1
                 this.currentServerId = -1
@@ -987,13 +987,13 @@ export default {
                 }
             }
 
-            console.log('open')
+            // console.log('open')
 
-            console.log('a1: ')
-            console.log(this.listOfControlQuestions[index].a1)
+            // console.log('a1: ')
+            // console.log(this.listOfControlQuestions[index].a1)
 
-            console.log('answerIndices: ')
-            console.log(this.answerIndices)
+            // console.log('answerIndices: ')
+            // console.log(this.answerIndices)
 
             this.computeWordsFromIndices()
         },
@@ -1048,9 +1048,9 @@ export default {
          */
 
         getCategoryIndexAndQuestionIndexFromQuestionId(questionId) {
-            console.log('bin in getCat...')
+            // console.log('bin in getCat...')
             for (let c = 0; c < this.categories.length; c++) {
-                console.log(c)
+                // console.log(c)
                 const questions = []
                 for (let i = 0; i < this.categories[c].questionList.length; i++) {
                     if (
@@ -1060,9 +1060,9 @@ export default {
                         questions.push(this.categories[c].questionList[i])
                 }
                 for (let q = 0; q < questions.length; q++) {
-                    console.log(q)
+                    // console.log(q)
                     if (questions[q].questionId === questionId) {
-                        console.log({ categoryIndex: c, questionIndex: q })
+                        // console.log({ categoryIndex: c, questionIndex: q })
                         return { categoryIndex: c, questionIndex: q }
                     }
                 }

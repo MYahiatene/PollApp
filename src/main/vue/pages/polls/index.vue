@@ -15,9 +15,14 @@
                     >
                         <template v-slot:header>
                             <v-toolbar class="mb-1">
-                                <v-btn icon color="primary" @click="initialize">
-                                    <v-icon> mdi-refresh</v-icon>
-                                </v-btn>
+                                <v-tooltip bottom>
+                                    <template v-slot:activator="{ on, attrs }">
+                                        <v-btn icon color="primary" v-bind="attrs" @click="initialize" v-on="on">
+                                            <v-icon> mdi-refresh</v-icon>
+                                        </v-btn>
+                                    </template>
+                                    <span> Aktualisieren</span>
+                                </v-tooltip>
                                 <v-btn large color="primary" @click="initializeDatabase">
                                     <v-icon :color="progressA">mdi-auto-fix</v-icon>
                                 </v-btn>
@@ -427,7 +432,7 @@ export default {
             )
         },
         exportPoll(item) {
-            console.log(item)
+            // console.log(item)
             this.setPollIndex(item.pollId)
             this.exportWidgetDialog = true
         },
@@ -561,11 +566,11 @@ export default {
             await this.$axios
                 .post('/createpoll', poll)
                 .then((response) => {
-                    console.log(response)
+                    // console.log(response)
                     newPollId = response.data
                 })
                 .catch((reason) => {
-                    console.log(reason)
+                    // console.log(reason)
                 })
             const response = await this.$axios.get('/getonepoll', {
                 params: {
@@ -573,7 +578,7 @@ export default {
                 },
             })
             const pollData = response.data
-            console.log(newPollId)
+            // console.log(newPollId)
             this.progressColorA = '#ff4d00'
             await this.$axios
                 .post('/addquestion', {
@@ -586,10 +591,10 @@ export default {
                     userAnswers: true,
                 })
                 .then((response) => {
-                    console.log(response)
+                    // console.log(response)
                 })
                 .catch((reason) => {
-                    console.log(reason)
+                    // console.log(reason)
                 })
             this.progressColorA = '#ffbb00'
             await this.$axios
@@ -603,10 +608,10 @@ export default {
                     userAnswers: true,
                 })
                 .then((response) => {
-                    console.log(response)
+                    // console.log(response)
                 })
                 .catch((reason) => {
-                    console.log(reason)
+                    // console.log(reason)
                 })
             this.progressColorA = '#fbff00'
             await this.$axios
@@ -620,10 +625,10 @@ export default {
                     textMaximum: 50,
                 })
                 .then((response) => {
-                    console.log(response)
+                    // console.log(response)
                 })
                 .catch((reason) => {
-                    console.log(reason)
+                    // console.log(reason)
                 })
             this.progressColorA = '#aaff00'
             await this.$axios
@@ -637,10 +642,10 @@ export default {
                     textMaximum: 150,
                 })
                 .then((response) => {
-                    console.log(response)
+                    // console.log(response)
                 })
                 .catch((reason) => {
-                    console.log(reason)
+                    // console.log(reason)
                 })
             this.progressColorA = '#5eff00'
             await this.$axios
@@ -656,10 +661,10 @@ export default {
                     aboveMessage: 'Über 80',
                 })
                 .then((response) => {
-                    console.log(response)
+                    // console.log(response)
                 })
                 .catch((reason) => {
-                    console.log(reason)
+                    // console.log(reason)
                 })
             this.progressColorA = '#00ff84'
             await this.$axios
@@ -676,10 +681,10 @@ export default {
                     hideValues: true,
                 })
                 .then((response) => {
-                    console.log(response)
+                    // console.log(response)
                 })
                 .catch((reason) => {
-                    console.log(reason)
+                    // console.log(reason)
                 })
             this.progressColorA = '#00d5ff'
             await this.$axios
@@ -696,10 +701,10 @@ export default {
                     hideValues: false,
                 })
                 .then((response) => {
-                    console.log(response)
+                    // console.log(response)
                 })
                 .catch((reason) => {
-                    console.log(reason)
+                    // console.log(reason)
                 })
             await this.$axios
                 .post('/addquestion', {
@@ -710,10 +715,10 @@ export default {
                     answerPossibilities: ['A', 'B', 'C', 'D', 'E'],
                 })
                 .then((response) => {
-                    console.log(response)
+                    // console.log(response)
                 })
                 .catch((reason) => {
-                    console.log(reason)
+                    // console.log(reason)
                 })
             this.progressColorA = '#006eff'
             this.initialize()
@@ -727,9 +732,9 @@ export default {
                 },
             })
             const pollData = response.data
-            console.log('Beantworte poll: ' + targetPollId)
-            console.log(pollData)
-            for (let j = 0; j < 10; j++) {
+            // console.log('Beantworte poll: ' + targetPollId)
+            // console.log(pollData)
+            for (let j = 0; j < 100; j++) {
                 if (j < 200) {
                     this.progressColorB = '#006eff'
                 } else if (j < 175) {
@@ -999,8 +1004,8 @@ export default {
                 },
             })
             const pollData = response.data
-            console.log('Beantworte poll: ' + targetPollId)
-            console.log(pollData)
+            // console.log('Beantworte poll: ' + targetPollId)
+            // console.log(pollData)
             for (let j = 0; j < 25; j++) {
                 if (j < 200) {
                     this.progressColorB = '#006eff'
@@ -1027,14 +1032,14 @@ export default {
                     questionId: pollData.categoryList[0].questionList[0].questionId,
                     answerList: ['' + Math.floor(Math.random() * 4)],
                 })
-                console.log(1)
+                // console.log(1)
                 await this.$store.dispatch('participant/saveAnswer', {
                     username: '' + i,
                     pollId: targetPollId,
                     questionId: pollData.categoryList[0].questionList[1].questionId,
                     answerList: ['' + Math.floor(Math.random() * 5), '' + Math.floor(Math.random() * 4)],
                 })
-                console.log(2)
+                // console.log(2)
                 const p = ['Haus', 'Baum', 'Apfel', 'Spitzzange', 'Webcam']
                 await this.$store.dispatch('participant/saveAnswer', {
                     username: '' + i,
@@ -1042,7 +1047,7 @@ export default {
                     questionId: pollData.categoryList[0].questionList[2].questionId,
                     answerList: [p[Math.floor(Math.random() * 4)]],
                 })
-                console.log(3)
+                // console.log(3)
                 const p2 = [
                     'Das ist ein langer Text',
                     'Das ist ein scheiße langer Text',
@@ -1054,28 +1059,28 @@ export default {
                     questionId: pollData.categoryList[0].questionList[3].questionId,
                     answerList: [p2[Math.floor(Math.random() * 2)]],
                 })
-                console.log(4)
+                // console.log(4)
                 await this.$store.dispatch('participant/saveAnswer', {
                     username: '' + i,
                     pollId: targetPollId,
                     questionId: pollData.categoryList[0].questionList[4].questionId,
                     answerList: [Math.floor(Math.random() * 8)],
                 })
-                console.log(5)
+                // console.log(5)
                 await this.$store.dispatch('participant/saveAnswer', {
                     username: '' + i,
                     pollId: targetPollId,
                     questionId: pollData.categoryList[0].questionList[5].questionId,
                     answerList: [Math.floor(Math.random() * 100) / 100],
                 })
-                console.log(6)
+                // console.log(6)
                 await this.$store.dispatch('participant/saveAnswer', {
                     username: '' + i,
                     pollId: targetPollId,
                     questionId: pollData.categoryList[0].questionList[6].questionId,
                     answerList: [Math.floor((Math.random() * 50000) / 10)],
                 })
-                console.log(7)
+                // console.log(7)
                 const array = ['0', '1', '2', '3', '4']
                 let a, b
                 for (let k = array.length - 1; k > 0; k--) {
@@ -1090,7 +1095,7 @@ export default {
                     questionId: pollData.categoryList[0].questionList[7].questionId,
                     answerList: array,
                 })
-                console.log(8)
+                // console.log(8)
             }
         },
     },

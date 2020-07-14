@@ -39,7 +39,7 @@ public class AnswerController {
      */
     @PostMapping("/poll/{pollId:\\d+}/addanswer") // {pollId:\d+}
     public void addAnswer(final @PathVariable Long pollId, final @RequestBody AnswerCmd answerCmd) {
-        LOGGER.info("Im AnswerController");
+        // LOGGER.info("Im AnswerController");
         answerService.giveAnswer(answerCmd.getUsername(), pollId,
             answerCmd.getQuestionId(), answerCmd.getAnswerList());
     }

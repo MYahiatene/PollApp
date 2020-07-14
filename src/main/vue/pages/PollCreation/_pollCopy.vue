@@ -617,7 +617,7 @@ export default {
             list.sort((a, b) => {
                 return a - b
             })
-            console.log(list)
+            // console.log(list)
             return list
         },
         serialPollValid() {
@@ -646,8 +646,8 @@ export default {
             const monthContext =
                 (this.monthValid(this.month) === true && this.month.length > 0) || this.selectedLevel === 2
             const weekContext = (this.weekValid(this.week) === true && this.week.length > 0) || this.selectedLevel === 1
-            console.log('monthContext:', monthContext)
-            console.log('weekContext:', weekContext)
+            // console.log('monthContext:', monthContext)
+            // console.log('weekContext:', weekContext)
             if (list.length > 0) {
                 for (const elem of list) {
                     if (weekContext && (elem < 1 || elem > 7)) {
@@ -669,7 +669,7 @@ export default {
             const list = this.stringToList(weekString)
             const monthContext =
                 (this.monthValid(this.month) === true && this.month.length > 0) || this.selectedLevel === 2
-            console.log('monthContextForWeek:', monthContext)
+            // console.log('monthContextForWeek:', monthContext)
             if (list.length > 0 || weekString.length === 0) {
                 for (const elem of list) {
                     if (monthContext && (elem < 1 || elem > 5)) {
@@ -743,7 +743,7 @@ export default {
                 lastEditAt: this.created,
                 lastEditFrom: this.getUsername,
             }
-            console.log('obj: ', obj)
+            // console.log('obj: ', obj)
             if (this.pollId !== '0') {
                 await this.$axios
                     .post('/createcopypoll', obj)
@@ -783,7 +783,7 @@ export default {
             this.title += ':wt:'
         },
         switchLevel(choice) {
-            console.log(choice)
+            // console.log(choice)
             switch (choice) {
                 case 'Tage':
                     this.selectedLevel = 0
@@ -809,10 +809,10 @@ export default {
         },
         currentDate() {
             const date = new Date()
-            console.log(date)
-            console.log(date.getFullYear())
-            console.log(date.getMonth())
-            console.log(date.getDay())
+            // console.log(date)
+            // console.log(date.getFullYear())
+            // console.log(date.getMonth())
+            // console.log(date.getDay())
             const string =
                 date.getFullYear() +
                 '-' +
@@ -821,59 +821,59 @@ export default {
                 '-' +
                 (date.getUTCDate() < 10 ? '0' : '') +
                 date.getUTCDate()
-            console.log(string)
+            // console.log(string)
             return string
         },
         formatDate(date) {
-            console.log('formatDate')
+            // console.log('formatDate')
             if (!date) return null
             const [year, month, day] = date.split('-')
             return `${day}.${month}.${year}`
         },
         parseDate(date) {
-            console.log('parseDate')
+            // console.log('parseDate')
             if (!date) return null
             const [day, month, year] = date.split('.')
-            console.log(`${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`)
+            // console.log(`${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`)
             return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
         },
         unparseDate(date) {
-            console.log('unparseDate')
+            // console.log('unparseDate')
             if (!date) {
-                console.log(this.currentDate())
+                // console.log(this.currentDate())
                 return this.currentDate()
             }
             const [year, month, day] = date.split('-')
-            console.log('ELSE')
-            console.log(`${day.padStart(2, '0')}.${month.padStart(2, '0')}.${year}`)
+            // console.log('ELSE')
+            // console.log(`${day.padStart(2, '0')}.${month.padStart(2, '0')}.${year}`)
             return `${day.padStart(2, '0')}.${month.padStart(2, '0')}.${year}`
         },
         getActivationDate(date) {
-            console.log('getActivationDate')
+            // console.log('getActivationDate')
             if (date === null) return this.currentDate()
             const [day, month, year] = date.split('.')
             return `${year}-${month}-${day}`
         },
         reformatActivateDate() {
-            console.log('reformatActivateDate')
+            // console.log('reformatActivateDate')
             this.activateDate = this.formatDate(this.date)
         },
         reformatDeactivateDate() {
-            console.log('reformatDeActivateDate')
+            // console.log('reformatDeActivateDate')
             this.deactivateDate = this.formatDate(this.date)
         },
         parseTime(date) {
-            console.log('parseTime')
+            // console.log('parseTime')
             if (!date) return null
             return date.getHours() + ':' + date.getMinutes()
         },
         closeMenuAndUpdateA() {
-            console.log('closeMenuAndUpdateA')
+            // console.log('closeMenuAndUpdateA')
             this.menu = false
             this.reformatActivateDate()
         },
         closeMenuAndUpdateD() {
-            console.log('closeMenuAndUpdateD')
+            // console.log('closeMenuAndUpdateD')
             this.menu = false
             this.reformatDeactivateDate()
         },
@@ -886,7 +886,7 @@ export default {
                 const reader = new FileReader()
                 reader.readAsDataURL(image)
                 reader.onload = (e) => {
-                    console.log(e)
+                    // console.log(e)
                     this.logo = e.target.result
                 }
             } else {
@@ -912,13 +912,13 @@ export default {
                 await this.$store.dispatch('PollCreation/getCopyPoll', this.pollId)
                 this.poll = this.getPoll
                 this.categoryList = this.poll.categoryList
-                console.log('poll', this.poll)
+                // console.log('poll', this.poll)
             }
         },
         async getTitle() {
             if (this.pollId !== '0') {
                 const response = await this.$store.dispatch('PollCreation/getPollName', this.pollId)
-                console.log(response)
+                // console.log(response)
                 this.title = response
                 await this.$router.forceUpdate()
                 return response
@@ -928,7 +928,7 @@ export default {
         async getAnonType() {
             if (this.pollId !== '0') {
                 const response = await this.$store.dispatch('PollCreation/getAnonType', this.pollId)
-                console.log(response)
+                // console.log(response)
                 if (response === 'Anonym') this.selectedAnonymityType = 1
                 if (response === 'Teilanonym') this.selectedAnonymityType = 2
                 if (response === 'Nichtanonym') this.selectedAnonymityType = 3
@@ -937,11 +937,11 @@ export default {
         async getActDate() {
             if (this.pollId !== '0') {
                 const response = await this.$store.dispatch('PollCreation/getActDate', this.pollId)
-                console.log(response)
+                // console.log(response)
                 this.activateDate = response.substring(0, response.indexOf('&'))
-                console.log('activatedDate', this.activateDate)
+                // console.log('activatedDate', this.activateDate)
                 this.activatedTime = response.substring(response.indexOf('&') + 1)
-                console.log('activatedDate', this.activatedTime)
+                // console.log('activatedDate', this.activatedTime)
                 return response
             } else {
                 const today = new Date()
@@ -956,11 +956,11 @@ export default {
         async getDeactDate() {
             if (this.pollId !== '0') {
                 const response = await this.$store.dispatch('PollCreation/getDeactDate', this.pollId)
-                console.log(response)
+                // console.log(response)
                 this.deactivateDate = response.substring(0, response.indexOf('&'))
-                console.log('deactivatedDate', this.deactivateDate)
+                // console.log('deactivatedDate', this.deactivateDate)
                 this.deactivatedTime = response.substring(response.indexOf('&') + 1)
-                console.log('deactivatedDate', this.deactivatedTime)
+                // console.log('deactivatedDate', this.deactivatedTime)
                 return response
             } else {
                 const today = new Date()

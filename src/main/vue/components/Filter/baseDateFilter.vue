@@ -91,7 +91,7 @@ export default {
      */
 
     mounted() {
-        console.log('new dateFilter', this.filterIndex)
+        // console.log('new dateFilter', this.filterIndex)
 
         const start = this.startDate
         const end = this.endDate
@@ -103,7 +103,7 @@ export default {
         this.computeDates()
         this.$forceUpdate()
         this.datePickerKey += 1
-        console.log(this.dates)
+        // console.log(this.dates)
     },
 
     computed: {
@@ -147,11 +147,11 @@ export default {
          */
 
         computeDates() {
-            console.log('dates...:')
-            console.log(this.dates)
+            // console.log('dates...:')
+            // console.log(this.dates)
             if (this.dates[0] && this.dates[1]) {
                 if (this.dates[0] + ' ' + this.time1 > this.dates[1] + ' ' + this.time2) {
-                    console.log('wechsel')
+                    // console.log('wechsel')
                     this.startDisplay = this.dates[1]
                     this.endDisplay = this.dates[0]
                     const tmp = this.time1

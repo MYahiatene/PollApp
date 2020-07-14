@@ -90,9 +90,9 @@ export default {
 
         color() {
             if (this.currentQuestion !== null) {
-                console.log('question')
-                console.log(this.question.categoryId)
-                console.log(this.question.questionId)
+                // console.log('question')
+                // console.log(this.question.categoryId)
+                // console.log(this.question.questionId)
                 if (
                     this.currentQuestion.categoryId === this.question.categoryId &&
                     this.currentQuestion.questionId === this.question.questionId

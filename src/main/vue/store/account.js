@@ -37,7 +37,7 @@ export const actions = {
     async changePassword({ commit }, userObj) {
         this.$axios.defaults.baseURL = 'http://localhost:8088/api/'
         this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('user-token')
-        console.log('userObj', userObj)
+        // console.log('userObj', userObj)
         const status = await this.$axios.put('/changePassword', userObj)
         commit('/setFailStatus', status)
     },

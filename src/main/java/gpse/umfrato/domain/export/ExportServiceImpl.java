@@ -152,7 +152,7 @@ public class ExportServiceImpl implements ExportService {
             builder.append(lastEdit.format(lastEditFormatter)).append(separator);
             while (answerIterator.hasNext()) {
                 final Answer singularAnswer = answerIterator.next();
-                System.out.println("Answer: "+singularAnswer);
+                // System.out.println("Answer: "+singularAnswer);
                 if (dereferenceAnswerPossibilities && (getQuestionFromQuestionList(singularAnswer.getQuestionId(),
                     questionList).getQuestionType().equals(CHOICE_QUESTION)
                     || getQuestionFromQuestionList(singularAnswer.getQuestionId(), questionList).getQuestionType()
@@ -187,15 +187,15 @@ public class ExportServiceImpl implements ExportService {
         while (categoryIterator.hasNext()) {
             final Category singularCategory = categoryIterator.next(); //Page
             for (final Question singularQuestion : singularCategory.getQuestionList()) {
-                System.out.println("SINGULARQUESTION MESSAGE: "+singularQuestion.getQuestionMessage());
+                // System.out.println("SINGULARQUESTION MESSAGE: "+singularQuestion.getQuestionMessage());
                 String singularQuestionMessage = singularQuestion.getQuestionMessage();
-                System.out.println("SINGULAR ASDASDQUESTION MESSAGE: "+escapeSpecialCharacters(singularQuestionMessage));
+                // System.out.println("SINGULAR ASDASDQUESTION MESSAGE: "+escapeSpecialCharacters(singularQuestionMessage));
                 singularQuestionMessage = "\"" + singularQuestionMessage + "\"";
                 columnNamesList.append(separator).append(escapeSpecialCharacters(singularQuestionMessage)); /*I think it works that way,
                 should give out "PollID, Frage1, Frage2, Frage3, ... regardless of category"*/
             }
         }
-        System.out.println("COLUMNNAMESLIST TO STRINF: "+columnNamesList.toString());
+        // System.out.println("COLUMNNAMESLIST TO STRINF: "+columnNamesList.toString());
         return columnNamesList.toString();
     }
 

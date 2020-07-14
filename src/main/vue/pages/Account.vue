@@ -189,15 +189,15 @@ export default {
             })
             // nach genau dem selben Code, wird auf der Adminseite hier die usernames richtig ausgegeben, aber
             // hier ist überall username tbettmann... Wieso?
-            console.log('users', this.users)
+            // console.log('users', this.users)
             this.getAccount()
         },
         getAccount() {
-            console.log(this.users)
+            // console.log(this.users)
             for (let i = 0; i < this.users.length; i++) {
                 if (this.users[i].username === this.getUsername) {
                     this.account = this.users[i]
-                    console.log(this.account)
+                    // console.log(this.account)
                 }
             }
         },
@@ -205,7 +205,7 @@ export default {
          * When "Abbrechen" is clicked nothing happens, the changes will be discarded and the dialog will close.
          */
         closePw() {
-            console.log('failStatus', this.failStatus)
+            // console.log('failStatus', this.failStatus)
             this.incorrectPw = false
             this.dialog = false
         },
@@ -232,7 +232,7 @@ export default {
                 const status = this.$axios.put('/changePassword', this.userObj)
 
                 this.failStatus = status
-                console.log('failStatus', this.failStatus)
+                // console.log('failStatus', this.failStatus)
             } else {
                 this.incorrectPw = true
             }
@@ -255,7 +255,7 @@ export default {
 
             this.$axios.defaults.baseURL = 'http://localhost:8088/api/'
             this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('user-token')
-            console.log(this.userObj)
+            // console.log(this.userObj)
             await this.$axios.put('/changeEmail', this.userObj)
 
             // users and account need to be reloaded to show changed email

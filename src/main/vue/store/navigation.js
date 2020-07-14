@@ -57,14 +57,14 @@ export const mutations = {
 }
 export const actions = {
     async initialize({ commit, state }) {
-        console.log('reload')
+        // console.log('reload')
         let error = ''
         const data = await this.$axios.get('/poll').catch((reason) => {
-            console.log(reason)
+            // console.log(reason)
             error = reason
         })
         if (error.length === 0) {
-            console.log(data)
+            // console.log(data)
             commit('setPolls', data)
         } else {
             commit('saveError', error)
@@ -73,7 +73,7 @@ export const actions = {
     async updatePollStatus({ commit }, pollId) {
         let error = ''
         const data = await this.$axios.post('/addPollStatus/' + pollId).catch((reason) => {
-            console.log(reason)
+            // console.log(reason)
             error = reason
         })
         if (error.length === 0) {
@@ -85,7 +85,7 @@ export const actions = {
     async reEditPoll({ commit }, pollId) {
         let error = ''
         const data = await this.$axios.post('/removePollStatus/' + pollId).catch((reason) => {
-            console.log(reason)
+            // console.log(reason)
             error = reason
         })
         if (error.length === 0) {

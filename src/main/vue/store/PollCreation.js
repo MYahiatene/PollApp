@@ -5,7 +5,7 @@ export const state = () => ({
 })
 export const getters = {
     getPoll: (state) => {
-        console.log('getPoll in js')
+        // console.log('getPoll in js')
         return state.poll
     },
 }
@@ -22,7 +22,7 @@ export const actions = {
             .then((res) => {
                 const newPoll = res.data
                 commit('savePoll', newPoll)
-                console.log('PollID: ', newPoll)
+                // console.log('PollID: ', newPoll)
             })
             .catch(() => {
                 commit('savePoll', null)
@@ -38,7 +38,7 @@ export const actions = {
             })
             .then((response) => {
                 commit('savePoll', response.data)
-                console.log('response data: ', response.data)
+                // console.log('response data: ', response.data)
             })
             .catch((error) => {
                 console.log(error)
@@ -51,7 +51,7 @@ export const actions = {
                 pollId: id,
             },
         })
-        console.log('responsepollName: ', response.data)
+        // console.log('responsepollName: ', response.data)
         return response.data
     },
 
@@ -61,7 +61,7 @@ export const actions = {
                 pollId: id,
             },
         })
-        console.log('responsepollAnonStatus: ', response.data)
+        // console.log('responsepollAnonStatus: ', response.data)
         return response.data
     },
 
@@ -71,7 +71,7 @@ export const actions = {
                 pollId: id,
             },
         })
-        console.log('responsepollActDate: ', response.data)
+        // console.log('responsepollActDate: ', response.data)
         return response.data
     },
 
@@ -81,7 +81,7 @@ export const actions = {
                 pollId: id,
             },
         })
-        console.log('responsepollDeactDate: ', response.data)
+        // console.log('responsepollDeactDate: ', response.data)
         return response.data
     },
 }

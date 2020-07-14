@@ -147,8 +147,8 @@ public class DiagramData {
                 data.add(newList);
             }
             final int index = (int) ((answerPossibility - start) / step);
-            try{
-            data.get(dataIndex).set(index, data.get(dataIndex).get(index) + 1);
+            try {
+                data.get(dataIndex).set(index, data.get(dataIndex).get(index) + 1);
             }
             catch (IndexOutOfBoundsException ignored)
             {}
@@ -376,7 +376,7 @@ public class DiagramData {
                     if (arrayOfValues.get(i).meanPosition == -1) {
                         if (lowestMeanPositionValue >= arrayOfValues.get(i).meanPositionValue) {
                             if (lowestMeanPositionValue == arrayOfValues.get(i).meanPositionValue && firstItem != i) {
-                                LOGGER.info("item " + i + "is duplicate to " + firstItem);
+                                // LOGGER.info("item " + i + "is duplicate to " + firstItem);
                                 arrayOfValues.get(i).twin = firstItem;
 
                             }

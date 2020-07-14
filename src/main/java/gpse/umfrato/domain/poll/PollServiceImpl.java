@@ -8,6 +8,7 @@ import gpse.umfrato.domain.consistencyquestion.ConsistencyQuestionService;
 import gpse.umfrato.domain.evaluation.session.SessionService;
 import gpse.umfrato.domain.participationlinks.ParticipationLinkService;
 import gpse.umfrato.domain.pollresult.PollResultService;
+import gpse.umfrato.domain.question.Question;
 import gpse.umfrato.domain.question.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -167,6 +168,8 @@ class PollServiceImpl implements PollService {
     @Override
     public Integer increasePollStatus(final Long pollId) {
         final Poll poll = pollRepository.getOne(pollId);
+        // System.out.println(pollId);
+        // System.out.println("A " + poll.toString());
         switch (poll.getPollStatus()) {
             case 0:
                 poll.setPollStatus(1);
@@ -180,6 +183,7 @@ class PollServiceImpl implements PollService {
                 break;
             case 2:
                 poll.setPollStatus(3);
+                // System.out.println("Next " + poll.toString());
                 if (poll.getLevel() != -1) {
                     if (!stoppingReason(poll)) {
                         createNextSeriesPoll(poll);
@@ -273,6 +277,7 @@ class PollServiceImpl implements PollService {
     @Override
     public Poll checkActivationAndDeactivation(final Poll poll) {
         final ZonedDateTime now = ZonedDateTime.now();
+        // System.out.println("B " + poll.toString());
         if ((poll.isActivated() || poll.getLevel() != -1)
             && poll.getPollStatus() == 1 && poll.getActivatedDate().isBefore(now)) {
             increasePollStatus(poll.getPollId());
@@ -326,6 +331,7 @@ class PollServiceImpl implements PollService {
      */
     @Override
     public ZonedDateTime calculateNextDate(final Poll poll) {
+        // System.out.println("calculateNextDate " + poll.toString());
         final int repeat = poll.getRepeat();
         final List<Integer> day = poll.getDay();
         final List<Integer> week = poll.getWeek();
@@ -655,7 +661,6 @@ class PollServiceImpl implements PollService {
      * @param poll
      */
     private void createNextSeriesPoll(final Poll poll) {
-        // TODO: lastEditFrom = null -> schlimm?
         final Poll nextSeriesPoll = new Poll(poll.getPollCreator(), poll.getAnonymityStatus(), poll.getSeriesPollName(),
             poll.getCreationDate(), poll.getNextSeries(), poll.getDeactivatedDate(), 1,
             poll.getBackgroundColor(), poll.getFontColor(), poll.getLogo(), poll.isVisibility(),
@@ -671,10 +676,10 @@ class PollServiceImpl implements PollService {
         nextSeriesPoll.setLastEditAt(ZonedDateTime.now());
         final List<Category> categories = categoryService.getAllCategories(poll.getPollId());
         for (final Category category : categories) {
-            final Category newCategory = categoryService.createCategory(category.getCategoryName(),
-                nextSeriesPoll.getPollId());
-            questionService.copyQuestions(newCategory.getCategoryId(), nextSeriesPoll.getPollId(),
-                category.getQuestionList());
+            LOGGER.info(category.toString());
+            final Category newCategory = categoryService.createCategory(category.getCategoryName(), nextSeriesPoll.getPollId());
+            LOGGER.info(category.toString());
+            questionService.copyQuestions(newCategory.getCategoryId(), nextSeriesPoll.getPollId(), category.getQuestionList());
         }
         nextSeriesPoll.setLastEditFrom(poll.getLastEditFrom());
         nextSeriesPoll.setCreationDate(ZonedDateTime.now());

@@ -15,7 +15,7 @@
                             <v-icon>mdi-cloud-upload</v-icon>
                         </v-btn>
                     </template>
-                    <span>Globale Digrammfarben anpassen</span>
+                    <span>Umfrage Importieren</span>
                 </v-tooltip>
             </template>
             <v-card class="pa-3">
@@ -44,8 +44,8 @@ export default {
             const reader = new FileReader()
             reader.readAsText(this.file)
             reader.onload = async (e) => {
-                console.log('File: ', this.file)
-                console.log('FileE: ', e.target.result)
+                // console.log('File: ', this.file)
+                // console.log('FileE: ', e.target.result)
                 if (await this.$store.dispatch('evaluation/importPoll', e.target.result)) {
                     this.dialog = false
                     this.$emit('done')

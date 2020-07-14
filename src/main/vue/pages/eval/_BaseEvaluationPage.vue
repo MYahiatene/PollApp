@@ -292,8 +292,8 @@ export default {
         this.reset()
         this.initialize(this.$route.params.BaseEvaluationPage)
         this.loadSessions()
-        console.log('DD:')
-        console.log(this.diagramData)
+        // console.log('DD:')
+        // console.log(this.diagramData)
     },
     watch: {
         currentTheme() {
@@ -367,7 +367,7 @@ export default {
                 }
             }
             for (let i = 0; i < this.items.length; i++) {
-                console.log(this.items[i])
+                // console.log(this.items[i])
                 i2[i] = {
                     answerPossibilities: this.items[i].answerPossibilities,
                     data: this.items[i].data,
@@ -391,7 +391,7 @@ export default {
 
         getPollIndex() {
             for (let i = 0; i < this.getPolls.length; i++) {
-                console.log(i)
+                // console.log(i)
                 if (this.getPolls[i].pollId.toString() === this.$route.params.BaseEvaluationPage) {
                     return i
                 }
@@ -409,7 +409,7 @@ export default {
         // returns the name of the poll that is analysed
         getPollName() {
             for (let i = 0; i < this.getPolls.length; i++) {
-                console.log(i)
+                // console.log(i)
                 if (this.getPolls[i].pollId.toString() === this.$route.params.BaseEvaluationPage) {
                     return this.getPolls[i].pollName
                 }
@@ -446,7 +446,7 @@ export default {
 
         // updates the page
         async forceUpdate() {
-            console.log('force-update')
+            // console.log('force-update')
             // gets the stuff from the database
             await this.updateData()
             // forces the diagrams to update

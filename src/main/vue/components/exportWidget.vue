@@ -68,7 +68,7 @@ export default {
     },
     watch: {
         exportPollId() {
-            console.log('Hi' + this.exportPollId)
+            // console.log('Hi' + this.exportPollId)
         },
     },
     computed: {

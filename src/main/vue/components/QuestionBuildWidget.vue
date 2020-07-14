@@ -207,8 +207,8 @@ export default {
                 }
                 await this.$axios.post('/newLastEdit', obj)
             } else {
-                console.log(this.getQuestion)
-                console.log(this.getQuestion.categoryType)
+                // console.log(this.getQuestion)
+                // console.log(this.getQuestion.categoryType)
                 await this.$axios
                     .put('/editquestion', {
                         pollId: this.$route.params.QuestionOverview,
@@ -234,12 +234,12 @@ export default {
                     })
                     .then((response) => {
                         let questionExists = false
-                        console.log('suche frage')
+                        // console.log('suche frage')
                         this.categoryData.forEach((category) => {
                             if (category.categoryId === response.data.categoryId) {
                                 category.questionList.forEach((question) => {
                                     if (question.questionId === response.data.questionId) {
-                                        console.log('id gefunden')
+                                        // console.log('id gefunden')
                                         questionExists = true
                                     }
                                 })
@@ -249,7 +249,7 @@ export default {
                             this.categoryData.forEach((category) =>
                                 category.questionList.forEach((question) => {
                                     if (question.questionId === this.getQuestion.questionId) {
-                                        console.log('lösche frage')
+                                        // console.log('lösche frage')
                                         category.questionList.splice(category.questionList.indexOf(question), 1)
                                     }
                                 })

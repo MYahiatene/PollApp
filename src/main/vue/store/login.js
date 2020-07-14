@@ -43,7 +43,7 @@ export const mutations = {
         localStorage.setItem('user-name', username)
     },
     logout(state) {
-        console.log('logout')
+        // console.log('logout')
         state.authenticated = false
         localStorage.setItem('user-token', '')
         mutations.setUsername(state, '')
@@ -86,7 +86,7 @@ export const actions = {
             })
             .then((response) => {
                 if (response.status === 200) {
-                    console.log(response)
+                    // console.log(response)
                     commit('setUsername', tmpUsername)
                     commit('authenticate', token)
                     this.$router.push('/')

@@ -177,38 +177,38 @@ export default {
         }),
 
         answers() {
-            console.log(this.diagramData)
-            console.log(this.diagramData[this.questionID].texts)
+            // console.log(this.diagramData)
+            // console.log(this.diagramData[this.questionID].texts)
             return this.diagramData[this.questionID].texts
         },
         frequency() {
-            console.log(this.diagramData[this.questionID].frequency)
+            // console.log(this.diagramData[this.questionID].frequency)
             return this.diagramData[this.questionID].frequency
         },
         seriesToList() {
             return (seriesList) => {
                 const outputList = [[]]
-                console.log('SeriesList: ', seriesList)
+                // console.log('SeriesList: ', seriesList)
                 for (const key in seriesList) {
-                    console.log('Key: ', seriesList[key])
+                    // console.log('Key: ', seriesList[key])
                     // if (seriesList[key].seriesCounter - 1 < 0) seriesList[key].seriesCounter = 1
                     while (outputList.length <= seriesList[key].seriesCounter - 1) {
                         outputList.push([])
                     }
-                    console.log('SERIES LIST SERIES COUTER -1 ', seriesList[key].seriesCounter - 1)
-                    console.log('SERIES LIST KEY ', seriesList[key])
+                    // console.log('SERIES LIST SERIES COUTER -1 ', seriesList[key].seriesCounter - 1)
+                    // console.log('SERIES LIST KEY ', seriesList[key])
                     if (seriesList[key].seriesCounter - 1 >= 0)
                         outputList[seriesList[key].seriesCounter - 1].push(seriesList[key])
                     else outputList[seriesList[key].seriesCounter].push(seriesList[key])
                 }
-                console.log('OutputList: ', outputList)
+                // console.log('OutputList: ', outputList)
                 return outputList
             }
         },
     },
     mounted() {
-        // console.log('mounted')
-        // console.log(this.polls)
+        // // console.log('mounted')
+        // // console.log(this.polls)
     },
     methods: {
         ...mapActions({ initialize: 'navigation/initialize' }),
@@ -220,11 +220,11 @@ export default {
                 }
                 freqMap[w] += 1
             })
-            // console.log('polls:')
-            // console.log(this.polls)
-            // console.log('wordListWithFreq:')
-            // console.log(this.returnWordListWithFreq(freqMap))
-            // console.log(freqMap)
+            // // console.log('polls:')
+            // // console.log(this.polls)
+            // // console.log('wordListWithFreq:')
+            // // console.log(this.returnWordListWithFreq(freqMap))
+            // // console.log(freqMap)
             return freqMap
         },
         filterOnlyCapsText(value, search, item) {

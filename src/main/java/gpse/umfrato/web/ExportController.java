@@ -149,7 +149,7 @@ public class ExportController {
         final ZonedDateTime creationTime = ZonedDateTime.ofInstant(creationDate, ZoneId.ofOffset("UTC",
             ZoneOffset.ofHoursMinutes(timeZoneOffset / 60, timeZoneOffset % 60)));
 
-        final Poll poll = new Poll(pollCmd.getPollCreator(), pollCmd.getAnonymityStatus(), pollCmd.getPollName(),
+        Poll poll = new Poll(pollCmd.getPollCreator(), pollCmd.getAnonymityStatus(), pollCmd.getPollName(),
             creationTime, actTime, deactTime, 0,
             pollCmd.getBackgroundColor(), pollCmd.getFontColor(), pollCmd.getLogo(), pollCmd.isVisibility(),
             pollCmd.isCategoryChange(), pollCmd.isActivated(), pollCmd.isDeactivated(), pollCmd.getOwnDesign(),
@@ -159,6 +159,7 @@ public class ExportController {
             ZonedDateTime.now(), null);
         poll.setPollId(null);
         final Long pollId = pollRepository.save(poll).getPollId();
+        poll = pollRepository.getOne(pollId);
         poll.setLastEditAt(ZonedDateTime.now());
         poll.setCheckLeapYear(pollCmd.getCheckLeapYear());
         poll.setSeriesPollName(pollCmd.getSeriesPollName());
@@ -172,7 +173,6 @@ public class ExportController {
         }
         poll.setCategoryList(cmdToCategory(pollCmd.getCategoryList(), pollId));
         poll.setSeriesCounter(pollCmd.getSeriesCounter());
-
     /*if (poll.getAnonymityStatus().equals(ONE)) {
         final String link = participationLinkService.createParticipationLink().toString();
         participationLinkService.saveParticipationLink(poll.getPollId(), ALL_USERS, link);

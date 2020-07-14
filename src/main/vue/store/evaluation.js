@@ -43,9 +43,9 @@ function formatToString(format) {
 }
 
 function stringToFormat(string) {
-    console.log(string)
+    // console.log(string)
     const short = JSON.parse(string)
-    console.log(short)
+    // console.log(short)
     return {
         questionId: short.q,
         showDiagram: short.d,
@@ -59,7 +59,7 @@ function stringToFormat(string) {
 
 export const getters = {
     getDiagramData(state) {
-        console.log(state.DiagramData)
+        // console.log(state.DiagramData)
         return state.DiagramData.questionList
     },
     getPollName(state) {
@@ -92,7 +92,7 @@ export const getters = {
         return state.Sessions
     },
     getDiagramOption(state) {
-        console.log('getDiagramOptions()')
+        // console.log('getDiagramOptions()')
         return (id) => {
             for (let i = 0; i < state.DiagramOptions.length; i++) {
                 if (state.DiagramOptions[i].questionId === id) {
@@ -134,7 +134,7 @@ export const mutations = {
         Object.assign(state, generateDefaultState())
     },
     setDiagramData(state, data) {
-        console.log(data)
+        // console.log(data)
         state.DiagramData = data.data
     },
     setPollData(state, pollData) {
@@ -228,7 +228,7 @@ export const actions = {
         await this.$axios
             .post('/evaluation/generateDiagram', state.FilterList)
             .catch((reason) => {
-                console.log(reason)
+                // console.log(reason)
             })
             .then((response) => {
                 commit('setDiagramData', response)
@@ -239,7 +239,7 @@ export const actions = {
         await this.$axios
             .post('/evaluation/generateDiagram', filterList)
             .catch((reason) => {
-                console.log(reason)
+                // console.log(reason)
             })
             .then((response) => {
                 commit('setDiagramData', response)
@@ -268,43 +268,43 @@ export const actions = {
         await this.$axios
             .post('/evaluation/saveSession', payload)
             .then((response) => {
-                console.log(response)
+                // console.log(response)
             })
             .catch((reason) => {
-                console.log(reason)
+                // console.log(reason)
             })
     },
     async loadSessions({ state, commit }) {
-        console.log('getSessions()')
+        // console.log('getSessions()')
         await this.$axios
             .get('/evaluation/getSessions/' + state.pollId)
             .then((response) => {
                 commit('setSessions', response)
             })
             .catch((reason) => {
-                console.log(reason)
+                // console.log(reason)
             })
     },
     async loadSession({ state, commit }, sessionId) {
         commit('setCurrentSession', sessionId)
-        console.log('loadSession(' + sessionId + ')')
+        // console.log('loadSession(' + sessionId + ')')
         if (sessionId !== -1) {
             await this.$axios
                 .get('/evaluation/loadSession/' + sessionId)
                 .then((response) => {
-                    console.log(response)
+                    // console.log(response)
                     commit('setCurrentSession', sessionId)
                     commit('saveFilter', response.data.filterList)
                     commit('setDiagramFormatsFromServer', response.data.diagramFormat)
                     commit('setDiagramOptionsFromServer', response.data.diagramOptions)
                 })
                 .catch((reason) => {
-                    console.log(reason)
+                    // console.log(reason)
                 })
         }
     },
     async deleteSession({ state, commit }, sessionId) {
-        console.log('loadSession(' + sessionId + ')')
+        // console.log('loadSession(' + sessionId + ')')
         await this.$axios
             .get('/evaluation/deleteSession/' + sessionId)
             .then((response) => {
@@ -334,13 +334,13 @@ export const actions = {
                 }
             })
             .catch((reason) => {
-                console.log(reason)
+                // console.log(reason)
             })
     },
     async exportPoll({ state, commit }, { pollId, formatString, customSeparator }) {
         /** Export von einem Poll */
-        console.log('export start!')
-        console.log('/api/export/Poll/{pollId:' + pollId + '}')
+        // console.log('export start!')
+        // console.log('/api/export/Poll/{pollId:' + pollId + '}')
         let response
         await this.$axios
             .post('/export/Poll/' + pollId, null, {
@@ -355,12 +355,12 @@ export const actions = {
             .then((r) => {
                 response = r
             })
-        console.log('response: ', response)
+        // console.log('response: ', response)
         return response.data
     },
     async exportResults({ state, commit }, { pollId, sessionID, formatString, customSeparator, dereference }) {
-        console.log('export start!')
-        console.log('/api/export/PollResult/{pollId:' + pollId + '}')
+        // console.log('export start!')
+        // console.log('/api/export/PollResult/{pollId:' + pollId + '}')
         let response
         await this.$axios
             .post('/export/PollResult/' + pollId, state.FilterList, {
@@ -377,15 +377,15 @@ export const actions = {
             .then((r) => {
                 response = r
             })
-        console.log('r: ', response)
+        // console.log('r: ', response)
         return response.data
     },
 
     async awaitFile({ state, commit }, { fileName, fileNumber, fileFormat }) {
-        console.log('trying to find file ')
-        console.log('api/export/filename:{' + fileNumber + '}')
+        // console.log('trying to find file ')
+        // console.log('api/export/filename:{' + fileNumber + '}')
         const FileDownload = require('js-file-download')
-        const response = await this.$axios
+        await this.$axios
             .get('/export/getFile/' + fileNumber)
             .then((response) => {
                 let finalData
@@ -408,18 +408,16 @@ export const actions = {
                 console.log(error)
                 return false
             })
-        console.log('response: ', response)
         return true
     },
 
     async importPoll({ state, commit }, file) {
-        console.log('Loaded file: ', JSON.parse(file)) // .replace(/#/g, encodeURIComponent('#')))
+        // console.log('Loaded file: ', JSON.parse(file)) // .replace(/#/g, encodeURIComponent('#')))
         const data = JSON.parse(file)
-        const response = await this.$axios.$post('/export/importPoll/', data).catch((error) => {
+        await this.$axios.$post('/export/importPoll/', data).catch((error) => {
             console.log(error)
             return false
         })
-        console.log('Response: ', response)
         return true
     },
 }

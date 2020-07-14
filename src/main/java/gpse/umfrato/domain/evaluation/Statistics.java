@@ -27,7 +27,7 @@ public class Statistics {
 
     private static final String NAME_STRING = "{\"name\":\"";
     private static final String PARTICIPANTS_STRING = "\",\"particpantCount\":\"";
-    private static final Logger LOGGER = Logger.getLogger("Statistics");
+    // private static final Logger LOGGER = Logger.getLogger("Statistics");
     private final QuestionService questionService;
     private final PollService pollService;
     private final PollResultService pollResultService;
@@ -180,7 +180,7 @@ public class Statistics {
      */
     public String generateDiagram() {
         if (pollId == null) {
-            LOGGER.warning("Ungültige Umfrage");
+            // LOGGER.warning("Ungültige Umfrage");
             return "{\"name\":\"Ungültige Umfrage\"}";
         }
         String response;
@@ -211,9 +211,9 @@ public class Statistics {
                 break;
             }
             questionIds = translateQuestionIds(poll, questionIds, nextPoll);
-            LOGGER.info("prev " + poll.getPollId());
+            // LOGGER.info("prev " + poll.getPollId());
             poll = nextPoll;
-            LOGGER.info("next " + poll.getPollId());
+            // LOGGER.info("next " + poll.getPollId());
             prev++;
         }
         response = NAME_STRING + pollService.getPoll(this.pollId).getPollName() + PARTICIPANTS_STRING +
@@ -252,9 +252,9 @@ public class Statistics {
                         final double questionConfidence = questionSimilarity(oq, translatedQuestion);
                         if (questionSimilarity(oq, translatedQuestion) > 0.8) {
                             translatedIds.add(translatedQuestion.getQuestionId());
-                            LOGGER.info("+ORIGINAL: " + oq.getQuestionMessage() + " " + oq.getQuestionId());
-                            LOGGER.info("+TRANSATED: " + translatedQuestion.getQuestionMessage() + " "
-                                + translatedQuestion.getQuestionId());
+                            // LOGGER.info("+ORIGINAL: " + oq.getQuestionMessage() + " " + oq.getQuestionId());
+                            // LOGGER.info("+TRANSATED: " + translatedQuestion.getQuestionMessage() + " "
+                            //    + translatedQuestion.getQuestionId());
                         } else {
                             Question bestMatch = translatedQuestion;
                             double bestConfidence = questionConfidence;
@@ -268,9 +268,9 @@ public class Statistics {
                                 }
                             }
                             translatedIds.add(bestMatch.getQuestionId());
-                            LOGGER.info(">ORIGINAL: " + oq.getQuestionMessage() + " " + oq.getQuestionId());
-                            LOGGER.info(">TRANSATED: " + bestMatch.getQuestionMessage() + " " + bestMatch
-                                .getQuestionId());
+                            // LOGGER.info(">ORIGINAL: " + oq.getQuestionMessage() + " " + oq.getQuestionId());
+                            // LOGGER.info(">TRANSATED: " + bestMatch.getQuestionMessage() + " " + bestMatch
+                            //    .getQuestionId());
                         }
                     }
                     questionIndex++;
@@ -278,8 +278,8 @@ public class Statistics {
                 categoryIndex++;
             }
         }
-        LOGGER.info("Original IDs: " + originalQuestionIds.toString());
-        LOGGER.info("Translated IDs: " + translatedIds.toString());
+        // LOGGER.info("Original IDs: " + originalQuestionIds.toString());
+        // LOGGER.info("Translated IDs: " + translatedIds.toString());
         return translatedIds;
     }
 
