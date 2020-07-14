@@ -68,7 +68,7 @@ public class ExportServiceImpl implements ExportService {
 
         //String catSeparatorIncrement = "";
         for (final Category category : poll.getCategoryList()) {
-            output.append(("\""+escapeSpecialCharacters(category.getCategoryName()))+"\"").append(separator).append("Antwortoptionen").append('\n');
+            output.append((escapeSpecialCharacters(category.getCategoryName()))).append(separator).append("Antwortoptionen").append('\n');
             for (final Question question : category.getQuestionList()) {
                 //output.append(catSeparatorIncrement);
                 output.append(escapeSpecialCharacters(question.getQuestionMessage())).
@@ -158,13 +158,13 @@ public class ExportServiceImpl implements ExportService {
                     || getQuestionFromQuestionList(singularAnswer.getQuestionId(), questionList).getQuestionType()
                     .equals(SORT_QUESTION))) {
                     builder.append(answerToReadableCSV(singularAnswer, getQuestionFromQuestionList(singularAnswer
-                        .getQuestionId(), questionList)));
+                        .getQuestionId(), questionList))).append(separator);
                 } else if (dereferenceAnswerPossibilities && (getQuestionFromQuestionList(singularAnswer.getQuestionId(),
                     questionList).getQuestionType().equals(RANGE_QUESTION))) {
                     builder.append(answerToRangeCSV(singularAnswer, getQuestionFromQuestionList(singularAnswer
-                        .getQuestionId(), questionList)));
+                        .getQuestionId(), questionList))).append(separator);
                 } else {
-                    builder.append(answerToCSV(singularAnswer));
+                    builder.append(answerToCSV(singularAnswer)).append(separator);
                 }
             }
             builder.append('\n');
@@ -187,10 +187,7 @@ public class ExportServiceImpl implements ExportService {
         while (categoryIterator.hasNext()) {
             final Category singularCategory = categoryIterator.next(); //Page
             for (final Question singularQuestion : singularCategory.getQuestionList()) {
-                System.out.println("SINGULARQUESTION MESSAGE: "+singularQuestion.getQuestionMessage());
                 String singularQuestionMessage = singularQuestion.getQuestionMessage();
-                System.out.println("SINGULAR ASDASDQUESTION MESSAGE: "+escapeSpecialCharacters(singularQuestionMessage));
-                singularQuestionMessage = "\"" + singularQuestionMessage + "\"";
                 columnNamesList.append(separator).append(escapeSpecialCharacters(singularQuestionMessage)); /*I think it works that way,
                 should give out "PollID, Frage1, Frage2, Frage3, ... regardless of category"*/
             }
@@ -209,6 +206,7 @@ public class ExportServiceImpl implements ExportService {
             final String answerForSingularQuestion = answerIterator.next();
             output.append(escapeSpecialCharacters(answerForSingularQuestion)).append(' ');
         }
+        System.out.println("AnswerTOCSV: "+output.toString());
         return output.toString();
     }
 
@@ -266,7 +264,7 @@ public class ExportServiceImpl implements ExportService {
         String escapedData = data.replaceAll("\\R", " ");
         if (data.contains(",") || data.contains("\"") || data.contains("'")) {
             data = data.replace("\"", "\"\"");
-            escapedData = "\"" + data + "\"";
+            escapedData = data;
         }
         return escapedData;
     }
