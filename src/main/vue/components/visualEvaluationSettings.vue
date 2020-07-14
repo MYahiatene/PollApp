@@ -240,9 +240,6 @@ export default {
         },
     },
     mounted() {
-        const format = this.getFormat(this.questionId)
-        console.log('los gehts ' + this.questionId)
-        console.log(format)
         this.diagramType = String(this.initialDiagramType)
         this.showTable = Boolean(this.initialShowTable)
         this.showDiagram = Boolean(this.initialShowDiagram)
@@ -363,11 +360,11 @@ export default {
             if (this.changeDefault) {
                 this.setDiagramFormats({ useOnAll: this.useOnAll, format })
             } else {
-                console.log('pushFormat')
+                // console.log('pushFormat')
                 await this.setDiagramFormat(format)
-                console.log('pushedFormat')
+                // console.log('pushedFormat')
             }
-            console.log('done')
+            // console.log('done')
             this.$emit('done')
         },
 
@@ -436,7 +433,7 @@ export default {
          */
 
         loadColors(index) {
-            console.log('load colors')
+            // console.log('load colors')
             if (this.changeDefault && this.colorList.length < this.defaultColorListLength) {
                 this.colorList = ['', '', '', '', '']
             }
@@ -447,8 +444,8 @@ export default {
                 }
             }
             for (let i = 0; i < this.colorList.length; i++) {
-                console.log('hu')
-                console.log(this.colorSchemes[index].colorArray[i % this.colorSchemes[index].colorArray.length])
+                // console.log('hu')
+                // console.log(this.colorSchemes[index].colorArray[i % this.colorSchemes[index].colorArray.length])
                 this.colorList[i] = this.colorSchemes[index].colorArray[i % this.colorSchemes[index].colorArray.length]
             }
             this.loadChipColorInPicker()
@@ -524,10 +521,10 @@ export default {
          */
         answerTitles() {
             const a = []
-            console.log(this.diagramData)
-            console.log(this.questionId)
+            // console.log(this.diagramData)
+            // console.log(this.questionId)
             for (let i = 0; i < this.diagramData.length; i++) {
-                console.log(i)
+                // console.log(i)
                 if (this.diagramData[i].id === this.questionId) {
                     for (let j = 0; j < this.diagramData[i].answerPossibilities.length; j++) {
                         if (this.diagramData[i].answerPossibilities[j].length < 5) {
@@ -540,7 +537,7 @@ export default {
                     }
                 }
             }
-            console.log(a)
+            // console.log(a)
             return a
         },
     },

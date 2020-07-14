@@ -162,7 +162,7 @@ export default {
                 })
                 .then((response) => {
                     this.poll = response.data
-                    console.log(this.poll)
+                    // console.log(this.poll)
                 })
                 .catch((error) => {
                     console.log(error)
@@ -185,8 +185,8 @@ export default {
             }
         },
         sendEmail() {
-            console.log('Email Sending test')
-            console.log(this.items)
+            // console.log('Email Sending test')
+            // console.log(this.items)
             const obj = {
                 mailList: this.items,
                 emailSubject: this.mailSubject,
@@ -197,7 +197,7 @@ export default {
             this.$axios
                 .post('/sendEmail', obj)
                 .then(function () {
-                    console.log('Email sending succedeed.')
+                    // console.log('Email sending succedeed.')
                 })
                 .catch((error) => console.log(error))
             this.$router.push('/polls')
@@ -206,7 +206,7 @@ export default {
             const input = document.getElementById('itemForm')
             if (input.value !== '' && input.value.includes('@') && input.value.includes('.')) {
                 this.items.push(input.value)
-                console.log(input.value)
+                // console.log(input.value)
                 this.mail = ''
             }
         },

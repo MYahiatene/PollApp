@@ -135,11 +135,11 @@ export default {
     methods: {
         onMove(evt) {
             this.draggedQuestionId = evt.draggedContext.element.questionId
-            console.log(this.draggedQuestionId)
+            // console.log(this.draggedQuestionId)
         },
         onEnd(evt) {
-            console.log('onEnd')
-            const oldIndex2 = evt.oldIndex
+            // console.log('onEnd')
+            // const oldIndex2 = evt.oldIndex
             const newIndex2 = evt.newIndex
             let newCategoryId2 = null
             this.categoryData.forEach((c) => {
@@ -149,10 +149,10 @@ export default {
                     }
                 })
             })
-            console.log('oldIndex: ' + oldIndex2)
-            console.log('newIndex: ' + newIndex2)
-            console.log('newCategoryId2: ' + newCategoryId2)
-            console.log('QuestionId: ' + this.draggedQuestionId)
+            // console.log('oldIndex: ' + oldIndex2)
+            // console.log('newIndex: ' + newIndex2)
+            // console.log('newCategoryId2: ' + newCategoryId2)
+            // console.log('QuestionId: ' + this.draggedQuestionId)
 
             this.$axios
                 .post('/changeQuestionIndex', {
@@ -161,8 +161,8 @@ export default {
                     questionId: this.draggedQuestionId,
                 })
                 .then((response) => {
-                    console.log('Hallo')
-                    console.log(this.categoryData)
+                    // console.log('Hallo')
+                    // console.log(this.categoryData)
                     this.categoryData.forEach((category) =>
                         category.questionList.forEach((question) => {
                             if (question.questionId === response.data.questionId) {
@@ -170,7 +170,7 @@ export default {
                             }
                         })
                     )
-                    console.log(this.categoryData)
+                    // console.log(this.categoryData)
                 })
         },
         setDeleteIndex(category, deleteIndex) {
@@ -192,8 +192,8 @@ export default {
             if (!index) {
                 alert('Löschen nicht möglich, da es die Standardkategorie geben muss')
             } else {
-                console.log('DeleteIndexSetted')
-                console.log(this.deleteIndex)
+                // console.log('DeleteIndexSetted')
+                // console.log(this.deleteIndex)
                 this.categoryData.splice(index, 1)
                 this.categoryNames.splice(index, 1)
                 this.$axios
@@ -205,7 +205,7 @@ export default {
                         console.log(error)
                     })
                 if (this.deleteIndex === '1') {
-                    console.log(this.categoryData)
+                    // console.log(this.categoryData)
                     category.questionList.forEach((question) => {
                         question.categoryId = this.categoryData[0].categoryId
                         this.categoryData[0].questionList.push(question)

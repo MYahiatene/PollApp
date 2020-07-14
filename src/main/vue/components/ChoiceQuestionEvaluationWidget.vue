@@ -349,7 +349,7 @@ export default {
             setDiagramOption: 'evaluation/setDiagramOption',
         }),
         // arrayTransposed(array) {
-        //     console.log(array)
+        //     // console.log(array)
         //     const newArray = []
         //     for (let j = 0; j < array[0].length; j++) {
         //         newArray.push([])
@@ -357,7 +357,7 @@ export default {
         //             newArray[j].push(array[i][j])
         //         }
         //     }
-        //     console.log(newArray)
+        //     // console.log(newArray)
         //     return newArray
         // },
     },

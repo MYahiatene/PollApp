@@ -110,12 +110,12 @@ class UserServiceImpl implements UserService {
      */
     @Override
     public void addParticipatedPoll(final String username, final Long pollId) {
-        LOGGER.info("username" + username + "pollId" + pollId);
+        // LOGGER.info("username" + username + "pollId" + pollId);
         final User user = userRepository.getOne(username);
         final List<Long> tmp = user.getParticipated();
         tmp.add(pollId);
         user.setParticipated(tmp);
-        LOGGER.info(tmp.toString());
+        // LOGGER.info(tmp.toString());
         userRepository.save(user);
     }
 
@@ -144,12 +144,9 @@ class UserServiceImpl implements UserService {
     @Override
     public void changePassword(final String username, final String password) {
         final User user = userRepository.getOne(username);
-        LOGGER.info("username, password" + username + password);
         final String cryptPassword = PasswordEncoderFactories.createDelegatingPasswordEncoder().encode(password);
         user.setPassword(cryptPassword);
-        LOGGER.info(cryptPassword);
         userRepository.save(user);
-        LOGGER.info("All done in UserServiceImpl");
     }
 
     @Override
@@ -157,7 +154,6 @@ class UserServiceImpl implements UserService {
         final User user = userRepository.getOne(username);
         user.setEmail(email);
         userRepository.save(user);
-        LOGGER.info("Changed Password!");
     }
 
 }

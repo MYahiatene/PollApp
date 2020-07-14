@@ -12,7 +12,7 @@ public class QuestionCmd {
 
     private long pollId;
 
-    private long categoryId;
+    private Long categoryId;
 
     private long questionId;
 

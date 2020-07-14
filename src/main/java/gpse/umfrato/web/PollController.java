@@ -129,8 +129,14 @@ public class PollController {
     @PreAuthorize("hasAnyAuthority('Admin', 'Creator')")
     public Long createCopyPoll(final @RequestBody PollCmd pollCmd, final @RequestHeader int timeZoneOffset) {
         try {
-            final Poll poll = pollService.createCopyPoll(pollCmd.getCmdPoll(ZoneOffset.ofHoursMinutes(
-                timeZoneOffset / 60, timeZoneOffset % 60)));
+            Poll poll = null;
+            if (pollCmd.getRepeat() != null) {
+                poll = pollService.createSeriesPoll(pollCmd.getCmdPoll(ZoneOffset.ofHoursMinutes(
+                        timeZoneOffset / 60, timeZoneOffset % 60)));
+            } else {
+                poll = pollService.createCopyPoll(pollCmd.getCmdPoll(ZoneOffset.ofHoursMinutes(
+                        timeZoneOffset / 60, timeZoneOffset % 60)));
+            }
             if (poll.getAnonymityStatus().equals(ONE)) {
                 final String link = participationLinkService.createParticipationLink().toString();
                 participationLinkService.saveParticipationLink(poll.getPollId(), ALL_USERS, link);

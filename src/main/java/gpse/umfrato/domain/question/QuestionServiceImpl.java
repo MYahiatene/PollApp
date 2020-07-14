@@ -72,7 +72,6 @@ public class QuestionServiceImpl implements QuestionService {
     @Override
     public Question addQuestion(final QuestionCmd questionCmd) {
         Question question = null;
-        System.out.println(questionCmd.toString());
         switch (questionCmd.getQuestionType()) {
             case TEXT_QUESTION:
                 question = new Question(questionCmd.getQuestionMessage(), questionCmd.isTextMultiline(),
@@ -106,11 +105,15 @@ public class QuestionServiceImpl implements QuestionService {
                 return null;
         }
         if(questionCmd.getCategoryType() == null) {
-            questionCmd.setCategoryType(questionCmd.getCategoryId());
-            questionCmd.setCategoryId(pollRepository.getOne(questionCmd.getPollId()).getCategoryList().get(0).getCategoryId());
+            if(questionCmd.getCategoryId() == null) {
+                questionCmd.setCategoryType(pollRepository.getOne(questionCmd.getPollId()).getCategoryList().get(0).getCategoryId());
+            } else {
+                questionCmd.setCategoryType(questionCmd.getCategoryId());
+            }
         }
         question.setCategoryId(questionCmd.getCategoryType());
-        categoryRepository.findById(questionCmd.getCategoryType()).get().getQuestionList().add(question);
+        Category c = categoryRepository.findById(questionCmd.getCategoryType()).get();
+        c.getQuestionList().add(question);
         questionRepository.save(question);
         return question;
 
@@ -232,7 +235,7 @@ public class QuestionServiceImpl implements QuestionService {
         final long newCategoryId = questionCmd.getCategoryType();
         if(oldCategoryId != newCategoryId) {
             final Category oldCategory = categoryRepository.getOne(oldCategoryId);
-            System.out.println(newCategoryId);
+            // System.out.println(newCategoryId);
             final Category newCategory = categoryRepository.getOne(newCategoryId);
             oldCategory.getQuestionList().remove(question);
             categoryRepository.save(oldCategory);
@@ -370,13 +373,12 @@ public class QuestionServiceImpl implements QuestionService {
             cmd.setTextMaximum(question.getTextMaximum());
             cmd.setTextMinBool(question.isTextMinBool());
             cmd.setTextMaxBool(question.isTextMaxBool());
-            cmd.setCategoryId(question.getCategoryId());
+            cmd.setCategoryId(null);
             cmd.setQuestionMessage(question.getQuestionMessage());
             cmd.setAnswerPossibilities(question.getAnswerPossibilities());
             cmd.setQuestionType(question.getQuestionType());
             cmd.setUserAnswers(question.isUserAnswers());
             cmd.setNumberOfPossibleAnswers(question.getNumberOfPossibleAnswers());
-            cmd.setCategoryType(question.getCategoryId());
             if (question.getQuestionType().equals(CHOICE_QUESTION)) {
                 newQuestion = addChoiceQuestion(question, pollId);
             } else if (question.getQuestionType().equals(SORT_QUESTION)) {
@@ -387,7 +389,6 @@ public class QuestionServiceImpl implements QuestionService {
             changeCategory(newQuestion.getQuestionId(), categoryId, indexCounter);
             indexCounter += 1;
         }
-
     }
 
 

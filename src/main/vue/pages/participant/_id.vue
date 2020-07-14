@@ -409,11 +409,11 @@ export default {
         await this.showParticipated()
         await this.valuesForQuestions()
         if (this.poll[1].data.pollStatus === 3) {
-            console.log('PollStatus 3')
+            // console.log('PollStatus 3')
             await this.$router.push('/pollOver')
         }
         if (this.poll[1].data.pollStatus === 0 || this.poll[1].data.pollStatus === 1) {
-            console.log('PollStatus 0')
+            // console.log('PollStatus 0')
             await this.$router.push('/PollNotActive')
         }
     },
@@ -567,8 +567,8 @@ export default {
          * @returns {boolean}
          */
         hasNoNext() {
-            console.log('categoryLength', this.categoryLength)
-            console.log('categoryIndex', this.categoryIndex)
+            // console.log('categoryLength', this.categoryLength)
+            // console.log('categoryIndex', this.categoryIndex)
             return this.categoryIndex >= this.categoryLength
         },
         /**
@@ -598,8 +598,8 @@ export default {
         valuesForQuestions() {
             this.createListOfAnswerPossibilitiesForSortQuestions()
             this.valueList = []
-            console.log('givenAnswers', this.givenAnswers)
-            console.log('computedQuestionList', this.givenAnswers)
+            // console.log('givenAnswers', this.givenAnswers)
+            // console.log('computedQuestionList', this.givenAnswers)
             let index = 0
             for (let m = 0; m < this.getPoll[1].data.categoryList.length; m++) {
                 if (this.getCategory.categoryId > this.getPoll[1].data.categoryList[m].categoryId) {
@@ -608,15 +608,15 @@ export default {
                     break
                 }
             }
-            console.log('index', index)
+            // console.log('index', index)
             for (let i = 0; i < this.getCategory.questionList.length; i++) {
                 const type = this.getCategory.questionList[i].questionType
 
-                console.log('type', type)
+                // console.log('type', type)
                 if (this.givenAnswers !== []) {
-                    console.log('!== []')
+                    // console.log('!== []')
                     if (this.givenAnswers[i + index] != null) {
-                        console.log('!= null')
+                        // console.log('!= null')
                         // for RadioButtons we need answer text and given back are the indizes
                         if (
                             (type === 'ChoiceQuestion' &&
@@ -632,7 +632,7 @@ export default {
                         else if (type === 'ChoiceQuestion') {
                             const array = []
                             for (let j = 0; j < this.givenAnswers[i + index].givenAnswerList.length; j++) {
-                                console.log('dfg', this.givenAnswers[i + index].givenAnswerList[j])
+                                // console.log('dfg', this.givenAnswers[i + index].givenAnswerList[j])
                                 array.push(
                                     this.computedQuestionList[i].answerPossibilities[
                                         this.givenAnswers[i + index].givenAnswerList[j]
@@ -649,7 +649,7 @@ export default {
                                     ]
                                 )
                             }
-                            console.log('array', array)
+                            // console.log('array', array)
                             for (let j = 0; j < array.length; j++) {
                                 this.AnswerListsOfSortQuestions[i][j] = array[j]
                             }
@@ -657,8 +657,8 @@ export default {
                             // won't be used for SortQuestions, but needs to be correct index
                             this.valueList.push(array)
                         } else {
-                            console.log('type', type)
-                            console.log('textpush', this.givenAnswers[i + index].givenAnswerList[0])
+                            // console.log('type', type)
+                            // console.log('textpush', this.givenAnswers[i + index].givenAnswerList[0])
                             this.valueList.push(this.givenAnswers[i + index].givenAnswerList[0])
                         }
                     } else {
@@ -702,8 +702,8 @@ export default {
                     }
                 }
             }
-            console.log('AnswerSortQuestion', this.AnswerListsOfSortQuestions)
-            console.log('ValueList is created: ', this.valueList)
+            // console.log('AnswerSortQuestion', this.AnswerListsOfSortQuestions)
+            // console.log('ValueList is created: ', this.valueList)
         },
         /**
          * Get the given answer of the text field from the array ownAnswers and send the answer with the
@@ -924,11 +924,11 @@ export default {
          * It's called by click on + Icon at a Range Question.
          */
         subValue(question, index) {
-            console.log(this.valueList[index])
+            // console.log(this.valueList[index])
             // TODO: doesn't update, so value doesn't show on slider, but does change to "correct value, after click on
             // other slider...
             this.valueList[index] = this.valueList[index] - question.stepSize || question.startValue
-            console.log(this.valueList[index])
+            // console.log(this.valueList[index])
             this.$forceUpdate()
         },
         /**
@@ -1002,7 +1002,7 @@ export default {
          * Calls saveAnswers from the store with the answerobj (cmdAnswer with all given input)
          */
         saveAnswer() {
-            console.log('answerObj', this.answerObj)
+            // console.log('answerObj', this.answerObj)
             this.answerObj.username = this.getUsername
             this.$store.dispatch('participant/saveAnswer', this.answerObj)
         },
@@ -1041,7 +1041,7 @@ export default {
                     }
                 }
             }
-            console.log('givenAnswers', this.givenAnswers)
+            // console.log('givenAnswers', this.givenAnswers)
         },
         showAnswerMultipleChoice() {
             this.answerObj.username = this.getUsername

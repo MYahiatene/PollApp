@@ -121,7 +121,7 @@ export default {
         sessions() {
             const sessions = []
             const data = this.getSessions
-            console.log(data)
+            // console.log(data)
             for (let i = 0; i < data.length; i++) {
                 sessions.push({
                     sessionId: data[i].sessionId,
@@ -158,7 +158,7 @@ export default {
             return true
         },
         async saveThisSession(item) {
-            console.log('saveThisSession()')
+            // console.log('saveThisSession()')
             if (item.sessionId) {
                 const payload = {
                     sessionId: item.sessionId,
@@ -182,7 +182,7 @@ export default {
         },
 
         async loadOneSession(item) {
-            console.log('loadOneSession()')
+            // console.log('loadOneSession()')
             await this.loadSession(item.sessionId)
             await this.updateData()
             this.$emit('close-event')
@@ -190,7 +190,7 @@ export default {
         },
 
         async deleteOneSession(item) {
-            console.log('deleteOneSession()')
+            // console.log('deleteOneSession()')
             await this.deleteSession(item.sessionId)
             if (item.sessionId === this.currentSession) {
                 await this.loadSession(-1)

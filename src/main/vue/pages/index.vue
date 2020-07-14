@@ -103,11 +103,11 @@ export default {
                 await this.$axios
                     .get('/relevantpolls')
                     .then((response) => {
-                        console.log(response)
+                        // console.log(response)
                         pollData = response.data
                     })
                     .catch((reason) => {
-                        console.log(reason)
+                        // console.log(reason)
                     })
                 const data = []
                 for (let i = 0; i < pollData.length; i++) {

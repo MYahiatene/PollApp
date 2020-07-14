@@ -162,7 +162,7 @@ export const actions = {
         this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('user-token')
         await this.$axios.post('/participated', pollResultObj).then((response) => {
             state.participated = response.data
-            console.log('store', state.participated)
+            // console.log('store', state.participated)
         })
     },
 
@@ -205,10 +205,10 @@ export const actions = {
      * @param answerObj object with (username, questionId, answerList, pollId)
      */
     saveAnswer(state, answerObj) {
-        console.log('answerObjImStore', answerObj)
+        // console.log('answerObjImStore', answerObj)
         this.$axios.defaults.baseURL = 'http://localhost:8088/api/'
         this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('user-token')
-        console.log(answerObj)
+        // console.log(answerObj)
         return this.$axios.post('/poll/' + answerObj.pollId + '/addanswer', answerObj)
     },
     /**
@@ -221,7 +221,7 @@ export const actions = {
     saveParticipatedPoll(state, userObj) {
         this.$axios.defaults.baseURL = 'http://localhost:8088/api/'
         this.$axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('user-token')
-        console.log('userObj', userObj)
+        // console.log('userObj', userObj)
         return this.$axios.post('/participationToPollResult', userObj)
     },
     /**

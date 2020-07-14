@@ -11,7 +11,7 @@
                         <v-row>
                             <v-card class="ma-0" min-width="400" max-width="500">
                                 <v-row>
-                                    <v-spacer></v-spacer>
+                                    <v-spacer />
                                     <v-col cols="10">
                                         <v-card-title>
                                             <h2 style="font-weight: normal; text-align: center;" class="ma-0">
@@ -273,15 +273,15 @@ export default {
         },
         onEnd(evt) {
             /*
-                console.log('old drag index:\n' + evt.oldDraggableIndex + '\n')
-                console.log('new drag index:\n' + evt.newDraggableIndex + '\n')
-                console.log('old index:\n' + evt.oldIndex + '\n')
-                console.log('new index:\n' + evt.newIndex + '\n') */
-            console.log(evt)
+                // console.log('old drag index:\n' + evt.oldDraggableIndex + '\n')
+                // console.log('new drag index:\n' + evt.newDraggableIndex + '\n')
+                // console.log('old index:\n' + evt.oldIndex + '\n')
+                // console.log('new index:\n' + evt.newIndex + '\n') */
+            // console.log(evt)
             if (evt.pullMode) {
                 //  this.$axios.post('/changequestioncategory')
             }
-            // console.log(this.categoryData)
+            // // console.log(this.categoryData)
         },
         pollName() {
             return this.pollData.pollName
@@ -296,7 +296,7 @@ export default {
                 })
                 .then((response) => {
                     this.pollData = response.data
-                    console.log(this.pollData)
+                    // console.log(this.pollData)
                 })
                 .catch((error) => {
                     console.log(error)
@@ -322,8 +322,8 @@ export default {
                             value: ele.categoryId,
                         })
                     })
-                    console.log('CategoryData')
-                    console.log(this.categoryData)
+                    // console.log('CategoryData')
+                    // console.log(this.categoryData)
                 })
                 .catch((error) => {
                     console.log(error)
@@ -345,7 +345,7 @@ export default {
                 }
             })
             this.categoryData[0].questionList.forEach((question) => {
-                console.log(question.questionId)
+                // console.log(question.questionId)
             })
             const obj = {
                 lastEditFrom: this.getUsername,

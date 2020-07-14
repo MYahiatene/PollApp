@@ -13,13 +13,13 @@ export default {
         options: {},
     },
     mounted() {
-        // console.log('mount')
-        // console.log(this.chartdata)
+        // // console.log('mount')
+        // // console.log(this.chartdata)
         this.renderChart(this.chartdata, this.options)
     },
 
     updated() {
-        // console.log('update')
+        // // console.log('update')
     },
 }
 </script>

@@ -247,8 +247,8 @@ export default {
                         c.push(this.categories[this.categoryIndex].questionList[i])
                     }
                 }
-                console.log('questions: ')
-                console.log(c)
+                // console.log('questions: ')
+                // console.log(c)
                 return c
             }
         },

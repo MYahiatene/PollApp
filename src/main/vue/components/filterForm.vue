@@ -334,8 +334,8 @@ export default {
          */
 
         isSeriesPoll() {
-            console.log('poll')
-            console.log(this.poll)
+            // console.log('poll')
+            // console.log(this.poll)
             return (
                 this.poll.prevInSeries !== undefined && this.poll.prevInSeries !== null && this.poll.prevInSeries >= 0
             )
@@ -365,7 +365,7 @@ export default {
          */
 
         chosenQuestionIds() {
-            console.log('chosenQuestionIds()')
+            // console.log('chosenQuestionIds()')
             const questionIds = []
             for (let i = 0; i < this.selectedQuestions.length; i++) {
                 const poll = this.polls[this.pollIndex]
@@ -386,7 +386,7 @@ export default {
          */
 
         questionTitles() {
-            console.log('questionTitle()')
+            // console.log('questionTitle()')
             if (this.pollIndex === -1) {
                 return []
             }
@@ -396,7 +396,7 @@ export default {
                     questionTitles.push(this.polls[this.pollIndex].categoryList[i].questionList[j].questionMessage)
                 }
             }
-            console.log('questionTitles: ')
+            // console.log('questionTitles: ')
             return questionTitles
         },
     },
@@ -423,7 +423,7 @@ export default {
          */
 
         async saveToStore() {
-            console.log('saveToStore()')
+            // console.log('saveToStore()')
             const filterData = []
             filterData.push({
                 filterType: 'dataFilter',
@@ -449,10 +449,10 @@ export default {
             for (let i = 0; i < this.qafilterList.length; i++) {
                 if (this.qafilterList[i].active) {
                     const filter = this.qafilterList[i]
-                    console.log('saveQAFilter')
-                    console.log(this.polls)
-                    console.log(this.pollIndex)
-                    console.log(filter)
+                    // console.log('saveQAFilter')
+                    // console.log(this.polls)
+                    // console.log(this.pollIndex)
+                    // console.log(filter)
                     if (filter.answerIndices.length !== 0) {
                         filterData.push({
                             filterType: 'questionAnswer',
@@ -466,7 +466,7 @@ export default {
             }
             if (this.datefilter) {
                 let numberOfDateFilters = 0
-                console.log(this.dateFilterList)
+                // console.log(this.dateFilterList)
                 for (let i = 0; i < this.dateFilterList.length; i++) {
                     if (this.dateFilterList[i].active) {
                         numberOfDateFilters += 1
@@ -484,7 +484,7 @@ export default {
                     })
                 }
             }
-            console.log(filterData)
+            // console.log(filterData)
             await this.sendFilter(filterData)
             this.$emit('close-event')
         },
@@ -495,14 +495,14 @@ export default {
          */
 
         async updateNumberOfConsistencyQuestions() {
-            console.log('updateNumberOfConsistencyQuestions()')
+            // console.log('updateNumberOfConsistencyQuestions()')
             await this.$axios
                 .get('/poll/' + this.polls[this.pollIndex].pollId + '/consistencyquestionnumber')
                 .then((response) => {
                     this.maxConsistencyValue = response.data
                 })
                 .catch((reason) => {
-                    console.log(reason)
+                    // console.log(reason)
                     this.maxConsistencyValue = 0
                 })
         },
@@ -569,7 +569,7 @@ export default {
             this.qafilterList[filterId].answerIndices = answerIndices
             this.qafilterList[filterId].isSlider = isSlider
             this.qafilterList[filterId].invertFilter = invertFilter
-            console.log(this.qafilterList[filterId])
+            // console.log(this.qafilterList[filterId])
         },
 
         /**
@@ -607,12 +607,12 @@ export default {
          */
 
         updateDateFilter([filterIndex, startDate, endDate, invertFilter]) {
-            console.log('updateDateFilter()')
-            console.log(invertFilter)
+            // console.log('updateDateFilter()')
+            // console.log(invertFilter)
             this.dateFilterList[filterIndex].startDate = startDate
             this.dateFilterList[filterIndex].endDate = endDate
             this.dateFilterList[filterIndex].invertFilter = invertFilter
-            console.log(this.dateFilterList)
+            // console.log(this.dateFilterList)
         },
 
         /**
@@ -628,10 +628,10 @@ export default {
          */
 
         getFilters() {
-            console.log('getFilters')
+            // console.log('getFilters')
             if (this.filters.length !== 0) {
-                console.log('do stuff')
-                console.log(this.filters)
+                // console.log('do stuff')
+                // console.log(this.filters)
                 this.qafilterList = []
                 this.dateFilterList = []
                 if (this.filters[0].filterType === 'dataFilter') {
@@ -657,17 +657,17 @@ export default {
                     }
                     this.seriesPollNumber = this.filters[0].numberOfEvaluatedSeriesPolls
 
-                    console.log(this.selectedQuestions)
+                    // console.log(this.selectedQuestions)
                 }
 
                 for (let i = 0; i < this.filters.length; i++) {
                     if (this.filters[i].filterType === 'consistency') {
-                        console.log('consis filter')
+                        // console.log('consis filter')
                         this.minConsistencyValue = this.filters[i].minSuccesses
                         this.updateConsistencyOn()
                     }
                     if (this.filters[i].filterType === 'user') {
-                        console.log('user filter')
+                        // console.log('user filter')
                         this.userInverted = this.filters[i].invertFilter
                         this.selectedUsers = []
                         for (let j = 0; j < this.filters[i].userNames.length; j++) {
@@ -676,7 +676,7 @@ export default {
                     }
 
                     if (this.filters[i].filterType === 'date') {
-                        console.log('date filter')
+                        // console.log('date filter')
                         const id = this.dateFilterList.length
                         this.dateFilterList.push({
                             active: true,
@@ -689,7 +689,7 @@ export default {
                     }
 
                     if (this.filters[i].filterType === 'questionAnswer') {
-                        console.log('qa filter')
+                        // console.log('qa filter')
                         const a = []
                         if (this.filters[i].isSlider) {
                             for (let j = 0; j < this.filters[i].targetAnswerPossibilities.length; j++) {
@@ -719,11 +719,11 @@ export default {
                         })
                     }
 
-                    console.log(this.dateFilterList)
+                    // console.log(this.dateFilterList)
 
-                    console.log('qaFilter in FF')
+                    // console.log('qaFilter in FF')
 
-                    console.log(this.qafilterList)
+                    // console.log(this.qafilterList)
 
                     this.updateFilter()
                 }
@@ -778,9 +778,9 @@ export default {
          */
 
         getCategoryIndexAndQuestionIndexFromQuestionId(questionId) {
-            console.log('bin in getCat...')
+            // console.log('bin in getCat...')
             for (let c = 0; c < this.categories.length; c++) {
-                console.log(c)
+                // console.log(c)
                 const questions = []
                 for (let i = 0; i < this.categories[c].questionList.length; i++) {
                     if (
@@ -790,9 +790,9 @@ export default {
                         questions.push(this.categories[c].questionList[i])
                 }
                 for (let q = 0; q < questions.length; q++) {
-                    console.log(q)
+                    // console.log(q)
                     if (questions[q].questionId === questionId) {
-                        console.log({ categoryIndex: c, questionIndex: q })
+                        // console.log({ categoryIndex: c, questionIndex: q })
                         return { categoryIndex: c, questionIndex: q }
                     }
                 }

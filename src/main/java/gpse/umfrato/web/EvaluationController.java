@@ -67,7 +67,7 @@ public class EvaluationController {
     @PreAuthorize("hasAnyAuthority('Admin','Creator')")
     @PostMapping("/generateDiagram")
     public String populateDiagram(final @RequestBody List<FilterCmd> input, final @RequestHeader int timeZoneOffset) {
-        LOGGER.info(input.toString());
+        // LOGGER.info(input.toString());
         if (input.isEmpty()) {
             return "?";
         }

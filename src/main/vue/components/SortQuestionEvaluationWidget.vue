@@ -300,11 +300,11 @@ export default {
          */
 
         loadLastWidget() {
-            console.log('next')
+            // console.log('next')
             if (!(this.currentIndex === 0)) {
-                console.log(this.currentIndex)
+                // console.log(this.currentIndex)
                 this.currentIndex--
-                console.log(this.currentIndex)
+                // console.log(this.currentIndex)
                 this.$forceUpdate()
                 this.computeData(this.currentIndex)
             }
@@ -319,9 +319,9 @@ export default {
          */
 
         loadNextWidget() {
-            console.log('last')
+            // console.log('last')
             if (!(this.currentIndex === this.numberOfWidgets - 1)) {
-                console.log(this.currentIndex)
+                // console.log(this.currentIndex)
                 this.currentIndex++
                 this.computeData(this.currentIndex)
             }
