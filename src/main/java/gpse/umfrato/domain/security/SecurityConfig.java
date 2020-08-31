@@ -24,7 +24,7 @@ import java.util.Arrays;
 @EnableWebSecurity
 @EnableAutoConfiguration
 @EnableConfigurationProperties(SecurityConstants.class)
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+public class    SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final SecurityConstants securityConstants;
 
