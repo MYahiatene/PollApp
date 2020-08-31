@@ -53,4 +53,6 @@ public class QuestionCmd {
     private int numberOfPossibleAnswers;
 
     private Long categoryType;
+
+    private String fileName;
 }

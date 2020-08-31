@@ -8,7 +8,7 @@
             something was choosen, else defined in the nuxt.config.js depending on the chosen theme-->
             <v-app-bar fixed app>
                 <!--Logo and Name of the App-->
-                <nuxt-link to="/" style="text-decoration: none;">
+                <nuxt-link to="/" style="text-decoration: none">
                     <div>
                         <h1><img src="LogoEinfach.svg" alt="Logo" width="25" /> {{ title }}</h1>
                     </div>

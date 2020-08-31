@@ -75,16 +75,17 @@ public class QuestionServiceImpl implements QuestionService {
         switch (questionCmd.getQuestionType()) {
             case TEXT_QUESTION:
                 question = new Question(questionCmd.getQuestionMessage(), questionCmd.isTextMultiline(),
-                    questionCmd.getTextMinimum(), questionCmd.getTextMaximum());
+                    questionCmd.getTextMinimum(), questionCmd.getTextMaximum(), questionCmd.getFileName());
                 question.setTextMinBool(questionCmd.isTextMinBool());
                 question.setTextMaxBool(questionCmd.isTextMaxBool());
                 break;
             case RANGE_QUESTION:
                 question = new Question(questionCmd.getQuestionMessage(),
                     questionCmd.getStartValue(), questionCmd.getEndValue(),
-                        questionCmd.getStepSize() == ZERO ? ONE : questionCmd.getStepSize(),
-                        questionCmd.getBelowMessage() == null ? "" : questionCmd.getBelowMessage(),
-                        questionCmd.getAboveMessage() == null ? "" : questionCmd.getAboveMessage());
+                    questionCmd.getStepSize() == ZERO ? ONE : questionCmd.getStepSize(),
+                    questionCmd.getBelowMessage() == null ? "" : questionCmd.getBelowMessage(),
+                    questionCmd.getAboveMessage() == null ? "" : questionCmd.getAboveMessage(),
+                    questionCmd.getFileName());
                 break;
             case SLIDER_QUESTION:
                 question = new Question(questionCmd.getQuestionMessage(),
@@ -92,11 +93,13 @@ public class QuestionServiceImpl implements QuestionService {
                     questionCmd.getStepSize() == ZERO ? ONE : questionCmd.getStepSize(),
                     questionCmd.getBelowMessage() == null ? "" : questionCmd.getBelowMessage(),
                     questionCmd.getAboveMessage() == null ? "" : questionCmd.getAboveMessage(),
-                    questionCmd.isHideValues());
+                    questionCmd.isHideValues(),
+                    questionCmd.getFileName());
                 break;
             case CHOICE_QUESTION:
                 question = new Question(questionCmd.getQuestionMessage(), questionCmd.getAnswerPossibilities(),
-                    questionCmd.getNumberOfPossibleAnswers(), questionCmd.isUserAnswers(), questionCmd.isDropDown());
+                    questionCmd.getNumberOfPossibleAnswers(), questionCmd.isUserAnswers(), questionCmd.isDropDown(),
+                    questionCmd.getFileName());
                 break;
             case SORT_QUESTION:
                 question = new Question(questionCmd.getQuestionMessage(), questionCmd.getAnswerPossibilities());
@@ -104,8 +107,8 @@ public class QuestionServiceImpl implements QuestionService {
             default:
                 return null;
         }
-        if(questionCmd.getCategoryType() == null) {
-            if(questionCmd.getCategoryId() == null) {
+        if (questionCmd.getCategoryType() == null) {
+            if (questionCmd.getCategoryId() == null) {
                 questionCmd.setCategoryType(pollRepository.getOne(questionCmd.getPollId()).getCategoryList().get(0).getCategoryId());
             } else {
                 questionCmd.setCategoryType(questionCmd.getCategoryId());
@@ -193,11 +196,13 @@ public class QuestionServiceImpl implements QuestionService {
                 question.setTextMaxBool(questionCmd.isTextMaxBool());
                 question.setTextMinimum(questionCmd.getTextMinimum());
                 question.setTextMaximum(questionCmd.getTextMaximum());
+                question.setFileName(questionCmd.getFileName());
                 break;
             case SORT_QUESTION:
                 question.setQuestionType(questionCmd.getQuestionType());
                 question.setQuestionMessage(questionCmd.getQuestionMessage());
                 question.setAnswerPossibilities(questionCmd.getAnswerPossibilities());
+                question.setFileName(questionCmd.getFileName());
                 break;
             case RANGE_QUESTION:
                 question.setQuestionType(questionCmd.getQuestionType());
@@ -207,6 +212,7 @@ public class QuestionServiceImpl implements QuestionService {
                 question.setStepSize(questionCmd.getStepSize());
                 question.setStartValue(questionCmd.getStartValue());
                 question.setEndValue(questionCmd.getEndValue());
+                question.setFileName(questionCmd.getFileName());
                 break;
             case SLIDER_QUESTION:
                 question.setQuestionType(questionCmd.getQuestionType());
@@ -217,6 +223,7 @@ public class QuestionServiceImpl implements QuestionService {
                 question.setStartValue(questionCmd.getStartValue());
                 question.setEndValue(questionCmd.getEndValue());
                 question.setHideValues(questionCmd.isHideValues());
+                question.setFileName(questionCmd.getFileName());
                 break;
             case CHOICE_QUESTION:
                 question.setQuestionType(questionCmd.getQuestionType());
@@ -226,14 +233,21 @@ public class QuestionServiceImpl implements QuestionService {
                 question.setQuestionType(questionCmd.getQuestionType());
                 question.setUserAnswers(questionCmd.isUserAnswers());
                 question.setDropDown(questionCmd.isDropDown());
+                question.setFileName(questionCmd.getFileName());
                 break;
             default:
                 return null;
         }
         final long oldCategoryId = questionRepository.findById(question.getQuestionId()).orElseThrow(EntityNotFoundException::new)
             .getCategoryId();
-        final long newCategoryId = questionCmd.getCategoryType();
-        if(oldCategoryId != newCategoryId) {
+        final long newCategoryId;
+        if (questionCmd.getCategoryType() != null) {
+            newCategoryId = questionCmd.getCategoryType();
+        } else {
+            newCategoryId = oldCategoryId;
+        }
+
+        if (oldCategoryId != newCategoryId) {
             final Category oldCategory = categoryRepository.getOne(oldCategoryId);
             // System.out.println(newCategoryId);
             final Category newCategory = categoryRepository.getOne(newCategoryId);
@@ -314,7 +328,8 @@ public class QuestionServiceImpl implements QuestionService {
     public Question addChoiceQuestion(final Question question, final Long pollId) {
         Question newQuestion = null;
         newQuestion = new Question(question.getQuestionMessage(), new ArrayList<>(),
-            question.getNumberOfPossibleAnswers(), question.isUserAnswers(), question.isDropDown());
+            question.getNumberOfPossibleAnswers(), question.isUserAnswers(), question.isDropDown(),
+            question.getFileName());
         return copyAnswerPossibilities(question, pollId, newQuestion);
     }
 
@@ -333,13 +348,13 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     private Question copyAnswerPossibilities(final Question question, final Long pollId, final Question newQuestion) {
-        for (final String answer: question.getAnswerPossibilities()) {
+        for (final String answer : question.getAnswerPossibilities()) {
             newQuestion.getAnswerPossibilities().add(answer);
         }
         newQuestion.setCategoryId(pollRepository.findById(pollId)
-                .orElseThrow(EntityNotFoundException ::new).getCategoryList().get(0).getCategoryId());
+            .orElseThrow(EntityNotFoundException::new).getCategoryList().get(0).getCategoryId());
         pollRepository.findById(pollId).orElseThrow(EntityNotFoundException::new)
-                .getCategoryList().get(0).getQuestionList().add(newQuestion);
+            .getCategoryList().get(0).getQuestionList().add(newQuestion);
         questionRepository.save(newQuestion);
 
         return newQuestion;

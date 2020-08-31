@@ -8,9 +8,7 @@
             <v-spacer></v-spacer>
 
             <!--this is displayed if there were no ansers for this question-->
-            <div v-if="(calculated[0].relative[0] === 'NaN')">
-                Keine Antworten
-            </div>
+            <div v-if="calculated[0].relative[0] === 'NaN'">Keine Antworten</div>
 
             <div v-if="!(calculated[0].relative[0] === 'NaN')">
                 <v-tooltip bottom>
@@ -23,9 +21,7 @@
                             v-on="on"
                             @click=";(relativ = !relativ), (diagramKey += 1)"
                         >
-                            <v-icon>
-                                %
-                            </v-icon>
+                            <v-icon> % </v-icon>
                         </v-btn>
                     </template>
                     <span>Relative bzw. Absolute Häufigkeit umschalten</span>
@@ -84,7 +80,7 @@
                             ></BarChartView>
                         </div>
                         <!--                     the height is set to 60% of the screen-->
-                        <div v-else-if="diagramType === 'pie'" style="height: 60vh;">
+                        <div v-else-if="diagramType === 'pie'" style="height: 60vh">
                             <PieChartView
                                 :key="diagramKey"
                                 :chartdata="chartdataSet"

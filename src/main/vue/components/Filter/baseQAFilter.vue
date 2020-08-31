@@ -13,7 +13,7 @@ This selection can also be inverted so that only participants who di not answer 
             prefix="Nur Teilnehmer, die in Kategorie"
             :items="categoryTitles"
             elevation="0"
-            style="box-shadow: none;"
+            style="box-shadow: none"
             @input="updateCategoryIndex()"
         >
         </v-overflow-btn>
@@ -30,7 +30,7 @@ This selection can also be inverted so that only participants who di not answer 
                     : 'Keine nutzbaren Fragen in dieser Kategorie. Bitte wählen Sie eine andere!'
             "
             elevation="0"
-            style="box-shadow: none;"
+            style="box-shadow: none"
             @input="updateQuestionIndex()"
         >
         </v-overflow-btn>
@@ -77,7 +77,7 @@ This selection can also be inverted so that only participants who di not answer 
                         hide-details
                         single-line
                         type="number"
-                        style="width: 60px;"
+                        style="width: 60px"
                         @input="updateLower"
                     ></v-text-field>
                 </template>
@@ -88,7 +88,7 @@ This selection can also be inverted so that only participants who di not answer 
                         hide-details
                         single-line
                         type="number"
-                        style="width: 60px;"
+                        style="width: 60px"
                         @input="updateUpper"
                     ></v-text-field>
                 </template>

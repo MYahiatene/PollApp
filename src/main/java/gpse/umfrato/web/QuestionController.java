@@ -5,10 +5,29 @@ import gpse.umfrato.domain.cmd.QuestionCmd;
 import gpse.umfrato.domain.question.Question;
 import gpse.umfrato.domain.question.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URLConnection;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * The Question controller used to process question specific requests.
@@ -19,6 +38,8 @@ import java.util.List;
 public class QuestionController {
 
     private final QuestionService questionService;
+
+    private static String uploadDirectory = System.getProperty("user.dir") + "/uploads/";
 
     /**
      * This class constructor initializes the services and repository.
@@ -39,6 +60,47 @@ public class QuestionController {
     @PostMapping("/addquestion")
     public Question addQuestion(final @RequestBody QuestionCmd questionCmd) {
         return questionService.addQuestion(questionCmd);
+    }
+
+    @PreAuthorize("hasAnyAuthority('Admin','Creator', 'Editor')")
+    @PostMapping(value = "/upload")
+    public String uploadMultimedia(@RequestParam("file") MultipartFile file) {
+
+        File path = new File(uploadDirectory + file.getOriginalFilename());
+        try {
+            file.transferTo(path);
+            return "Upload successful.";
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "Upload failed.";
+        }
+    }
+
+    @PreAuthorize("hasAnyAuthority('Admin','Creator', 'Editor')")
+    @GetMapping(value = "/download/{filename}")
+    public Resource downloadMultimedia(@PathVariable String filename) throws IOException {
+        Path filePath = Path.of(uploadDirectory + filename);
+        UrlResource urlResource = null;
+        try {
+            urlResource = new UrlResource(filePath.toUri());
+        } catch (MalformedURLException e) {
+            throw new IOException(e);
+        }
+        return urlResource;
+
+    }
+
+    @PreAuthorize("hasAnyAuthority('Admin','Creator', 'Editor')")
+    @PostMapping(value = "/removeFile/{filename}")
+    public String removeMultimedia(@PathVariable String filename) {
+        File path = new File(uploadDirectory + filename);
+
+        if (path.exists()) {
+            path.delete();
+            return "Remove successul.";
+        } else {
+            return "Nothing to remove.";
+        }
     }
 
     /**
@@ -66,6 +128,7 @@ public class QuestionController {
 
     /**
      * This method returns a list of all questions in a specific category.
+     *
      * @param categoryId The categoryId of a specific category.
      * @return returns a list of all questions in a specific category.
      */
@@ -77,6 +140,7 @@ public class QuestionController {
 
     /**
      * This method edits a specific question.
+     *
      * @param questionCmd takes the necessary question Cmd object.
      * @return returns the specific question object.
      */
@@ -89,6 +153,7 @@ public class QuestionController {
 
     /**
      * This method changes the category of a question.
+     *
      * @param questionCategoryChangeCmd takes the questionCategoryChangeCmd object.
      * @return returns the specific question.
      */

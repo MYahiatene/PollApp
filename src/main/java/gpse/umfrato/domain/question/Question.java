@@ -49,6 +49,8 @@ public class Question {
 
     private boolean dropDown;
 
+    private String fileName;
+
     /**
      * This attribute represents an unique id from the object question.
      */
@@ -86,12 +88,13 @@ public class Question {
      * @param textMaximum   the maximal number of letters possible in a textfield
      */
     public Question(final String question, final Boolean textMultiline, final int textMinimum,
-                    final int textMaximum) {
+                    final int textMaximum, final String fileName) {
         this.questionMessage = question;
         this.questionType = "TextQuestion";
         this.textMultiline = textMultiline;
         this.textMinimum = textMinimum;
         this.textMaximum = textMaximum;
+        this.fileName = fileName;
     }
 
     /**
@@ -103,13 +106,15 @@ public class Question {
      * @param userAnswers             the answers from user
      */
     public Question(final String question, final List<String> answerPossibilities,
-                    final Integer numberOfPossibleAnswers, final Boolean userAnswers, final Boolean dropDown) {
+                    final Integer numberOfPossibleAnswers, final Boolean userAnswers, final Boolean dropDown,
+                    final String fileName) {
         this.questionMessage = question;
         this.answerPossibilities = answerPossibilities;
         this.numberOfPossibleAnswers = numberOfPossibleAnswers;
         this.userAnswers = userAnswers;
         this.questionType = "ChoiceQuestion";
         this.dropDown = dropDown;
+        this.fileName = fileName;
     }
 
     /**
@@ -122,7 +127,7 @@ public class Question {
      * @param aboveMessage the message for the meaning of the end value of a range Question
      */
     public Question(final String question, final double startValue, final double endValue, final double stepSize,
-                    final String belowMessage, final String aboveMessage) {
+                    final String belowMessage, final String aboveMessage, final String fileName) {
         this.questionMessage = question;
         this.questionType = "RangeQuestion";
         this.endValue = endValue;
@@ -130,6 +135,7 @@ public class Question {
         this.stepSize = stepSize;
         this.belowMessage = belowMessage;
         this.aboveMessage = aboveMessage;
+        this.fileName = fileName;
     }
 
     /**
@@ -143,7 +149,8 @@ public class Question {
      * @param hideValues   for the slide question,if it shows the chosen value
      */
     public Question(final String question, final double startValue, final double endValue, final double stepSize,
-                    final String belowMessage, final String aboveMessage, final Boolean hideValues) {
+                    final String belowMessage, final String aboveMessage, final Boolean hideValues,
+                    final String fileName) {
         this.questionMessage = question;
         this.questionType = "SliderQuestion";
         this.endValue = endValue;
@@ -152,6 +159,7 @@ public class Question {
         this.belowMessage = belowMessage;
         this.aboveMessage = aboveMessage;
         this.hideValues = hideValues;
+        this.fileName = fileName;
     }
 
     /**

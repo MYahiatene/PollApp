@@ -108,4 +108,11 @@ export default {
          */
         extend(config, ctx) {},
     },
+
+    target: 'static',
+
+    generate: {
+        dir: 'target/classes/public/',
+        subFolders: false,
+    },
 }

@@ -5,7 +5,7 @@
         <!--        backgroundColor is a computed string that sets the background to the color defined in the nuxt.config.js depending on the chosen theme-->
         <v-app-bar fixed app>
             <!--            Logo and Name of the App-->
-            <nuxt-link to="/" style="text-decoration: none;">
+            <nuxt-link to="/" style="text-decoration: none">
                 <div>
                     <h1><img src="LogoEinfach.svg" alt="Logo" width="25" /> {{ title }}</h1>
                 </div>
@@ -14,9 +14,7 @@
             <v-spacer></v-spacer>
             <!--            Umfrage Button-->
             <div v-if="isAuthenticated">
-                <v-btn class="ma-3" :to="'/polls'" color="primary" :disabled="isEditor === false">
-                    Umfragen
-                </v-btn>
+                <v-btn class="ma-3" :to="'/polls'" color="primary" :disabled="isEditor === false"> Umfragen </v-btn>
             </div>
             <!--            Administration Button-->
             <div v-if="isAuthenticated">

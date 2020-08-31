@@ -52,9 +52,7 @@ that each display a basic evaluation of one specific question-->
                                 v-on="on"
                                 @click=";(relativ = !relativ), (widgetKey += 1)"
                             >
-                                <v-icon>
-                                    %
-                                </v-icon>
+                                <v-icon> % </v-icon>
                             </v-btn>
                         </template>
                         <span>Global Relative bzw. Absolute Häufigkeit umschalten</span>

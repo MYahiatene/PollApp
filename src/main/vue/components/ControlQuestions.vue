@@ -2,15 +2,11 @@
     <!--    Here the user can create consistency relationships between two questions of a poll-->
     <v-dialog v-model="dialog" overlay-color="background" persistent width="500" overlay-opacity="0.95" fullscreen>
         <template #activator="{ on: dialog }">
-            <v-btn v-if="useEvaluationStore" v-on="{ ...dialog }">
-                Konsistenzfragen bearbeiten
-            </v-btn>
+            <v-btn v-if="useEvaluationStore" v-on="{ ...dialog }"> Konsistenzfragen bearbeiten </v-btn>
             <v-tooltip v-else bottom>
                 <template #activator="{ on: tooltip }">
                     <v-btn class="mr-n5" icon v-on="{ ...tooltip, ...dialog }" @click="initialize">
-                        <v-icon large color="primary">
-                            mdi-lock-pattern
-                        </v-icon>
+                        <v-icon large color="primary"> mdi-lock-pattern </v-icon>
                     </v-btn>
                 </template>
                 <span>Konsistenzfragen bearbeiten</span>
@@ -22,18 +18,14 @@
                     <h2>Konsistenzfragen von Umfrage: "{{ pollName }}"</h2>
                 </v-col>
                 <v-col cols="12" lg="1">
-                    <v-btn color="primary" @click=";(dialog = false), $emit('close-event')">
-                        Fertig
-                    </v-btn>
+                    <v-btn color="primary" @click=";(dialog = false), $emit('close-event')"> Fertig </v-btn>
                 </v-col>
             </v-row>
 
             <!--        This provides the user with an explanation of how the consistency Questions work -->
             <v-expansion-panels v-model="panel" flat>
                 <v-expansion-panel>
-                    <v-expansion-panel-header>
-                        Was sind eigentlich Konsistenzfragen?
-                    </v-expansion-panel-header>
+                    <v-expansion-panel-header> Was sind eigentlich Konsistenzfragen? </v-expansion-panel-header>
                     <v-expansion-panel-content>
                         <p>
                             Konsistenzfragen können eingebaut werden, um zu überprüfen, ob die Umfrage-Teilnehmer
@@ -72,7 +64,7 @@
                             nach von einem aufmerksamen Teilnehmer nur gemeinsam gewählt werden können.
                         </p>
 
-                        <v-btn text color="info" style="float: right;" @click="panel = false"> Ok! </v-btn>
+                        <v-btn text color="info" style="float: right" @click="panel = false"> Ok! </v-btn>
                     </v-expansion-panel-content>
                 </v-expansion-panel>
             </v-expansion-panels>
@@ -91,7 +83,7 @@
                                 prefix="Kategorie: "
                                 :items="categoryTitles"
                                 elevation="0"
-                                style="box-shadow: none;"
+                                style="box-shadow: none"
                                 @input="updateCategoryIndex()"
                             >
                             </v-overflow-btn>
@@ -109,7 +101,7 @@
                                         : 'Keine nutzbaren Fragen in dieser Kategorie. Bitte wählen Sie eine andere!'
                                 "
                                 elevation="0"
-                                style="box-shadow: none;"
+                                style="box-shadow: none"
                                 @input="updateQuestionIndex()"
                             >
                             </v-overflow-btn>
@@ -167,7 +159,7 @@
                                             hide-details
                                             single-line
                                             type="number"
-                                            style="width: 60px;"
+                                            style="width: 60px"
                                             @change="$set(range, 0, $event)"
                                         ></v-text-field>
                                     </template>
@@ -178,7 +170,7 @@
                                             hide-details
                                             single-line
                                             type="number"
-                                            style="width: 60px;"
+                                            style="width: 60px"
                                             @change="$set(range, 1, $event)"
                                         ></v-text-field>
                                     </template>
@@ -197,7 +189,7 @@
                                 prefix="Kategorie: "
                                 :items="categoryTitles"
                                 elevation="0"
-                                style="box-shadow: none;"
+                                style="box-shadow: none"
                                 @input="updateCategoryIndex2()"
                             >
                             </v-overflow-btn>
@@ -215,7 +207,7 @@
                                         : 'Keine nutzbaren Fragen in dieser Kategorie. Bitte wählen Sie eine andere!'
                                 "
                                 elevation="0"
-                                style="box-shadow: none;"
+                                style="box-shadow: none"
                                 @input="updateQuestionIndex2()"
                             >
                             </v-overflow-btn>
@@ -270,7 +262,7 @@
                                             hide-details
                                             single-line
                                             type="number"
-                                            style="width: 60px;"
+                                            style="width: 60px"
                                             @change="$set(range2, 0, $event)"
                                         ></v-text-field>
                                     </template>
@@ -281,7 +273,7 @@
                                             hide-details
                                             single-line
                                             type="number"
-                                            style="width: 60px;"
+                                            style="width: 60px"
                                             @change="$set(range2, 1, $event)"
                                         ></v-text-field>
                                     </template>
@@ -296,13 +288,9 @@
 
             <v-card-actions>
                 <!--            margin so the text doesn't touch the buttons -->
-                <v-btn class="mr-2" color="primary" @click="addControlQuestion">
-                    Speichern
-                </v-btn>
+                <v-btn class="mr-2" color="primary" @click="addControlQuestion"> Speichern </v-btn>
                 {{ buttonInfo }}
-                <v-btn class="ml-2" color="secondary" @click="discardControlQuestion">
-                    Änderungen verwerfen
-                </v-btn>
+                <v-btn class="ml-2" color="secondary" @click="discardControlQuestion"> Änderungen verwerfen </v-btn>
             </v-card-actions>
 
             <!--        the dialog is opened to confirm that the question should be deleted-->
@@ -311,16 +299,12 @@
                 <v-card>
                     <v-card-title class="headline"> Sicher? </v-card-title>
 
-                    <v-card-text>
-                        Wollen Sie diese Konsistenzfrage wirklich entgültig löschen?
-                    </v-card-text>
+                    <v-card-text> Wollen Sie diese Konsistenzfrage wirklich entgültig löschen? </v-card-text>
 
                     <v-card-actions>
                         <v-spacer></v-spacer>
 
-                        <v-btn color="error" @click="closeDeleteDialog(), addControlQuestion(currentId)">
-                            Nein
-                        </v-btn>
+                        <v-btn color="error" @click="closeDeleteDialog(), addControlQuestion(currentId)"> Nein </v-btn>
 
                         <v-btn color="success" @click="closeDeleteDialog(), deleteControlQuestion(currentId)">
                             Ja
@@ -332,23 +316,21 @@
             <!--        in this v-card the consistency relationships that are already created are listed-->
 
             <v-card class="ma-1 pa-4">
-                <h3>
-                    Bereits erstellte Konsistenzfragen:
-                </h3>
+                <h3>Bereits erstellte Konsistenzfragen:</h3>
 
                 <div v-for="(cq, index) in listOfControlQuestions" :key="index">
                     <v-row>
                         <v-chip class="ma-1" :outlined="index === currentId" @click="openCq(index)">
                             {{ index }}: Kat {{ cq.c1 + 1 }} / Frage {{ cq.q1 + 1 }}:
-                            {{(cq.s1? "Intervall" :  cq.a1.length + " Antwort(en) ")}} mit Kat {{ cq.c2 + 1 }} / Frage
+                            {{ cq.s1 ? 'Intervall' : cq.a1.length + ' Antwort(en) ' }} mit Kat {{ cq.c2 + 1 }} / Frage
                             {{ cq.q2 + 1 }}:
-                            {{(cq.s2? "Intervall" :  cq.a2.length + " Antwort(en)" )}}
+                            {{ cq.s2 ? 'Intervall' : cq.a2.length + ' Antwort(en)' }}
 
                             <v-icon class="ml-1" @click="copyQcQuestion(index)"> mdi-content-duplicate</v-icon>
                             <v-icon right @click="deleteDialog = true"> mdi-minus-circle-outline</v-icon>
                         </v-chip>
 
-                        <div v-if="index === currentId" style="font-style: italic;">(geöffnet)</div>
+                        <div v-if="index === currentId" style="font-style: italic">(geöffnet)</div>
                     </v-row>
                 </div>
             </v-card>

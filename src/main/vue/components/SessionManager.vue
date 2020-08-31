@@ -1,14 +1,10 @@
 <template>
     <v-dialog overlay-color="background" v-model="dialog" width="800" overlay-opacity="0.75">
         <template v-slot:activator="{ on }">
-            <v-btn color="primary" v-on="on" class="ma-2">
-                Sessions
-            </v-btn>
+            <v-btn color="primary" v-on="on" class="ma-2"> Sessions </v-btn>
         </template>
         <v-card class="pa-3">
-            <v-card-title>
-                Sessionmanagement
-            </v-card-title>
+            <v-card-title> Sessionmanagement </v-card-title>
             <v-card-text>
                 Hier können Sie alle Auswertungssessions zu dieser Umfrage verwalten und neue erstellen.
             </v-card-text>
@@ -62,19 +58,13 @@
                         :footer-props="footerProps"
                     >
                         <template v-slot:item.saveIcon="{ item }">
-                            <v-icon @click="saveThisSession(item)">
-                                mdi-content-save
-                            </v-icon>
+                            <v-icon @click="saveThisSession(item)"> mdi-content-save </v-icon>
                         </template>
                         <template v-slot:item.deleteIcon="{ item }">
-                            <v-icon @click="deleteOneSession(item)">
-                                mdi-delete
-                            </v-icon>
+                            <v-icon @click="deleteOneSession(item)"> mdi-delete </v-icon>
                         </template>
                         <template v-slot:item.loadIcon="{ item }">
-                            <v-icon @click="loadOneSession(item)">
-                                mdi-chevron-double-right
-                            </v-icon>
+                            <v-icon @click="loadOneSession(item)"> mdi-chevron-double-right </v-icon>
                         </template>
                     </v-data-table>
                 </template>

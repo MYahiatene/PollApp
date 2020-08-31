@@ -7,9 +7,7 @@
                 <v-row>
                     <v-col cols="12" lg="12">
                         <v-card align="center">
-                            <v-card-title class="headline">
-                                Willkommen bei Umfrato!
-                            </v-card-title>
+                            <v-card-title class="headline"> Willkommen bei Umfrato! </v-card-title>
                             <v-card-text>
                                 <v-container>
                                     <v-row>
@@ -53,9 +51,7 @@
                                             </div>
                                         </v-col>
                                         <!--Is shown before Loged In-->
-                                        <div v-else>
-                                            Bitte melden Sie sich an.
-                                        </div>
+                                        <div v-else>Bitte melden Sie sich an.</div>
                                         <v-spacer />
                                         <v-btn v-if="isAuthenticated !== true" color="accent" nuxt to="/login">
                                             Login
@@ -68,7 +64,7 @@
                     <br />
                     <v-col cols="12" lg="3"></v-col>
                     <v-col cols="12" lg="6" align="center" justify="center">
-                        <v-card class="pa-2" style="background-color: #ffffff;">
+                        <v-card class="pa-2" style="background-color: #ffffff">
                             <v-img src="LogoMitMehr2.png"></v-img>
                         </v-card>
                     </v-col>

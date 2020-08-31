@@ -34,7 +34,7 @@
                 </v-menu>
             </v-col>
             <!--            Time-Picker-->
-            <v-col><v-text-field label="Uhrzeit" :value="time" type="time" style="width: 170px;"></v-text-field></v-col>
+            <v-col><v-text-field label="Uhrzeit" :value="time" type="time" style="width: 170px"></v-text-field></v-col>
         </v-row>
     </v-container>
 </template>

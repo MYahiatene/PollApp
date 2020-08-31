@@ -119,9 +119,7 @@
                                                         v-bind="attrs"
                                                         v-on="on"
                                                     >
-                                                        <v-icon @click="inviteAction(item)">
-                                                            mdi-account-plus
-                                                        </v-icon>
+                                                        <v-icon @click="inviteAction(item)"> mdi-account-plus </v-icon>
                                                     </v-btn>
                                                 </template>
                                                 <span> Teilnehmer einladen</span>
@@ -149,9 +147,7 @@
                                             <v-tooltip bottom>
                                                 <template v-slot:activator="{ on, attrs }">
                                                     <v-btn icon color="primary" v-bind="attrs" v-on="on">
-                                                        <v-icon @click="exportPoll(item)">
-                                                            mdi-cloud-download
-                                                        </v-icon>
+                                                        <v-icon @click="exportPoll(item)"> mdi-cloud-download </v-icon>
                                                     </v-btn>
                                                 </template>
                                                 <span> Umfrage exportieren </span>
@@ -159,9 +155,7 @@
                                             <v-tooltip bottom>
                                                 <template v-slot:activator="{ on, attrs }">
                                                     <v-btn icon color="primary" v-bind="attrs" v-on="on">
-                                                        <v-icon @click="copyPoll(item)">
-                                                            mdi-content-copy
-                                                        </v-icon>
+                                                        <v-icon @click="copyPoll(item)"> mdi-content-copy </v-icon>
                                                     </v-btn>
                                                 </template>
                                                 <span> Umfrage kopieren</span>
@@ -175,9 +169,7 @@
                                                         v-bind="attrs"
                                                         v-on="on"
                                                     >
-                                                        <v-icon @click="setLink(item)">
-                                                            mdi-link-variant
-                                                        </v-icon>
+                                                        <v-icon @click="setLink(item)"> mdi-link-variant </v-icon>
                                                     </v-btn>
                                                 </template>
                                                 <span> Links kopieren</span>
@@ -195,9 +187,7 @@
                                                         v-bind="attrs"
                                                         v-on="on"
                                                     >
-                                                        <v-icon @click="generateQR(item)">
-                                                            mdi-qrcode
-                                                        </v-icon>
+                                                        <v-icon @click="generateQR(item)"> mdi-qrcode </v-icon>
                                                     </v-btn>
                                                 </template>
                                                 <span> QR generieren</span>
@@ -211,9 +201,7 @@
                                                         v-bind="attrs"
                                                         v-on="on"
                                                     >
-                                                        <v-icon @click="abortSeries(item)">
-                                                            mdi-cancel
-                                                        </v-icon>
+                                                        <v-icon @click="abortSeries(item)"> mdi-cancel </v-icon>
                                                     </v-btn>
                                                 </template>
                                                 <span> Serienumfrage abbrechen </span>
@@ -227,9 +215,7 @@
                                                         v-bind="attrs"
                                                         v-on="on"
                                                     >
-                                                        <v-icon @click="deletePoll(item)">
-                                                            mdi-delete
-                                                        </v-icon>
+                                                        <v-icon @click="deletePoll(item)"> mdi-delete </v-icon>
                                                     </v-btn>
                                                 </template>
                                                 <span> Umfrage löschen </span>
@@ -247,9 +233,7 @@
             <v-card>
                 <v-card-title>
                     <v-spacer />
-                    <v-icon>
-                        mdi-sync-alert
-                    </v-icon>
+                    <v-icon> mdi-sync-alert </v-icon>
                     Der Umfrato-Server antwortet nicht
                     <v-spacer
                 /></v-card-title>

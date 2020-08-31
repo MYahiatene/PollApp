@@ -444,7 +444,7 @@
    <installDirectory>${NODE_PATH}</installDirectory>
    <workingDirectory>${YOUR_WORKING_DIRECTORY}</workingDirectory>
 
-                            <arguments>run build</arguments>
+                            <arguments>run generate</arguments>
                         </configuration>
                     </execution>
                 </executions>

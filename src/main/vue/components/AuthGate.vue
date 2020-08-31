@@ -6,17 +6,13 @@
                     <v-col cols="12" lg="12">
                         <v-row>
                             <v-card>
-                                <v-card-title class="headline">
-                                    Willkommen bei Umfrato!
-                                </v-card-title>
+                                <v-card-title class="headline"> Willkommen bei Umfrato! </v-card-title>
                                 <v-card-text>
                                     <v-container>
                                         <v-row>
                                             Bitte melden Sie sich an.
                                             <v-spacer />
-                                            <v-btn color="accent" nuxt to="/login">
-                                                Login
-                                            </v-btn>
+                                            <v-btn color="accent" nuxt to="/login"> Login </v-btn>
                                         </v-row>
                                     </v-container>
                                 </v-card-text>

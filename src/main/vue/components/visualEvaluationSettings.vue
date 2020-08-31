@@ -2,12 +2,8 @@
     <!--   this window allows the user to specify the visual settings for choiceQuestion-->
     <v-container class="ma-3">
         <v-row>
-            <p v-if="!changeDefault">
-                Hier können die Design-Einstellungen für eine Auswahlfrage verändert werden.
-            </p>
-            <h3 v-else>
-                Hier können die Design-Einstellungen für Auswahlfragen generell gesetzt werden.
-            </h3>
+            <p v-if="!changeDefault">Hier können die Design-Einstellungen für eine Auswahlfrage verändert werden.</p>
+            <h3 v-else>Hier können die Design-Einstellungen für Auswahlfragen generell gesetzt werden.</h3>
         </v-row>
         <!--switch for "ShowDiagram"-->
         <v-row no-gutters>
@@ -42,9 +38,7 @@
                 {{ colorSchemes[1].name }}
             </v-btn>
 
-            <v-btn class="ma-2" v-if="setMultipleColors" @click="loadRandomColors">
-                Zufall
-            </v-btn>
+            <v-btn class="ma-2" v-if="setMultipleColors" @click="loadRandomColors"> Zufall </v-btn>
 
             <!--            here we can specify the length of the colorList, only shown if changeDefault is active-->
 
@@ -65,14 +59,10 @@
             <v-row justify="center" v-if="setMultipleColors">
                 <v-dialog v-model="colorDialog" width="600px">
                     <template v-slot:activator="{ on, attrs }">
-                        <v-btn color="accent" v-bind="attrs" v-on="on">
-                            Mehr
-                        </v-btn>
+                        <v-btn color="accent" v-bind="attrs" v-on="on"> Mehr </v-btn>
                     </template>
                     <v-card>
-                        <v-card-title>
-                            Vorgefertigte Farbkombinationen:
-                        </v-card-title>
+                        <v-card-title> Vorgefertigte Farbkombinationen: </v-card-title>
                         <v-card-text>
                             <v-list v-for="(colorScheme, index) in colorSchemes" :key="index" dense>
                                 <v-list-item>
@@ -149,7 +139,7 @@
                             v-if="index === currentChipIndex"
                             class="ma-1"
                             :color="color"
-                            style="min-width: 2cm; text-align-all: center;"
+                            style="min-width: 2cm; text-align-all: center"
                             @click="updateCurrentChip(index)"
                             large
                         >
@@ -159,7 +149,7 @@
                             v-else
                             class="ma-1"
                             :color="color"
-                            style="min-width: 2cm; text-align: center;"
+                            style="min-width: 2cm; text-align: center"
                             @click="updateCurrentChip(index)"
                         >
                             {{ series ? 'Daten ' + index : answerTitles[index] }}
@@ -206,9 +196,7 @@
         </p>
         <!-- Button that will send save the data to the store-->
         <v-row no-gutters>
-            <v-btn color="success" @click="saveDiagramFormat">
-                Anwenden
-            </v-btn>
+            <v-btn color="success" @click="saveDiagramFormat"> Anwenden </v-btn>
         </v-row>
     </v-container>
 </template>

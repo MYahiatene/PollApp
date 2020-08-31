@@ -65,7 +65,7 @@
                                                 Aktivierungsdatums im Titel.
                                             </p>
 
-                                            <v-btn text color="info" style="float: right;" @click="panel1 = false">
+                                            <v-btn text color="info" style="float: right" @click="panel1 = false">
                                                 Ok!
                                             </v-btn>
                                         </v-expansion-panel-content>
@@ -108,7 +108,7 @@
                                                 Zahl angeben oder einen Tag, mit einer Zahl, in einem Monat, mit einer
                                                 Zahl von 1 - 12, oder mit einem Wochentag in einer Woche eines Monats.
                                             </p>
-                                            <v-btn text color="info" style="float: right;" @click="panel2 = false">
+                                            <v-btn text color="info" style="float: right" @click="panel2 = false">
                                                 Ok!
                                             </v-btn>
                                         </v-expansion-panel-content>
@@ -223,7 +223,7 @@
                                                 Umfrage der Serie nicht so viele Teilnehmer an der Umfrage teilgenommen
                                                 haben wird die Serie beendet.
                                             </p>
-                                            <v-btn text color="info" style="float: right;" @click="panel3 = false">
+                                            <v-btn text color="info" style="float: right" @click="panel3 = false">
                                                 Ok!
                                             </v-btn>
                                         </v-expansion-panel-content>
@@ -332,7 +332,7 @@
                                 v-model="activatedTime"
                                 label="Uhrzeit"
                                 type="time"
-                                style="width: 170px;"
+                                style="width: 170px"
                                 @change="saveTime($event, 'a')"
                             />
                         </v-col>
@@ -384,7 +384,7 @@
                                 v-model="deactivatedTime"
                                 label="Uhrzeit"
                                 type="time"
-                                style="width: 170px;"
+                                style="width: 170px"
                                 @change="saveTime($event, 'd')"
                         /></v-col>
                     </v-row>

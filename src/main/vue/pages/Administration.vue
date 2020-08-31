@@ -68,12 +68,8 @@
                 show-expand
             >
                 <template v-slot:item.actions="{ item }">
-                    <v-icon small class="mr-2" @click="editUser(item)">
-                        mdi-pencil
-                    </v-icon>
-                    <v-icon small @click="deleteUser(item)">
-                        mdi-delete
-                    </v-icon>
+                    <v-icon small class="mr-2" @click="editUser(item)"> mdi-pencil </v-icon>
+                    <v-icon small @click="deleteUser(item)"> mdi-delete </v-icon>
                 </template>
                 <template v-slot:expanded-item="{ headers, item }">
                     <v-container>E-Mail: {{ item.email }}</v-container>

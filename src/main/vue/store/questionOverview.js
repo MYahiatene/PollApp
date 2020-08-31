@@ -24,6 +24,7 @@ export const state = () => ({
         choiceType: '',
         questionId: null,
         categoryType: 0,
+        fileName: '',
     },
 })
 export const mutations = {
@@ -102,6 +103,9 @@ export const mutations = {
     setDropDown(state, value) {
         state.question.dropDown = value
     },
+    setFileName(state, fileName) {
+        state.question.fileName = fileName
+    },
 }
 export const getters = {
     getQuestionMessage(state) {
@@ -119,6 +123,9 @@ export const getters = {
     getCounter(state) {
         return state.counter
     },
+    getFileName(state) {
+        return state.question.fileName
+    },
 }
 export const actions = {
     setQuestionMessage({ commit }, questionMessage) {
@@ -126,5 +133,8 @@ export const actions = {
     },
     setAnswerPossibility({ commit }, obj) {
         commit('setAnswerP', obj)
+    },
+    setFileName({ commit }, fileName) {
+        commit('setFileName', fileName)
     },
 }

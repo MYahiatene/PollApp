@@ -12,16 +12,12 @@
             </v-col>
             <v-col cols="1">
                 <v-btn icon @click="editQuestion(question)" color="primary">
-                    <v-icon>
-                        mdi-pencil
-                    </v-icon>
+                    <v-icon> mdi-pencil </v-icon>
                 </v-btn>
             </v-col>
             <v-col cols="1">
                 <v-btn icon @click="deleteQuestion(question)" color="primary">
-                    <v-icon>
-                        mdi-delete
-                    </v-icon>
+                    <v-icon> mdi-delete </v-icon>
                 </v-btn>
             </v-col>
         </v-row>

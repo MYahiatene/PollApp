@@ -31,7 +31,7 @@ are included in the analysis.-->
                     v-model="time1"
                     label="Uhrzeit"
                     type="time"
-                    style="width: 170px;"
+                    style="width: 170px"
                     @change="update()"
                 ></v-text-field>
                 <p>und dem {{ endDisplay }}</p>
@@ -40,7 +40,7 @@ are included in the analysis.-->
                     v-model="time2"
                     label="Uhrzeit"
                     type="time"
-                    style="width: 170px;"
+                    style="width: 170px"
                     @change="update()"
                 ></v-text-field>
                 <p>getätigt wurden.</p>

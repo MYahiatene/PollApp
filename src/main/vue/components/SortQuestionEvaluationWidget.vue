@@ -21,9 +21,7 @@
                 <v-switch class="mt-4" v-model="shortView" label="Kurzübersicht"> </v-switch>
             </div>
 
-            <div v-else>
-                Keine Antworten
-            </div>
+            <div v-else>Keine Antworten</div>
         </v-app-bar>
 
         <div v-if="!noAnswers">
@@ -100,7 +98,7 @@
                                             <v-card flat>
                                                 <BarChartView
                                                     :key="DiagramKey"
-                                                    style="height: 30vh;"
+                                                    style="height: 30vh"
                                                     :chartdata="chartdataSets[item.itemID]"
                                                     :options="barChartOptions"
                                                 ></BarChartView>

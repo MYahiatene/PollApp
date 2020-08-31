@@ -1,6 +1,6 @@
 <template>
     <div>
-        <v-expansion-panel style="min-width: 400px; max-width: 400px;">
+        <v-expansion-panel style="min-width: 400px; max-width: 400px">
             <v-expansion-panel-header class="my-0" min-width="400" :style="headerColor">
                 <template v-slot:default="{ open }">
                     <div v-if="open">
@@ -15,7 +15,7 @@
                     </div>
                     <div v-else>
                         <draggable :group="{ name: 'g1' }">
-                            <h2 slot="header" style="font-weight: normal;">
+                            <h2 slot="header" style="font-weight: normal">
                                 {{ category.categoryName.substr(0, 27) }}
                             </h2>
                             <v-spacer></v-spacer>

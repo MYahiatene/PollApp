@@ -6,27 +6,19 @@
                 <v-card-title class="justify-center"> Willkommen, {{ account.firstName }}! </v-card-title>
                 <v-container class="ma-1">
                     <v-container>
-                        <span class="font-weight-bold">
-                            Name:
-                        </span>
+                        <span class="font-weight-bold"> Name: </span>
                         {{ account.firstName }} {{ account.lastName }}</v-container
                     >
                     <v-container>
-                        <span class="font-weight-bold">
-                            Username:
-                        </span>
+                        <span class="font-weight-bold"> Username: </span>
                         {{ account.username }}</v-container
                     >
                     <v-container>
-                        <span class="font-weight-bold">
-                            Rolle:
-                        </span>
+                        <span class="font-weight-bold"> Rolle: </span>
                         {{ account.role }}</v-container
                     >
                     <v-container>
-                        <span class="font-weight-bold">
-                            E-Mail:
-                        </span>
+                        <span class="font-weight-bold"> E-Mail: </span>
                         {{ account.email }} <v-icon @click="dialog2 = true">mdi-pencil</v-icon></v-container
                     >
                 </v-container>
@@ -35,9 +27,7 @@
                         <v-btn color="primary" class="ma-4 float-left" v-on="on">Passwort ändern</v-btn>
                     </template>
                     <v-card>
-                        <v-card-title>
-                            Passwort ändern
-                        </v-card-title>
+                        <v-card-title> Passwort ändern </v-card-title>
                         <v-card-text>
                             <v-container>
                                 <v-row>
@@ -78,9 +68,7 @@
                 <v-btn color="accent" class="ma-4 float-right" v-on="on" @click="logout">Abmelden</v-btn>
                 <v-dialog v-model="dialog2" persistent max-width="600px">
                     <v-card>
-                        <v-card-title>
-                            E-Mail ändern
-                        </v-card-title>
+                        <v-card-title> E-Mail ändern </v-card-title>
                         <v-card-text>
                             <v-container>
                                 <v-row>

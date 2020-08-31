@@ -26,6 +26,15 @@
                         />
                     </v-row>
                     <v-row no-gutters>
+                        <v-model v-model="fileNameModel">
+                            {{ 'Angehängte Datei: ' + fileNameModel }}
+                            <v-btn text x-small @click="removeFile">{{ this.removeButtonText }}</v-btn>
+                        </v-model>
+                    </v-row>
+                    <v-row no-gutters>
+                        <input type="file" name="file" id="file" @change="uploadFile" />
+                    </v-row>
+                    <v-row no-gutters>
                         <v-select v-model="questionType" :items="questionWidgets" label="Fragenart" />
                     </v-row>
                     <v-row>
@@ -41,9 +50,7 @@
                         <v-col cols="8" />
                         <v-col>
                             <v-btn :disabled="questionMessageBool" @click="createQuestion">
-                                <v-icon color="primary" left>
-                                    mdi-plus
-                                </v-icon>
+                                <v-icon color="primary" left> mdi-plus </v-icon>
                                 Speichern
                             </v-btn>
                         </v-col>
@@ -97,6 +104,8 @@ export default {
                     value: 'RangeQuestion',
                 },
             ],
+            file: null,
+            removeButtonText: 'X',
         }
     },
     computed: {
@@ -108,6 +117,7 @@ export default {
             getSaveButtonStatus: 'questionOverview/getSaveButtonStatus',
             getCategoryType: 'questionOverview/getCategoryType',
             getUsername: 'login/getUsername',
+            getFileName: 'questionOverview/getFileName',
         }),
         questionMessageBool: {
             get() {
@@ -168,8 +178,45 @@ export default {
                 this.setCategoryType(value)
             },
         },
+        fileNameModel: {
+            get() {
+                return this.getQuestion.fileName
+            },
+            set() {
+                this.setFileName(this.fileName)
+            },
+        },
     },
     methods: {
+        async uploadFile(event) {
+            const tmpfile = event.target.files[0]
+            if (tmpfile.name.includes('.jpg') || tmpfile.name.includes('.mp3')) {
+                const file = event.target.files[0]
+                this.fileName = file.name
+                this.fileNameModel = this.fileName
+                const formdata = new FormData()
+                formdata.append('file', file)
+                await this.$axios
+                    .post('/upload', formdata, { headers: { 'Content-Type': 'multipart/form-data' } })
+                    .then(function (res) {
+                        console.log(res)
+                    })
+            } else {
+                console.log('not allowed file extension')
+            }
+        },
+        removeFile() {
+            this.$axios
+                .post('/removeFile/' + this.fileNameModel, {
+                    fileName: this.fileNameModel,
+                })
+                .then((response) => {
+                    console.log(response)
+                })
+            this.fileName = ''
+            this.removeButtonText = 'entfernt'
+            this.fileNameModel = ''
+        },
         async createQuestion() {
             if (this.buildIndex === 1) {
                 await this.$axios
@@ -193,6 +240,7 @@ export default {
                         hideValues: this.getQuestion.hideValues,
                         dropDown: this.getQuestion.dropDown,
                         categoryType: this.getQuestion.categoryType,
+                        fileName: this.fileName,
                     })
                     .then((response) => {
                         this.categoryData.forEach((category) => {
@@ -200,6 +248,8 @@ export default {
                                 category.questionList.push(response.data)
                             }
                         })
+                        this.file = null
+                        this.fileName = null
                     })
                 const obj = {
                     lastEditFrom: this.getUsername,
@@ -207,8 +257,6 @@ export default {
                 }
                 await this.$axios.post('/newLastEdit', obj)
             } else {
-                // console.log(this.getQuestion)
-                // console.log(this.getQuestion.categoryType)
                 await this.$axios
                     .put('/editquestion', {
                         pollId: this.$route.params.QuestionOverview,
@@ -231,10 +279,10 @@ export default {
                         hideValues: this.getQuestion.hideValues,
                         dropDown: this.getQuestion.dropDown,
                         categoryType: this.getQuestion.categoryType,
+                        fileName: this.fileName,
                     })
                     .then((response) => {
                         let questionExists = false
-                        // console.log('suche frage')
                         this.categoryData.forEach((category) => {
                             if (category.categoryId === response.data.categoryId) {
                                 category.questionList.forEach((question) => {
@@ -249,7 +297,6 @@ export default {
                             this.categoryData.forEach((category) =>
                                 category.questionList.forEach((question) => {
                                     if (question.questionId === this.getQuestion.questionId) {
-                                        // console.log('lösche frage')
                                         category.questionList.splice(category.questionList.indexOf(question), 1)
                                     }
                                 })
@@ -260,6 +307,8 @@ export default {
                                 }
                             })
                         }
+                        this.file = null
+                        this.fileName = null
                     })
                 const obj = {
                     lastEditFrom: this.getUsername,
@@ -268,6 +317,7 @@ export default {
                 await this.$axios.post('/newLastEdit', obj)
             }
             this.setBuildIndex(0)
+            this.removeButtonText = 'X'
         },
         ...mapMutations({
             setCategoryType: 'questionOverview/setCategoryType',
@@ -276,10 +326,12 @@ export default {
             setQuestionType: 'questionOverview/setQuestionType',
             setBuildIndex: 'questionOverview/setBuildIndex',
             setQuestion: 'questionOverview/setQuestion',
+            setFileName: 'questionOverview/setFileName',
         }),
         ...mapActions({
             setQM: 'questionOverview/setQuestionMessage',
             deleteQuestion: 'pollOverview/deleteQuestion',
+            setFileName: 'questionOverview/setFileName',
         }),
     },
 }

@@ -3,9 +3,7 @@
 <template>
     <v-dialog v-model="dialog" overlay-color="background" persistent width="500" overlay-opacity="0.95" fullscreen>
         <template v-slot:activator="{ on }">
-            <v-btn color="primary" v-on="on" class="ma-2" @click="getFilters">
-                Analyse
-            </v-btn>
+            <v-btn color="primary" v-on="on" class="ma-2" @click="getFilters"> Analyse </v-btn>
         </template>
 
         <v-card class="ma-2 pa-2">
@@ -18,7 +16,7 @@
                         v-if="isSeriesPoll"
                         v-model="seriesPollNumber"
                         min="0"
-                        :max="(poll.seriesCounter - 1)"
+                        :max="poll.seriesCounter - 1"
                         label="Anzahl der betrachteten vorhergegangenen Serienumfragen:"
                         :thumb-label="true"
                     />
@@ -28,9 +26,7 @@
 
                 <v-expansion-panels accordion multiple hover>
                     <v-expansion-panel>
-                        <v-expansion-panel-header>
-                            Fragenauswahl
-                        </v-expansion-panel-header>
+                        <v-expansion-panel-header> Fragenauswahl </v-expansion-panel-header>
                         <v-expansion-panel-content>
                             Hier können Sie die Fragen auswählen, die in der Analyse betrachtet werden sollen.
 
@@ -64,9 +60,7 @@
                         </v-expansion-panel-content>
                     </v-expansion-panel>
                     <v-expansion-panel v-if="userNames.length !== 0">
-                        <v-expansion-panel-header>
-                            Teilnehmerauswahl
-                        </v-expansion-panel-header>
+                        <v-expansion-panel-header> Teilnehmerauswahl </v-expansion-panel-header>
                         <v-expansion-panel-content>
                             Hier können Sie die Teilnehmer auswählen, die {{ userInverted ? 'NICHT' : '' }} in der
                             Analyse betrachtet werden sollen.
@@ -99,16 +93,12 @@
                     </v-expansion-panel>
 
                     <v-expansion-panel>
-                        <v-expansion-panel-header>
-                            Konsistenzfragen
-                        </v-expansion-panel-header>
+                        <v-expansion-panel-header> Konsistenzfragen </v-expansion-panel-header>
                         <v-expansion-panel-content>
                             <v-container fluid>
                                 <v-row>
                                     <v-col colls="12" lg="8">
-                                        <div v-if="maxConsistencyValue === 0">
-                                            Erstellen Sie erst Konsistenzfragen!
-                                        </div>
+                                        <div v-if="maxConsistencyValue === 0">Erstellen Sie erst Konsistenzfragen!</div>
                                         <div v-else-if="maxConsistencyValue === 1">
                                             <v-switch
                                                 v-model="consistencyOn"
@@ -148,9 +138,7 @@
                     </v-expansion-panel>
 
                     <v-expansion-panel>
-                        <v-expansion-panel-header>
-                            Antwortenfilter
-                        </v-expansion-panel-header>
+                        <v-expansion-panel-header> Antwortenfilter </v-expansion-panel-header>
                         <v-expansion-panel-content dense>
                             Hier können Sie das Antwortverhalten der Teilnehmer, die Sie betrachten wollen, festlegen.
                             Dieser Filter funktioniert allerdings nur auf Range-, Slider- und Auswahlfragen.
@@ -203,9 +191,7 @@
                     </v-expansion-panel>
 
                     <v-expansion-panel>
-                        <v-expansion-panel-header>
-                            Zeitraumfilter
-                        </v-expansion-panel-header>
+                        <v-expansion-panel-header> Zeitraumfilter </v-expansion-panel-header>
                         <v-expansion-panel-content>
                             Hier können Sie den Antwortzeitpunkt der Teilnehmer, die Sie betrachten wollen festlegen.
 

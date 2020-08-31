@@ -29,9 +29,12 @@
                                     <v-card-title class="col" :style="fontColorText">
                                         <!--the visibility of the index of the current questions in relation to the total
                                     number of questions, given in the settings of the poll-->
-                                        <div v-if="getVisibility">{{ (index+1) }}/{{ getNumberOfQuestions }}</div>
+                                        <div v-if="getVisibility">{{ index + 1 }}/{{ getNumberOfQuestions }}</div>
                                         <div class="ps-4">{{ question.questionMessage }}</div>
                                     </v-card-title>
+                                    <div v-if="question.fileName != null">
+                                        <v-btn small @click="downloadFile(question)">Download Anhang</v-btn>
+                                    </div>
                                     <div v-if="question.questionType === 'TextQuestion'">
                                         <v-card-text>
                                             <!--:rules="textQuestionRules"-->
@@ -268,9 +271,7 @@
                                                 >
                                             </div>
                                         </draggable>
-                                        <v-btn class="ma-2" @click="restoreAP(index, question)">
-                                            Zurücksetzen
-                                        </v-btn>
+                                        <v-btn class="ma-2" @click="restoreAP(index, question)"> Zurücksetzen </v-btn>
                                         <v-btn
                                             v-if="!sqWasAnsweredList[index]"
                                             class="ma-2"
@@ -314,9 +315,7 @@
                                     >Nächste Seite</v-btn
                                 >
                                 <!--nuxt to="/AfterParticipated"-->
-                                <v-btn :color="fontColor" @click="saveParticipatedPoll()">
-                                    Absenden
-                                </v-btn>
+                                <v-btn :color="fontColor" @click="saveParticipatedPoll()"> Absenden </v-btn>
                             </div>
                         </v-col>
                     </v-row>
@@ -334,9 +333,7 @@
                                         <v-card-title class="headline">
                                             Sie haben an dieser Umfrage bereits teilgenommen!
                                         </v-card-title>
-                                        <v-card-text>
-                                            Vielen Dank für ihre Teilnahme!
-                                        </v-card-text>
+                                        <v-card-text> Vielen Dank für ihre Teilnahme! </v-card-text>
                                     </v-card>
                                 </v-row>
                             </v-col>
@@ -581,6 +578,24 @@ export default {
         },
     },
     methods: {
+        downloadFile(question) {
+            this.$axios({ url: '/download/' + question.fileName, method: 'GET', responseType: 'blob' }).then(
+                (response) => {
+                    console.log('download start')
+                    const url = window.URL.createObjectURL(new Blob([response.data]))
+                    console.log(response)
+                    const link = document.createElement('a')
+                    link.href = url
+                    link.setAttribute('download', question.fileName)
+                    document.body.appendChild(link)
+                    link.click()
+                    // const fileDownload = require('js-file-download')
+                    // fileDownload(response.data, question.filename)
+
+                    console.log('download finish')
+                }
+            )
+        },
         errorCheckbox(i, question) {
             if (this.valueList[i]) {
                 if (Object.keys(this.valueList[i]).length > question.numberOfPossibleAnswers) {
@@ -598,8 +613,6 @@ export default {
         valuesForQuestions() {
             this.createListOfAnswerPossibilitiesForSortQuestions()
             this.valueList = []
-            // console.log('givenAnswers', this.givenAnswers)
-            // console.log('computedQuestionList', this.givenAnswers)
             let index = 0
             for (let m = 0; m < this.getPoll[1].data.categoryList.length; m++) {
                 if (this.getCategory.categoryId > this.getPoll[1].data.categoryList[m].categoryId) {
@@ -608,15 +621,11 @@ export default {
                     break
                 }
             }
-            // console.log('index', index)
             for (let i = 0; i < this.getCategory.questionList.length; i++) {
                 const type = this.getCategory.questionList[i].questionType
 
-                // console.log('type', type)
                 if (this.givenAnswers !== []) {
-                    // console.log('!== []')
                     if (this.givenAnswers[i + index] != null) {
-                        // console.log('!= null')
                         // for RadioButtons we need answer text and given back are the indizes
                         if (
                             (type === 'ChoiceQuestion' &&

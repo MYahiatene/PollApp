@@ -14,7 +14,7 @@
                                     <v-spacer />
                                     <v-col cols="10">
                                         <v-card-title>
-                                            <h2 style="font-weight: normal; text-align: center;" class="ma-0">
+                                            <h2 style="font-weight: normal; text-align: center" class="ma-0">
                                                 Kategorien
                                             </h2>
                                             <v-spacer />
@@ -31,9 +31,7 @@
                                 <v-row>
                                     <v-col cols="6">
                                         <v-btn class="ml-10" @click="createCategory()">
-                                            <v-icon color="primary">
-                                                mdi-plus
-                                            </v-icon>
+                                            <v-icon color="primary"> mdi-plus </v-icon>
                                             Kategorie
                                         </v-btn>
                                     </v-col>
@@ -99,9 +97,7 @@
             <v-card>
                 <v-card-title>
                     <v-spacer />
-                    <v-icon>
-                        mdi-sync-alert
-                    </v-icon>
+                    <v-icon> mdi-sync-alert </v-icon>
                     Der Umfrato-Server hat noch nicht geantwortet
                     <v-spacer />
                 </v-card-title>
@@ -428,6 +424,7 @@ export default {
             updateCategorys: 'pollOverview/updateCategoryOrder',
             setBuildIndex: 'questionOverview/setBuildIndex',
             setQuestion: 'questionOverview/setQuestion',
+            setFileName: 'questionOverview/setFileName',
         }),
         saveState() {
             const payload = {
