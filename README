@@ -5,13 +5,13 @@ Nuxt2 + VUEX + Vuetify and Spring Boot fullstack webapp we coded for a Consultin
 
 Prerequisites: Java11, Nuxt2 , Node , Maven 
 
-To start the backend server and install front/backend dependencies:
+To start the backend server and install front/backend dependencies from the project root directory:
 ```
 
-mvn spring-boot:run
+./mvnw spring-boot:run
 
 ```
-To start the frontend:
+To start the frontend from the project root directory:
 
 ```
 nuxt
