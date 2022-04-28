@@ -1,2 +1,19 @@
-GIT checkout:
-git clone https://se.techfak.de/git/gp-se-ss-2020-team5-1.git
+### Poll App
+#### Live polling app for company employees to organize themselves with JWT Security layer.
+
+Nuxt2 + VUEX + Vuetify and Spring Boot fullstack webapp we coded for a Consulting company as an university project. 
+
+Prerequisites: Java11, Nuxt2 , Node , Maven 
+
+To start the backend server and install front/backend dependencies:
+```
+
+mvn spring-boot:run
+
+```
+To start the frontend:
+
+```
+nuxt
+
+```
