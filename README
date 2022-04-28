@@ -1,7 +1,7 @@
 ### Poll App
-#### Live polling app for company employees to organize themselves with JWT Security layer.
+#### Live polling app for company employees to organize themselves.
 
-Nuxt2 + VUEX + Vuetify and Spring Boot fullstack webapp we coded for a Consulting company as an university project. 
+Nuxt2 + VUEX + Vuetify and Spring Boot(JWT Security) fullstack webapp we coded for a Consulting company as an university project. 
 
 Prerequisites: Java11, Nuxt2 , Node , Maven 
 
