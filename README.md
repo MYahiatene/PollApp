@@ -8,12 +8,12 @@ Prerequisites: Java11, Nuxt2 , Node , Maven
 To start the backend server and install front/backend dependencies from the project root directory:
 ```
 
-./mvnw spring-boot:run
+mvn spring-boot:run
 
 ```
 To start the frontend from the project root directory:
 
 ```
-nuxt
+npm run dev
 
 ```
