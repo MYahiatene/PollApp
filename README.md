@@ -19,9 +19,21 @@ npm run dev
 ```
 
 ### To login into the App specify Username and Password in the InitializeDatabase class or just use:
-### Login:
+### Admin Login:
 ```
-tbettmann
+user
+
+```
+### Password:
+```
+password
+
+```
+
+### User Login:
+
+```
+testNutzer
 
 ```
 ### Password:
