@@ -17,3 +17,15 @@ To start the frontend from the project root directory:
 npm run dev
 
 ```
+
+### To login in to the App specify Username and Password in the InitializeDatabase class or just use:
+### Login:
+```
+tbettmann
+
+```
+### Password:
+```
+password
+
+```
